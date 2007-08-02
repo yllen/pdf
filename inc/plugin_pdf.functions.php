@@ -115,7 +115,7 @@ function plugin_pdf_background($tab,$width,$ID,$type){
 	$pdf->setLineStyle(1,'round','round');
 	$pdf->rectangle(20,20,$width-40,$height-40);
 	$pdf->addJpegFromFile("../pics/fd_logo.jpg",25,$height-50);
-	$pdf->selectFont("../../../lib/ezpdf/fonts/Times-Roman.afm");
+	$pdf->selectFont("../fonts/Times-Roman.afm");
 	$pdf->setFontFamily('Times-Roman.afm',array('b'=>'Times-Bold.afm','i'=>'Times-Italic.afm','bi'=>'Times-BoldItalic.afm'));
 	
 	switch($type){
