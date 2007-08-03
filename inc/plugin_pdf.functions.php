@@ -36,14 +36,14 @@ function plugin_pdf_menu_computer($type,$ID){
 	
 	echo "<form action=\"../plugins/pdf/front/plugin_pdf.export.php\" target=\"blank\" method=\"post\" style=\"margin-top: 20px\">";
 	echo "<div align=\"center\">";
-	echo "<table cellspacing=\"10\" cellpadding=\"2\">";
-	echo "<tr><td align='center' style='font-size:20px'>".$LANGPDF["title"][2]."</td></tr>";
-	echo "<tr>";
-	echo "<td  align='center'>";
+	echo "<table class='tab_cadre'>";
+	echo "<tr><th>".$LANGPDF["title"][2]."</th></tr>";
+	echo "<tr class='tab_bg_1'>";
+	echo "<td align='center'>";
 	echo "<input type=\"hidden\" name=\"ID\" value=\"$ID\" />";
 	echo "<input type=\"hidden\" name=\"type\" value=\"$type\" />";
 	echo "<input type=\"hidden\" name=\"indice\" value=\"10\" />";
-	echo "<table><tr>";
+	echo "<table class='tab_cadre'><tr class='tab_bg_1'>";
 	echo "<td align='right' width='100px'>".$LANG["Menu"][26];
 	echo "<input type=\"checkbox\" name=\"check0\" value=\"0\" /><br />";
 	echo $LANG["title"][27];
@@ -67,7 +67,7 @@ function plugin_pdf_menu_computer($type,$ID){
 	echo "</tr></table>";
 	echo "</td>";
 	echo "</tr>";
-	echo "<tr><td align='center'><input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='icon_consol' /></td></tr>";
+	echo "<tr class='tab_bg_2'><td align='center'><input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='submit' /></td></tr>";
 	echo "</table></div></form>";
 }
 
@@ -76,14 +76,14 @@ function plugin_pdf_menu_software($type,$ID){
 	
 	echo "<form action=\"../plugins/pdf/front/plugin_pdf.export.php\" target=\"blank\" method=\"post\" style=\"margin-top: 20px\">";
 	echo "<div align=\"center\">";
-	echo "<table cellspacing=\"10\" cellpadding=\"2\">";
-	echo "<tr><td align='center' style='font-size:20px'>".$LANGPDF["title"][2]."</td></tr>";
-	echo "<tr>";
-	echo "<td  align='center'>";
+	echo "<table class='tab_cadre'>";
+	echo "<tr><th>".$LANGPDF["title"][2]."</th></tr>";
+	echo "<tr class='tab_bg_1'>";
+	echo "<td align='center'>";
 	echo "<input type=\"hidden\" name=\"ID\" value=\"$ID\" />";
 	echo "<input type=\"hidden\" name=\"type\" value=\"$type\" />";
 	echo "<input type=\"hidden\" name=\"indice\" value=\"9\" />";
-	echo "<table><tr>";
+	echo "<table ><tr class='tab_bg_1'>";
 	echo "<td align='right' width='100px'>".$LANG["title"][26];
 	echo "<input type=\"checkbox\" name=\"check0\" value=\"0\" /><br />";
 	echo $LANG["software"][19];
@@ -105,7 +105,7 @@ function plugin_pdf_menu_software($type,$ID){
 	echo "</tr></table>";
 	echo "</td>";
 	echo "</tr>";
-	echo "<tr><td align='center'><input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='icon_consol' /></td></tr>";
+	echo "<tr class='tab_bg_2'><td align='center'><input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='submit' /></td></tr>";
 	echo "</table></div></form>";
 }
 
