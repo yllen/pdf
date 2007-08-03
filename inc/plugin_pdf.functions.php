@@ -34,58 +34,78 @@
 function plugin_pdf_menu_computer($type,$ID){
 	global $LANGPDF,$LANG;
 	
-	echo "<form action=\"../plugins/pdf/front/plugin_pdf.export.php\" method=\"post\">";
+	echo "<form action=\"../plugins/pdf/front/plugin_pdf.export.php\" target=\"blank\" method=\"post\" style=\"margin-top: 20px\">";
 	echo "<div align=\"center\">";
-	echo "<table cellspacing=\"2\" cellpadding=\"2\">";
-	echo "<tr><td align='center'><input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='icon_consol' /></td></tr>";
+	echo "<table cellspacing=\"10\" cellpadding=\"2\">";
+	echo "<tr><td align='center' style='font-size:20px'>".$LANGPDF["title"][2]."</td></tr>";
 	echo "<tr>";
 	echo "<td  align='center'>";
 	echo "<input type=\"hidden\" name=\"ID\" value=\"$ID\" />";
 	echo "<input type=\"hidden\" name=\"type\" value=\"$type\" />";
-	echo "<select name=\"onglet\">";
-	echo "<option value=\"1\">".$LANG["title"][26]."</option>";
-	echo "<option value=\"2\">".$LANG["title"][12]."</option>";
-	echo "<option value=\"3\">".$LANG["title"][27]."</option>";
-	echo "<option value=\"4\">".$LANG["Menu"][26]."</option>";
-	echo "<option value=\"5\">".$LANG["title"][25]."</option>";
-	echo "<option value=\"14\">".$LANG["title"][43]."</option>";
-	echo "<option value=\"6\">".$LANG["title"][28]."</option>";
-	echo "<option value=\"7\">".$LANG["title"][34]."</option>";
-	echo "<option value=\"10\">".$LANG["title"][37]."</option>";
-	echo "<option value=\"11\">".$LANG["title"][35]."</option>";
-	echo "<option value=\"12\">".$LANG["title"][38]."</option>";
-	echo "<option value=\"-1\">".$LANG["title"][29]."</option>";
-	echo "</select>";
+	echo "<input type=\"hidden\" name=\"indice\" value=\"10\" />";
+	echo "<table><tr>";
+	echo "<td align='right' width='100px'>".$LANG["Menu"][26];
+	echo "<input type=\"checkbox\" name=\"check0\" value=\"0\" /><br />";
+	echo $LANG["title"][27];
+	echo "<input type=\"checkbox\" name=\"check1\" value=\"1\" /></td>";
+	echo "<td align='right' width='100px'>".$LANG["devices"][10];
+	echo "<input type=\"checkbox\" name=\"check2\" value=\"2\" /><br />";
+	echo $LANG["title"][12];
+	echo "<input type=\"checkbox\" name=\"check3\" value=\"3\" /></td>";
+	echo "<td align='right' width='100px'>".$LANG["title"][25];
+	echo "<input type=\"checkbox\" name=\"check4\" value=\"4\" /><br />";
+	echo $LANG["title"][43];
+	echo "<input type=\"checkbox\" name=\"check5\" value=\"5\" /></td>";
+	echo "<td align='right' width='100px'>".$LANG["title"][34];
+	echo "<input type=\"checkbox\" name=\"check6\" value=\"6\" /><br />";
+	echo $LANG["title"][37];
+	echo "<input type=\"checkbox\" name=\"check7\" value=\"7\" /></td>";
+	echo "<td align='right' width='100px'>".$LANG["title"][35];
+	echo "<input type=\"checkbox\" name=\"check8\" value=\"8\" /><br />";
+	echo $LANG["title"][38];
+	echo "<input type=\"checkbox\" name=\"check9\" value=\"9\" /></td>";
+	echo "</tr></table>";
 	echo "</td>";
 	echo "</tr>";
+	echo "<tr><td align='center'><input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='icon_consol' /></td></tr>";
 	echo "</table></div></form>";
 }
 
 function plugin_pdf_menu_software($type,$ID){
 	global $LANGPDF,$LANG;
 	
-	echo "<form action=\"../plugins/pdf/front/plugin_pdf.export.php\" method=\"post\">";
+	echo "<form action=\"../plugins/pdf/front/plugin_pdf.export.php\" target=\"blank\" method=\"post\" style=\"margin-top: 20px\">";
 	echo "<div align=\"center\">";
-	echo "<table cellspacing=\"2\" cellpadding=\"2\">";
-	echo "<tr><td align='center'><input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='icon_consol' /></td></tr>";
+	echo "<table cellspacing=\"10\" cellpadding=\"2\">";
+	echo "<tr><td align='center' style='font-size:20px'>".$LANGPDF["title"][2]."</td></tr>";
 	echo "<tr>";
 	echo "<td  align='center'>";
 	echo "<input type=\"hidden\" name=\"ID\" value=\"$ID\" />";
 	echo "<input type=\"hidden\" name=\"type\" value=\"$type\" />";
-	echo "<select name=\"onglet\">";
-	echo "<option value=\"1\">".$LANG["title"][26]."</option>";
-	echo "<option value=\"2\">".$LANG["software"][19]."</option>";
-	echo "<option value=\"4\">".$LANG["Menu"][26]."</option>";
-	echo "<option value=\"5\">".$LANG["title"][25]."</option>";
-	echo "<option value=\"6\">".$LANG["title"][28]."</option>";
-	echo "<option value=\"7\">".$LANG["title"][34]."</option>";
-	echo "<option value=\"10\">".$LANG["title"][37]."</option>";
-	echo "<option value=\"11\">".$LANG["title"][35]."</option>";
-	echo "<option value=\"12\">".$LANG["title"][38]."</option>";
-	echo "<option value=\"-1\">".$LANG["title"][29]."</option>";
-	echo "</select>";
+	echo "<input type=\"hidden\" name=\"indice\" value=\"9\" />";
+	echo "<table><tr>";
+	echo "<td align='right' width='100px'>".$LANG["title"][26];
+	echo "<input type=\"checkbox\" name=\"check0\" value=\"0\" /><br />";
+	echo $LANG["software"][19];
+	echo "<input type=\"checkbox\" name=\"check1\" value=\"1\" /></td>";
+	echo "<td align='right' width='100px'>".$LANG["Menu"][26];
+	echo "<input type=\"checkbox\" name=\"check2\" value=\"2\" /><br />";
+	echo $LANG["title"][25];
+	echo "<input type=\"checkbox\" name=\"check3\" value=\"3\" /></td>";
+	echo "<td align='right' width='100px'>".$LANG["title"][28];
+	echo "<input type=\"checkbox\" name=\"check4\" value=\"4\" /><br />";
+	echo $LANG["title"][34];
+	echo "<input type=\"checkbox\" name=\"check5\" value=\"5\" /></td>";
+	echo "<td align='right' width='100px'>".$LANG["title"][37];
+	echo "<input type=\"checkbox\" name=\"check6\" value=\"6\" /><br />";
+	echo $LANG["title"][35];
+	echo "<input type=\"checkbox\" name=\"check7\" value=\"7\" /></td>";
+	echo "<td align='right' width='100px'>".$LANG["title"][38];
+	echo "<input type=\"checkbox\" name=\"check8\" value=\"8\" /><br />";
+	echo "</tr></table>";
 	echo "</td>";
 	echo "</tr>";
+	echo "<tr><td align='center'><input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='icon_consol' /></td></tr>";
 	echo "</table></div></form>";
 }
 
@@ -710,6 +730,11 @@ function plugin_pdf_software($tab,$width,$ID){
 		}
 	else
 		{
+		if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 		$pdf->saveState();
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
@@ -834,6 +859,8 @@ function plugin_pdf_port($tab,$width,$ID){
 	
 	$query = "SELECT ID FROM glpi_networking_ports WHERE (on_device = ".$ID." AND device_type = ".COMPUTER_TYPE.") ORDER BY name, logical_number";
 	
+	$i=0;
+	
 	if ($result = $DB->query($query)) 
 		{
 		
@@ -848,8 +875,6 @@ function plugin_pdf_port($tab,$width,$ID){
 			$pdf->restoreState();
 			
 			$pdf->addText(250,$start_tab,9,utf8_decode('<b>'.$nb_connect.' '.$LANG["networking"][13].' :</b>'));
-			
-			$i=0;
 				
 			while ($devid=$DB->fetch_row($result)) 
 				{
@@ -930,14 +955,18 @@ function plugin_pdf_port($tab,$width,$ID){
 			}
 		}
 	else
-	{
+		{
+		if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 		$pdf->saveState();
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 		$pdf->restoreState();
-		$pdf->addText(250,$start_tab,9,utf8_decode('<b>0 '.$LANG["networking"][37].'</b>'));
-			
-	}
+		$pdf->addText(250,$start_tab,9,utf8_decode('<b>0 '.$LANG["networking"][37].'</b>'));		
+		}
 	
 	$tab["start_tab"] = $start_tab;
 	$tab["pdf"] = $pdf;
@@ -1017,6 +1046,11 @@ function plugin_pdf_financial($tab,$width,$ID,$type){
 	}
 	else
 		{
+		if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 		$pdf->saveState();
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
@@ -1128,6 +1162,11 @@ function plugin_pdf_contract($tab,$width,$ID,$type){
 	}
 	else
 		{
+		if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 		$pdf->saveState();
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
@@ -1207,6 +1246,11 @@ function plugin_pdf_document($tab,$width,$ID,$type){
 	}
 	else
 		{
+		if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 		$pdf->saveState();
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
@@ -1286,6 +1330,11 @@ function plugin_pdf_registry($tab,$width,$ID){
 		}
 		else
 			{
+			if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 			$pdf->saveState();
 			$pdf->setColor(0.8,0.8,0.8);
 			$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
@@ -1389,6 +1438,11 @@ function plugin_pdf_ticket($tab,$width,$ID,$type){
 	} 
 	else
 		{
+		if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 		$pdf->saveState();
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
@@ -1491,6 +1545,11 @@ function plugin_pdf_oldticket($tab,$width,$ID,$type){
 	} 
 	else
 		{
+		if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 		$pdf->saveState();
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
@@ -1633,6 +1692,11 @@ function plugin_pdf_link($tab,$width,$ID,$type){
 	}
 	else
 		{
+		if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 		$pdf->saveState();
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
@@ -1697,6 +1761,11 @@ function plugin_pdf_note($tab,$width,$ID,$type){
 		}
 	else
 		{
+		if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 		$pdf->saveState();
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
@@ -1893,6 +1962,11 @@ function plugin_pdf_reservation($tab,$width,$ID,$type){
 		} 
 	else
 			{
+			if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 			$pdf->saveState();
 			$pdf->setColor(0.8,0.8,0.8);
 			$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
@@ -2052,6 +2126,11 @@ function plugin_pdf_history($tab,$width,$ID,$type){
 	}
 	else
 		{
+		if(($start_tab-20)-(20*$i)<50){
+				$pdf = plugin_pdf_newPage($pdf);
+				$i=0;
+				$start_tab = 750;
+				}
 		$pdf->saveState();
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
@@ -2073,7 +2152,7 @@ function plugin_pdf_newPage($pdf){
 	return $pdf;
 }
 
-function plugin_pdf_general($type,$ID,$onglet){
+function plugin_pdf_general($type,$ID,$tab){
 
 $pdf= new Cezpdf('a4','portrait');
 $width = $pdf->ez['pageWidth'];
@@ -2087,59 +2166,42 @@ switch($type){
 		$tab_pdf = plugin_pdf_background($tab_pdf,$width,$ID,COMPUTER_TYPE);
 		$tab_pdf = plugin_pdf_config_computer($tab_pdf,$width,$ID);
 		
-		switch($onglet){
-			case -1:
-				$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,COMPUTER_TYPE);
-				$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,COMPUTER_TYPE);
-				$tab_pdf = plugin_pdf_connection($tab_pdf,$width,$ID);
-				$tab_pdf = plugin_pdf_port($tab_pdf,$width,$ID);
-				$tab_pdf = plugin_pdf_device($tab_pdf,$width,$ID);
-				$tab_pdf = plugin_pdf_software($tab_pdf,$width,$ID);
-				$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,COMPUTER_TYPE);
-				$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
-				$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
-				$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,COMPUTER_TYPE);
-				$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,COMPUTER_TYPE);
-				$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,COMPUTER_TYPE);
-				$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,COMPUTER_TYPE);
-				$tab_pdf = plugin_pdf_registry($tab_pdf,$width,$ID);
-			break;
-			case 1:
-				$tab_pdf = plugin_pdf_device($tab_pdf,$width,$ID);
-			break;
-			case 2:
-				$tab_pdf = plugin_pdf_software($tab_pdf,$width,$ID);
-			break;
-			case 3:
-				$tab_pdf = plugin_pdf_connection($tab_pdf,$width,$ID);
-				$tab_pdf = plugin_pdf_port($tab_pdf,$width,$ID);
-			break;
-			case 4:
-				$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,COMPUTER_TYPE);
-				$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,COMPUTER_TYPE);
-			break;
-			case 5:
-				$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,COMPUTER_TYPE);
-			break;
-			case 6:
-				$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
-				$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
-			break;
-			case 7:
-				$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,COMPUTER_TYPE);
-			break;
-			case 10:
-				$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,COMPUTER_TYPE);
-			break;
-			case 11:
-				$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,COMPUTER_TYPE);
-			break;
-			case 12:
-				$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,COMPUTER_TYPE);
-			break;
-			case 14:
-				$tab_pdf = plugin_pdf_registry($tab_pdf,$width,$ID);
-			break;
+		for($i=0;$i<count($tab);$i++)
+		{
+			switch($tab[$i]){
+				case 0:
+					$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,COMPUTER_TYPE);
+					$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,COMPUTER_TYPE);
+				break;
+				case 1:
+					$tab_pdf = plugin_pdf_connection($tab_pdf,$width,$ID);
+					$tab_pdf = plugin_pdf_port($tab_pdf,$width,$ID);
+				break;
+				case 2:
+					$tab_pdf = plugin_pdf_device($tab_pdf,$width,$ID);
+				break;
+				case 3:
+					$tab_pdf = plugin_pdf_software($tab_pdf,$width,$ID);
+				break;
+				case 4:
+					$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,COMPUTER_TYPE);
+				break;
+				case 5:
+					$tab_pdf = plugin_pdf_registry($tab_pdf,$width,$ID);
+				break;
+				case 6:
+					$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,COMPUTER_TYPE);
+				break;
+				case 7:
+					$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,COMPUTER_TYPE);
+				break;
+				case 8:
+					$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,COMPUTER_TYPE);
+				break;
+				case 9:
+					$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,COMPUTER_TYPE);
+				break;
+			}
 		}
 	break;
 	
@@ -2148,48 +2210,39 @@ switch($type){
 		$tab_pdf = plugin_pdf_background($tab_pdf,$width,$ID,SOFTWARE_TYPE);
 		$tab_pdf = plugin_pdf_config_software($tab_pdf,$width,$ID);
 		
-		switch($onglet){
-			case -1:
-				$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-				$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-				$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,0);
-				$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-				$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-				$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-				$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-				$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-				$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-				$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-			break;
-			case 1:
-				$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,0);
-			break;
-			case 2:
-				$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,1);
-			break;
-			case 4:
-				$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-				$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-			break;
-			case 5:
-				$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-			break;
-			case 6:
-				$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-				$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-			break;
-			case 7:
-				$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-			break;
-			case 10:
-				$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-			break;
-			case 11:
-				$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-			break;
-			case 12:
-				$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-			break;
+		for($i=0;$i<count($tab);$i++)
+		{
+			switch($tab[$i]){
+				case 0:
+					$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,0);
+				break;
+				case 1:
+					$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,1);
+				break;
+				case 2:
+					$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+					$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+				break;
+				case 3:
+					$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+				break;
+				case 4:
+					$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+					$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+				break;
+				case 5:
+					$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+				break;
+				case 6:
+					$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+				break;
+				case 7:
+					$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+				break;
+				case 8:
+					$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+				break;
+			}
 		}
 	break;
 	}

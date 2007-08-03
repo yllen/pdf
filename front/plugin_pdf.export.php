@@ -37,6 +37,12 @@ define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT."/inc/includes.php");
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-plugin_pdf_general($_POST["type"],$_POST["ID"],$_POST["onglet"]);
+for($i=0,$j=0;$i<$_POST["indice"];$i++)
+	if(isset($_POST["check".$i])){
+		$tab[$j] = $_POST["check".$i];
+		$j++;
+	}
+
+plugin_pdf_general($_POST["type"],$_POST["ID"],$tab);
 	
 ?>

@@ -32,6 +32,7 @@
 // ----------------------------------------------------------------------
 
 $LANGPDF["title"][1]="Impression pdf";
+$LANGPDF["title"][2]="Choisir les tableaux pour l'impression pdf";
 
 $LANGPDF["button"][1]="Imprimer";
 
