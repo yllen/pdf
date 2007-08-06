@@ -42,7 +42,7 @@ function plugin_pdf_menu_computer($type,$ID){
 	echo "<td align='center'>";
 	echo "<input type=\"hidden\" name=\"ID\" value=\"$ID\" />";
 	echo "<input type=\"hidden\" name=\"type\" value=\"$type\" />";
-	echo "<input type=\"hidden\" name=\"indice\" value=\"10\" />";
+	echo "<input type=\"hidden\" name=\"indice\" value=\"11\" />";
 	echo "<table class='tab_cadre'><tr class='tab_bg_1'>";
 	echo "<td align='right' width='100px'>".$LANG["Menu"][26];
 	echo "<input type=\"checkbox\" name=\"check0\" value=\"0\" /><br />";
@@ -52,18 +52,20 @@ function plugin_pdf_menu_computer($type,$ID){
 	echo "<input type=\"checkbox\" name=\"check2\" value=\"2\" /><br />";
 	echo $LANG["title"][12];
 	echo "<input type=\"checkbox\" name=\"check3\" value=\"3\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["title"][25];
+	echo "<td align='right' width='100px'>".$LANG["title"][28];
 	echo "<input type=\"checkbox\" name=\"check4\" value=\"4\" /><br />";
-	echo $LANG["title"][43];
+	echo $LANG["title"][25];
 	echo "<input type=\"checkbox\" name=\"check5\" value=\"5\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["title"][34];
+	echo "<td align='right' width='100px'>".$LANG["title"][43];
 	echo "<input type=\"checkbox\" name=\"check6\" value=\"6\" /><br />";
-	echo $LANG["title"][37];
+	echo $LANG["title"][34];
 	echo "<input type=\"checkbox\" name=\"check7\" value=\"7\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["title"][35];
+	echo "<td align='right' width='100px'>".$LANG["title"][37];
 	echo "<input type=\"checkbox\" name=\"check8\" value=\"8\" /><br />";
-	echo $LANG["title"][38];
+	echo $LANG["title"][35];
 	echo "<input type=\"checkbox\" name=\"check9\" value=\"9\" /></td>";
+	echo "<td align='right' width='100px'>".$LANG["title"][38];
+	echo "<input type=\"checkbox\" name=\"check10\" value=\"10\" /></td>";
 	echo "</tr></table>";
 	echo "</td>";
 	echo "</tr>";
@@ -101,7 +103,7 @@ function plugin_pdf_menu_software($type,$ID){
 	echo $LANG["title"][35];
 	echo "<input type=\"checkbox\" name=\"check7\" value=\"7\" /></td>";
 	echo "<td align='right' width='100px'>".$LANG["title"][38];
-	echo "<input type=\"checkbox\" name=\"check8\" value=\"8\" /><br />";
+	echo "<input type=\"checkbox\" name=\"check8\" value=\"8\" /></td>";
 	echo "</tr></table>";
 	echo "</td>";
 	echo "</tr>";
@@ -2184,21 +2186,25 @@ switch($type){
 					$tab_pdf = plugin_pdf_software($tab_pdf,$width,$ID);
 				break;
 				case 4:
-					$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,COMPUTER_TYPE);
+					$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
+					$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
 				break;
 				case 5:
-					$tab_pdf = plugin_pdf_registry($tab_pdf,$width,$ID);
+					$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,COMPUTER_TYPE);
 				break;
 				case 6:
-					$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,COMPUTER_TYPE);
+					$tab_pdf = plugin_pdf_registry($tab_pdf,$width,$ID);
 				break;
 				case 7:
-					$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,COMPUTER_TYPE);
+					$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,COMPUTER_TYPE);
 				break;
 				case 8:
-					$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,COMPUTER_TYPE);
+					$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,COMPUTER_TYPE);
 				break;
 				case 9:
+					$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,COMPUTER_TYPE);
+				break;
+				case 10:
 					$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,COMPUTER_TYPE);
 				break;
 				default:
