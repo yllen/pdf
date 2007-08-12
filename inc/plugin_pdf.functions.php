@@ -37,39 +37,42 @@ function plugin_pdf_menu_computer($type,$ID){
 	echo "<form action=\"../plugins/pdf/front/plugin_pdf.export.php\" target=\"blank\" method=\"post\" style=\"margin-top: 20px\">";
 	echo "<div align=\"center\">";
 	echo "<table class='tab_cadre'>";
-	echo "<tr><th>".$LANGPDF["title"][2]."</th></tr>";
+	echo "<tr><th colspan='6'>".$LANGPDF["title"][2]."</th></tr>";
+
 	echo "<tr class='tab_bg_1'>";
-	echo "<td align='center'>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check0\" value=\"0\" /> ".$LANG["Menu"][26]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check2\" value=\"2\" /> ".$LANG["devices"][10]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check4\" value=\"4\" /> ".$LANG["title"][28]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check6\" value=\"6\" /> ".$LANG["title"][43]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check8\" value=\"8\" /> ".$LANG["title"][37]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check10\" value=\"10\" /> ".$LANG["title"][38]."</td>";
+	echo "</tr>";
+	
+	echo "<tr class='tab_bg_1'>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check1\" value=\"1\" /> ".$LANG["title"][27]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check3\" value=\"3\" /> ".$LANG["title"][12]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check5\" value=\"5\" /> ".$LANG["title"][25]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check7\" value=\"7\" /> ".$LANG["title"][34]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check9\" value=\"9\" /> ".$LANG["title"][35]."</td>";
+	echo "<td></td>";
+	echo "</tr>";
+	
+	echo "<tr class='tab_bg_2'><td colspan='6' align='center'>";
 	echo "<input type=\"hidden\" name=\"ID\" value=\"$ID\" />";
 	echo "<input type=\"hidden\" name=\"type\" value=\"$type\" />";
 	echo "<input type=\"hidden\" name=\"indice\" value=\"11\" />";
-	echo "<table class='tab_cadre'><tr class='tab_bg_1'>";
-	echo "<td align='right' width='100px'>".$LANG["Menu"][26];
-	echo "<input type=\"checkbox\" name=\"check0\" value=\"0\" /><br />";
-	echo $LANG["title"][27];
-	echo "<input type=\"checkbox\" name=\"check1\" value=\"1\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["devices"][10];
-	echo "<input type=\"checkbox\" name=\"check2\" value=\"2\" /><br />";
-	echo $LANG["title"][12];
-	echo "<input type=\"checkbox\" name=\"check3\" value=\"3\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["title"][28];
-	echo "<input type=\"checkbox\" name=\"check4\" value=\"4\" /><br />";
-	echo $LANG["title"][25];
-	echo "<input type=\"checkbox\" name=\"check5\" value=\"5\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["title"][43];
-	echo "<input type=\"checkbox\" name=\"check6\" value=\"6\" /><br />";
-	echo $LANG["title"][34];
-	echo "<input type=\"checkbox\" name=\"check7\" value=\"7\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["title"][37];
-	echo "<input type=\"checkbox\" name=\"check8\" value=\"8\" /><br />";
-	echo $LANG["title"][35];
-	echo "<input type=\"checkbox\" name=\"check9\" value=\"9\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["title"][38];
-	echo "<input type=\"checkbox\" name=\"check10\" value=\"10\" /></td>";
-	echo "</tr></table>";
-	echo "</td>";
-	echo "</tr>";
-	echo "<tr class='tab_bg_2'><td align='center'><input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='submit' /></td></tr>";
+	echo "<input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='submit' /></td></tr>";
 	echo "</table></div></form>";
 }
 
@@ -79,35 +82,40 @@ function plugin_pdf_menu_software($type,$ID){
 	echo "<form action=\"../plugins/pdf/front/plugin_pdf.export.php\" target=\"blank\" method=\"post\" style=\"margin-top: 20px\">";
 	echo "<div align=\"center\">";
 	echo "<table class='tab_cadre'>";
-	echo "<tr><th>".$LANGPDF["title"][2]."</th></tr>";
+	echo "<tr><th colspan='6'>".$LANGPDF["title"][2]."</th></tr>";
+	
 	echo "<tr class='tab_bg_1'>";
-	echo "<td align='center'>";
+
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check0\" value=\"0\" /> ".$LANG["title"][26]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check2\" value=\"2\" /> ".$LANG["Menu"][26]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check4\" value=\"4\" /> ".$LANG["title"][28]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check6\" value=\"6\" /> ".$LANG["title"][37]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check8\" value=\"8\" /> ".$LANG["title"][38]."</td>";
+	
+	
+	echo "<tr class='tab_bg_1'>";
+	
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check1\" value=\"1\" /> ".$LANG["software"][19]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check3\" value=\"3\" /> ".$LANG["title"][25]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check5\" value=\"5\" /> ".$LANG["title"][34]."</td>";
+	echo "<td>";
+	echo "<input type=\"checkbox\" name=\"check7\" value=\"7\" /> ".$LANG["title"][35]."</td>";
+	echo "<td></td>";
+	echo "</tr>";
+	
+	echo "<tr class='tab_bg_2'><td colspan='6' align='center'>";
 	echo "<input type=\"hidden\" name=\"ID\" value=\"$ID\" />";
 	echo "<input type=\"hidden\" name=\"type\" value=\"$type\" />";
 	echo "<input type=\"hidden\" name=\"indice\" value=\"9\" />";
-	echo "<table ><tr class='tab_bg_1'>";
-	echo "<td align='right' width='100px'>".$LANG["title"][26];
-	echo "<input type=\"checkbox\" name=\"check0\" value=\"0\" /><br />";
-	echo $LANG["software"][19];
-	echo "<input type=\"checkbox\" name=\"check1\" value=\"1\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["Menu"][26];
-	echo "<input type=\"checkbox\" name=\"check2\" value=\"2\" /><br />";
-	echo $LANG["title"][25];
-	echo "<input type=\"checkbox\" name=\"check3\" value=\"3\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["title"][28];
-	echo "<input type=\"checkbox\" name=\"check4\" value=\"4\" /><br />";
-	echo $LANG["title"][34];
-	echo "<input type=\"checkbox\" name=\"check5\" value=\"5\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["title"][37];
-	echo "<input type=\"checkbox\" name=\"check6\" value=\"6\" /><br />";
-	echo $LANG["title"][35];
-	echo "<input type=\"checkbox\" name=\"check7\" value=\"7\" /></td>";
-	echo "<td align='right' width='100px'>".$LANG["title"][38];
-	echo "<input type=\"checkbox\" name=\"check8\" value=\"8\" /></td>";
-	echo "</tr></table>";
-	echo "</td>";
-	echo "</tr>";
-	echo "<tr class='tab_bg_2'><td align='center'><input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='submit' /></td></tr>";
+	echo "<input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='submit' /></td></tr>";
 	echo "</table></div></form>";
 }
 
