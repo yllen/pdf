@@ -27,14 +27,14 @@
  ------------------------------------------------------------------------
 */
 
-// Original Author of file: BALPE Dévi
+// Original Author of file: BALPE Dï¿½vi
 // Purpose of file:
 // ----------------------------------------------------------------------
 
 function plugin_pdf_menu_computer($type,$ID){
 	global $LANGPDF,$LANG;
 	
-	echo "<form action=\"../plugins/pdf/front/plugin_pdf.export.php\" target=\"blank\" method=\"post\" style=\"margin-top: 20px\">";
+	echo "<form name='computer' action=\"../plugins/pdf/front/plugin_pdf.export.php\" target=\"blank\" method=\"post\" style=\"margin-top: 20px\">";
 	echo "<div align=\"center\">";
 	echo "<table class='tab_cadre'>";
 	echo "<tr><th colspan='6'>".$LANGPDF["title"][2]."</th></tr>";
@@ -74,12 +74,16 @@ function plugin_pdf_menu_computer($type,$ID){
 	echo "<input type=\"hidden\" name=\"indice\" value=\"11\" />";
 	echo "<input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='submit' /></td></tr>";
 	echo "</table></div></form>";
+	
+	if(isset($_SESSION["pdf"][COMPUTER_TYPE]))
+		for($i=0;$i<count($_SESSION["pdf"][COMPUTER_TYPE]);$i++)
+			echo "<script type='text/javascript'>document.forms['computer'].check".$_SESSION['pdf'][COMPUTER_TYPE][$i].".checked=true</script>";
 }
 
 function plugin_pdf_menu_software($type,$ID){
 	global $LANGPDF,$LANG;
 	
-	echo "<form action=\"../plugins/pdf/front/plugin_pdf.export.php\" target=\"blank\" method=\"post\" style=\"margin-top: 20px\">";
+	echo "<form name='software' action=\"../plugins/pdf/front/plugin_pdf.export.php\" target=\"blank\" method=\"post\" style=\"margin-top: 20px\">";
 	echo "<div align=\"center\">";
 	echo "<table class='tab_cadre'>";
 	echo "<tr><th colspan='6'>".$LANGPDF["title"][2]."</th></tr>";
@@ -117,6 +121,10 @@ function plugin_pdf_menu_software($type,$ID){
 	echo "<input type=\"hidden\" name=\"indice\" value=\"9\" />";
 	echo "<input type=\"submit\" value=\"".$LANGPDF["button"][1]."\" class='submit' /></td></tr>";
 	echo "</table></div></form>";
+	
+	if(isset($_SESSION["pdf"][SOFTWARE_TYPE]))
+		for($i=0;$i<count($_SESSION["pdf"][SOFTWARE_TYPE]);$i++)
+			echo "<script type='text/javascript'>document.forms['software'].check".$_SESSION['pdf'][SOFTWARE_TYPE][$i].".checked=true</script>";
 }
 
 function plugin_pdf_getDropdownName($table,$id){

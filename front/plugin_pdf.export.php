@@ -27,7 +27,7 @@
  ------------------------------------------------------------------------
 */
 
-// Original Author of file: BALPE Dévi
+// Original Author of file: BALPE Dï¿½vi
 // Purpose of file:
 // ----------------------------------------------------------------------
 
@@ -37,8 +37,20 @@ define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT."/inc/includes.php");
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
+if($_POST["type"]==COMPUTER_TYPE && isset($_SESSION["pdf"][COMPUTER_TYPE]))
+		unset($_SESSION["pdf"][COMPUTER_TYPE]);
+		
+else if($_POST["type"]==SOFTWARE_TYPE && isset($_SESSION["pdf"][SOFTWARE_TYPE]))
+		unset($_SESSION["pdf"][SOFTWARE_TYPE]);
+
 for($i=0,$j=1;$i<$_POST["indice"];$i++)
 	if(isset($_POST["check".$i])){
+		if($_POST["type"]==COMPUTER_TYPE)
+			$_SESSION["pdf"][COMPUTER_TYPE][]=$i;
+		
+		else if($_POST["type"]==SOFTWARE_TYPE)
+			$_SESSION["pdf"][SOFTWARE_TYPE][]=$i;
+		
 		$tab[$j] = $_POST["check".$i];
 		$j++;
 	}
