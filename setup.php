@@ -36,9 +36,9 @@ include_once ("inc/plugin_pdf.functions.php");
 function plugin_init_pdf() {
 	global $PLUGIN_HOOKS;
 	
-	$PLUGIN_HOOKS['menu_entry']['pdf'] = true;
+	$PLUGIN_HOOKS['menu_entry']['pdf'] = false;
 		
-	$PLUGIN_HOOKS['config_page']['pdf'] = 'config.php';
+	//$PLUGIN_HOOKS['config_page']['pdf'] = 'config.php';
 		
 	$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
 	$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';

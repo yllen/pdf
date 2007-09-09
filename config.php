@@ -36,7 +36,7 @@ if(!defined('GLPI_ROOT')){
 }
 include (GLPI_ROOT . "/inc/includes.php");
 
-commonHeader($LANGPDF["title"][1],$_SERVER["PHP_SELF"],"plugins");
+commonHeader($LANGPDF["title"][1],$_SERVER["PHP_SELF"],"plugins","pdf");
 
 echo $LANGPDF["config"][1];
 
