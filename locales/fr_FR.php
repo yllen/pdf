@@ -36,14 +36,14 @@ $LANGPDF["title"][2]="Choisir les tableaux pour l'impression pdf";
 
 $LANGPDF["button"][1]="Imprimer";
 
-$LANGPDF["config"][1]="Ce plugin ne nÃ©cessite pas de configuration particuliÃ¨re";
+$LANGPDF["config"][1]="Ce plugin ne nécessite pas de configuration particulière";
 
-$LANGPDF["note"][1]="Pas de notes trouvÃ©es";
+$LANGPDF["note"][1]="Pas de notes trouvées";
 
-$LANGPDF["document"][1]="Pas de documents associÃ©s";
+$LANGPDF["document"][1]="Pas de documents associés";
 
-$LANGPDF["financial"][1]="Pas d'informations financiÃ¨res";
-$LANGPDF["financial"][2]="Pas de contrats associÃ©s";
+$LANGPDF["financial"][1]="Pas d'informations financières";
+$LANGPDF["financial"][2]="Pas de contrats associés";
 
-$LANGPDF["software"][1]="Pas de logiciel installÃ©";
+$LANGPDF["software"][1]="Pas de logiciel installé";
 ?>
