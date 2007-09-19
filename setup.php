@@ -27,28 +27,37 @@
  ------------------------------------------------------------------------
 */
 
-// Original Author of file: BALPE Dévi
+// Original Author of file: BALPE DÃ©vi
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-include_once ("inc/plugin_pdf.functions.php");
+include_once ("plugin_pdf.includes.php");
 
 function plugin_init_pdf() {
 	global $PLUGIN_HOOKS;
 	
-	$PLUGIN_HOOKS['menu_entry']['pdf'] = false;
+	$PLUGIN_HOOKS['init_session']['pdf'] = 'plugin_pdf_initSession';
+	
+	if (isset($_SESSION["glpi_plugin_pdf_installed"]) && $_SESSION["glpi_plugin_pdf_installed"]==1)
+		{
+		$PLUGIN_HOOKS['menu_entry']['pdf'] = true;
 		
-	//$PLUGIN_HOOKS['config_page']['pdf'] = 'config.php';
+		$PLUGIN_HOOKS['use_massive_action']['pdf']=1;
 		
-	$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
-	$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
+		$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
+		
+		$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
+		$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
+		}
+	else
+		$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
 }
 
 	
 function plugin_version_pdf() {
 	global $LANGPDF;
 
-		return array ('name' => $LANGPDF["title"][1], 'version' => '0.2');
+		return array ('name' => $LANGPDF["title"][1], 'version' => '0.3');
 }
 
 function plugin_get_headings_pdf($type,$withtemplate){	
@@ -104,4 +113,60 @@ function plugin_headings_pdf_software($type,$ID,$withtemplate=0){
 	echo plugin_pdf_menu_software($type,$ID);
 	echo "</div>";
 }
+
+function plugin_pdf_MassiveActions($type){
+	global $LANG;
+	switch ($type){
+		case COMPUTER_TYPE :
+			return array(
+				"plugin_pdf_DoIt"=>"Imprimer en pdf",
+			);
+			break;
+		case SOFTWARE_TYPE:
+			return array(
+				"plugin_pdf_DoIt"=>"Imprimer en pdf",
+				);
+		break;
+	}
+	return array();
+}
+
+function plugin_pdf_MassiveActionsDisplay($type,$action){
+	global $LANG;
+	switch ($type){
+		case COMPUTER_TYPE:
+			switch ($action){
+				case "plugin_pdf_DoIt":
+					echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
+				break;
+			}
+			break;
+		case SOFTWARE_TYPE:
+			switch ($action){
+				case "plugin_pdf_DoIt":
+					echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
+				break;
+			}
+		break;
+	}
+	return "";
+}
+
+function plugin_pdf_MassiveActionsProcess($data){
+	if (!isset($_SESSION["MESSAGE_AFTER_REDIRECT"])) 
+		$_SESSION["MESSAGE_AFTER_REDIRECT"]="";
+
+	switch ($data["action"]){
+		case "plugin_pdf_DoIt":
+			foreach ($data['item'] as $key => $val)
+				$tab_id[]=$key;
+					
+			$_SESSION["plugin_pdf"]["type"] = $data["device_type"];
+			$_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
+			
+			echo "<script type='text/javascript'>location.href='../plugins/pdf/front/plugin_pdf.export.massive.php'</script>)";
+		break;
+		}
+}
+
 ?>

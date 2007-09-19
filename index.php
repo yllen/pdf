@@ -27,7 +27,7 @@
  ------------------------------------------------------------------------
 */
 
-// Original Author of file: BALPE Dévi
+// Original Author of file: BALPE DÃ©vi
 // Purpose of file:
 // ----------------------------------------------------------------------
 
@@ -35,9 +35,9 @@ define('GLPI_ROOT', '../..');
 include (GLPI_ROOT."/inc/includes.php");
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-commonHeader($LANGPDF["title"][1],$_SERVER['PHP_SELF'],"plugins");
+commonHeader($LANGPDF["title"][1],$_SERVER['PHP_SELF'],"pdf");
 
-glpi_header("config.php");
+glpi_header("front/plugin_pdf.config.form.php");
 
 commonFooter();
 ?>

@@ -27,7 +27,7 @@
  ------------------------------------------------------------------------
 */
 
-// Original Author of file: BALPE Dévi
+// Original Author of file: BALPE DÃ©vi
 // Purpose of file:
 // ----------------------------------------------------------------------
 
@@ -35,15 +35,21 @@ $LANGPDF["title"][1]="Impression pdf";
 $LANGPDF["title"][2]="Choisir les tableaux pour l'impression pdf";
 
 $LANGPDF["button"][1]="Imprimer";
+$LANGPDF["button"][2]="Sauvegarder";
 
-$LANGPDF["config"][1]="Ce plugin ne nécessite pas de configuration particulière";
+$LANGPDF["config"][1]="Configuration du plugin pdf";
+$LANGPDF["config"][2]="Installer le plugin pdf";
+$LANGPDF["config"][3]="PrÃ©fÃ©rence du plugin";
+$LANGPDF["config"][4]="DÃ©sinstaller le plugin pdf";
+$LANGPDF["config"][5]="Configuration de vos prÃ©fÃ©rences";
+$LANGPDF["config"][6]="Type d'inventaire :";
 
-$LANGPDF["note"][1]="Pas de notes trouvées";
+$LANGPDF["note"][1]="Pas de notes trouvÃ©es";
 
-$LANGPDF["document"][1]="Pas de documents associés";
+$LANGPDF["document"][1]="Pas de documents associÃ©s";
 
-$LANGPDF["financial"][1]="Pas d'informations financières";
-$LANGPDF["financial"][2]="Pas de contrats associés";
+$LANGPDF["financial"][1]="Pas d'informations financiÃ¨res";
+$LANGPDF["financial"][2]="Pas de contrats associÃ©s";
 
-$LANGPDF["software"][1]="Pas de logiciel installé";
+$LANGPDF["software"][1]="Pas de logiciel installÃ©";
 ?>

@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------
  GLPI - Gestionnaire Libre de Parc Informatique
  Copyright (C) 2003-2005 by the INDEPNET Development Team.
-
+ 
  http://indepnet.net/   http://glpi-project.org/
  ----------------------------------------------------------------------
 
@@ -31,25 +31,36 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-$LANGPDF["title"][1]="Print to pdf";
-$LANGPDF["title"][2]="Choose the tables to print in pdf";
 
-$LANGPDF["button"][1]="Print";
-$LANGPDF["button"][2]="Save";
+$NEEDED_ITEMS=array("computer","device","networking","monitor","printer","tracking","software","peripheral","reservation","infocom","contract","document","user","link","phone","registry");
+define('GLPI_ROOT', '../../..');
+include (GLPI_ROOT."/inc/includes.php");
+include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-$LANGPDF["config"][1]="This plugin doesn't require particular configuration";
-$LANGPDF["config"][2]="Install pdf plugin";
-$LANGPDF["config"][3]="Plugin preferences";
-$LANGPDF["config"][4]="Uninstall pdf plugin";
-$LANGPDF["config"][5]="Configuration of your preferences";
-$LANGPDF["config"][6]="Type of inventory :";
+global $DB;
+	
+$type = $_SESSION["plugin_pdf"]["type"];
 
-$LANGPDF["note"][1]="No note found";
+unset($_SESSION["plugin_pdf"]["type"]);
 
-$LANGPDF["document"][1]="No associated documents";
+$tab_id = unserialize($_SESSION["plugin_pdf"]["tab_id"]);
 
-$LANGPDF["financial"][1]="No financial information";
-$LANGPDF["financial"][2]="No associated contract";
+unset($_SESSION["plugin_pdf"]["tab_id"]);
 
-$LANGPDF["software"][1]="No installed software";
+$tab[0]=-1;
+
+$user_id = $_SESSION['glpiID'];
+$query = "select table_num from glpi_plugin_pdf_preference WHERE user_id =".$user_id." and cat=".$type;
+$result = $DB->query($query);
+
+$i=1;
+		
+while($data = $DB->fetch_array($result))
+	{
+	$tab[$i]=$data["table_num"];
+	$i++;
+	}
+	
+plugin_pdf_general($type,$tab_id,$tab);
+	
 ?>

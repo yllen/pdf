@@ -27,7 +27,7 @@
  ------------------------------------------------------------------------
 */
 
-// Original Author of file: BALPE D�vi
+// Original Author of file: BALPE Dévi
 // Purpose of file:
 // ----------------------------------------------------------------------
 
@@ -37,26 +37,28 @@ define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT."/inc/includes.php");
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-if($_POST["type"]==COMPUTER_TYPE && isset($_SESSION["pdf"][COMPUTER_TYPE]))
-		unset($_SESSION["pdf"][COMPUTER_TYPE]);
-		
-else if($_POST["type"]==SOFTWARE_TYPE && isset($_SESSION["pdf"][SOFTWARE_TYPE]))
-		unset($_SESSION["pdf"][SOFTWARE_TYPE]);
-
+if($_POST["type"]==COMPUTER_TYPE && isset($_SESSION["plugin_pdf"][COMPUTER_TYPE]))
+		unset($_SESSION["plugin_pdf"][COMPUTER_TYPE]);
+			
+else if($_POST["type"]==SOFTWARE_TYPE && isset($_SESSION["plugin_pdf"][SOFTWARE_TYPE]))
+		unset($_SESSION["plugin_pdf"][SOFTWARE_TYPE]);
+	
 for($i=0,$j=1;$i<$_POST["indice"];$i++)
 	if(isset($_POST["check".$i])){
 		if($_POST["type"]==COMPUTER_TYPE)
-			$_SESSION["pdf"][COMPUTER_TYPE][]=$i;
-		
+			$_SESSION["plugin_pdf"][COMPUTER_TYPE][]=$i;
+			
 		else if($_POST["type"]==SOFTWARE_TYPE)
-			$_SESSION["pdf"][SOFTWARE_TYPE][]=$i;
-		
+			$_SESSION["plugin_pdf"][SOFTWARE_TYPE][]=$i;
+			
 		$tab[$j] = $_POST["check".$i];
 		$j++;
 	}
-
-$tab[0]=-1;
 	
-plugin_pdf_general($_POST["type"],$_POST["ID"],$tab);
+$tab[0]=-1;
+		
+$tab_id[0]=$_POST["ID"];
+
+plugin_pdf_general($_POST["type"],$tab_id,$tab);
 	
 ?>

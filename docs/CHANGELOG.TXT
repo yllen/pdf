@@ -28,7 +28,7 @@
 */
 
 // ----------------------------------------------------------------------
-// Original Author of file: BALPE dévi
+// Original Author of file: BALPE Dévi
 // Purpose of file:
 // ----------------------------------------------------------------------
 
@@ -42,3 +42,7 @@ Version 0.2:
 Fiches logiciels imprimable.
 Cards softwares printable.
 
+Version 0.3
+
+Export massive en pdf avec gestion des préférences utilisateur.
+Massive export to pdf with management of the preferences user.

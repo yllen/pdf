@@ -28,19 +28,19 @@
 */
 
 // ----------------------------------------------------------------------
-// Original Author of file: BALPE Dévi
+// Original Author of file: BALPE DÃ©vi
 // Purpose of file:
 // ----------------------------------------------------------------------
 
 Continuer pour toutes les fiches:
 
 - Moniteurs
-- Réseaux
-- Périphériques
+- RÃ©seaux
+- Pï¿½riphÃ©riques
 - Imprimantes
 - Cartouches
 - Consommables
-- Téléphones
+- TÃ©lÃ©phones
 - Statuts
 
 To continue for all the cards: 

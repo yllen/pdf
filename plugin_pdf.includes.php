@@ -27,29 +27,10 @@
  ------------------------------------------------------------------------
 */
 
-// Original Author of file: BALPE Dévi
+// Original Author of file: Balpe Dévi
 // Purpose of file:
 // ----------------------------------------------------------------------
-
-$LANGPDF["title"][1]="Print to pdf";
-$LANGPDF["title"][2]="Choose the tables to print in pdf";
-
-$LANGPDF["button"][1]="Print";
-$LANGPDF["button"][2]="Save";
-
-$LANGPDF["config"][1]="This plugin doesn't require particular configuration";
-$LANGPDF["config"][2]="Install pdf plugin";
-$LANGPDF["config"][3]="Plugin preferences";
-$LANGPDF["config"][4]="Uninstall pdf plugin";
-$LANGPDF["config"][5]="Configuration of your preferences";
-$LANGPDF["config"][6]="Type of inventory :";
-
-$LANGPDF["note"][1]="No note found";
-
-$LANGPDF["document"][1]="No associated documents";
-
-$LANGPDF["financial"][1]="No financial information";
-$LANGPDF["financial"][2]="No associated contract";
-
-$LANGPDF["software"][1]="No installed software";
+ 
+include_once ("inc/plugin_pdf.functions.php");
+include_once ("inc/plugin_pdf.config.function.php");
 ?>
