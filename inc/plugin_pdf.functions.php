@@ -694,31 +694,64 @@ function plugin_pdf_software($tab,$width,$ID,$type){
 	
 	$comp=new Computer();
 	$comp->getFromDB($ID);
-	$query = "SELECT glpi_inst_software.license as license, glpi_inst_software.ID as ID,glpi_licenses.expire,glpi_software.deleted, glpi_licenses.sID, glpi_licenses.version, glpi_licenses.oem, glpi_licenses.oem_computer, glpi_licenses.serial, glpi_licenses.buy FROM glpi_inst_software, glpi_software,glpi_licenses ";
-	$query.= "WHERE glpi_inst_software.license = glpi_licenses.ID AND glpi_licenses.sID = glpi_software.ID AND (glpi_inst_software.cID = '$ID') order by glpi_software.name, glpi_licenses.version";
+	$FK_entities=$comp->fields["FK_entities"];
+
+	$query_cat = "SELECT 1 as TYPE, glpi_dropdown_software_category.name as category, glpi_software.category as category_id, glpi_software.name as softname, glpi_inst_software.license as license, glpi_inst_software.ID as ID,glpi_licenses.expire,glpi_software.deleted, glpi_licenses.sID, glpi_licenses.version, glpi_licenses.oem, glpi_licenses.oem_computer, glpi_licenses.serial, glpi_licenses.buy	FROM glpi_inst_software LEFT JOIN glpi_licenses ON ( glpi_inst_software.license = glpi_licenses.ID )
+	LEFT JOIN glpi_software ON (glpi_licenses.sID = glpi_software.ID) 
+	LEFT JOIN glpi_dropdown_software_category ON (glpi_dropdown_software_category.ID = glpi_software.category)";
+
+	$query_cat.=" WHERE glpi_inst_software.cID = '$ID' AND glpi_software.category > 0 "; 
+    $query_nocat = "SELECT 2 as TYPE, glpi_dropdown_software_category.name as category, glpi_software.category as category_id, glpi_software.name as softname, glpi_inst_software.license as license, glpi_inst_software.ID as ID,glpi_licenses.expire,glpi_software.deleted, glpi_licenses.sID, glpi_licenses.version, glpi_licenses.oem, glpi_licenses.oem_computer, glpi_licenses.serial, glpi_licenses.buy  
+        FROM glpi_inst_software LEFT JOIN glpi_licenses ON ( glpi_inst_software.license = glpi_licenses.ID ) 
+        LEFT JOIN glpi_software ON (glpi_licenses.sID = glpi_software.ID)  
+        LEFT JOIN glpi_dropdown_software_category ON (glpi_dropdown_software_category.ID = glpi_software.category)"; 
+    $query_nocat.= " WHERE glpi_inst_software.cID = '$ID' AND (glpi_software.category <= 0 OR glpi_software.category IS NULL ) "; 
+    $query="( $query_cat ) UNION ($query_nocat) ORDER BY TYPE, category, softname, version";
 
 	$result = $DB->query($query);
-	
-	$i=0;
+	$i = 0;
 	
 	$pdf->saveState();
 	$pdf->setColor(0.8,0.8,0.8);
 	$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-	$pdf->filledRectangle(25,($start_tab-25)-(20*$i),385,15);
-	$pdf->filledRectangle(415,($start_tab-25)-(20*$i),65,15);
-	$pdf->filledRectangle(485,($start_tab-25)-(20*$i),40,15);
-	$pdf->filledRectangle(530,($start_tab-25)-(20*$i),40,15);
 	$pdf->restoreState();
 	$pdf->addText(250,$start_tab,9,utf8_decode('<b>'.$LANG["software"][17].'</b>'));
-	$pdf->addText(180,$start_tab-20,9,utf8_decode('<b>'.$LANG["common"][16].'</b>'));
-	$pdf->addText(425,$start_tab-20,9,utf8_decode('<b>'.$LANG["financial"][98].'</b>'));
-	$pdf->addText(493,$start_tab-20,9,utf8_decode('<b>'.$LANG["software"][28].'</b>'));
-	$pdf->addText(536,$start_tab-20,9,utf8_decode('<b>'.$LANG["software"][35].'</b>'));
 	
-	$i++;
+	$cat=-1;
 	
 	if ($DB->numrows($result))
 		while ($data=$DB->fetch_array($result)) {
+			
+			if($data["category_id"] != $cat)
+				{
+				$cat = $data["category_id"];
+				$catname=$data["category"];
+				
+				if (!$cat)
+					$catname=$LANG["softwarecategories"][3];
+				
+				$pdf->saveState();
+				$pdf->setColor(0.8,0.8,0.8);
+				$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$width-50,15);
+				$pdf->restoreState();
+				$pdf->addText(240,($start_tab-20)-(20*$i),9,utf8_decode('<b>'.$catname.'</b>'));
+				
+				$i++;
+				
+				$pdf->saveState();
+				$pdf->setColor(0.8,0.8,0.8);
+				$pdf->filledRectangle(25,($start_tab-25)-(20*$i),385,15);
+				$pdf->filledRectangle(415,($start_tab-25)-(20*$i),65,15);
+				$pdf->filledRectangle(485,($start_tab-25)-(20*$i),40,15);
+				$pdf->filledRectangle(530,($start_tab-25)-(20*$i),40,15);
+				$pdf->restoreState();
+				$pdf->addText(180,($start_tab-20)-(20*$i),9,utf8_decode('<b>'.$LANG["common"][16].'</b>'));
+				$pdf->addText(425,($start_tab-20)-(20*$i),9,utf8_decode('<b>'.$LANG["financial"][98].'</b>'));
+				$pdf->addText(493,($start_tab-20)-(20*$i),9,utf8_decode('<b>'.$LANG["software"][28].'</b>'));
+				$pdf->addText(536,($start_tab-20)-(20*$i),9,utf8_decode('<b>'.$LANG["software"][35].'</b>'));
+				
+				$i++;
+				}
 			
 			$sw = new Software();
 			$sw->getFromDB($data['sID']);
