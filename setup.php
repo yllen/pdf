@@ -137,14 +137,14 @@ function plugin_pdf_MassiveActionsDisplay($type,$action){
 		case COMPUTER_TYPE:
 			switch ($action){
 				case "plugin_pdf_DoIt":
-					echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
+					echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
 				break;
 			}
 			break;
 		case SOFTWARE_TYPE:
 			switch ($action){
 				case "plugin_pdf_DoIt":
-					echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
+					echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
 				break;
 			}
 		break;
