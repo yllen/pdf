@@ -37,10 +37,13 @@ if(!defined('GLPI_ROOT')){
 }
 include_once (GLPI_ROOT . "/inc/includes.php");
 
+checkRight("config","w");
+
 if(!isset($_SESSION["glpi_plugin_pdf_installed"]) || $_SESSION["glpi_plugin_pdf_installed"]!=1) {
 	
 	commonHeader($LANG["title"][2],$_SERVER['PHP_SELF'],"config","plugins");
 	
+	if ($_SESSION["glpiactive_entity"]==0){
 	echo "<div align='center'>";
 	echo "<table class='tab_cadre' cellpadding='5'>";
 	echo "<tr><th>".$LANGPDF["config"][1]."</th></tr>";
@@ -48,6 +51,10 @@ if(!isset($_SESSION["glpi_plugin_pdf_installed"]) || $_SESSION["glpi_plugin_pdf_
 	echo "<a href='plugin_pdf.install.php'>".$LANGPDF["config"][2]."</a>";
 	echo "</td></tr>";
 	echo "</table></div>";
+	}else{ 
+		echo "<div align='center'><br><br><img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt=\"warning\"><br><br>"; 
+		echo "<b>".$LANG["login"][5]."</b></div>"; 
+	}
 }
 else
 {
