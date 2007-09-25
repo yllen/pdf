@@ -37,7 +37,7 @@ $LANGPDF["title"][2]="Choose the tables to print in pdf";
 $LANGPDF["button"][1]="Print";
 $LANGPDF["button"][2]="Save";
 
-$LANGPDF["config"][1]="This plugin doesn't require particular configuration";
+$LANGPDF["config"][1]="Configuration of pdf plugin";
 $LANGPDF["config"][2]="Install pdf plugin";
 $LANGPDF["config"][3]="Plugin preferences";
 $LANGPDF["config"][4]="Uninstall pdf plugin";

@@ -42,7 +42,7 @@ include_once (GLPI_ROOT . "/inc/includes.php");
 
 if (haveRight("config","w"))
 	{
-	if(TableExists("glpi_plugin_data_injection_config"))
+	if(TableExists("glpi_plugin_pdf_preference"))
 		{
 		cleanCache("GLPI_HEADER_".$_SESSION["glpiID"]);
 		plugin_pdf_uninstall();

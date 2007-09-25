@@ -41,7 +41,7 @@ checkRight("config","w");
 
 if(!isset($_SESSION["glpi_plugin_pdf_installed"]) || $_SESSION["glpi_plugin_pdf_installed"]!=1) {
 	
-	commonHeader($LANG["title"][2],$_SERVER['PHP_SELF'],"config","plugins");
+	commonHeader($LANG["title"][1],$_SERVER['PHP_SELF'],"config","plugins");
 	
 	if ($_SESSION["glpiactive_entity"]==0){
 	echo "<div align='center'>";
