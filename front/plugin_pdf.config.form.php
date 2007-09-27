@@ -43,7 +43,6 @@ if(!isset($_SESSION["glpi_plugin_pdf_installed"]) || $_SESSION["glpi_plugin_pdf_
 	
 	commonHeader($LANG["title"][1],$_SERVER['PHP_SELF'],"config","plugins");
 	
-	if ($_SESSION["glpiactive_entity"]==0){
 	echo "<div align='center'>";
 	echo "<table class='tab_cadre' cellpadding='5'>";
 	echo "<tr><th>".$LANGPDF["config"][1]."</th></tr>";
@@ -51,10 +50,6 @@ if(!isset($_SESSION["glpi_plugin_pdf_installed"]) || $_SESSION["glpi_plugin_pdf_
 	echo "<a href='plugin_pdf.install.php'>".$LANGPDF["config"][2]."</a>";
 	echo "</td></tr>";
 	echo "</table></div>";
-	}else{ 
-		echo "<div align='center'><br><br><img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt=\"warning\"><br><br>"; 
-		echo "<b>".$LANG["login"][5]."</b></div>"; 
-	}
 }
 else
 {
@@ -63,7 +58,7 @@ else
 	echo "<div align='center'>";
 	echo "<table class='tab_cadre' cellpadding='5'>";
 	echo "<tr><th>".$LANGPDF["config"][1]."</th></tr>";
-	echo "<tr class='tab_bg_1' align='center'><td>";
+	echo "<tr class='tab_bg_1' align='center'><td>";	
 	echo "<a href=\"plugin_pdf.preference.php\">".$LANGPDF["config"][3]."</a>";
 	echo "</td/></tr>";
 	if (haveRight("config","w")){
