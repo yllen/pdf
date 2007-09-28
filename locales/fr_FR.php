@@ -39,10 +39,9 @@ $LANGPDF["button"][2]="Sauvegarder";
 
 $LANGPDF["config"][1]="Configuration du plugin pdf";
 $LANGPDF["config"][2]="Installer le plugin pdf";
-$LANGPDF["config"][3]="Préférences du plugin";
-$LANGPDF["config"][4]="Désinstaller le plugin pdf";
-$LANGPDF["config"][5]="Configuration de vos préférences";
-$LANGPDF["config"][6]="Type d'inventaire :";
+$LANGPDF["config"][3]="Désinstaller le plugin pdf";
+$LANGPDF["config"][4]="Configuration de vos préférences";
+$LANGPDF["config"][5]="Type d'inventaire :";
 
 $LANGPDF["note"][1]="Pas de notes trouvées";
 

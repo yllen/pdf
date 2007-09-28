@@ -58,14 +58,9 @@ else
 	echo "<div align='center'>";
 	echo "<table class='tab_cadre' cellpadding='5'>";
 	echo "<tr><th>".$LANGPDF["config"][1]."</th></tr>";
-	echo "<tr class='tab_bg_1' align='center'><td>";	
-	echo "<a href=\"plugin_pdf.preference.php\">".$LANGPDF["config"][3]."</a>";
+	echo "<tr class='tab_bg_1' align='center'><td>";
+	echo "<a href=\"plugin_pdf.uninstall.php\">".$LANGPDF["config"][3]."</a>";
 	echo "</td/></tr>";
-	if (haveRight("config","w")){
-		echo "<tr class='tab_bg_1' align='center'><td>";
-		echo "<a href=\"plugin_pdf.uninstall.php\">".$LANGPDF["config"][4]."</a>";
-		echo "</td/></tr>";
-	}
 	echo "</table></div>";
 }
 

@@ -44,9 +44,9 @@ commonHeader($LANGPDF["title"][1],$_SERVER['PHP_SELF'],"plugins","pdf");
 echo "<form action='".$_SERVER['PHP_SELF']."' method='post'>";
 echo "<div align='center'>";
 echo "<table class='tab_cadre' cellpadding='5'>";
-echo "<tr><th>".$LANGPDF["config"][5]."</th></tr>";
+echo "<tr><th>".$LANGPDF["config"][4]."</th></tr>";
 echo "<tr class='tab_bg_1' align='center'><td>";
-echo $LANGPDF["config"][6]." <select name='inventaire'>";
+echo $LANGPDF["config"][5]." <select name='inventaire'>";
 
 if(isset($_POST['inventaire']))
 	{
