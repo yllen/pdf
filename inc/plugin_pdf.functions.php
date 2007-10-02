@@ -876,26 +876,30 @@ function plugin_pdf_connection($tab,$width,$ID,$type){
 						$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$width-50,15);
 						$pdf->restoreState();
 					}
-					
+
+					$tempo=$ci->getName()." - ";
 					if($ci->getField("serial")!=null)
-						$pdf->addText(150,($start_tab-20)-(20*$i),9,utf8_decode($ci->getName()." - (".$ci->getField("serial").") - ".plugin_pdf_getDropdownName("glpi_dropdown_state",$ci->getField('state'))));
-					else
-						$pdf->addText(150,($start_tab-20)-(20*$i),9,utf8_decode($ci->getName()." - ".plugin_pdf_getDropdownName("glpi_dropdown_state",$ci->getField('state'))));
-					}
-				}
+						$tempo .="N° serie : " .$ci->getField("serial")." - ";
+					if($ci->getField("otherserial")!=null)
+						$tempo .="N° inventaire : " .$ci->getField("otherserial")." - ";
+					
+					$pdf->addText(120,($start_tab-20)-(20*$i),9,utf8_decode($tempo . plugin_pdf_getDropdownName("glpi_dropdown_state",$ci->getField('state'))));
+
+				}				
+			}
 			else
 				switch ($type){
 					case PRINTER_TYPE:
-						$pdf->addText(150,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][38]));
+						$pdf->addText(120,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][38]));
 					break;
 					case MONITOR_TYPE:
-						$pdf->addText(150,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][37]));
+						$pdf->addText(120,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][37]));
 					break;
 					case PERIPHERAL_TYPE:
-						$pdf->addText(150,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][47]));
+						$pdf->addText(120,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][47]));
 					break;
 					case PHONE_TYPE:
-						$pdf->addText(150,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][54]));
+						$pdf->addText(120,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][54]));
 					break;
 					}
 			}
