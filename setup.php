@@ -39,18 +39,17 @@ function plugin_init_pdf() {
 	$PLUGIN_HOOKS['init_session']['pdf'] = 'plugin_pdf_initSession';
 	
 	if (isset($_SESSION["glpi_plugin_pdf_installed"]) && $_SESSION["glpi_plugin_pdf_installed"]==1)
-		{
+	{
 		$PLUGIN_HOOKS['menu_entry']['pdf'] = true;
 		
 		$PLUGIN_HOOKS['use_massive_action']['pdf']=1;
 		
-		$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
-		
 		$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
 		$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
-		}
-	else
+	}
+	if (haveRight("config","w")) {
 		$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
+	}
 }
 
 	
