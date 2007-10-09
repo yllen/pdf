@@ -46,3 +46,8 @@ Version 0.3
 
 Export massive en pdf avec gestion des préférences utilisateur.
 Massive export to pdf with management of the preferences user.
+
+Version 0.4
+
+Gestion des droits par profil.
+Profiles right management.
