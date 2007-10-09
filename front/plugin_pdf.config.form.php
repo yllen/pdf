@@ -37,8 +37,6 @@ if(!defined('GLPI_ROOT')){
 }
 include_once (GLPI_ROOT . "/inc/includes.php");
 
-checkSeveralRightsOr(array("config"=>"w", "profile"=>"r"));
-
 if(isset($_SESSION["glpi_plugin_pdf_installed"]) && $_SESSION["glpi_plugin_pdf_installed"]==1) 
 {
 	checkSeveralRightsOr(array("config" => "w", "profile" => "r"));
