@@ -33,4 +33,5 @@
  
 include_once ("inc/plugin_pdf.functions.php");
 include_once ("inc/plugin_pdf.config.function.php");
+include_once ("inc/plugin_pdf.profile.class.php");
 ?>

@@ -29,7 +29,7 @@
    ------------------------------------------------------------------------
  */
 
-// Original Author of file: Balpe Dévi
+// Original Author of file: Balpe Dévi / Remi Collet
 // Purpose of file:
 // ----------------------------------------------------------------------
 if(!defined('GLPI_ROOT')){
@@ -37,33 +37,38 @@ if(!defined('GLPI_ROOT')){
 }
 include_once (GLPI_ROOT . "/inc/includes.php");
 
-checkRight("config","w");
+checkSeveralRightsOr(array("config"=>"w", "profile"=>"r"));
 
-if(!isset($_SESSION["glpi_plugin_pdf_installed"]) || $_SESSION["glpi_plugin_pdf_installed"]!=1) {
-	
-	commonHeader($LANG["title"][1],$_SERVER['PHP_SELF'],"config","plugins");
-	
-	echo "<div align='center'>";
-	echo "<table class='tab_cadre' cellpadding='5'>";
-	echo "<tr><th>".$LANGPDF["config"][1]."</th></tr>";
-	echo "<tr class='tab_bg_1' align='center'><td>";
-	echo "<a href='plugin_pdf.install.php'>".$LANGPDF["config"][2]."</a>";
-	echo "</td></tr>";
-	echo "</table></div>";
-}
-else
+if(isset($_SESSION["glpi_plugin_pdf_installed"]) && $_SESSION["glpi_plugin_pdf_installed"]==1) 
 {
+	checkSeveralRightsOr(array("config" => "w", "profile" => "r"));
 	commonHeader($LANGPDF["config"][1], $_SERVER["PHP_SELF"],"plugins","pdf");
 	
 	echo "<div align='center'>";
 	echo "<table class='tab_cadre' cellpadding='5'>";
-	echo "<tr><th>".$LANGPDF["config"][1]."</th></tr>";
+	echo "<tr><th>".$LANGPDF["config"][1]."</th></tr>\n";
+	if (haveRight("profile","r")){
+		echo "<tr class='tab_bg_1' align='center'><td>";
+		echo "<a href='plugin_pdf.profiles.php'>".$LANGPDF["config"][6]."</a></td></tr>\n";
+	}
+	if (haveRight("config","w")){
+		echo "<tr class='tab_bg_1' align='center'><td>";
+		echo "<a href=\"plugin_pdf.uninstall.php\">".$LANGPDF["config"][3]."</a></td/></tr>\n";
+	}
+	echo "</table>\n</div>";
+}
+else
+{
+	checkRight("config","w");
+	commonHeader($LANG["title"][1],$_SERVER['PHP_SELF'],"config","plugins");
+	
+	echo "<div align='center'>";
+	echo "<table class='tab_cadre' cellpadding='5'>\n";
+	echo "<tr><th>".$LANGPDF["config"][1]."</th></tr>\n";
 	echo "<tr class='tab_bg_1' align='center'><td>";
-	echo "<a href=\"plugin_pdf.uninstall.php\">".$LANGPDF["config"][3]."</a>";
-	echo "</td/></tr>";
-	echo "</table></div>";
+	echo "<a href='plugin_pdf.install.php'>".$LANGPDF["config"][2]."</a></td></tr>\n";
+	echo "</table>\n</div>";
 }
 
 commonFooter();
 ?>
-

@@ -41,6 +41,15 @@ include_once (GLPI_ROOT . "/inc/includes.php");
 function plugin_pdf_Install() {
 	$DB = new DB;
 			
+	$query= "CREATE TABLE `glpi_plugin_pdf_profiles` (
+  	`ID` int(11),
+  	`profile` varchar(255) NOT NULL,
+  	`use` tinyint(1) default 0,
+  	PRIMARY KEY  (`ID`)
+	) ENGINE=MyISAM;";
+			
+	$DB->query($query) or die($DB->error());	
+
 	$query= "CREATE TABLE `glpi_plugin_pdf_preference` (
   	`id` int(11) NOT NULL auto_increment,
   	`user_id` int(11) NOT NULL,
@@ -57,11 +66,24 @@ function plugin_pdf_uninstall() {
 		
 	$query = "DROP TABLE `glpi_plugin_pdf_preference`;";
 	$DB->query($query) or die($DB->error());
+
+	$query = "DROP TABLE `glpi_plugin_pdf_profiles`;";
+	$DB->query($query) or die($DB->error());
 }
 
 function plugin_pdf_initSession()
 {
-	if (TableExists("glpi_plugin_pdf_preference"))
+	if (TableExists("glpi_plugin_pdf_profiles"))
 		$_SESSION["glpi_plugin_pdf_installed"]=1;	
+}
+function plugin_pdf_changeprofile()
+{
+	if(isset($_SESSION["glpi_plugin_pdf_installed"]) && $_SESSION["glpi_plugin_pdf_installed"]==1){
+		$prof=new PluginPdfProfile();
+		if($prof->getFromDB($_SESSION['glpiactiveprofile']['ID']))
+			$_SESSION["glpi_plugin_pdf_profile"]=$prof->fields;
+		else
+			unset($_SESSION["glpi_plugin_pdf_profile"]);
+	}
 }
 ?>

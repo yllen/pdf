@@ -42,6 +42,8 @@ $LANGPDF["config"][2]="Install pdf plugin";
 $LANGPDF["config"][3]="Uninstall pdf plugin";
 $LANGPDF["config"][4]="Configuration of your preferences";
 $LANGPDF["config"][5]="Type of inventory :";
+$LANGPDF["config"][6]="Profiles right management";
+$LANGPDF["config"][7]="Right for this profile";
 
 $LANGPDF["note"][1]="No note found";
 

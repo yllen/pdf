@@ -37,17 +37,24 @@ function plugin_init_pdf() {
 	global $PLUGIN_HOOKS;
 	
 	$PLUGIN_HOOKS['init_session']['pdf'] = 'plugin_pdf_initSession';
+	$PLUGIN_HOOKS['change_profile']['pdf'] = 'plugin_pdf_changeprofile';
 	
 	if (isset($_SESSION["glpi_plugin_pdf_installed"]) && $_SESSION["glpi_plugin_pdf_installed"]==1)
 	{
-		$PLUGIN_HOOKS['menu_entry']['pdf'] = true;
-		
-		$PLUGIN_HOOKS['use_massive_action']['pdf']=1;
-		
-		$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
-		$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
+		if (isset($_SESSION["glpi_plugin_pdf_profile"]) && $_SESSION["glpi_plugin_pdf_profile"]["use"])
+		{
+			$PLUGIN_HOOKS['menu_entry']['pdf'] = true;
+	
+			$PLUGIN_HOOKS['use_massive_action']['pdf']=1;
+			
+			$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
+			$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
+		}
+		if (haveRight("config","w") || haveRight("profile","r")) {
+			$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
+		}		
 	}
-	if (haveRight("config","w")) {
+	else if (haveRight("config","w")) {
 		$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
 	}
 }
@@ -56,7 +63,7 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 	global $LANGPDF;
 
-		return array ('name' => $LANGPDF["title"][1], 'version' => '0.3');
+		return array ('name' => $LANGPDF["title"][1], 'version' => '0.4');
 }
 
 function plugin_get_headings_pdf($type,$withtemplate){	
