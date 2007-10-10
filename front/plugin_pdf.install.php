@@ -44,7 +44,7 @@ commonHeader($LANGPDF["config"][1], $_SERVER["PHP_SELF"],"plugins","pdf");
 
 if (haveRight("config","w"))
 	{
-	if(!TableExists("glpi_plugin_pdf_preference"))
+	if(!(TableExists("glpi_plugin_pdf_preference") && TableExists("glpi_plugin_pdf_profiles")))
 		{
 		cleanCache("GLPI_HEADER_".$_SESSION["glpiID"]);
 		plugin_pdf_Install();

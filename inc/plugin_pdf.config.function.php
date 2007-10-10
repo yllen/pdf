@@ -41,7 +41,7 @@ include_once (GLPI_ROOT . "/inc/includes.php");
 function plugin_pdf_Install() {
 	$DB = new DB;
 			
-	$query= "CREATE TABLE `glpi_plugin_pdf_profiles` (
+	$query= "CREATE TABLE IF NOT EXISTS `glpi_plugin_pdf_profiles` (
   	`ID` int(11),
   	`profile` varchar(255) NOT NULL,
   	`use` tinyint(1) default 0,
@@ -50,7 +50,7 @@ function plugin_pdf_Install() {
 			
 	$DB->query($query) or die($DB->error());	
 
-	$query= "CREATE TABLE `glpi_plugin_pdf_preference` (
+	$query= "CREATE TABLE IF NOT EXISTS `glpi_plugin_pdf_preference` (
   	`id` int(11) NOT NULL auto_increment,
   	`user_id` int(11) NOT NULL,
   	`cat` varchar(255) NOT NULL,
