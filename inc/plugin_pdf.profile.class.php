@@ -39,7 +39,15 @@ class PluginPdfProfile extends CommonDBTM {
 		$this->table="glpi_plugin_pdf_profiles";
     	$this->type=-1;
 	}
-
+	
+	//if profile deleted
+	function cleanProfiles($ID) {
+	
+		global $DB;
+		$query = "DELETE FROM glpi_plugin_pdf_profiles WHERE ID='$ID' ";
+		$DB->query($query);
+	}
+	
 	function showForm($target,$ID){
 		global $LANG,$LANGPDF,$DB;
 

@@ -57,6 +57,7 @@ function plugin_init_pdf() {
 	else if (haveRight("config","w")) {
 		$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
 	}
+	$PLUGIN_HOOKS['pre_item_delete']['pdf'] = 'plugin_pre_item_delete_pdf';
 }
 
 	
@@ -64,6 +65,20 @@ function plugin_version_pdf() {
 	global $LANGPDF;
 
 		return array ('name' => $LANGPDF["title"][1], 'version' => '0.4');
+}
+
+// Hook done on delete item case
+
+function plugin_pre_item_delete_pdf($input){
+	if (isset($input["_item_type_"]))
+		switch ($input["_item_type_"]){
+			case PROFILE_TYPE :
+				// Manipulate data if needed 
+				$PluginPdfProfile=new PluginPdfProfile;
+				$PluginPdfProfile->cleanProfiles($input["ID"]);
+				break;
+		}
+	return $input;
 }
 
 function plugin_get_headings_pdf($type,$withtemplate){	
