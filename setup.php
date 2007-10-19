@@ -49,6 +49,7 @@ function plugin_init_pdf() {
 			
 			$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
 			$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
+			$PLUGIN_HOOKS['pre_item_delete']['pdf'] = 'plugin_pre_item_delete_pdf';
 		}
 		if (haveRight("config","w") || haveRight("profile","r")) {
 			$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
@@ -57,7 +58,7 @@ function plugin_init_pdf() {
 	else if (haveRight("config","w")) {
 		$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
 	}
-	$PLUGIN_HOOKS['pre_item_delete']['pdf'] = 'plugin_pre_item_delete_pdf';
+	
 }
 
 	
