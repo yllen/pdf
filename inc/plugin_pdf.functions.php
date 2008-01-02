@@ -1088,8 +1088,8 @@ function plugin_pdf_financial($tab,$width,$ID,$type){
 	$pdf->addText(30,$start_tab-40,9,utf8_decode("<b><i>".$LANG["financial"][18]." :</i></b> ".$ic->fields["num_commande"]));
 	$pdf->addText(30,$start_tab-60,9,utf8_decode("<b><i>".$LANG["financial"][14]." :</i></b> ".convDate($ic->fields["buy_date"])));
 	$pdf->addText(30,$start_tab-80,9,utf8_decode("<b><i>".$LANG["financial"][15]." :</i></b> ".$ic->fields["warranty_duration"]." mois <b><i> Expire le</i></b> ".getWarrantyExpir($ic->fields["buy_date"],$ic->fields["warranty_duration"])));
-	$pdf->addText(30,$start_tab-100,9,utf8_decode("<b><i>".$LANG["financial"][78]." :</i></b> ".number_format($ic->fields["warranty_value"],$CFG_GLPI["decimal_number"],'.','')));
-	$pdf->addText(30,$start_tab-120,9,utf8_decode("<b><i>".$LANG["rulesengine"][13]." :</i></b> ".number_format($ic->fields["value"],$CFG_GLPI["decimal_number"],'.','')));
+	$pdf->addText(30,$start_tab-100,9,utf8_decode("<b><i>".$LANG["financial"][78]." :</i></b> ".formatNumber($ic->fields["warranty_value"],true)));
+	$pdf->addText(30,$start_tab-120,9,utf8_decode("<b><i>".$LANG["rulesengine"][13]." :</i></b> ".formatNumber($ic->fields["value"],true)));
 	$pdf->addText(30,$start_tab-140,9,utf8_decode("<b><i>".$LANG["financial"][20]." :</i></b> 	".$ic->fields["num_immo"]));
 	$pdf->addText(30,$start_tab-160,9,utf8_decode("<b><i>".$LANG["financial"][23]." :</i></b> ".$ic->fields["amort_time"]." an(s)"));
 	$pdf->addText(30,$start_tab-180,9,utf8_decode("<b><i>".$LANG["financial"][89]." :</i></b> ".showTco($ci->getField('ticket_tco'),$ic->fields["value"])));

@@ -65,7 +65,7 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 	global $LANGPDF;
 
-		return array ('name' => $LANGPDF["title"][1], 'version' => '0.5');
+		return array ('name' => $LANGPDF["title"][1],'minGlpiVersion' => '0.71', 'version' => '0.5');
 }
 
 // Hook done on delete item case
