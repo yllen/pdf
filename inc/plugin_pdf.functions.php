@@ -417,7 +417,7 @@ function plugin_pdf_device($tab,$width,$ID,$type){
 			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
 			$pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_hdd"][4].' :</i></b> '.$val["specificity"]));
 			if (!empty($device->fields["rpm"]))	$pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_hdd"][0].' :</i></b> '.$device->fields["rpm"]));
-			if (!empty($device->fields["interface"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_hdd"][2].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"])));
+			if (!empty($device->fields["interface"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"])));
 			if (!empty($device->fields["cache"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_hdd"][1].' :</i></b> '.$device->fields["cache"]));
 			break;
 		case GFX_DEVICE :
@@ -425,7 +425,7 @@ function plugin_pdf_device($tab,$width,$ID,$type){
 			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][2]));
 			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
 			if (!empty($device->fields["ram"])) $pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_gfxcard"][0].' :</i></b> '.$device->fields["ram"]));
-			if (!empty($device->fields["interface"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_gfxcard"][2].' :</i></b> '.$device->fields["interface"]));
+			if (!empty($device->fields["interface"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.$device->fields["interface"]));
 			break;
 		case NETWORK_DEVICE :
 			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
@@ -473,7 +473,7 @@ function plugin_pdf_device($tab,$width,$ID,$type){
 			$pdf->addText($device_x,($start_tab-25)-(25*$i),9,utf8_decode($LANG["devices"][20]));
 			$pdf->addTextWrap($design_x,($start_tab-25)-(25*$i),270,9,utf8_decode($device->fields["designation"]));
 			if (!empty($device->fields["raid"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_control"][0].' :</i></b> '.getYesNo($device->fields["raid"])));
-			if (!empty($device->fields["interface"])) $pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_control"][1].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"])));
+			if (!empty($device->fields["interface"])) $pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"])));
 			break;
 		case PCI_DEVICE :
 			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
@@ -879,9 +879,9 @@ function plugin_pdf_connection($tab,$width,$ID,$type){
 
 					$tempo=$ci->getName()." - ";
 					if($ci->getField("serial")!=null)
-						$tempo .="N° serie : " .$ci->getField("serial")." - ";
+						$tempo .="Nï¿½ serie : " .$ci->getField("serial")." - ";
 					if($ci->getField("otherserial")!=null)
-						$tempo .="N° inventaire : " .$ci->getField("otherserial")." - ";
+						$tempo .="Nï¿½ inventaire : " .$ci->getField("otherserial")." - ";
 					
 					$pdf->addText(120,($start_tab-20)-(20*$i),9,utf8_decode($tempo . plugin_pdf_getDropdownName("glpi_dropdown_state",$ci->getField('state'))));
 
@@ -995,7 +995,7 @@ function plugin_pdf_port($tab,$width,$ID,$type){
 							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["networking"][56].' :</i></b> '));
 						break;
 						case 5:
-						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["networking"][16].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_iface",$netport->fields["iface"])));
+						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_iface",$netport->fields["iface"])));
 						break;
 						case 6:
 						$contact = new Netport;
