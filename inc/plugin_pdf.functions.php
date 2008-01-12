@@ -42,7 +42,7 @@ function plugin_pdf_menu_computer($type,$ID){
 	echo "<tr class='tab_bg_1'>";
 	echo "<td><input type='checkbox' name='check0' id='check0' value='0' /> ".$LANG["Menu"][26]."</td>";
 
-	echo "<td><input type='checkbox' name='check2' id='check2' value='2' /> ".$LANG["devices"][10]."</td>";
+	echo "<td><input type='checkbox' name='check2' id='check2' value='2' /> ".$LANG["title"][30]."</td>";
 
 	echo "<td><input type='checkbox' name='check4' id='check4' value='4' /> ".$LANG["title"][28]."</td>";
 
@@ -56,7 +56,7 @@ function plugin_pdf_menu_computer($type,$ID){
 	echo "<tr class='tab_bg_1'>";
 	echo "<td><input type='checkbox' name='check1' id='check1' value='1' /> ".$LANG["title"][27]."</td>";
 
-	echo "<td><input type='checkbox' name='check3' id='check3' value='3' /> ".$LANG["title"][12]."</td>";
+	echo "<td><input type='checkbox' name='check3' id='check3' value='3' /> ".$LANG["Menu"][4]."</td>";
 
 	echo "<td><input type='checkbox' name='check5' id='check5' value='5' /> ".$LANG["title"][25]."</td>";
 
@@ -387,7 +387,7 @@ function plugin_pdf_device($tab,$width,$ID,$type){
 	$pdf->setColor(0.8,0.8,0.8);
 	$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 	$pdf->restoreState();
-	$pdf->addText(275,$start_tab,9,'<b>'.utf8_decode($LANG["devices"][10].'</b>'));
+	$pdf->addText(275,$start_tab,9,'<b>'.utf8_decode($LANG["title"][30].'</b>'));
 	
 	$i=0;
 	
@@ -444,7 +444,7 @@ function plugin_pdf_device($tab,$width,$ID,$type){
 			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
 			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][4]));
 			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
-			$pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_processor"][0].' :</i></b> '.$val["specificity"]));
+			$pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$val["specificity"]));
 			break;
 		case RAM_DEVICE :
 			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
@@ -466,7 +466,7 @@ function plugin_pdf_device($tab,$width,$ID,$type){
 			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
 			if (!empty($device->fields["is_writer"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["profiles"][11].' :</i></b> '.getYesNo($device->fields["is_writer"])));
 			if (!empty($device->fields["speed"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_drive"][1].' :</i></b> '.$device->fields["speed"]));
-			if (!empty($device->fields["frequence"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_processor"][0].' :</i></b> '.$device->fields["frequence"]));
+			if (!empty($device->fields["frequence"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$device->fields["frequence"]));
 			break;
 		case CONTROL_DEVICE :;
 			$pdf->addText($nb_x,($start_tab-25)-(25*$i),9,utf8_decode($val["quantity"].'x'));
