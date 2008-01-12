@@ -122,11 +122,11 @@ if(isset($_POST['valide']) || isset($_POST['save']))
 
 			echo "<td><input type='checkbox' name='check3' id='check3' value='3' /> ".$LANG["Menu"][4]."</td>";
 
-			echo "<td><input type='checkbox' name='check5' id='check5' value='5' /> ".$LANG["title"][25]."</td>";
+			echo "<td><input type='checkbox' name='check5' id='check5' value='5' /> ".$LANG["Menu"][27]."</td>";
 
 			echo "<td><input type='checkbox' name='check7' id='check7' value='7' /> ".$LANG["title"][34]."</td>";
 
-			echo "<td><input type='checkbox' name='check9' id='check9' value='9' /> ".$LANG["title"][35]."</td>";
+			echo "<td><input type='checkbox' name='check9' id='check9' value='9' /> ".$LANG["Menu"][17]."</td>";
 			
 			echo "<td></td>";
 			echo "</tr>";
@@ -166,11 +166,11 @@ if(isset($_POST['valide']) || isset($_POST['save']))
 			echo "<tr class='tab_bg_1'>";
 			echo "<td><input type='checkbox' name='check1' id='check1' value='1' /> ".$LANG["software"][19]."</td>";
 			
-			echo "<td><input type='checkbox' name='check3' id='check3' value='3' /> ".$LANG["title"][25]."</td>";
+			echo "<td><input type='checkbox' name='check3' id='check3' value='3' /> ".$LANG["Menu"][27]."</td>";
 
 			echo "<td><input type='checkbox' name='check5' id='check5' value='5' /> ".$LANG["title"][34]."</td>";
 
-			echo "<td><input type='checkbox' name='check7' id='check7' value='7' /> ".$LANG["title"][35]."</td>";
+			echo "<td><input type='checkbox' name='check7' id='check7' value='7' /> ".$LANG["Menu"][17]."</td>";
 			
 			echo "<td></td>";
 			echo "</tr>";
