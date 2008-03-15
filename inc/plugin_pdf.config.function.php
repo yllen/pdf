@@ -43,7 +43,7 @@ function plugin_pdf_Install() {
 			
 	$query= "CREATE TABLE IF NOT EXISTS `glpi_plugin_pdf_profiles` (
   	`ID` int(11),
-  	`profile` varchar(255) NOT NULL,
+  	`profile` varchar(255) default 0,
   	`use` tinyint(1) default 0,
   	PRIMARY KEY  (`ID`)
 	) ENGINE=MyISAM;";
