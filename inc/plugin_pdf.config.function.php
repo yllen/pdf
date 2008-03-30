@@ -54,7 +54,7 @@ function plugin_pdf_Install() {
   	`id` int(11) NOT NULL auto_increment,
   	`user_id` int(11) NOT NULL,
   	`cat` varchar(255) NOT NULL,
-  	`table_num` int(11) NOT NULL,
+  	`table_num` int(11) NOT NULL default -1,
   	PRIMARY KEY  (`id`)
 	) ENGINE=MyISAM;";
 			

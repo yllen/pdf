@@ -37,18 +37,18 @@ define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT."/inc/includes.php");
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-if($_POST["type"]==COMPUTER_TYPE && isset($_SESSION["plugin_pdf"][COMPUTER_TYPE]))
+if($_POST["plugin_pdf_inventory_type"]==COMPUTER_TYPE && isset($_SESSION["plugin_pdf"][COMPUTER_TYPE]))
 		unset($_SESSION["plugin_pdf"][COMPUTER_TYPE]);
 			
-else if($_POST["type"]==SOFTWARE_TYPE && isset($_SESSION["plugin_pdf"][SOFTWARE_TYPE]))
+else if($_POST["plugin_pdf_inventory_type"]==SOFTWARE_TYPE && isset($_SESSION["plugin_pdf"][SOFTWARE_TYPE]))
 		unset($_SESSION["plugin_pdf"][SOFTWARE_TYPE]);
 	
 for($i=0,$j=1;$i<$_POST["indice"];$i++)
 	if(isset($_POST["check".$i])){
-		if($_POST["type"]==COMPUTER_TYPE)
+		if($_POST["plugin_pdf_inventory_type"]==COMPUTER_TYPE)
 			$_SESSION["plugin_pdf"][COMPUTER_TYPE][]=$i;
 			
-		else if($_POST["type"]==SOFTWARE_TYPE)
+		else if($_POST["plugin_pdf_inventory_type"]==SOFTWARE_TYPE)
 			$_SESSION["plugin_pdf"][SOFTWARE_TYPE][]=$i;
 			
 		$tab[$j] = $_POST["check".$i];
@@ -56,9 +56,7 @@ for($i=0,$j=1;$i<$_POST["indice"];$i++)
 	}
 	
 $tab[0]=-1;
-		
-$tab_id[0]=$_POST["ID"];
+$tab_id[0]=$_POST["itemID"];
 
-plugin_pdf_general($_POST["type"],$tab_id,$tab);
-	
+plugin_pdf_general($_POST["plugin_pdf_inventory_type"],$tab_id,$tab);
 ?>

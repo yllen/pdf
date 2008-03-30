@@ -50,6 +50,8 @@ function plugin_init_pdf() {
 			$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
 			$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
 			$PLUGIN_HOOKS['pre_item_delete']['pdf'] = 'plugin_pre_item_delete_pdf';
+
+			$PLUGIN_HOOKS['user_preferences']['pdf'] = 'plugin_user_preferences_pdf';
 		}
 		if (haveRight("config","w") || haveRight("profile","r")) {
 			$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
@@ -125,28 +127,28 @@ function plugin_headings_actions_pdf($type){
 function plugin_headings_pdf_computer($type,$ID,$withtemplate=0){
 
 	echo "<div align='center'>";
-	echo plugin_pdf_menu_computer($type,$ID);
+	echo plugin_pdf_menu_computer("../plugins/pdf/front/plugin_pdf.export.php",$ID);
 	echo "</div>";
 }
 
 function plugin_headings_pdf_software($type,$ID,$withtemplate=0){
 
 	echo "<div align='center'>";
-	echo plugin_pdf_menu_software($type,$ID);
+	echo plugin_pdf_menu_software("../plugins/pdf/front/plugin_pdf.export.php",$ID);
 	echo "</div>";
 }
 
 function plugin_pdf_MassiveActions($type){
-	global $LANG;
+	global $LANGPDF;
 	switch ($type){
 		case COMPUTER_TYPE :
 			return array(
-				"plugin_pdf_DoIt"=>"Imprimer en pdf",
+				"plugin_pdf_DoIt"=>$LANGPDF["title"][1],
 			);
 			break;
 		case SOFTWARE_TYPE:
 			return array(
-				"plugin_pdf_DoIt"=>"Imprimer en pdf",
+				"plugin_pdf_DoIt"=>$LANGPDF["title"][1],
 				);
 		break;
 	}
@@ -191,4 +193,10 @@ function plugin_pdf_MassiveActionsProcess($data){
 		}
 }
 
+function plugin_user_preferences_pdf($post){
+	global $DB;
+
+	$pref = new PluginPdfPreferences;
+	$pref->showForm($_SERVER["PHP_SELF"],$_POST);
+}
 ?>
