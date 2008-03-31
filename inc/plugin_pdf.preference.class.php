@@ -52,16 +52,16 @@ class PluginPdfPreferences extends CommonDBTM {
 		}
 
 		echo "<div align='center' id='pdf_type'>";
-		echo "<table class='tab_cadre_fixe'>";
-		echo "<tr class='tab_bg_1' align='center'><th colspan='6'>".$LANGPDF["title"][1]."</th></tr>";		
-		echo "</td></tr>";
-		echo "<tr class='tab_bg_1' align='center'><td>"; 
+		//echo "<table class='tab_cadre_fixe'>";
+		//echo "<tr class='tab_bg_1' align='center'><th colspan='6'>".$LANGPDF["title"][1]."</th></tr>";		
+		//echo "</td></tr>";
+		//echo "<tr class='tab_bg_1' align='center'><td>"; 
 		plugin_pdf_menu_computer($_SERVER['PHP_SELF'],-1,false);
-		echo "</td></tr>";		
-		echo "<tr class='tab_bg_1' align='center'><td>"; 
+		//echo "</td></tr>";		
+		//echo "<tr class='tab_bg_1' align='center'><td>"; 
 		plugin_pdf_menu_software($_SERVER['PHP_SELF'],-1,false);
-		echo "</td></tr>";		
-		echo "</table>";
+		//echo "</td></tr>";		
+		//echo "</table>";
 		echo "</div>";
 	}
 }
