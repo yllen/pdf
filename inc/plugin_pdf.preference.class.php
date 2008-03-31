@@ -39,7 +39,7 @@ class PluginPdfPreferences extends CommonDBTM {
 	}
 
 	function showForm($target,$post) {
-		global $LANGPDF, $LANG, $DB;
+		global $LANGPDF, $LANG, $DB, $CFG_GLPI;
 
 		//Save user preferences
 		if (isset ($post['plugin_pdf_user_preferences_save'])) {
@@ -51,39 +51,18 @@ class PluginPdfPreferences extends CommonDBTM {
 		
 		}
 
-		echo "<form action='" . $_SERVER['PHP_SELF'] . "' method='post' name='plugin_pdf_choose_type'>";
-		echo "<div align='center'>";
-		echo "<table class='tab_cadre_fixe' cellpadding='5'>";
-		echo "<tr class='tab_bg_1' align='center'><th colspan='2'>".$LANGPDF["title"][1]."</th></tr>";		
-		echo "<tr class='tab_bg_1' align='center'><td>";
-		echo $LANGPDF["config"][5];
-		$type_values[-1]="-----";
-		$type_values[COMPUTER_TYPE]=$LANG["Menu"][0];
-		$type_values[SOFTWARE_TYPE]=$LANG["Menu"][4];
-
-		dropdownArrayValues("plugin_pdf_inventory_type",$type_values,(isset($post["plugin_pdf_inventory_type"])?$post["plugin_pdf_inventory_type"]:0));
+		echo "<div align='center' id='pdf_type'>";
+		echo "<table class='tab_cadre_fixe'>";
+		echo "<tr class='tab_bg_1' align='center'><th colspan='6'>".$LANGPDF["title"][1]."</th></tr>";		
 		echo "</td></tr>";
-		echo "<tr class='tab_bg_1' align='center'><td>";
-		echo "<input type='submit' name='plugin_pdf_user_preferences_validate' value='".$LANG["buttons"][2]."' class='submit' />";
-		echo "</td></tr>";
+		echo "<tr class='tab_bg_1' align='center'><td>"; 
+		plugin_pdf_menu_computer($_SERVER['PHP_SELF'],-1,false);
+		echo "</td></tr>";		
+		echo "<tr class='tab_bg_1' align='center'><td>"; 
+		plugin_pdf_menu_software($_SERVER['PHP_SELF'],-1,false);
+		echo "</td></tr>";		
 		echo "</table>";
 		echo "</div>";
-		echo "</form>";
-
-		if (isset ($post['plugin_pdf_user_preferences_save']) || isset ($post['plugin_pdf_user_preferences_validate'])) {
-			if ($post['plugin_pdf_inventory_type']>0)
-			{
-				switch ($post['plugin_pdf_inventory_type']) {
-					case COMPUTER_TYPE :
-							plugin_pdf_menu_computer($_SERVER['PHP_SELF'],-1,false);
-						break;
-					case SOFTWARE_TYPE :
-							plugin_pdf_menu_software($_SERVER['PHP_SELF'],-1,false);
-						break;
-				}
-			}
-		}
-
 	}
 }
 ?>

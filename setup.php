@@ -122,14 +122,18 @@ function plugin_headings_actions_pdf($type){
 function plugin_headings_pdf_computer($type,$ID,$withtemplate=0){
 
 	echo "<div align='center'>";
+	echo "<table class='tab_cadre_fixe'>";
 	echo plugin_pdf_menu_computer("../plugins/pdf/front/plugin_pdf.export.php",$ID);
+	echo "</table>";
 	echo "</div>";
 }
 
 function plugin_headings_pdf_software($type,$ID,$withtemplate=0){
 
 	echo "<div align='center'>";
+	echo "<table class='tab_cadre_fixe'>";
 	echo plugin_pdf_menu_software("../plugins/pdf/front/plugin_pdf.export.php",$ID);
+	echo "</table>";
 	echo "</div>";
 }
 
