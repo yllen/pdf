@@ -176,8 +176,6 @@ function plugin_pdf_MassiveActionsDisplay($type,$action){
 }
 
 function plugin_pdf_MassiveActionsProcess($data){
-	if (!isset($_SESSION["MESSAGE_AFTER_REDIRECT"])) 
-		$_SESSION["MESSAGE_AFTER_REDIRECT"]="";
 
 	switch ($data["action"]){
 		case "plugin_pdf_DoIt":
