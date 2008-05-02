@@ -40,8 +40,6 @@ $LANGPDF["button"][2]="Salvar";
 $LANGPDF["config"][1]="Configuração do Plugin";
 $LANGPDF["config"][2]="Instalar o PDF Plugin";
 $LANGPDF["config"][3]="Remover o PDF Plugin";
-$LANGPDF["config"][4]="Configuração das suas Preferências";
-$LANGPDF["config"][5]="Tipo de Inventário :";
 $LANGPDF["config"][6]="Gerenciar direitos de Perfis";
 $LANGPDF["config"][7]="Direitos para este perfil";
 

@@ -41,8 +41,6 @@ $LANGPDF["config"][1]="PDF modul beállítása";
 $LANGPDF["config"][2]="PDF modul telepítése";
 $LANGPDF["config"][3]="PDF modul eltávolítása";
 $LANGPDF["config"][4]="Beállítások";
-$LANGPDF["config"][5]="Leltári tárgy típusa :";
-$LANGPDF["config"][6]="Profilok jogosultságai";
 $LANGPDF["config"][7]="Jogok a következő profilhoz";
 
 $LANGPDF["note"][1]="Nincs megjegyzés";

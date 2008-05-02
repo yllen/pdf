@@ -40,8 +40,6 @@ $LANGPDF["button"][2]="Sauvegarder";
 $LANGPDF["config"][1]="Configuration du plugin Impression pdf";
 $LANGPDF["config"][2]="Installer le plugin Impression pdf";
 $LANGPDF["config"][3]="Désinstaller le plugin Impression pdf";
-$LANGPDF["config"][4]="Configuration de vos préférences";
-$LANGPDF["config"][5]="Type d'inventaire :";
 $LANGPDF["config"][6]="Gestion des droits par profil";
 $LANGPDF["config"][7]="Droit pour ce profil";
 
