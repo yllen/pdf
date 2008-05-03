@@ -384,86 +384,90 @@ function plugin_pdf_device($tab,$width,$ID,$type){
 		
 		switch($device->devtype) {
 		case HDD_DEVICE :
-			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][1]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
-			$pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_hdd"][4].' :</i></b> '.$val["specificity"]));
-			if (!empty($device->fields["rpm"]))	$pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_hdd"][0].' :</i></b> '.$device->fields["rpm"]));
-			if (!empty($device->fields["interface"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"])));
-			if (!empty($device->fields["cache"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_hdd"][1].' :</i></b> '.$device->fields["cache"]));
+			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][1]));
+			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
+			$pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_hdd"][4].' :</i></b> '.$val["specificity"]));
+			if (!empty($device->fields["rpm"]))	$pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_hdd"][0].' :</i></b> '.$device->fields["rpm"]));
+			else if (!empty($device->fields["interface"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"])));
+			else if (!empty($device->fields["cache"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_hdd"][1].' :</i></b> '.$device->fields["cache"]));
 			break;
 		case GFX_DEVICE :
-			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][2]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["ram"])) $pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_gfxcard"][0].' :</i></b> '.$device->fields["ram"]));
-			if (!empty($device->fields["interface"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.$device->fields["interface"]));
+			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][2]));
+			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
+			if (!empty($device->fields["ram"])) $pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_gfxcard"][0].' :</i></b> '.$device->fields["ram"]));
+			if (!empty($device->fields["interface"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.$device->fields["interface"]));
 			break;
 		case NETWORK_DEVICE :
-			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][3]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),230,9,utf8_decode($device->fields["designation"]));
-			$pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["networking"][15].' :</i></b> '.$val["specificity"]));
-			if (!empty($device->fields["bandwidth"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_iface"][0].' :</i></b> '.$device->fields["bandwidth"]));
+			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][3]));
+			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
+			$pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["networking"][15].' :</i></b> '.$val["specificity"]));
+			if (!empty($device->fields["bandwidth"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_iface"][0].' :</i></b> '.$device->fields["bandwidth"]));
 			break;
 		case MOBOARD_DEVICE :
-			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][5]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["chipset"])) $pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_moboard"][0].' :</i></b> '.$device->fields["chipset"]));
+			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][5]));
+			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
+			if (!empty($device->fields["chipset"])) $pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_moboard"][0].' :</i></b> '.$device->fields["chipset"]));
 			break;
 		case PROCESSOR_DEVICE :
-			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][4]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
-			$pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$val["specificity"]));
+			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][4]));
+			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
+			$pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$val["specificity"]));
 			break;
 		case RAM_DEVICE :
-			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["printers"][23]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
-			$pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["monitors"][21].' :</i></b> '.$val["specificity"]));
-			if (!empty($device->fields["type"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_ram_type",$device->fields["type"])));
-			if (!empty($device->fields["frequence"])) $pdf->addText($other_x+70,($start_tab-20)-(20*$i),9,utf8_decode($device->fields["frequence"]));
+			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["printers"][23]));
+			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
+			$pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["monitors"][21].' :</i></b> '.$val["specificity"]));
+			if (empty($device->fields["frequence"])) {
+				if (!empty($device->fields["type"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_ram_type",$device->fields["type"])));
+			} else {
+				if (!empty($device->fields["type"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),73,9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_ram_type",$device->fields["type"])));
+				$pdf->addTextWrap($other_x+75,($start_tab-20)-(20*$i),28,9,utf8_decode($device->fields["frequence"]));
+			}	
 			break;
 		case SND_DEVICE :
-			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][7]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["type"])) $pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.$device->fields["type"]));
+			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][7]));
+			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
+			if (!empty($device->fields["type"])) $pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.$device->fields["type"]));
 			break;
 		case DRIVE_DEVICE : 
-			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][19]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["is_writer"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["profiles"][11].' :</i></b> '.getYesNo($device->fields["is_writer"])));
-			if (!empty($device->fields["speed"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_drive"][1].' :</i></b> '.$device->fields["speed"]));
-			if (!empty($device->fields["frequence"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$device->fields["frequence"]));
+			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][19]));
+			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
+			if (!empty($device->fields["is_writer"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["profiles"][11].' :</i></b> '.getYesNo($device->fields["is_writer"])));
+			else if (!empty($device->fields["speed"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_drive"][1].' :</i></b> '.$device->fields["speed"]));
+			else if (!empty($device->fields["frequence"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$device->fields["frequence"]));
 			break;
 		case CONTROL_DEVICE :;
-			$pdf->addText($nb_x,($start_tab-25)-(25*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-25)-(25*$i),9,utf8_decode($LANG["devices"][20]));
-			$pdf->addTextWrap($design_x,($start_tab-25)-(25*$i),270,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["raid"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_control"][0].' :</i></b> '.getYesNo($device->fields["raid"])));
-			if (!empty($device->fields["interface"])) $pdf->addText($spec_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"])));
+			$pdf->addTextWrap($nb_x,($start_tab-25)-(25*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-25)-(25*$i),73,9,utf8_decode($LANG["devices"][20]));
+			$pdf->addTextWrap($design_x,($start_tab-25)-(25*$i),228,9,utf8_decode($device->fields["designation"]));
+			if (!empty($device->fields["interface"])) $pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"])));
+			if (!empty($device->fields["raid"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_control"][0].' :</i></b> '.getYesNo($device->fields["raid"])));
 			break;
 		case PCI_DEVICE :
-			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][21]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
+			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][21]));
+			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
 			break;
 		case POWER_DEVICE :
-			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][23]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["power"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_power"][0].' :</i></b> '.$device->fields["power"]));
-			if (!empty($device->fields["atx"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["device_power"][1].' :</i></b> '.getYesNo($device->fields["atx"])));
+			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][23]));
+			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
+			if (!empty($device->fields["power"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_power"][0].' :</i></b> '.$device->fields["power"]));
+			else if (!empty($device->fields["atx"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_power"][1].' :</i></b> '.getYesNo($device->fields["atx"])));
 			break;
 		case CASE_DEVICE :
-			$pdf->addText($nb_x,($start_tab-20)-(20*$i),9,utf8_decode($val["quantity"].'x'));
-			$pdf->addText($device_x,($start_tab-20)-(20*$i),9,utf8_decode($LANG["devices"][22]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),270,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["type"])) $pdf->addText($other_x,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_case_type",$device->fields["type"])));
+			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][22]));
+			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
+			if (!empty($device->fields["type"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_case_type",$device->fields["type"])));
 			break;
 		}
 	$i++;
