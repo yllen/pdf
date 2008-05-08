@@ -1469,7 +1469,7 @@ function plugin_pdf_ticket($tab,$width,$ID,$type){
 						case 5:
 							$ci=new CommonItem();
 							$ci->getFromDB($data["device_type"],$data["computer"]);
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["planning"][10].' :</i></b> '.$ci->getType()));
+							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][1].' :</i></b> '.$ci->getType()));
 						break;
 						case 6:
 							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]));
@@ -1576,7 +1576,7 @@ function plugin_pdf_oldticket($tab,$width,$ID,$type){
 						case 5:
 							$ci=new CommonItem();
 							$ci->getFromDB($data["device_type"],$data["computer"]);
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["planning"][10].' :</i></b> '.$ci->getType()));
+							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][1].' :</i></b> '.$ci->getType()));
 						break;
 						case 6:
 							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]));
