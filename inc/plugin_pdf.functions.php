@@ -252,7 +252,7 @@ function plugin_pdf_config_computer($tab,$width,$ID){
 	$pdf->addText($length_tab+35,$start_tab-160,9,utf8_decode('<b><i>'.$LANG["common"][19].' :</i></b> '.$computer->fields['serial']));
 	$pdf->addText($length_tab+35,$start_tab-180,9,utf8_decode('<b><i>'.$LANG["common"][20].' :</i></b> '.$computer->fields['otherserial']));
 	$pdf->addText($length_tab+35,$start_tab-200,9,utf8_decode('<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$computer->fields['state'])));
-	$pdf->addText($length_tab+35,$start_tab-220,9,utf8_decode('<b><i>'.$LANG["setup"][98].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_auto_update',$computer->fields['auto_update'])));
+	$pdf->addText($length_tab+35,$start_tab-220,9,utf8_decode('<b><i>'.$LANG["computers"][51].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_auto_update',$computer->fields['auto_update'])));
 	
 	$start_tab = ($start_tab-20)-(20*$i) - 20;
 	
@@ -420,7 +420,7 @@ function plugin_pdf_device($tab,$width,$ID,$type){
 			break;
 		case RAM_DEVICE :
 			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["printers"][23]));
+			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][6]));
 			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
 			$pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["monitors"][21].' :</i></b> '.$val["specificity"]));
 			if (empty($device->fields["frequence"])) {
@@ -1259,7 +1259,7 @@ function plugin_pdf_document($tab,$width,$ID,$type){
 	$pdf->filledRectangle(395,($start_tab-25)-(20*$i),100,15);
 	$pdf->filledRectangle(500,($start_tab-25)-(20*$i),70,15);
 	$pdf->restoreState();
-	$pdf->addText(250,$start_tab,9,'<b>'.utf8_decode($LANG["tracking"][25]).' :</b>');
+	$pdf->addText(250,$start_tab,9,'<b>'.utf8_decode($LANG["document"][21]).' :</b>');
 	$pdf->addText(80,$start_tab-20,9,'<b>'.utf8_decode($LANG["common"][16]).'</b>');
 	$pdf->addText(195,$start_tab-20,9,'<b>'.utf8_decode($LANG["backup"][10]).'</b>');
 	$pdf->addText(315,$start_tab-20,9,'<b>'.utf8_decode($LANG["document"][33]).'</b>');
@@ -1783,7 +1783,7 @@ function plugin_pdf_note($tab,$width,$ID,$type){
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 		$pdf->restoreState();
-		$pdf->addText(280,$start_tab,9,'<b>'.utf8_decode($LANG["reminder"][2]).'</b>');
+		$pdf->addText(280,$start_tab,9,'<b>'.utf8_decode($LANG["title"][37]).'</b>');
 			
 		$nbline = $length/140;
 		$temp=utf8_decode($ci->getField('notes'));
