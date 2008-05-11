@@ -1261,7 +1261,7 @@ function plugin_pdf_document($tab,$width,$ID,$type){
 	$pdf->restoreState();
 	$pdf->addText(250,$start_tab,9,'<b>'.utf8_decode($LANG["document"][21]).' :</b>');
 	$pdf->addText(80,$start_tab-20,9,'<b>'.utf8_decode($LANG["common"][16]).'</b>');
-	$pdf->addText(195,$start_tab-20,9,'<b>'.utf8_decode($LANG["backup"][10]).'</b>');
+	$pdf->addText(195,$start_tab-20,9,'<b>'.utf8_decode($LANG["document"][2]).'</b>');
 	$pdf->addText(315,$start_tab-20,9,'<b>'.utf8_decode($LANG["document"][33]).'</b>');
 	$pdf->addText(425,$start_tab-20,9,'<b>'.utf8_decode($LANG["document"][3]).'</b>');
 	$pdf->addText(510,$start_tab-20,9,'<b>'.utf8_decode($LANG["document"][4]).'</b>');
