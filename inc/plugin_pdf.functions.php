@@ -109,9 +109,9 @@ function plugin_pdf_menu_software($action,$softID){
 	echo "</table></form>";
 }
 
-function plugin_pdf_getDropdownName($table,$id){
+function plugin_pdf_getDropdownName($table,$id,$withcomment=0){
 	
-	$name = getDropdownName($table,$id);
+	$name = getDropdownName($table,$id,$withcomment);
 	
 	if($name=="&nbsp;")
 		$name="";
@@ -244,9 +244,9 @@ function plugin_pdf_config_computer($tab,$width,$ID){
 			
 	$pdf->addText($length_tab+35,$start_tab-20,9,utf8_decode('<b><i>'.$LANG["common"][18].' :</i></b> '.$computer->fields['contact']));
 	$pdf->addText($length_tab+35,$start_tab-40,9,utf8_decode('<b><i>'.$LANG["common"][21].' :</i></b> '.$computer->fields['contact_num']));
-	$pdf->addText($length_tab+35,$start_tab-60,9,utf8_decode('<b><i>'.$LANG["common"][34].' :</i></b> '.plugin_pdf_getDropdownName('glpi_users',$computer->fields['FK_users'])));
+	$pdf->addText($length_tab+35,$start_tab-60,9,utf8_decode('<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($computer->fields['FK_users'])));
 	$pdf->addText($length_tab+35,$start_tab-80,9,utf8_decode('<b><i>'.$LANG["common"][35].' :</i></b> '.plugin_pdf_getDropdownName('glpi_groups',$computer->fields['FK_groups'])));
-	$pdf->addText($length_tab+35,$start_tab-100,9,utf8_decode('<b><i>'.$LANG["common"][10].' :</i></b> '.plugin_pdf_getDropdownName('glpi_users',$computer->fields['tech_num'])));
+	$pdf->addText($length_tab+35,$start_tab-100,9,utf8_decode('<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($computer->fields['tech_num'])));
 	$pdf->addText($length_tab+35,$start_tab-120,9,utf8_decode('<b><i>'.$LANG["setup"][88].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_network',$computer->fields['network'])));
 	$pdf->addText($length_tab+35,$start_tab-140,9,utf8_decode('<b><i>'.$LANG["setup"][89].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_domain',$computer->fields['domain'])));
 	$pdf->addText($length_tab+35,$start_tab-160,9,utf8_decode('<b><i>'.$LANG["common"][19].' :</i></b> '.$computer->fields['serial']));
@@ -303,8 +303,8 @@ function plugin_pdf_config_software($tab,$width,$ID){
 	$pdf->addText(100,$start_tab,9,utf8_decode('<b>'.$LANG["common"][2].' '.$software->fields['ID'].' ('.plugin_pdf_getDropdownName('glpi_entities',$software->fields['FK_entities']).')</b>'));
 	$pdf->addText(30,$start_tab-20,9,utf8_decode('<b><i>'.$LANG["common"][16].' :</i></b> '.$software->fields['name']));
 	$pdf->addText(30,$start_tab-40,9,utf8_decode('<b><i>'.$LANG["software"][3].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_os',$software->fields['platform'])));
-	$pdf->addText(30,$start_tab-60,9,utf8_decode('<b><i>'.$LANG["common"][34].' :</i></b> '.plugin_pdf_getDropdownName('glpi_users',$software->fields["FK_users"])));
-	$pdf->addText(30,$start_tab-80,9,utf8_decode('<b><i>'.$LANG["common"][10].' :</i></b> '.plugin_pdf_getDropdownName('glpi_users',$software->fields["tech_num"])));
+	$pdf->addText(30,$start_tab-60,9,utf8_decode('<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($software->fields["FK_users"])));
+	$pdf->addText(30,$start_tab-80,9,utf8_decode('<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($software->fields["tech_num"])));
 	$pdf->addText(30,$start_tab-100,9,utf8_decode('<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$software->fields['location'])));
 	
 	if($software->fields['is_update'])
