@@ -2061,17 +2061,17 @@ function plugin_pdf_history($tab,$width,$ID,$type){
 			switch ($data["linked_action"]){
 
 				case HISTORY_ADD_DEVICE :
-					$field = getDeviceTypeLabel($data["device_internal_type"]);
+					$field = getDictDeviceLabel($data["device_internal_type"]);
 					$change = $LANG["devices"][25]." ".$data[ "new_value"];	
 					break;
 
 				case HISTORY_UPDATE_DEVICE :
-					$field = getDeviceTypeLabel($data["device_internal_type"]);
+					$field = getDictDeviceLabel($data["device_internal_type"]);
 					$change = getDeviceSpecifityLabel($data["device_internal_type"]).$data[ "old_value"].$data[ "new_value"];	
 					break;
 
 				case HISTORY_DELETE_DEVICE :
-					$field = getDeviceTypeLabel($data["device_internal_type"]);
+					$field = getDictDeviceLabel($data["device_internal_type"]);
 					$change = $LANG["devices"][26]." ".$data["old_value"];	
 					break;
 				case HISTORY_INSTALL_SOFTWARE :
