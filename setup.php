@@ -47,7 +47,6 @@ function plugin_init_pdf() {
 			$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
 			$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
 			$PLUGIN_HOOKS['pre_item_delete']['pdf'] = 'plugin_pre_item_delete_pdf';
-			$PLUGIN_HOOKS['user_preferences']['pdf'] = 'plugin_user_preferences_pdf';
 		}
 		if (haveRight("config","w") || haveRight("profile","r"))
 			$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
@@ -85,18 +84,14 @@ function plugin_get_headings_pdf($type,$withtemplate){
 
 	switch ($type){
 		case COMPUTER_TYPE :
+		case SOFTWARE_TYPE :
+		case "prefs" :
 			if ($withtemplate)
 				return array();
 			else 
 				return array(1 => $LANGPDF["title"][1]);
 		break;
 
-		case SOFTWARE_TYPE :
-			if ($withtemplate)
-				return array();
-			else 
-				return array(1 => $LANGPDF["title"][1]);
-		break;
 	}
 	return false;	
 }
@@ -113,6 +108,11 @@ function plugin_headings_actions_pdf($type){
 		case SOFTWARE_TYPE :
 			return array(
 					1 => "plugin_headings_pdf_software",
+				    );
+			break;
+		case "prefs" :
+			return array(
+					1 => "plugin_user_preferences_pdf",
 				    );
 			break;
 	}
