@@ -34,7 +34,7 @@
 function plugin_pdf_menu_computer($action,$compID,$export=true){
 	global $LANGPDF,$LANG,$DB;
 	
-	echo "<form name='computer' action='$action' target='blank' method='post'><table class='tab_cadre_fixe'>";
+	echo "<form name='computer' action='$action' method='post'><table class='tab_cadre_fixe'>";
 	$values = array();
 	$result = $DB->query("select table_num from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION['glpiID'] . " and cat=" . COMPUTER_TYPE);
 					
@@ -72,7 +72,7 @@ function plugin_pdf_menu_computer($action,$compID,$export=true){
 function plugin_pdf_menu_software($action,$softID){
 	global $LANGPDF,$LANG,$DB;
 	
-	echo "<form name='software' action='$action' target='blank' method='post'><table class='tab_cadre_fixe'>";
+	echo "<form name='software' action='$action' method='post'><table class='tab_cadre_fixe'>";
 	$values = array();
 	$result = $DB->query("select table_num from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION['glpiID'] . " and cat=" . SOFTWARE_TYPE);
 						
