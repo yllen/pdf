@@ -190,9 +190,9 @@ function plugin_pdf_MassiveActionsProcess($data){
 		}
 }
 
-function plugin_user_preferences_pdf($post){
+function plugin_user_preferences_pdf(){
 	global $DB;
-
+print_r($_POST);
 	$pref = new PluginPdfPreferences;
 	$pref->showForm($_SERVER["PHP_SELF"],$_POST);
 }

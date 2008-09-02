@@ -42,7 +42,7 @@ class PluginPdfPreferences extends CommonDBTM {
 		global $LANGPDF, $LANG, $DB, $CFG_GLPI;
 
 		//Save user preferences
-		if (isset ($post['plugin_pdf_user_preferences_save'])) {
+		if (isset ($post['plugin_pdf_user_preferences_save']) && isset($post["plugin_pdf_inventory_type"])) {
 			$DB->query("DELETE from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION["glpiID"] . " and cat=" . $post["plugin_pdf_inventory_type"]);
 			
 			for ($i = 0; $i < $post['indice']; $i++)
