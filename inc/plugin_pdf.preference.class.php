@@ -38,28 +38,18 @@ class PluginPdfPreferences extends CommonDBTM {
 		$this->table = "glpi_plugin_pdf_preference";
 	}
 
-	function showForm($target,$post) {
+	function showForm($target) {
 		global $LANGPDF, $LANG, $DB, $CFG_GLPI;
-
-		//Save user preferences
-		if (isset ($post['plugin_pdf_user_preferences_save']) && isset($post["plugin_pdf_inventory_type"])) {
-			$DB->query("DELETE from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION["glpiID"] . " and cat=" . $post["plugin_pdf_inventory_type"]);
-			
-			for ($i = 0; $i < $post['indice']; $i++)
-				if (isset ($post["check" . $i]))
-					$DB->query("INSERT INTO `glpi_plugin_pdf_preference` (`id` ,`user_id` ,`cat` ,`table_num`) VALUES (NULL , '".$_SESSION["glpiID"]."', '".$post["plugin_pdf_inventory_type"]."', '" . $i . "');");
-		
-		}
 
 		echo "<div align='center' id='pdf_type'>";
 		//echo "<table class='tab_cadre_fixe'>";
 		//echo "<tr class='tab_bg_1' align='center'><th colspan='6'>".$LANGPDF["title"][1]."</th></tr>";		
 		//echo "</td></tr>";
 		//echo "<tr class='tab_bg_1' align='center'><td>"; 
-		plugin_pdf_menu_computer($CFG_GLPI['root_doc']."/front/user.form.my.php",-1,false);
+		plugin_pdf_menu_computer($target,-1,false);
 		//echo "</td></tr>";		
 		//echo "<tr class='tab_bg_1' align='center'><td>"; 
-		plugin_pdf_menu_software($CFG_GLPI['root_doc']."/front/user.form.my.php",-1,false);
+		plugin_pdf_menu_software($target,-1,false);
 		//echo "</td></tr>";		
 		//echo "</table>";
 		echo "</div>";

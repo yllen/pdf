@@ -131,7 +131,7 @@ function plugin_headings_pdf($type,$ID,$withtemplate=0){
 			break;
 			case "prefs":
 				$pref = new PluginPdfPreferences;
-				$pref->showForm($CFG_GLPI['root_doc']."/front/user.form.my.php",$_POST);
+				$pref->showForm($CFG_GLPI['root_doc']."/plugins/pdf/front/plugin_pdf.preferences.form.php");
 			break;
 			default :
 			break;
