@@ -100,41 +100,42 @@ function plugin_headings_actions_pdf($type){
 
 	switch ($type){
 		case COMPUTER_TYPE :
-			return array(
-					1 => "plugin_headings_pdf_computer",
-				    );
-			break;
-
 		case SOFTWARE_TYPE :
-			return array(
-					1 => "plugin_headings_pdf_software",
-				    );
-			break;
 		case "prefs" :
 			return array(
-					1 => "plugin_user_preferences_pdf",
+					1 => "plugin_headings_pdf",
 				    );
 			break;
 	}
 	return false;
 }
 
-function plugin_headings_pdf_computer($type,$ID,$withtemplate=0){
+// action heading
+function plugin_headings_pdf($type,$ID,$withtemplate=0){
+	global $CFG_GLPI;
 
-	echo "<div align='center'>";
-	echo "<table class='tab_cadre_fixe'>";
-	echo plugin_pdf_menu_computer("../plugins/pdf/front/plugin_pdf.export.php",$ID);
-	echo "</table>";
-	echo "</div>";
-}
-
-function plugin_headings_pdf_software($type,$ID,$withtemplate=0){
-
-	echo "<div align='center'>";
-	echo "<table class='tab_cadre_fixe'>";
-	echo plugin_pdf_menu_software("../plugins/pdf/front/plugin_pdf.export.php",$ID);
-	echo "</table>";
-	echo "</div>";
+		switch ($type){
+			case COMPUTER_TYPE :
+				echo "<div align='center'>";
+				echo "<table class='tab_cadre_fixe'>";
+				echo plugin_pdf_menu_computer("../plugins/pdf/front/plugin_pdf.export.php",$ID);
+				echo "</table>";
+				echo "</div>";
+			break;
+			case SOFTWARE_TYPE :
+				echo "<div align='center'>";
+				echo "<table class='tab_cadre_fixe'>";
+				echo plugin_pdf_menu_software("../plugins/pdf/front/plugin_pdf.export.php",$ID);
+				echo "</table>";
+				echo "</div>";
+			break;
+			case "prefs":
+				$pref = new PluginPdfPreferences;
+				$pref->showForm($CFG_GLPI['root_doc']."/front/user.form.my.php",$_POST);
+			break;
+			default :
+			break;
+		}
 }
 
 function plugin_pdf_MassiveActions($type){
@@ -190,10 +191,4 @@ function plugin_pdf_MassiveActionsProcess($data){
 		}
 }
 
-function plugin_user_preferences_pdf(){
-	global $DB;
-print_r($_POST);
-	$pref = new PluginPdfPreferences;
-	$pref->showForm($_SERVER["PHP_SELF"],$_POST);
-}
 ?>
