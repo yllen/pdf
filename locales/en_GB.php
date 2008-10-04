@@ -31,24 +31,22 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-$LANG['pdf']["title"][1]="Print to pdf";
-$LANG['pdf']["title"][2]="Choose the tables to print in pdf";
+$LANG['plugin_pdf']["title"][1]="Print to pdf";
+$LANG['plugin_pdf']["title"][2]="Choose the tables to print in pdf";
 
-$LANG['pdf']["button"][1]="Print";
-$LANG['pdf']["button"][2]="Save";
+$LANG['plugin_pdf']["button"][1]="Print";
+$LANG['plugin_pdf']["button"][2]="Save";
 
-$LANG['pdf']["config"][1]="Configuration of pdf plugin";
-$LANG['pdf']["config"][2]="Install pdf plugin";
-$LANG['pdf']["config"][3]="Uninstall pdf plugin";
-$LANG['pdf']["config"][6]="Profiles right management";
-$LANG['pdf']["config"][7]="Right for this profile";
+$LANG['plugin_pdf']["config"][1]="Configuration of pdf plugin";
+$LANG['plugin_pdf']["config"][6]="Profiles right management";
+$LANG['plugin_pdf']["config"][7]="Right for this profile";
 
-$LANG['pdf']["note"][1]="No note found";
+$LANG['plugin_pdf']["note"][1]="No note found";
 
-$LANG['pdf']["document"][1]="No associated documents";
+$LANG['plugin_pdf']["document"][1]="No associated documents";
 
-$LANG['pdf']["financial"][1]="No financial information";
-$LANG['pdf']["financial"][2]="No associated contract";
+$LANG['plugin_pdf']["financial"][1]="No financial information";
+$LANG['plugin_pdf']["financial"][2]="No associated contract";
 
-$LANG['pdf']["software"][1]="No installed software";
+$LANG['plugin_pdf']["software"][1]="No installed software";
 ?>

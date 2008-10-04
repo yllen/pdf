@@ -35,7 +35,7 @@ define('GLPI_ROOT', '../..');
 include (GLPI_ROOT."/inc/includes.php");
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-commonHeader($LANG['pdf']["title"][1],$_SERVER['PHP_SELF'],"pdf");
+commonHeader($LANG['plugin_pdf']["title"][1],$_SERVER['PHP_SELF'],"pdf");
 
 glpi_header("front/plugin_pdf.preference.php");
 

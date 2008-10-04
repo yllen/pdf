@@ -32,24 +32,17 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
+include_once ("plugin_pdf.includes.php");
+
 function plugin_pdf_initSession()
 {
-	error_log("plugin_pdf_initSession");
-	if (TableExists("glpi_plugin_pdf_profiles")) {
-		$_SESSION["glpi_plugin_pdf_installed"]=1;			
-	} else {
-		unset($_SESSION["glpi_plugin_pdf_installed"]);	
-	}
+	return true;
 }
 function plugin_pdf_changeprofile()
 {
-	error_log("plugin_pdf_changeprofile");
-	if (isset($_SESSION["glpi_plugin_pdf_installed"])) {
-		$prof=new PluginPdfProfile();
-		if($prof->getFromDB($_SESSION['glpiactiveprofile']['ID']))
-			$_SESSION["glpi_plugin_pdf_profile"]=$prof->fields;
-		else
-			unset($_SESSION["glpi_plugin_pdf_profile"]);
+	$prof=new PluginPdfProfile();
+	if($prof->getFromDB($_SESSION['glpiactiveprofile']['ID'])) {
+		$_SESSION["glpi_plugin_pdf_profile"]=$prof->fields;
 	} else {
 		unset($_SESSION["glpi_plugin_pdf_profile"]);
 	}
@@ -66,7 +59,7 @@ function plugin_get_headings_pdf($type,$withtemplate){
 			if ($withtemplate)
 				return array();
 			else 
-				return array(1 => $LANG['pdf']["title"][1]);
+				return array(1 => $LANG['plugin_pdf']["title"][1]);
 		break;
 
 	}
@@ -112,12 +105,12 @@ function plugin_pdf_MassiveActions($type){
 	switch ($type){
 		case COMPUTER_TYPE :
 			return array(
-				"plugin_pdf_DoIt"=>$LANG['pdf']["title"][1],
+				"plugin_pdf_DoIt"=>$LANG['plugin_pdf']["title"][1],
 			);
 			break;
 		case SOFTWARE_TYPE:
 			return array(
-				"plugin_pdf_DoIt"=>$LANG['pdf']["title"][1],
+				"plugin_pdf_DoIt"=>$LANG['plugin_pdf']["title"][1],
 				);
 		break;
 	}

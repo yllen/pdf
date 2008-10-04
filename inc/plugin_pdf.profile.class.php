@@ -61,11 +61,11 @@ class PluginPdfProfile extends CommonDBTM {
 		echo "<div align='center'>";
 		echo "<form action='".$_SERVER['PHP_SELF']."' method='post'>";
 		echo "<table class='tab_cadre' cellpadding='5'>"; 
-		echo "<tr><th colspan='2'>".$LANG['pdf']["config"][7]. "</th></tr>\n";
+		echo "<tr><th colspan='2'>".$LANG['plugin_pdf']["config"][7]. "</th></tr>\n";
 			
 
 		echo "<tr class='tab_bg_1'>";
-		echo "<td>".$LANG['pdf']["title"][1].":</td><td>";
+		echo "<td>".$LANG['plugin_pdf']["title"][1].":</td><td>";
 		dropdownYesNo("use",(isset($this->fields["use"])?$this->fields["use"]:''));
 		echo "</td></tr>\n";	
 

@@ -41,7 +41,12 @@ if(!defined('GLPI_ROOT')){
 include_once (GLPI_ROOT . "/inc/includes.php");
 checkRight("profile","r");
 
-commonHeader($LANG['pdf']["config"][1], $_SERVER["PHP_SELF"],"plugins","reports");
+
+include_once ("../plugin_pdf.includes.php");
+// Mainly usefull if not actived
+usePLugin('pdf');
+
+commonHeader($LANG['plugin_pdf']["config"][1], $_SERVER["PHP_SELF"],"plugins","reports");
 
 $prof = new PluginPdfProfile();
 
@@ -70,7 +75,7 @@ else  if (isset($_POST["update"])){
 
 echo "<div align='center'><form method='post' action=\"".$_SERVER["PHP_SELF"]."\">";
 echo "<table class='tab_cadre' cellpadding='5'><tr><th colspan='2'>";
-echo $LANG['pdf']["config"][1]."<br />" . $LANG['pdf']["config"][6] . "</th></tr>\n";
+echo $LANG['plugin_pdf']["config"][1]."<br />" . $LANG['plugin_pdf']["config"][6] . "</th></tr>\n";
 
 echo "<tr class='tab_bg_1'><td>" . $LANG["profiles"][22] . "&nbsp;: ";
 $query="SELECT ID, name FROM glpi_profiles ORDER BY name";

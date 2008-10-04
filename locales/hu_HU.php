@@ -31,24 +31,22 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-$LANG['pdf']["title"][1]="Nyomtatás PDF-be";
-$LANG['pdf']["title"][2]="Válaszdki a pdf-be nyomtatandó táblákat";
+$LANG['plugin_pdf']["title"][1]="Nyomtatás PDF-be";
+$LANG['plugin_pdf']["title"][2]="Válaszdki a pdf-be nyomtatandó táblákat";
 
-$LANG['pdf']["button"][1]="Nyomtatás";
-$LANG['pdf']["button"][2]="Mentés";
+$LANG['plugin_pdf']["button"][1]="Nyomtatás";
+$LANG['plugin_pdf']["button"][2]="Mentés";
 
-$LANG['pdf']["config"][1]="PDF modul beállítása";
-$LANG['pdf']["config"][2]="PDF modul telepítése";
-$LANG['pdf']["config"][3]="PDF modul eltávolítása";
-$LANG['pdf']["config"][4]="Beállítások";
-$LANG['pdf']["config"][7]="Jogok a következő profilhoz";
+$LANG['plugin_pdf']["config"][1]="PDF modul beállítása";
+$LANG['plugin_pdf']["config"][6]="Profiles right management";
+$LANG['plugin_pdf']["config"][7]="Jogok a következő profilhoz";
 
-$LANG['pdf']["note"][1]="Nincs megjegyzés";
+$LANG['plugin_pdf']["note"][1]="Nincs megjegyzés";
 
-$LANG['pdf']["document"][1]="Nincs hozzárendelt dokumentum";
+$LANG['plugin_pdf']["document"][1]="Nincs hozzárendelt dokumentum";
 
-$LANG['pdf']["financial"][1]="Nincs pénzügyi információ";
-$LANG['pdf']["financial"][2]="Nincs hozzárendelt szerződés";
+$LANG['plugin_pdf']["financial"][1]="Nincs pénzügyi információ";
+$LANG['plugin_pdf']["financial"][2]="Nincs hozzárendelt szerződés";
 
-$LANG['pdf']["software"][1]="Nincs telepített szoftver";
+$LANG['plugin_pdf']["software"][1]="Nincs telepített szoftver";
 ?>

@@ -41,7 +41,7 @@ function plugin_pdf_menu_computer($action,$compID,$export=true){
 	while ($data = $DB->fetch_array($result))
 		$values["check".$data["table_num"]] = $data["table_num"]; 
 
-		echo "<tr><th colspan='6'>" . $LANG['pdf']["title"][2]. " : ".$LANG["Menu"][0] . "</th></tr>";
+		echo "<tr><th colspan='6'>" . $LANG['plugin_pdf']["title"][2]. " : ".$LANG["Menu"][0] . "</th></tr>";
 		echo "<tr class='tab_bg_1'>";
 		checkbox("check0",$LANG["Menu"][26],0,(isset($values["check0"])?true:false));
 		checkbox("check2",$LANG["title"][30],2,(isset($values["check2"])?true:false));
@@ -65,7 +65,7 @@ function plugin_pdf_menu_computer($action,$compID,$export=true){
 		echo "<input type='hidden' name='indice' value='11'>";
 		echo "<input type='hidden' name='itemID' value='$compID'>";
 
-		echo "<input type='submit' value='" . (!$export?$LANG['pdf']["button"][2]:$LANG['pdf']["button"][1]) . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
+		echo "<input type='submit' value='" . (!$export?$LANG['plugin_pdf']["button"][2]:$LANG['plugin_pdf']["button"][1]) . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
 		echo "</table></form>";
 }
 
@@ -79,7 +79,7 @@ function plugin_pdf_menu_software($action,$softID,$export=true){
 	while ($data = $DB->fetch_array($result))
 		$values["check".$data["table_num"]] = $data["table_num"]; 
 		
-	echo "<tr><th colspan='6'>" . $LANG['pdf']["title"][2]." : ".$LANG["Menu"][4] . "</th></tr>";
+	echo "<tr><th colspan='6'>" . $LANG['plugin_pdf']["title"][2]." : ".$LANG["Menu"][4] . "</th></tr>";
 	
 	echo "<tr class='tab_bg_1'>";
 	checkbox("check0",$LANG["title"][26],0,(isset($values["check0"])?true:false));
@@ -105,7 +105,7 @@ function plugin_pdf_menu_software($action,$softID,$export=true){
 	echo "<input type='hidden' name='indice' value='7'>";
 	echo "<input type='hidden' name='itemID' value='$softID'>";
 	
-	echo "<input type='submit' value='" . (!$export?$LANG['pdf']["button"][2]:$LANG['pdf']["button"][1]) . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
+	echo "<input type='submit' value='" . (!$export?$LANG['plugin_pdf']["button"][2]:$LANG['plugin_pdf']["button"][1]) . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
 	echo "</table></form>";
 }
 
@@ -782,7 +782,7 @@ function plugin_pdf_software($tab,$width,$ID,$type){
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 		$pdf->restoreState();
-		$pdf->addText(250,$start_tab,9,'<b>'.utf8_decode($LANG['pdf']["software"][1]).'</b>');
+		$pdf->addText(250,$start_tab,9,'<b>'.utf8_decode($LANG['plugin_pdf']["software"][1]).'</b>');
 		}
 	$start_tab = ($start_tab-20)-(20*$i) - 20;
 		
@@ -1105,7 +1105,7 @@ function plugin_pdf_financial($tab,$width,$ID,$type){
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 		$pdf->restoreState();
-		$pdf->addText(245,$start_tab,9,utf8_decode("<b>".$LANG['pdf']["financial"][1]."</b>"));
+		$pdf->addText(245,$start_tab,9,utf8_decode("<b>".$LANG['plugin_pdf']["financial"][1]."</b>"));
 		}
 	
 
@@ -1221,7 +1221,7 @@ function plugin_pdf_contract($tab,$width,$ID,$type){
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 		$pdf->restoreState();
-		$pdf->addText(260,$start_tab,9,utf8_decode('<b>'.$LANG['pdf']["financial"][2].'</b>'));
+		$pdf->addText(260,$start_tab,9,utf8_decode('<b>'.$LANG['plugin_pdf']["financial"][2].'</b>'));
 		}
 	
 	$start_tab = ($start_tab-20)-(20*$i) - 20;
@@ -1305,7 +1305,7 @@ function plugin_pdf_document($tab,$width,$ID,$type){
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 		$pdf->restoreState();
-		$pdf->addText(250,$start_tab,9,'<b>'.utf8_decode($LANG['pdf']["document"][1]).'</b>');
+		$pdf->addText(250,$start_tab,9,'<b>'.utf8_decode($LANG['plugin_pdf']["document"][1]).'</b>');
 		}
 	$start_tab = ($start_tab-20)-(20*$i) - 20;
 	
@@ -1820,7 +1820,7 @@ function plugin_pdf_note($tab,$width,$ID,$type){
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 		$pdf->restoreState();
-		$pdf->addText(260,$start_tab,9,'<b>'.utf8_decode($LANG['pdf']["note"][1]).'</b>');
+		$pdf->addText(260,$start_tab,9,'<b>'.utf8_decode($LANG['plugin_pdf']["note"][1]).'</b>');
 		}
 	
 	$start_tab = ($start_tab-20)-(20*$i) - 20;
