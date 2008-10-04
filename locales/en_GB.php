@@ -31,24 +31,24 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-$LANGPDF["title"][1]="Print to pdf";
-$LANGPDF["title"][2]="Choose the tables to print in pdf";
+$LANG['pdf']["title"][1]="Print to pdf";
+$LANG['pdf']["title"][2]="Choose the tables to print in pdf";
 
-$LANGPDF["button"][1]="Print";
-$LANGPDF["button"][2]="Save";
+$LANG['pdf']["button"][1]="Print";
+$LANG['pdf']["button"][2]="Save";
 
-$LANGPDF["config"][1]="Configuration of pdf plugin";
-$LANGPDF["config"][2]="Install pdf plugin";
-$LANGPDF["config"][3]="Uninstall pdf plugin";
-$LANGPDF["config"][6]="Profiles right management";
-$LANGPDF["config"][7]="Right for this profile";
+$LANG['pdf']["config"][1]="Configuration of pdf plugin";
+$LANG['pdf']["config"][2]="Install pdf plugin";
+$LANG['pdf']["config"][3]="Uninstall pdf plugin";
+$LANG['pdf']["config"][6]="Profiles right management";
+$LANG['pdf']["config"][7]="Right for this profile";
 
-$LANGPDF["note"][1]="No note found";
+$LANG['pdf']["note"][1]="No note found";
 
-$LANGPDF["document"][1]="No associated documents";
+$LANG['pdf']["document"][1]="No associated documents";
 
-$LANGPDF["financial"][1]="No financial information";
-$LANGPDF["financial"][2]="No associated contract";
+$LANG['pdf']["financial"][1]="No financial information";
+$LANG['pdf']["financial"][2]="No associated contract";
 
-$LANGPDF["software"][1]="No installed software";
+$LANG['pdf']["software"][1]="No installed software";
 ?>

@@ -31,24 +31,24 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-$LANGPDF["title"][1]="Imprimir em PDF";
-$LANGPDF["title"][2]="Escolha os campos para imprimir";
+$LANG['pdf']["title"][1]="Imprimir em PDF";
+$LANG['pdf']["title"][2]="Escolha os campos para imprimir";
 
-$LANGPDF["button"][1]="Imprimir";
-$LANGPDF["button"][2]="Salvar";
+$LANG['pdf']["button"][1]="Imprimir";
+$LANG['pdf']["button"][2]="Salvar";
 
-$LANGPDF["config"][1]="Configuração do Plugin";
-$LANGPDF["config"][2]="Instalar o PDF Plugin";
-$LANGPDF["config"][3]="Remover o PDF Plugin";
-$LANGPDF["config"][6]="Gerenciar direitos de Perfis";
-$LANGPDF["config"][7]="Direitos para este perfil";
+$LANG['pdf']["config"][1]="Configuraï¿½ï¿½o do Plugin";
+$LANG['pdf']["config"][2]="Instalar o PDF Plugin";
+$LANG['pdf']["config"][3]="Remover o PDF Plugin";
+$LANG['pdf']["config"][6]="Gerenciar direitos de Perfis";
+$LANG['pdf']["config"][7]="Direitos para este perfil";
 
-$LANGPDF["note"][1]="Nenhuma Nota Encontrada";
+$LANG['pdf']["note"][1]="Nenhuma Nota Encontrada";
 
-$LANGPDF["document"][1]="Nenhum Documento Associado";
+$LANG['pdf']["document"][1]="Nenhum Documento Associado";
 
-$LANGPDF["financial"][1]="Nenhum informação Financeira";
-$LANGPDF["financial"][2]="Nenhum contrato associado";
+$LANG['pdf']["financial"][1]="Nenhum informaï¿½ï¿½o Financeira";
+$LANG['pdf']["financial"][2]="Nenhum contrato associado";
 
-$LANGPDF["software"][1]="Nenhum software instalado";
+$LANG['pdf']["software"][1]="Nenhum software instalado";
 ?>

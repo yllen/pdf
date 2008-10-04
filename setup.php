@@ -39,148 +39,44 @@ function plugin_init_pdf() {
 	$PLUGIN_HOOKS['init_session']['pdf'] = 'plugin_pdf_initSession';
 	$PLUGIN_HOOKS['change_profile']['pdf'] = 'plugin_pdf_changeprofile';
 	
-	if (isset($_SESSION["glpi_plugin_pdf_installed"]) && $_SESSION["glpi_plugin_pdf_installed"]==1)
+	if (isset($_SESSION["glpi_plugin_pdf_profile"]) && $_SESSION["glpi_plugin_pdf_profile"]["use"])
 	{
-		if (isset($_SESSION["glpi_plugin_pdf_profile"]) && $_SESSION["glpi_plugin_pdf_profile"]["use"])
-		{
-			$PLUGIN_HOOKS['use_massive_action']['pdf']=1;
-			$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
-			$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
-			$PLUGIN_HOOKS['pre_item_delete']['pdf'] = 'plugin_pre_item_delete_pdf';
-		}
-		if (haveRight("config","w") || haveRight("profile","r"))
-			$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
+		$PLUGIN_HOOKS['use_massive_action']['pdf']=1;
+		$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
+		$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
+		$PLUGIN_HOOKS['pre_item_delete']['pdf'] = 'plugin_pre_item_delete_pdf';
 	}
-	else if (haveRight("config","w")) {
-		$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.config.form.php';
+	if (haveRight("config","w") || haveRight("profile","r")) {
+		$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.profiles.php';
 	}
 	
 }
 
 	
 function plugin_version_pdf() {
-	global $LANGPDF;
+	global $LANG;
 
-		return array ('name' => $LANGPDF["title"][1],'minGlpiVersion' => '0.71', 'version' => '0.5');
+	return array( 
+		'name'    => $LANG['pdf']["title"][1],
+		'version' => '0.6',
+		'author' => 'Dévi Balpe',
+		'homepage'=> 'http://www.glpi-project.org/spip.php?article229');
 }
 
+// Optional : check prerequisites before install : may print errors or add to message after redirect
+function plugin_pdf_check_prerequisites(){
+	if (GLPI_VERSION >= 0.72){
+		return true;
+	} else {
+		echo "GLPI version not compatible need 0.72";
+	}
+}
+
+// Config process for plugin : need to return true if succeeded : may display messages or add to message after redirect
+function plugin_pdf_check_config(){
+	return TableExists("glpi_plugin_pdf_profiles");
+}
 // Hook done on delete item case
 
-function plugin_pre_item_delete_pdf($input){
-	if (isset($input["_item_type_"]))
-		switch ($input["_item_type_"]){
-			case PROFILE_TYPE :
-				// Manipulate data if needed 
-				$PluginPdfProfile=new PluginPdfProfile;
-				$PluginPdfProfile->cleanProfiles($input["ID"]);
-				break;
-		}
-	return $input;
-}
-
-function plugin_get_headings_pdf($type,$withtemplate){	
-
-	global $LANGPDF;
-
-	switch ($type){
-		case COMPUTER_TYPE :
-		case SOFTWARE_TYPE :
-		case "prefs" :
-			if ($withtemplate)
-				return array();
-			else 
-				return array(1 => $LANGPDF["title"][1]);
-		break;
-
-	}
-	return false;	
-}
-	 
-function plugin_headings_actions_pdf($type){
-
-	switch ($type){
-		case COMPUTER_TYPE :
-		case SOFTWARE_TYPE :
-		case "prefs" :
-			return array(
-					1 => "plugin_headings_pdf",
-				    );
-			break;
-	}
-	return false;
-}
-
-// action heading
-function plugin_headings_pdf($type,$ID,$withtemplate=0){
-	global $CFG_GLPI;
-
-		switch ($type){
-			case COMPUTER_TYPE :
-				plugin_pdf_menu_computer("../plugins/pdf/front/plugin_pdf.export.php",$ID);
-			break;
-			case SOFTWARE_TYPE :
-				plugin_pdf_menu_software("../plugins/pdf/front/plugin_pdf.export.php",$ID);
-			break;
-			case "prefs":
-				$pref = new PluginPdfPreferences;
-				$pref->showForm($CFG_GLPI['root_doc']."/plugins/pdf/front/plugin_pdf.preferences.form.php");
-			break;
-			default :
-			break;
-		}
-}
-
-function plugin_pdf_MassiveActions($type){
-	global $LANGPDF;
-	switch ($type){
-		case COMPUTER_TYPE :
-			return array(
-				"plugin_pdf_DoIt"=>$LANGPDF["title"][1],
-			);
-			break;
-		case SOFTWARE_TYPE:
-			return array(
-				"plugin_pdf_DoIt"=>$LANGPDF["title"][1],
-				);
-		break;
-	}
-	return array();
-}
-
-function plugin_pdf_MassiveActionsDisplay($type,$action){
-	global $LANG;
-	switch ($type){
-		case COMPUTER_TYPE:
-			switch ($action){
-				case "plugin_pdf_DoIt":
-					echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
-				break;
-			}
-			break;
-		case SOFTWARE_TYPE:
-			switch ($action){
-				case "plugin_pdf_DoIt":
-					echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
-				break;
-			}
-		break;
-	}
-	return "";
-}
-
-function plugin_pdf_MassiveActionsProcess($data){
-
-	switch ($data["action"]){
-		case "plugin_pdf_DoIt":
-			foreach ($data['item'] as $key => $val)
-				$tab_id[]=$key;
-					
-			$_SESSION["plugin_pdf"]["type"] = $data["device_type"];
-			$_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
-			
-			echo "<script type='text/javascript'>location.href='../plugins/pdf/front/plugin_pdf.export.massive.php'</script>)";
-		break;
-		}
-}
 
 ?>

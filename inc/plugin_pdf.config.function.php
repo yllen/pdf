@@ -38,7 +38,7 @@ if (!defined('GLPI_ROOT')){
 
 include_once (GLPI_ROOT . "/inc/includes.php");
 	
-function plugin_pdf_Install() {
+function plugin_pdf_install() {
 	$DB = new DB;
 			
 	$query= "CREATE TABLE IF NOT EXISTS `glpi_plugin_pdf_profiles` (
@@ -59,6 +59,8 @@ function plugin_pdf_Install() {
 	) ENGINE=MyISAM;";
 			
 	$DB->query($query) or die($DB->error());
+	
+	return true;
 }
 
 function plugin_pdf_uninstall() {
@@ -69,21 +71,8 @@ function plugin_pdf_uninstall() {
 
 	$query = "DROP TABLE `glpi_plugin_pdf_profiles`;";
 	$DB->query($query) or die($DB->error());
+
+	return true;
 }
 
-function plugin_pdf_initSession()
-{
-	if (TableExists("glpi_plugin_pdf_profiles"))
-		$_SESSION["glpi_plugin_pdf_installed"]=1;	
-}
-function plugin_pdf_changeprofile()
-{
-	if(isset($_SESSION["glpi_plugin_pdf_installed"]) && $_SESSION["glpi_plugin_pdf_installed"]==1){
-		$prof=new PluginPdfProfile();
-		if($prof->getFromDB($_SESSION['glpiactiveprofile']['ID']))
-			$_SESSION["glpi_plugin_pdf_profile"]=$prof->fields;
-		else
-			unset($_SESSION["glpi_plugin_pdf_profile"]);
-	}
-}
 ?>

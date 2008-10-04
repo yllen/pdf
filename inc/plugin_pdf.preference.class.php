@@ -39,11 +39,11 @@ class PluginPdfPreferences extends CommonDBTM {
 	}
 
 	function showForm($target) {
-		global $LANGPDF, $LANG, $DB, $CFG_GLPI;
+		global  $LANG, $DB, $CFG_GLPI;
 
 		echo "<div align='center' id='pdf_type'>";
 		//echo "<table class='tab_cadre_fixe'>";
-		//echo "<tr class='tab_bg_1' align='center'><th colspan='6'>".$LANGPDF["title"][1]."</th></tr>";		
+		//echo "<tr class='tab_bg_1' align='center'><th colspan='6'>".$LANG['pdf']["title"][1]."</th></tr>";		
 		//echo "</td></tr>";
 		//echo "<tr class='tab_bg_1' align='center'><td>"; 
 		plugin_pdf_menu_computer($target,-1,false);

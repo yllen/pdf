@@ -31,26 +31,26 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-$LANGPDF["title"][1]="Drukuj do PDF";
-$LANGPDF["title"][2]="Wybierz tabele do wydruku PDF";
+$LANG['pdf']["title"][1]="Drukuj do PDF";
+$LANG['pdf']["title"][2]="Wybierz tabele do wydruku PDF";
 
-$LANGPDF["button"][1]="Drukuj";
-$LANGPDF["button"][2]="Zapisz";
+$LANG['pdf']["button"][1]="Drukuj";
+$LANG['pdf']["button"][2]="Zapisz";
 
-$LANGPDF["config"][1]="Konfiguracja drukowania PDF";
-$LANGPDF["config"][2]="Instaluj wtyczke Drukuj do PDF";
-$LANGPDF["config"][3]="Odinstaluj wtyczke Drukuj do PDF";
-$LANGPDF["config"][4]="Konfiguracja";
-$LANGPDF["config"][5]="Typy w spisie:";
-$LANGPDF["config"][6]="Zarzadzanie prawami dostepu";
-$LANGPDF["config"][7]="Prawa do tego profilu";
+$LANG['pdf']["config"][1]="Konfiguracja drukowania PDF";
+$LANG['pdf']["config"][2]="Instaluj wtyczke Drukuj do PDF";
+$LANG['pdf']["config"][3]="Odinstaluj wtyczke Drukuj do PDF";
+$LANG['pdf']["config"][4]="Konfiguracja";
+$LANG['pdf']["config"][5]="Typy w spisie:";
+$LANG['pdf']["config"][6]="Zarzadzanie prawami dostepu";
+$LANG['pdf']["config"][7]="Prawa do tego profilu";
 
-$LANGPDF["note"][1]="Nic nie znaleziono";
+$LANG['pdf']["note"][1]="Nic nie znaleziono";
 
-$LANGPDF["document"][1]="Brak powiazanych dokumentow";
+$LANG['pdf']["document"][1]="Brak powiazanych dokumentow";
 
-$LANGPDF["financial"][1]="Brak informacji finansowych";
-$LANGPDF["financial"][2]="Brak powiazanych kontraktow";
+$LANG['pdf']["financial"][1]="Brak informacji finansowych";
+$LANG['pdf']["financial"][2]="Brak powiazanych kontraktow";
 
-$LANGPDF["software"][1]="Brak zainstalowanego oprogramowania";
+$LANG['pdf']["software"][1]="Brak zainstalowanego oprogramowania";
 ?>
