@@ -38,16 +38,18 @@ function plugin_init_pdf() {
 	
 	$PLUGIN_HOOKS['init_session']['pdf'] = 'plugin_pdf_initSession';
 	$PLUGIN_HOOKS['change_profile']['pdf'] = 'plugin_pdf_changeprofile';
-	
-	if (isset($_SESSION["glpi_plugin_pdf_profile"]) && $_SESSION["glpi_plugin_pdf_profile"]["use"])
-	{
-		$PLUGIN_HOOKS['use_massive_action']['pdf']=1;
-		$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
-		$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
-		$PLUGIN_HOOKS['pre_item_delete']['pdf'] = 'plugin_pre_item_delete_pdf';
-	}
-	if (haveRight("config","w") || haveRight("profile","r")) {
-		$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.profiles.php';
+
+	if (isset($_SESSION["glpi_plugin_pdf_installed"])) {
+		if (isset($_SESSION["glpi_plugin_pdf_profile"]) && $_SESSION["glpi_plugin_pdf_profile"]["use"])
+		{
+			$PLUGIN_HOOKS['use_massive_action']['pdf']=1;
+			$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
+			$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
+			$PLUGIN_HOOKS['pre_item_delete']['pdf'] = 'plugin_pre_item_delete_pdf';
+		}
+		if (haveRight("config","w") || haveRight("profile","r")) {
+			$PLUGIN_HOOKS['config_page']['pdf'] = 'front/plugin_pdf.profiles.php';
+		}
 	}
 	
 }
