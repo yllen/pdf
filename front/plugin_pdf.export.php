@@ -35,6 +35,7 @@
 $NEEDED_ITEMS=array("computer","device","networking","monitor","printer","tracking","software","peripheral","reservation","infocom","contract","document","user","link","phone","registry");
 define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT."/inc/includes.php");
+include_once ("../plugin_pdf.includes.php");
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
 if($_POST["plugin_pdf_inventory_type"]==COMPUTER_TYPE && isset($_SESSION["plugin_pdf"][COMPUTER_TYPE]))

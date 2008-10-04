@@ -58,8 +58,10 @@ function plugin_version_pdf() {
 	return array( 
 		'name'    => $LANG['plugin_pdf']["title"][1],
 		'version' => '0.6',
-		'author' => 'Dévi Balpe',
-		'homepage'=> 'http://www.glpi-project.org/spip.php?article229');
+		'author' => 'Dévi Balpe, Remi Collet, Walid Nouh',
+		'homepage'=> $LANG['plugin_pdf']["config"][8],
+		'minGlpiVersion' => '0.72', // Not needed in 0.72, only to avoid installation on 0.71 
+		);
 }
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect

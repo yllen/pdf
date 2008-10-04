@@ -40,6 +40,7 @@ $LANG['plugin_pdf']["button"][2]="Mentés";
 $LANG['plugin_pdf']["config"][1]="PDF modul beállítása";
 $LANG['plugin_pdf']["config"][6]="Profiles right management";
 $LANG['plugin_pdf']["config"][7]="Jogok a következő profilhoz";
+$LANG['plugin_pdf']["config"][8]="http://www.glpi-project.org/spip.php?article248";
 
 $LANG['plugin_pdf']["note"][1]="Nincs megjegyzés";
 

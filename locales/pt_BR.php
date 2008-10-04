@@ -40,6 +40,7 @@ $LANG['plugin_pdf']["button"][2]="Salvar";
 $LANG['plugin_pdf']["config"][1]="Configuração do Plugin";
 $LANG['plugin_pdf']["config"][6]="Gerenciar direitos de Perfis";
 $LANG['plugin_pdf']["config"][7]="Direitos para este perfil";
+$LANG['plugin_pdf']["config"][8]="http://www.glpi-project.org/spip.php?article248";
 
 $LANG['plugin_pdf']["note"][1]="Nenhuma Nota Encontrada";
 

@@ -40,6 +40,7 @@ $LANG['plugin_pdf']["button"][2]="Zapisz";
 $LANG['plugin_pdf']["config"][1]="Konfiguracja drukowania PDF";
 $LANG['plugin_pdf']["config"][6]="Zarzadzanie prawami dostepu";
 $LANG['plugin_pdf']["config"][7]="Prawa do tego profilu";
+$LANG['plugin_pdf']["config"][8]="http://www.glpi-project.org/spip.php?article248";
 
 $LANG['plugin_pdf']["note"][1]="Nic nie znaleziono";
 
