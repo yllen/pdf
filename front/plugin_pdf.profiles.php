@@ -46,7 +46,7 @@ include_once ("../plugin_pdf.includes.php");
 // Mainly usefull if not actived
 usePLugin('pdf');
 
-commonHeader($LANG['plugin_pdf']["config"][1], $_SERVER["PHP_SELF"],"plugins","reports");
+commonHeader($LANG['plugin_pdf']["config"][1], $_SERVER["PHP_SELF"],"config","plugins");
 
 $prof = new PluginPdfProfile();
 
