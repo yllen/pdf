@@ -48,22 +48,30 @@ function plugin_pdf_changeprofile()
 	}
 }
 
-function plugin_get_headings_pdf($type,$withtemplate){	
+function plugin_get_headings_pdf($type,$ID,$withtemplate){	
 
 	global $LANG;
 
-	switch ($type){
-		case COMPUTER_TYPE :
-		case SOFTWARE_TYPE :
-		case "prefs" :
-			if ($withtemplate)
-				return array();
-			else 
-				return array(1 => $LANG['plugin_pdf']["title"][1]);
-		break;
-
+	if ($type=="prefs") {
+		return array(
+			1 => $LANG['plugin_pdf']["title"][1],
+			);
 	}
-	return false;	
+	
+	elseif ($type==COMPUTER_TYPE || $type==SOFTWARE_TYPE) {
+		// template case
+		if ($withtemplate) {
+			return array();
+
+		// Non template case
+		} else  {
+			return array(
+				1 => $LANG['plugin_pdf']["title"][1],
+				);
+		}
+	}
+	return false;
+	
 }
 	 
 function plugin_headings_actions_pdf($type){
