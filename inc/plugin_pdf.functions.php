@@ -232,9 +232,15 @@ function plugin_pdf_config_computer($tab,$width,$ID){
 	$pdf->addText(30,$start_tab-260,9,utf8_decode('<b><i>'.$LANG["common"][25].' :</i></b> '));
 			
 	$y=$start_tab-260;
-	$temp=utf8_decode($computer->fields['comments']);
-	while($temp = $pdf->addTextWrap(105,$y,2*$length_tab-80,9,$temp))
+	$temp=str_replace("\r\n","\n",$computer->fields['comments']);
+	$lines=explode("\n", $temp);
+	foreach ($lines as $line) {
+		$line=utf8_decode($line);
+		while($line = $pdf->addTextWrap(105,$y,2*$length_tab-80,9,$line)) {
+			$y-=9;
+		}
 		$y-=9;
+	}
 			
 	if(!empty($computer->fields['tplname']))
 		$pdf->addText($length_tab+35,$start_tab,9,utf8_decode('<b>'.$LANG["common"][26].' : '.convDateTime($computer->fields["date_mod"]).' ('.$LANG["common"][13].' : '.$computer->fields['tplname'].')</b>'));
@@ -673,17 +679,31 @@ function plugin_pdf_software($tab,$width,$ID,$type){
 	$comp->getFromDB($ID);
 	$FK_entities=$comp->fields["FK_entities"];
 
-	$query_cat = "SELECT 1 as TYPE, glpi_dropdown_software_category.name as category, glpi_software.category as category_id, glpi_software.name as softname, glpi_inst_software.license as license, glpi_inst_software.ID as ID,glpi_licenses.expire,glpi_software.deleted, glpi_licenses.sID, glpi_licenses.version, glpi_licenses.oem, glpi_licenses.oem_computer, glpi_licenses.serial, glpi_licenses.buy	FROM glpi_inst_software LEFT JOIN glpi_licenses ON ( glpi_inst_software.license = glpi_licenses.ID )
-	LEFT JOIN glpi_software ON (glpi_licenses.sID = glpi_software.ID) 
-	LEFT JOIN glpi_dropdown_software_category ON (glpi_dropdown_software_category.ID = glpi_software.category)";
+	$query_cat = "SELECT 1 as TYPE, glpi_dropdown_software_category.name as category, glpi_software.category as category_id, 
+		glpi_software.name as softname, glpi_inst_software.ID as ID, glpi_software.deleted, glpi_dropdown_state.name AS state,
+		glpi_softwareversions.sID, glpi_softwareversions.name AS version,glpi_softwarelicenses.FK_computers AS FK_computers,glpi_softwarelicenses.type AS lictype
+		FROM glpi_inst_software 
+		LEFT JOIN glpi_softwareversions ON ( glpi_inst_software.vID = glpi_softwareversions.ID )
+		LEFT JOIN glpi_dropdown_state ON ( glpi_dropdown_state.ID = glpi_softwareversions.state )
+		LEFT JOIN glpi_softwarelicenses ON ( glpi_softwareversions.sID = glpi_softwarelicenses.sID AND glpi_softwarelicenses.FK_computers = '$ID')
+		LEFT JOIN glpi_software ON (glpi_softwareversions.sID = glpi_software.ID) 
+		LEFT JOIN glpi_dropdown_software_category ON (glpi_dropdown_software_category.ID = glpi_software.category)";
+	$query_cat .= " WHERE glpi_inst_software.cID = '$ID' AND glpi_software.category > 0";
 
-	$query_cat.=" WHERE glpi_inst_software.cID = '$ID' AND glpi_software.category > 0 "; 
-    $query_nocat = "SELECT 2 as TYPE, glpi_dropdown_software_category.name as category, glpi_software.category as category_id, glpi_software.name as softname, glpi_inst_software.license as license, glpi_inst_software.ID as ID,glpi_licenses.expire,glpi_software.deleted, glpi_licenses.sID, glpi_licenses.version, glpi_licenses.oem, glpi_licenses.oem_computer, glpi_licenses.serial, glpi_licenses.buy  
-        FROM glpi_inst_software LEFT JOIN glpi_licenses ON ( glpi_inst_software.license = glpi_licenses.ID ) 
-        LEFT JOIN glpi_software ON (glpi_licenses.sID = glpi_software.ID)  
-        LEFT JOIN glpi_dropdown_software_category ON (glpi_dropdown_software_category.ID = glpi_software.category)"; 
-    $query_nocat.= " WHERE glpi_inst_software.cID = '$ID' AND (glpi_software.category <= 0 OR glpi_software.category IS NULL ) "; 
-    $query="( $query_cat ) UNION ($query_nocat) ORDER BY TYPE, category, softname, version";
+	$query_nocat = "SELECT 2 as TYPE, glpi_dropdown_software_category.name as category, glpi_software.category as category_id,
+		glpi_software.name as softname, glpi_inst_software.ID as ID, glpi_software.deleted, glpi_dropdown_state.name AS state,
+		glpi_softwareversions.sID, glpi_softwareversions.name AS version,glpi_softwarelicenses.FK_computers AS FK_computers,glpi_softwarelicenses.type AS lictype
+	    FROM glpi_inst_software 
+		LEFT JOIN glpi_softwareversions ON ( glpi_inst_software.vID = glpi_softwareversions.ID ) 
+		LEFT JOIN glpi_dropdown_state ON ( glpi_dropdown_state.ID = glpi_softwareversions.state )
+		LEFT JOIN glpi_softwarelicenses ON ( glpi_softwareversions.sID = glpi_softwarelicenses.sID AND glpi_softwarelicenses.FK_computers = '$ID')
+	    LEFT JOIN glpi_software ON (glpi_softwareversions.sID = glpi_software.ID)  
+	    LEFT JOIN glpi_dropdown_software_category ON (glpi_dropdown_software_category.ID = glpi_software.category)";
+	$query_nocat .= " WHERE glpi_inst_software.cID = '$ID' AND (glpi_software.category <= 0 OR glpi_software.category IS NULL )";
+
+	$query = "( $query_cat ) UNION ($query_nocat) ORDER BY TYPE, category, softname, version";
+
+	$DB->query("SET SESSION group_concat_max_len = 9999999;");
 
 	$result = $DB->query($query);
 	$i = 0;
@@ -717,15 +737,15 @@ function plugin_pdf_software($tab,$width,$ID,$type){
 				
 				$pdf->saveState();
 				$pdf->setColor(0.8,0.8,0.8);
-				$pdf->filledRectangle(25,($start_tab-25)-(20*$i),385,15);
-				$pdf->filledRectangle(415,($start_tab-25)-(20*$i),65,15);
-				$pdf->filledRectangle(485,($start_tab-25)-(20*$i),40,15);
-				$pdf->filledRectangle(530,($start_tab-25)-(20*$i),40,15);
+				$pdf->filledRectangle(25,($start_tab-25)-(20*$i),310,15);
+				$pdf->filledRectangle(340,($start_tab-25)-(20*$i),70,15);
+				$pdf->filledRectangle(415,($start_tab-25)-(20*$i),70,15);
+				$pdf->filledRectangle(490,($start_tab-25)-(20*$i),80,15);
 				$pdf->restoreState();
-				$pdf->addText(180,($start_tab-20)-(20*$i),9,utf8_decode('<b>'.$LANG["common"][16].'</b>'));
-				$pdf->addText(425,($start_tab-20)-(20*$i),9,utf8_decode('<b>'.$LANG["financial"][98].'</b>'));
-				$pdf->addText(493,($start_tab-20)-(20*$i),9,utf8_decode('<b>'.$LANG["software"][28].'</b>'));
-				$pdf->addText(536,($start_tab-20)-(20*$i),9,utf8_decode('<b>'.$LANG["software"][35].'</b>'));
+				$pdf->addTextWrap(30,($start_tab-20)-(20*$i),310,9,utf8_decode('<b>'.$LANG["common"][16].'</b>'));
+				$pdf->addTextWrap(345,($start_tab-20)-(20*$i),70,9,utf8_decode('<b>'.$LANG['state'][0].'</b>'));
+				$pdf->addTextWrap(420,($start_tab-20)-(20*$i),70,9,utf8_decode('<b>'.$LANG['software'][5].'</b>'));
+				$pdf->addTextWrap(495,($start_tab-20)-(20*$i),80,9,utf8_decode('<b>'.$LANG['software'][30].'</b>'));
 				
 				$i++;
 				}
@@ -735,35 +755,18 @@ function plugin_pdf_software($tab,$width,$ID,$type){
 			
 			$pdf->saveState();
 			$pdf->setColor(0.95,0.95,0.95);
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),385,15);
-			$pdf->filledRectangle(415,($start_tab-25)-(20*$i),65,15);
-			$pdf->filledRectangle(485,($start_tab-25)-(20*$i),40,15);
-			$pdf->filledRectangle(530,($start_tab-25)-(20*$i),40,15);
+			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),310,15);
+			$pdf->filledRectangle(340,($start_tab-25)-(20*$i),70,15);
+			$pdf->filledRectangle(415,($start_tab-25)-(20*$i),70,15);
+			$pdf->filledRectangle(490,($start_tab-25)-(20*$i),80,15);
 			$pdf->restoreState();
 			
-			$pdf->addText(27,($start_tab-20)-(20*$i),8,utf8_decode($sw->fields["name"].' ( '.$data["version"].' ) - '.$data['serial']));
-			
-			if($data['expire']==null)
-				$pdf->addText(420,($start_tab-20)-(20*$i),9,utf8_decode($LANG["software"][26]));
-			else{
-				if($data['deleted'])
-					$pdf->addText(420,($start_tab-20)-(20*$i),9,utf8_decode($LANG["software"][27]));
-				else
-					$pdf->addText(420,($start_tab-20)-(20*$i),9,utf8_decode($data["expire"]));
+			$pdf->addTextWrap(30,($start_tab-20)-(20*$i),310,8,utf8_decode($data['softname']));
+			$pdf->addTextWrap(345,($start_tab-20)-(20*$i),70,8,utf8_decode($data['state']));
+			$pdf->addTextWrap(420,($start_tab-20)-(20*$i),70,8,utf8_decode($data['version']));
+			if ($data["FK_computers"]==$ID) {
+				$pdf->addTextWrap(495,($start_tab-20)-(20*$i),80,8,utf8_decode(plugin_pdf_getDropdownName("glpi_dropdown_licensetypes",$data["lictype"])));
 			}
-			
-			if($data['serial']!="free" && $data['serial']!="global")
-				{
-				if($data["oem"])
-					$pdf->addText(495,($start_tab-20)-(20*$i),9,utf8_decode($LANG["choice"][1]));
-				else
-					$pdf->addText(495,($start_tab-20)-(20*$i),9,utf8_decode($LANG["choice"][0]));
-				
-				if($data["buy"])
-					$pdf->addText(543,($start_tab-20)-(20*$i),9,utf8_decode($LANG["choice"][1]));
-				else
-					$pdf->addText(543,($start_tab-20)-(20*$i),9,utf8_decode($LANG["choice"][0]));
-				}
 			$i++;
 	
 			if(($start_tab-20)-(20*$i)<50){
@@ -1080,9 +1083,15 @@ function plugin_pdf_financial($tab,$width,$ID,$type){
 	$pdf->addText(30,$start_tab-220,9,utf8_decode("<b><i>".$LANG["common"][25]." :</i></b> "));
 			
 	$y=$start_tab-220;
-	$mytext=$ic->fields["comments"];
-	while($mytext = $pdf->addTextWrap(105,$y,2*$length_tab-80,10,utf8_decode($mytext)))
-		$y-=10;
+	$mytext=str_replace("\r\n","\n",$ic->fields["comments"]);
+	$lines = explode("\n", $mytext);
+	foreach ($lines as $line) {
+		$line = utf8_decode($line);
+		while($line = $pdf->addTextWrap(105,$y,2*$length_tab-80,10,$line)) {
+			$y-=9;
+		}
+		$y-=9;
+	}
 	
 	$pdf->addText($length_tab+35,$start_tab-20,9,utf8_decode("<b><i>".$LANG["financial"][82]." :</i></b> ".$ic->fields["facture"]));
 	$pdf->addText($length_tab+35,$start_tab-40,9,utf8_decode("<b><i>".$LANG["financial"][19]." :</i></b> ".$ic->fields["bon_livraison"]));
