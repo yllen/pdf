@@ -151,14 +151,14 @@ function plugin_pdf_add_header($pdf,$ID,$type){
 	global $LANG;
 	
 	$height = $pdf->ez['pageHeight'];
+
+	$entity = '';
 	
-	if (isMultiEntitiesMode()) {
-		$entity = ' ('.plugin_pdf_getDropdownName('glpi_entities',$computer->fields['FK_entities']).')'; 
-	} else {
-		$entity = '';
-	}
 	$ci = new CommonItem();
 	if ($ci->getFromDB($type, $ID) && $ci->obj->fields['name']) {
+		if (isMultiEntitiesMode() && isset($ci->obj->fields['FK_entities'])) {
+			$entity = ' ('.plugin_pdf_getDropdownName('glpi_entities',$ci->obj->fields['FK_entities']).')'; 
+		}
 		$name = $ci->obj->fields['name'];
 	} else {
 		$name = $LANG["common"][2].' '.$ID;
@@ -1763,6 +1763,87 @@ function plugin_pdf_link($tab,$width,$ID,$type){
 	return $tab;
 }
 
+function plugin_pdf_volume($tab,$width,$ID,$type){
+	
+	global $DB, $LANG;
+	
+	$start_tab = $tab["start_tab"];
+	$pdf = $tab["pdf"];
+	
+	$query = "SELECT glpi_dropdown_filesystems.name as fsname, glpi_computerdisks.* 
+		FROM glpi_computerdisks
+		LEFT JOIN glpi_dropdown_filesystems ON (glpi_computerdisks.FK_filesystems = glpi_dropdown_filesystems.ID)
+		WHERE (FK_computers = '$ID')";
+
+	$result=$DB->query($query);
+	
+	if ($start_tab<50) {
+		$pdf = plugin_pdf_newPage($pdf,$ID,$type);
+		$start_tab = 750;
+	}
+
+	$pdf->saveState();
+	$pdf->setColor(0.8,0.8,0.8);
+	$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
+	$pdf->restoreState();
+
+	if ($DB->numrows($result)>0){
+		
+		$pdf->addTextWrap(25,$start_tab,$width-50,9,'<b>'.utf8_decode($LANG['computers'][8]).'</b>','center');	
+		$start_tab -= 20;	
+
+		$pdf->saveState();
+		$pdf->setColor(0.8,0.8,0.8);
+		$pdf->filledRectangle (25,$start_tab-5,115,15);
+		$pdf->filledRectangle(145,$start_tab-5,115,15);
+		$pdf->filledRectangle(265,$start_tab-5,115,15);
+		$pdf->filledRectangle(385,$start_tab-5, 55,15);
+		$pdf->filledRectangle(445,$start_tab-5, 60,15);
+		$pdf->filledRectangle(510,$start_tab-5, 60,15);
+		$pdf->restoreState();
+		$pdf->addTextWrap (25,$start_tab,115,9,'<b>'.utf8_decode($LANG['common'][16]).'</b>','center');
+		$pdf->addTextWrap(145,$start_tab,115,9,'<b>'.utf8_decode($LANG['computers'][6]).'</b>','center');
+		$pdf->addTextWrap(265,$start_tab,115,9,'<b>'.utf8_decode($LANG['computers'][5]).'</b>','center');
+		$pdf->addTextWrap(385,$start_tab, 55,9,'<b>'.utf8_decode($LANG['common'][17]).'</b>','center');
+		$pdf->addTextWrap(445,$start_tab, 55,9,'<b>'.utf8_decode($LANG['computers'][3]).'</b>','center');
+		$pdf->addTextWrap(510,$start_tab, 55,9,'<b>'.utf8_decode($LANG['computers'][2]).'</b>','center');
+		$start_tab -= 20;	
+		
+		while ($data=$DB->fetch_assoc($result)){
+
+			if ($start_tab < 30) {
+				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
+				$start_tab = 750;
+				}
+			$pdf->saveState();
+			$pdf->setColor(0.95,0.95,0.95);
+			$pdf->filledRectangle (25,$start_tab-5,115,15);
+			$pdf->filledRectangle(145,$start_tab-5,115,15);
+			$pdf->filledRectangle(265,$start_tab-5,115,15);
+			$pdf->filledRectangle(385,$start_tab-5, 55,15);
+			$pdf->filledRectangle(445,$start_tab-5, 60,15);
+			$pdf->filledRectangle(510,$start_tab-5, 60,15);
+			$pdf->restoreState();
+			
+			$pdf->addTextWrap (27,$start_tab,110,9,'<b>'.utf8_decode(empty($data['name'])?$data['ID']:$data['name']).'</b>');
+			$pdf->addTextWrap(147,$start_tab,110,9,utf8_decode($data['device']));
+			$pdf->addTextWrap(267,$start_tab,110,9,utf8_decode($data['mountpoint']));
+			$pdf->addTextWrap(387,$start_tab, 50,9,utf8_decode($data['fsname']));
+			$pdf->addTextWrap(447,$start_tab, 55,9,utf8_decode(formatNumber($data['totalsize'], false, 0)." ".$LANG['common'][82]),'right');
+			$pdf->addTextWrap(512,$start_tab, 55,9,utf8_decode(formatNumber($data['freesize'], false, 0)." ".$LANG['common'][82]),'right');
+
+			$start_tab -= 20;	
+		}
+	} else {
+		$pdf->addTextWrap(25,$start_tab,$width-50,10,'<b>'.utf8_decode($LANG['computers'][8] . " - " . $LANG['search'][15]).'</b>','center');
+		$start_tab -= 20;	
+	}
+	
+	$tab["start_tab"] = $start_tab;
+	
+	return $tab;
+}
+
 function plugin_pdf_note($tab,$width,$ID,$type){
 	
 	global $LANG;
@@ -2228,41 +2309,42 @@ foreach($tab_id as $key => $ID)
 					case 0:
 						$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,COMPUTER_TYPE);
 						$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,COMPUTER_TYPE);
-					break;
+						break;
 					case 1:
 						$tab_pdf = plugin_pdf_connection($tab_pdf,$width,$ID,COMPUTER_TYPE);
 						$tab_pdf = plugin_pdf_port($tab_pdf,$width,$ID,COMPUTER_TYPE);
-					break;
+						break;
 					case 2:
 						$tab_pdf = plugin_pdf_device($tab_pdf,$width,$ID,COMPUTER_TYPE);
-					break;
+						break;
 					case 3:
 						$tab_pdf = plugin_pdf_software($tab_pdf,$width,$ID,COMPUTER_TYPE);
-					break;
+						break;
 					case 4:
 						$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
 						$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
-					break;
+						break;
 					case 5:
 						$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,COMPUTER_TYPE);
-					break;
+						break;
 					case 6:
 						$tab_pdf = plugin_pdf_registry($tab_pdf,$width,$ID,COMPUTER_TYPE);
-					break;
+						break;
 					case 7:
 						$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,COMPUTER_TYPE);
-					break;
+						break;
 					case 8:
 						$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,COMPUTER_TYPE);
-					break;
+						break;
 					case 9:
 						$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,COMPUTER_TYPE);
-					break;
+						break;
 					case 10:
 						$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,COMPUTER_TYPE);
-					break;
-					default:
-					break;
+						break;
+					case 11:
+						$tab_pdf = plugin_pdf_volume($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
 				}
 			}
 		break;
@@ -2277,35 +2359,33 @@ foreach($tab_id as $key => $ID)
 				switch($tab[$i]){
 					case 0:
 						$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,0,SOFTWARE_TYPE);
-					break;
+						break;
 					case 1:
 						$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,1,SOFTWARE_TYPE);
-					break;
+						break;
 					case 2:
 						$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,SOFTWARE_TYPE);
 						$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-					break;
+						break;
 					case 3:
 						$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-					break;
+						break;
 					case 4:
 						$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
 						$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-					break;
+						break;
 					case 5:
 						$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-					break;
+						break;
 					case 6:
 						$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-					break;
+						break;
 					case 7:
 						$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-					break;
+						break;
 					case 8:
 						$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-					break;
-					default:
-					break;
+						break;
 				}
 			}
 		break;
