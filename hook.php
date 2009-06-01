@@ -34,6 +34,18 @@
 
 include_once ("plugin_pdf.includes.php");
 
+function plugin_pdf_getSearchOption(){
+	global $LANG;
+	$sopt=array();
+	
+	$sopt[PROFILE_TYPE][1000]['table']='glpi_plugin_pdf_profiles';
+	$sopt[PROFILE_TYPE][1000]['field']='use';
+	$sopt[PROFILE_TYPE][1000]['linkfield']='';
+	$sopt[PROFILE_TYPE][1000]['name']=$LANG['plugin_pdf']["title"][1];
+	$sopt[PROFILE_TYPE][1000]['datatype']='bool';
+
+	return $sopt;
+}
 function plugin_pdf_changeprofile()
 {
 	$prof=new PluginPdfProfile();
@@ -129,6 +141,11 @@ function plugin_pdf_MassiveActions($type){
 			return array(
 				"plugin_pdf_DoIt"=>$LANG['plugin_pdf']["title"][1],
 				);
+		case PROFILE_TYPE:
+			return array(
+				"plugin_pdf_allow"=>$LANG['plugin_pdf']["title"][1]
+				);
+			break;
 		break;
 	}
 	return array();
@@ -151,6 +168,14 @@ function plugin_pdf_MassiveActionsDisplay($type,$action){
 				break;
 			}
 		break;
+		case PROFILE_TYPE:
+			switch ($action){
+				case "plugin_pdf_allow":
+					dropdownYesNo('use');
+					echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
+				break;
+			}
+		break;
 	}
 	return "";
 }
@@ -166,7 +191,23 @@ function plugin_pdf_MassiveActionsProcess($data){
 			$_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
 			
 			echo "<script type='text/javascript'>location.href='../plugins/pdf/front/plugin_pdf.export.massive.php'</script>)";
-		break;
+			break;
+		case "plugin_pdf_allow":
+			$prof =  new PluginPdfProfile();
+			foreach ($data['item'] as $key => $val) {
+				if ($prof->getFromDB($key)) {
+					$prof->update(array(
+						'ID' => $key,
+						'use' => $data['use']
+					));
+				} else if ($data['use']) {
+						$prof->add(array(
+							'ID' => $key,
+							'use' => $data['use']
+						));
+				}
+			}
+			break;
 		}
 }
 

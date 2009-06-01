@@ -36,7 +36,8 @@ function plugin_init_pdf() {
 	global $PLUGIN_HOOKS;
 	
 	$PLUGIN_HOOKS['change_profile']['pdf'] = 'plugin_pdf_changeprofile';
-
+	$PLUGIN_HOOKS['plugin_types'][PROFILE_TYPE]='pdf';
+	
 	if (isset($_SESSION["glpi_plugin_pdf_profile"]) && $_SESSION["glpi_plugin_pdf_profile"]["use"])
 	{
 		$PLUGIN_HOOKS['use_massive_action']['pdf']=1;
@@ -71,6 +72,12 @@ function plugin_pdf_check_prerequisites(){
 // Config process for plugin : need to return true if succeeded : may display messages or add to message after redirect
 function plugin_pdf_check_config(){
 	return TableExists("glpi_plugin_pdf_profiles");
+}
+
+function plugin_pdf_addLeftJoin($type,$ref_table,$new_table,$linkfield,$already_link_tables) {
+	if ($ref_table=='glpi_profiles' && $new_table=='glpi_plugin_pdf_profiles') {
+		return " LEFT JOIN $new_table  ON ($ref_table.ID = $new_table.ID) ";
+	}
 }
 
 ?>
