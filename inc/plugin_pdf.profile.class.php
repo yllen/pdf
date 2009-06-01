@@ -59,9 +59,10 @@ class PluginPdfProfile extends CommonDBTM {
 		}
 		
 		echo "<div align='center'>";
-		echo "<form action='".$_SERVER['PHP_SELF']."' method='post'>";
+		echo "<form action='".$target."' method='post'>";
 		echo "<table class='tab_cadre' cellpadding='5'>"; 
-		echo "<tr><th colspan='2'>".$LANG['plugin_pdf']["config"][7]. "</th></tr>\n";
+		echo "<tr><th colspan='2'>".$LANG['plugin_pdf']["config"][7]. " : " .
+			getDropdownName('glpi_profiles', $ID) . "</th></tr>\n";
 			
 
 		echo "<tr class='tab_bg_1'>";
@@ -74,12 +75,7 @@ class PluginPdfProfile extends CommonDBTM {
 			echo "<td colspan='2' align='center'>";
 			echo "<input type='hidden' name='ID' value=$ID>";
 
-			if ($this->fields["ID"]){
-				echo "<input type='submit' name='update' value=\"".$LANG["buttons"][7]."\" class='submit'>&nbsp;";
-				echo "<input type='submit' name='delete' value=\"".$LANG["buttons"][6]."\" class='submit'>";
-			} else {
-				echo "<input type='submit' name='add' value=\"".$LANG["buttons"][8]."\" class='submit'>";
-			}
+			echo "<input type='submit' name='update_user_profile' value=\"".$LANG["buttons"][7]."\" class='submit'>&nbsp;";
 			echo "</td></tr>\n";
 		}
 

@@ -44,55 +44,19 @@ checkRight("profile","r");
 
 include_once ("../plugin_pdf.includes.php");
 // Mainly usefull if not actived
-usePLugin('pdf');
-
-commonHeader($LANG['plugin_pdf']["config"][1], $_SERVER["PHP_SELF"],"config","plugins");
+usePLugin('pdf',true);
 
 $prof = new PluginPdfProfile();
 
-if(!isset($_POST["ID"])) $ID=0;	
-else $ID=$_POST["ID"];
+if(!isset($_POST["ID"])) die();	
 
-if (isset($_POST["add"])){
-	checkRight("profile","w");
-	$prof->add($_POST);
-	if ($_SESSION['glpiactiveprofile']['ID']==$ID)
-		$_SESSION["glpi_plugin_pdf_profile"]=$prof->fields;	
-}
-else  if (isset($_POST["delete"])){
-	checkRight("profile","w");
-
-	$prof->delete($_POST);
-	if ($_SESSION['glpiactiveprofile']['ID']==$ID)
-		unset($_SESSION["glpi_plugin_pdf_profile"]);
-}
-else  if (isset($_POST["update"])){
+if (isset($_POST["update_user_profile"])){
 	checkRight("profile","w");
 	$prof->update($_POST);
-	if ($_SESSION['glpiactiveprofile']['ID']==$ID)
+	if ($_SESSION['glpiactiveprofile']['ID']==$_POST["ID"])
 		$_SESSION["glpi_plugin_pdf_profile"]=$prof->fields;
+	glpi_header($_SERVER['HTTP_REFERER']);
 }
 
-echo "<div align='center'><form method='post' action=\"".$_SERVER["PHP_SELF"]."\">";
-echo "<table class='tab_cadre' cellpadding='5'><tr><th colspan='2'>";
-echo $LANG['plugin_pdf']["config"][1]."<br />" . $LANG['plugin_pdf']["config"][6] . "</th></tr>\n";
-
-echo "<tr class='tab_bg_1'><td>" . $LANG["profiles"][22] . "&nbsp;: ";
-$query="SELECT ID, name FROM glpi_profiles ORDER BY name";
-$result=$DB->query($query);
-
-echo "<select name='ID'>";
-while ($data=$DB->fetch_assoc($result)){
-	echo "<option value='".$data["ID"]."' ".($ID==$data["ID"]?"selected":"").">".$data['name']."</option>";
-}
-echo "</select>";
-echo "<td><input type='submit' value=\"".$LANG["buttons"][2]."\" class='submit' ></td></tr>";
-echo "</table></form></div>";
-
-if ($ID>0){	
-	$prof->showForm($_SERVER['PHP_SELF'],$ID);
-}
-
-commonFooter();
 ?>
 

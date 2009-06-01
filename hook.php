@@ -34,10 +34,6 @@
 
 include_once ("plugin_pdf.includes.php");
 
-function plugin_pdf_initSession()
-{
-	return true;
-}
 function plugin_pdf_changeprofile()
 {
 	$prof=new PluginPdfProfile();
@@ -60,11 +56,14 @@ function plugin_get_headings_pdf($type,$ID,$withtemplate){
 	
 	elseif ($type==COMPUTER_TYPE || $type==SOFTWARE_TYPE) {
 		// template case
-		if ($withtemplate) {
-			return array();
-
-		// Non template case
-		} else  {
+		if (!$withtemplate) {
+			return array(
+				1 => $LANG['plugin_pdf']["title"][1],
+				);
+		}
+	}
+	elseif ($type==PROFILE_TYPE) {
+		if ($ID) {
 			return array(
 				1 => $LANG['plugin_pdf']["title"][1],
 				);
@@ -79,6 +78,7 @@ function plugin_headings_actions_pdf($type){
 	switch ($type){
 		case COMPUTER_TYPE :
 		case SOFTWARE_TYPE :
+		case PROFILE_TYPE :
 		case "prefs" :
 			return array(
 					1 => "plugin_headings_pdf",
@@ -93,12 +93,21 @@ function plugin_headings_pdf($type,$ID,$withtemplate=0){
 	global $CFG_GLPI;
 
 		switch ($type){
+			case PROFILE_TYPE :
+				$prof =  new PluginPdfProfile();
+				if (!$prof->GetfromDB($ID)) {
+					$prof->add(array(
+						'ID'	=> $ID
+						));
+				}
+				$prof->showForm($CFG_GLPI["root_doc"]."/plugins/pdf/front/plugin_pdf.profiles.php",$ID);
+				break;
 			case COMPUTER_TYPE :
 				plugin_pdf_menu_computer("../plugins/pdf/front/plugin_pdf.export.php",$ID);
-			break;
+				break;
 			case SOFTWARE_TYPE :
 				plugin_pdf_menu_software("../plugins/pdf/front/plugin_pdf.export.php",$ID);
-			break;
+				break;
 			case "prefs":
 				$pref = new PluginPdfPreferences;
 				$pref->showForm($CFG_GLPI['root_doc']."/plugins/pdf/front/plugin_pdf.preferences.form.php");
@@ -171,6 +180,49 @@ function plugin_pre_item_delete_pdf($input){
 				break;
 		}
 	return $input;
+}
+
+function plugin_pdf_install() {
+	$DB = new DB;
+			
+	$query= "CREATE TABLE IF NOT EXISTS `glpi_plugin_pdf_profiles` (
+  	`ID` int(11),
+  	`profile` varchar(255) default NULL,
+  	`use` tinyint(1) default 0,
+  	PRIMARY KEY  (`ID`)
+	) ENGINE=MyISAM;";
+			
+	$DB->query($query) or die($DB->error());	
+
+	$query= "CREATE TABLE IF NOT EXISTS `glpi_plugin_pdf_preference` (
+  	`id` int(11) NOT NULL auto_increment,
+  	`user_id` int(11) NOT NULL,
+  	`cat` varchar(255) NOT NULL,
+  	`table_num` int(11) NOT NULL default -1,
+  	PRIMARY KEY  (`id`)
+	) ENGINE=MyISAM;";
+			
+	$DB->query($query) or die($DB->error());
+	
+	// Give right to current Profile
+	$prof =  new PluginPdfProfile();
+	$prof->add(array(
+		'ID'	=> $_SESSION['glpiactiveprofile']['ID'],
+		'use'	=> 1
+		));
+	return true;
+}
+
+function plugin_pdf_uninstall() {
+	$DB = new DB;
+		
+	$query = "DROP TABLE IF EXISTS `glpi_plugin_pdf_preference`;";
+	$DB->query($query) or die($DB->error());
+
+	$query = "DROP TABLE IF EXISTS `glpi_plugin_pdf_profiles`;";
+	$DB->query($query) or die($DB->error());
+
+	return true;
 }
 
 ?>
