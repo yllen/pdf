@@ -58,12 +58,12 @@ function plugin_pdf_menu_computer($action,$compID,$export=true){
 		checkbox("check5",$LANG["Menu"][27],5,(isset($values["check5"])?true:false));
 		checkbox("check7",$LANG["title"][34],7,(isset($values["check7"])?true:false));
 		checkbox("check9",$LANG["Menu"][17],9,(isset($values["check9"])?true:false));
-		echo "<td></td>";
+		checkbox("check11",$LANG['computers'][8],11,(isset($values["check11"])?true:false));
 		echo "</tr>";
 	
 		echo "<tr class='tab_bg_2'><td colspan='6' align='center'>";
 		echo "<input type='hidden' name='plugin_pdf_inventory_type' value='" . COMPUTER_TYPE . "'>";
-		echo "<input type='hidden' name='indice' value='11'>";
+		echo "<input type='hidden' name='indice' value='12'>";
 		echo "<input type='hidden' name='itemID' value='$compID'>";
 
 		echo "<input type='submit' value='" . (!$export?$LANG['plugin_pdf']["button"][2]:$LANG['plugin_pdf']["button"][1]) . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
@@ -152,24 +152,18 @@ function plugin_pdf_add_header($pdf,$ID,$type){
 	
 	$height = $pdf->ez['pageHeight'];
 	
-	switch($type){
-		case COMPUTER_TYPE:
-			$computer = new Computer();
-			$computer->getFromDB($ID);
-			if($computer->fields['name'])
-				$pdf->addText(220,$height-45,14,utf8_decode('<b>'.$computer->fields['name'].' ('.plugin_pdf_getDropdownName('glpi_entities',$computer->fields['FK_entities']).')</b>'));
-			else
-				$pdf->addText(220,$height-45,14,utf8_decode('<b>'.$LANG["common"][2].' '.$computer->fields['ID'].' ('.plugin_pdf_getDropdownName('glpi_entities',$computer->fields['FK_entities']).')</b>'));
-		break;
-		case SOFTWARE_TYPE:
-			$software = new Software();
-			$software->getFromDB($ID);
-			if($software->fields['name'])
-				$pdf->addText(200,$height-45,14,utf8_decode('<b>'.$software->fields['name'].' ('.plugin_pdf_getDropdownName('glpi_entities',$software->fields['FK_entities']).')</b>'));
-			else	
-				$pdf->addText(200,$height-45,14,utf8_decode('<b>'.$LANG["common"][2].' '.$software->fields['ID'].' ('.plugin_pdf_getDropdownName('glpi_entities',$software->fields['FK_entities']).')</b>'));
-		break;
+	if (isMultiEntitiesMode()) {
+		$entity = ' ('.plugin_pdf_getDropdownName('glpi_entities',$computer->fields['FK_entities']).')'; 
+	} else {
+		$entity = '';
 	}
+	$ci = new CommonItem();
+	if ($ci->getFromDB($type, $ID) && $ci->obj->fields['name']) {
+		$name = $ci->obj->fields['name'];
+	} else {
+		$name = $LANG["common"][2].' '.$ID;
+	}
+	$pdf->addTextWrap(0,$height-45,$pdf->ez['pageWidth'],14,utf8_decode("<b>$name</b>$entity"),'center');
 	
 	return $pdf;
 }
