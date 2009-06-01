@@ -1289,11 +1289,11 @@ function plugin_pdf_document($tab,$width,$ID,$type){
 		$pdf->filledRectangle(500,($start_tab-25)-(20*$i),70,15);
 		$pdf->restoreState();
 		
-		$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($data["name"]));
-		$pdf->addText(160,($start_tab-20)-(20*$i),9,utf8_decode($data["filename"]));
-		$pdf->addText(285,($start_tab-20)-(20*$i),9,utf8_decode($data["link"]));
-		$pdf->addText(400,($start_tab-20)-(20*$i),9,utf8_decode(plugin_pdf_getDropdownName("glpi_dropdown_rubdocs",$data["rubrique"])));
-		$pdf->addText(505,($start_tab-20)-(20*$i),9,utf8_decode($data["mime"]));
+		$pdf->addTextWrap(30,($start_tab-20)-(20*$i),125, 9,utf8_decode($data["name"]));
+		$pdf->addTextWrap(160,($start_tab-20)-(20*$i),120,9,utf8_decode($data["filename"]));
+		$pdf->addTextWrap(285,($start_tab-20)-(20*$i),110,9,utf8_decode($data["link"]));
+		$pdf->addTextWrap(400,($start_tab-20)-(20*$i),100,9,utf8_decode(plugin_pdf_getDropdownName("glpi_dropdown_rubdocs",$data["rubrique"])));
+		$pdf->addTextWrap(505,($start_tab-20)-(20*$i),70,9,utf8_decode($data["mime"]));
 		
 		$i++;
 		
@@ -1437,7 +1437,7 @@ function plugin_pdf_ticket($tab,$width,$ID,$type){
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 		$pdf->restoreState();
-		$pdf->addText(260,$start_tab,9,'<b>'.utf8_decode($number.' '.$LANG["job"][17].' '.$LANG["job"][16]).' :</b>');
+		$pdf->addTextWrap(30,$start_tab,$width-60,9,'<b>'.utf8_decode($LANG['joblist'][24]." - $number ".$LANG["job"][8]).' :</b>','center');
 
 		while ($data=$DB->fetch_assoc($result))
 		{
@@ -1507,7 +1507,7 @@ function plugin_pdf_ticket($tab,$width,$ID,$type){
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 		$pdf->restoreState();
-		$pdf->addText(260,$start_tab,9,'<b>'.utf8_decode($LANG["joblist"][8]).'</b>');
+		$pdf->addTextWrap(30,$start_tab,$width-60,9,'<b>'.utf8_decode($LANG['joblist'][24] . " - " . $LANG["job"][8]).'</b>','center');
 		}
 	
 	$start_tab = ($start_tab-20)-(20*$i) - 20;
@@ -1544,7 +1544,7 @@ function plugin_pdf_oldticket($tab,$width,$ID,$type){
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 		$pdf->restoreState();
-		$pdf->addText(240,$start_tab,9,'<b>'.utf8_decode($number.' '.$LANG["job"][18].' '.$LANG["job"][17].' '.$LANG["job"][16]).' :</b>');
+		$pdf->addTextWrap(30,$start_tab,$width-60,9,'<b>'.utf8_decode($LANG['joblist'][25]." - $number ".$LANG["job"][8]).' :</b>','center');
 
 		while ($data=$DB->fetch_assoc($result))
 		{
@@ -1614,7 +1614,7 @@ function plugin_pdf_oldticket($tab,$width,$ID,$type){
 		$pdf->setColor(0.8,0.8,0.8);
 		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
 		$pdf->restoreState();
-		$pdf->addText(240,$start_tab,9,'<b>'.utf8_decode($LANG["joblist"][22]).'</b>');
+		$pdf->addTextWrap(30,$start_tab,$width-60,9,'<b>'.utf8_decode($LANG['joblist'][25] . " - " . $LANG["joblist"][8]).'</b>','center');
 		}
 	
 	$start_tab = ($start_tab-20)-(20*$i) - 20;
@@ -1666,47 +1666,47 @@ function plugin_pdf_link($tab,$width,$ID,$type){
 			if (empty($file)){
 
 				$ci->getFromDB($type,$ID);
-				if (ereg("\[NAME\]",$link)){
-					$link=ereg_replace("\[NAME\]",$ci->getName(),$link);
+				if (strpos("[NAME]",$link)){
+					$link=str_replace("[NAME]",$ci->getName(),$link);
 				}
-				if (ereg("\[ID\]",$link)){
-					$link=ereg_replace("\[ID\]",$ID,$link);
+				if (strpos("[ID]",$link)){
+					$link=str_replace("[ID]",$ID,$link);
 				}
 
-				if (ereg("\[SERIAL\]",$link)){
+				if (strpos("[SERIAL]",$link)){
 					if ($tmp=$ci->getField('serial')){
-						$link=ereg_replace("\[SERIAL\]",$tmp,$link);
+						$link=str_replace("[SERIAL]",$tmp,$link);
 					}
 				}
-				if (ereg("\[OTHERSERIAL\]",$link)){
+				if (strpos("[OTHERSERIAL]",$link)){
 					if ($tmp=$ci->getField('otherserial')){
-						$link=ereg_replace("\[OTHERSERIAL\]",$tmp,$link);
+						$link=str_replace("[OTHERSERIAL]",$tmp,$link);
 					}
 				}
 
-				if (ereg("\[LOCATIONID\]",$link)){
+				if (strpos("[LOCATIONID]",$link)){
 					if ($tmp=$ci->getField('location')){
-						$link=ereg_replace("\[LOCATIONID\]",$tmp,$link);
+						$link=str_replace("[LOCATIONID]",$tmp,$link);
 					}
 				}
 
-				if (ereg("\[LOCATION\]",$link)){
+				if (strpos("[LOCATION]",$link)){
 					if ($tmp=$ci->getField('location')){
-						$link=ereg_replace("\[LOCATION\]",plugin_pdf_getDropdownName("glpi_dropdown_locations",$tmp),$link);
+						$link=str_replace("[LOCATION]",plugin_pdf_getDropdownName("glpi_dropdown_locations",$tmp),$link);
 					}
 				}
-				if (ereg("\[NETWORK\]",$link)){
+				if (strpos("[NETWORK]",$link)){
 					if ($tmp=$ci->getField('network')){
-						$link=ereg_replace("\[NETWORK\]",plugin_pdf_getDropdownName("glpi_dropdown_network",$tmp),$link);
+						$link=str_replace("[NETWORK]",plugin_pdf_getDropdownName("glpi_dropdown_network",$tmp),$link);
 					}
 				}
-				if (ereg("\[DOMAIN\]",$link)){
+				if (strpos("[DOMAIN]",$link)){
 					if ($tmp=$ci->getField('domain'))
-						$link=ereg_replace("\[DOMAIN\]",plugin_pdf_getDropdownName("glpi_dropdown_domain",$tmp),$link);
+						$link=str_replace("[DOMAIN]",plugin_pdf_getDropdownName("glpi_dropdown_domain",$tmp),$link);
 				}
 				$ipmac=array();
 				$j=0;
-				if (ereg("\[IP\]",$link)||ereg("\[MAC\]",$link)){
+				if (strpos("[IP]",$link)||strpos("[MAC]",$link)){
 					$query2 = "SELECT ifaddr,ifmac FROM glpi_networking_ports WHERE (on_device = $ID AND device_type = ".$type.") ORDER BY logical_number";
 					$result2=$DB->query($query2);
 					if ($DB->numrows($result2)>0)
@@ -1715,14 +1715,11 @@ function plugin_pdf_link($tab,$width,$ID,$type){
 							$ipmac[$j]['ifmac']=$data2["ifmac"];
 							$j++;
 						}
-				}
-
-				if (ereg("\[IP\]",$link)||ereg("\[MAC\]",$link)){
 					if (count($ipmac)>0){
 						foreach ($ipmac as $key => $val){
 							$tmplink=$link;
-							$tmplink=ereg_replace("\[IP\]",$val['ifaddr'],$tmplink);
-							$tmplink=ereg_replace("\[MAC\]",$val['ifmac'],$tmplink);
+							$tmplink=str_replace("[IP]",$val['ifaddr'],$tmplink);
+							$tmplink=str_replace("[MAC]",$val['ifmac'],$tmplink);
 							$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($tmplink));
 						}
 					}
@@ -1732,12 +1729,12 @@ function plugin_pdf_link($tab,$width,$ID,$type){
 				$link=$data['name'];		
 				$ci->getFromDB($type,$ID);
 
-				if (ereg("\[NAME\]",$link)){
-					$link=ereg_replace("\[NAME\]",$ci->getName(),$link);
+				if (strpos("[NAME]",$link)){
+					$link=str_replace("[NAME]",$ci->getName(),$link);
 				}
 
-				if (ereg("\[ID\]",$link)){
-					$link=ereg_replace("\[ID\]",$_GET["ID"],$link);
+				if (strpos("[ID]",$link)){
+					$link=str_replace("[ID]",$_GET["ID"],$link);
 				}
 				$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($name));
 			}
@@ -1795,32 +1792,29 @@ function plugin_pdf_note($tab,$width,$ID,$type){
 		$pdf->restoreState();
 		$pdf->addText(280,$start_tab,9,'<b>'.utf8_decode($LANG["title"][37]).'</b>');
 			
-		$nbline = $length/140;
-		$temp=utf8_decode($ci->getField('notes'));
-		$i=$j=0;
-		while($j<$nbline)
-			{
-			$pdf->saveState();
-			$pdf->setColor(0.95,0.95,0.95);
-			if($j==0)
-				$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$width-50,15);
-			else
-				$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$width-50,20);
-			$pdf->restoreState();	
-			
-			$temp = $pdf->addTextWrap(40,($start_tab-20)-(20*$i),$width-80,9,$temp);
-			$i++;
-			$j++;
-			
-			if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-			}
+		$temp=str_replace("\r\n","\n",$ci->getField('notes'));
+		$lines=explode("\n",$temp);
+
+		$i=0;
+		foreach($lines as $line) {
+			$line=utf8_decode($line);
+			do {
+				$pdf->saveState();
+				$pdf->setColor(0.95,0.95,0.95);
+				$pdf->filledRectangle(25,($start_tab-25)-(10*$i),$width-50,15);
+				$pdf->restoreState();	
+				$line = $pdf->addTextWrap(40,($start_tab-20)-(10*$i),$width-80,9,$line);
+				$i++;
+				
+				if(($start_tab-20)-(10*$i)<50){
+					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
+					$i=0;
+					$start_tab = 750;
+					}
+								
+			} while ($line);	
 		}
-	else
-		{
+	} else {
 		if(($start_tab-20)-(20*$i)<50){
 				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
 				$i=0;
@@ -1833,7 +1827,7 @@ function plugin_pdf_note($tab,$width,$ID,$type){
 		$pdf->addText(260,$start_tab,9,'<b>'.utf8_decode($LANG['plugin_pdf']["note"][1]).'</b>');
 		}
 	
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
+	$start_tab = ($start_tab-20)-(10*$i) - 20;
 		
 	$tab["start_tab"] = $start_tab;
 	$tab["pdf"] = $pdf;
