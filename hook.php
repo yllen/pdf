@@ -77,9 +77,12 @@ function plugin_get_headings_pdf($type,$ID,$withtemplate){
 	}
 	elseif ($type==PROFILE_TYPE) {
 		if ($ID) {
-			return array(
-				1 => $LANG['plugin_pdf']["title"][1],
-				);
+			$prof = new Profile();
+			if ($ID>0 && $prof->getFromDB($ID) && $prof->fields['interface']!='helpdesk') {
+				return array(
+					1 => $LANG['plugin_pdf']["title"][1],
+					);
+			}
 		}
 	}
 	return false;
@@ -194,18 +197,21 @@ function plugin_pdf_MassiveActionsProcess($data){
 			echo "<script type='text/javascript'>location.href='../plugins/pdf/front/plugin_pdf.export.massive.php'</script>)";
 			break;
 		case "plugin_pdf_allow":
-			$prof =  new PluginPdfProfile();
+			$profglpi = new Profile();
+			$prof = new PluginPdfProfile();
 			foreach ($data['item'] as $key => $val) {
-				if ($prof->getFromDB($key)) {
-					$prof->update(array(
-						'ID' => $key,
-						'use' => $data['use']
-					));
-				} else if ($data['use']) {
-						$prof->add(array(
+				if ($profglpi->getFromDB($key) && $profglpi->fields['interface']!='helpdesk') {
+					if ($prof->getFromDB($key)) {
+						$prof->update(array(
 							'ID' => $key,
 							'use' => $data['use']
 						));
+					} else if ($data['use']) {
+							$prof->add(array(
+								'ID' => $key,
+								'use' => $data['use']
+							));
+					}
 				}
 			}
 			break;
