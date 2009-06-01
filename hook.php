@@ -38,11 +38,12 @@ function plugin_pdf_getSearchOption(){
 	global $LANG;
 	$sopt=array();
 	
-	$sopt[PROFILE_TYPE][1000]['table']='glpi_plugin_pdf_profiles';
-	$sopt[PROFILE_TYPE][1000]['field']='use';
-	$sopt[PROFILE_TYPE][1000]['linkfield']='';
-	$sopt[PROFILE_TYPE][1000]['name']=$LANG['plugin_pdf']["title"][1];
-	$sopt[PROFILE_TYPE][1000]['datatype']='bool';
+	// Use a plugin type reservation to avoid conflict
+	$sopt[PROFILE_TYPE][3250]['table']='glpi_plugin_pdf_profiles';
+	$sopt[PROFILE_TYPE][3250]['field']='use';
+	$sopt[PROFILE_TYPE][3250]['linkfield']='';
+	$sopt[PROFILE_TYPE][3250]['name']=$LANG['plugin_pdf']["title"][1];
+	$sopt[PROFILE_TYPE][3250]['datatype']='bool';
 
 	return $sopt;
 }
