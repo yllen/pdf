@@ -74,10 +74,4 @@ function plugin_pdf_check_config(){
 	return TableExists("glpi_plugin_pdf_profiles");
 }
 
-function plugin_pdf_addLeftJoin($type,$ref_table,$new_table,$linkfield,$already_link_tables) {
-	if ($ref_table=='glpi_profiles' && $new_table=='glpi_plugin_pdf_profiles') {
-		return " LEFT JOIN $new_table  ON ($ref_table.ID = $new_table.ID) ";
-	}
-}
-
 ?>
