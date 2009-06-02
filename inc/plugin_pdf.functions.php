@@ -31,8 +31,11 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
+function checkbox($myname,$label,$value,$checked=false) {
+	echo "<td><input type='checkbox' ".($checked==true?"checked='checked'":'')." name='$myname' value='$value'>".$label."</td>";
+}
 
-function plugin_pdf_menu_computer($action,$compID,$export=true){
+function plugin_pdf_menu_computer($action,$compID,$export=true) {
 	global $LANG,$DB;
 	
 	echo "<form name='plugin_pdf_computer' action='$action' method='post'><table class='tab_cadre_fixe'>";
@@ -70,7 +73,7 @@ function plugin_pdf_menu_computer($action,$compID,$export=true){
 		echo "</table></form>";
 }
 
-function plugin_pdf_menu_software($action,$softID,$export=true){
+function plugin_pdf_menu_software($action,$softID,$export=true) {
 	global $LANG,$DB;
 	
 	echo "<form name='plugin_pdf_software' action='$action' method='post'><table class='tab_cadre_fixe'>";
@@ -120,38 +123,10 @@ function plugin_pdf_getDropdownName($table,$id,$withcomment=0){
 	return $name; 
 }
 
-
-function plugin_pdf_background($tab,$width){
-	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
-	
-	$height = $pdf->ez['pageHeight'];
-	$id_pdf=$pdf->openObject();
-	$pdf->saveState();
-	$pdf->ezStartPageNumbers(575,10,10,'left',convDate(date("Y-m-d"))." - {PAGENUM}/{TOTALPAGENUM}");
-	$pdf->setStrokeColor(0,0,0);
-	$pdf->setLineStyle(1,'round','round');
-	$pdf->rectangle(20,20,$width-40,$height-40);
-	$pdf->addJpegFromFile("../pics/fd_logo.jpg",25,$height-50);
-	$pdf->selectFont("../fonts/Times-Roman.afm");
-	$pdf->setFontFamily('Times-Roman.afm',array('b'=>'Times-Bold.afm','i'=>'Times-Italic.afm','bi'=>'Times-BoldItalic.afm'));
-	$pdf->restoreState();
-	$pdf->closeObject();
-	$pdf->addObject($id_pdf,'all');
-	
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
-}
-
 function plugin_pdf_add_header($pdf,$ID,$type){
 	
 	global $LANG;
 	
-	$height = $pdf->ez['pageHeight'];
-
 	$entity = '';
 	
 	$ci = new CommonItem();
@@ -163,106 +138,126 @@ function plugin_pdf_add_header($pdf,$ID,$type){
 	} else {
 		$name = $LANG["common"][2].' '.$ID;
 	}
-	$pdf->addTextWrap(0,$height-45,$pdf->ez['pageWidth'],14,utf8_decode("<b>$name</b>$entity"),'center');
-	
-	return $pdf;
+	$pdf->setHeader("<b>$name</b>$entity");
 }
 
-function plugin_pdf_config_computer($tab,$width,$ID){
-	
+function plugin_pdf_config_computer($pdf,$ID) {
 	global $LANG;
-	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
 	
 	$computer=new Computer();
 	$computer->getFromDB($ID);
 	
-	$length_tab = (($width-50)/2)-2.5;
-	
-	$pdf->saveState();
-	$pdf->setColor(0.8,0.8,0.8);
-	$pdf->filledRectangle(25,$start_tab-5,$length_tab,15);
-	$pdf->filledRectangle(25+$length_tab+5,$start_tab-5,$length_tab,15);
-	$pdf->setColor(0.95,0.95,0.95);
-	
-	for($i=0;$i<13;$i++)
-		{
-		if($i<11)
-			{
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$length_tab,15);
-			$pdf->filledRectangle(25+$length_tab+5,($start_tab-25)-(20*$i),$length_tab,15);
-			}
-		else
-			if($i==11)
-			{
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),2*$length_tab+5,15);	
-			}
-			else
-			{
-			$i+=2;
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),2*$length_tab+5,55);
-			}
-		}
-	$pdf->restoreState();
-			
-	$pdf->addText(100,$start_tab,9,utf8_decode('<b>'.$LANG["common"][2].' '.$computer->fields['ID'].' ('.plugin_pdf_getDropdownName('glpi_entities',$computer->fields['FK_entities']).')</b>'));
-	$pdf->addText(30,$start_tab-20,9,utf8_decode('<b><i>'.$LANG["common"][16].' :</i></b> '.$computer->fields['name']));
-	$pdf->addText(30,$start_tab-40,9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName('glpi_type_computers',$computer->fields['type'])));
-	$pdf->addText(30,$start_tab-60,9,utf8_decode('<b><i>'.$LANG["common"][22].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_model',$computer->fields['model'])));
-	$pdf->addText(30,$start_tab-80,9,utf8_decode('<b><i>'.$LANG["common"][5].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_manufacturer',$computer->fields['FK_glpi_enterprise'])));
-	$pdf->addText(30,$start_tab-100,9,utf8_decode('<b><i>'.$LANG["computers"][9].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_os',$computer->fields['os'])));
-	$pdf->addText(30,$start_tab-120,9,utf8_decode('<b><i>'.$LANG["computers"][52].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_os_version',$computer->fields['os_version'])));
-	$pdf->addText(30,$start_tab-140,9,utf8_decode('<b><i>'.$LANG["computers"][53].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_os_sp',$computer->fields['os_sp'])));
-	$pdf->addText(30,$start_tab-160,9,utf8_decode('<b><i>'.$LANG["computers"][10].' :</i></b> '.$computer->fields['os_license_number']));
-	$pdf->addText(30,$start_tab-180,9,utf8_decode('<b><i>'.$LANG["computers"][11].' :</i></b> '.$computer->fields['os_license_id']));
-			
-	if($computer->fields['ocs_import'])
-		$pdf->addText(30,$start_tab-200,9,utf8_decode('<b><i>'.$LANG["ocsng"][6].' '.$LANG["Menu"][33].' :</i></b> '.$LANG["choice"][1]));
-	else
-		$pdf->addText(30,$start_tab-200,9,utf8_decode('<b><i>'.$LANG["ocsng"][6].' '.$LANG["Menu"][33].' :</i></b> '.$LANG["choice"][0]));
-		
-	$pdf->addText(30,$start_tab-240,9,utf8_decode('<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$computer->fields['location'])));
-	$pdf->addText(30,$start_tab-260,9,utf8_decode('<b><i>'.$LANG["common"][25].' :</i></b> '));
-			
-	$y=$start_tab-260;
-	$temp=str_replace("\r\n","\n",$computer->fields['comments']);
-	$lines=explode("\n", $temp);
-	foreach ($lines as $line) {
-		$line=utf8_decode($line);
-		while($line = $pdf->addTextWrap(105,$y,2*$length_tab-80,9,$line)) {
-			$y-=9;
-		}
-		$y-=9;
-	}
-			
+	$pdf->setColumnsSize(50,50);
+	$col1 = '<b>'.$LANG["common"][2].' '.$computer->fields['ID'].'</b>';
 	if(!empty($computer->fields['tplname']))
-		$pdf->addText($length_tab+35,$start_tab,9,utf8_decode('<b>'.$LANG["common"][26].' : '.convDateTime($computer->fields["date_mod"]).' ('.$LANG["common"][13].' : '.$computer->fields['tplname'].')</b>'));
-	elseif($computer->fields['ocs_import'])
-		$pdf->addText($length_tab+35,$start_tab,9,utf8_decode('<b>'.$LANG["common"][26].' : '.convDateTime($computer->fields["date_mod"]).' ('.$LANG["ocsng"][7].')</b>'));
+		$col2 = $LANG["common"][26].' : '.convDateTime($computer->fields["date_mod"]).' ('.$LANG["common"][13].' : '.$computer->fields['tplname'].')';
+	else if($computer->fields['ocs_import'])
+		$col2 = $LANG["common"][26].' : '.convDateTime($computer->fields["date_mod"]).' ('.$LANG["ocsng"][7].')';
 	else
-		$pdf->addText($length_tab+80,$start_tab,9,utf8_decode('<b>'.$LANG["common"][26].' : '.convDateTime($computer->fields["date_mod"]).'</b>'));
-			
-	$pdf->addText($length_tab+35,$start_tab-20,9,utf8_decode('<b><i>'.$LANG["common"][18].' :</i></b> '.$computer->fields['contact']));
-	$pdf->addText($length_tab+35,$start_tab-40,9,utf8_decode('<b><i>'.$LANG["common"][21].' :</i></b> '.$computer->fields['contact_num']));
-	$pdf->addText($length_tab+35,$start_tab-60,9,utf8_decode('<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($computer->fields['FK_users'])));
-	$pdf->addText($length_tab+35,$start_tab-80,9,utf8_decode('<b><i>'.$LANG["common"][35].' :</i></b> '.plugin_pdf_getDropdownName('glpi_groups',$computer->fields['FK_groups'])));
-	$pdf->addText($length_tab+35,$start_tab-100,9,utf8_decode('<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($computer->fields['tech_num'])));
-	$pdf->addText($length_tab+35,$start_tab-120,9,utf8_decode('<b><i>'.$LANG["setup"][88].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_network',$computer->fields['network'])));
-	$pdf->addText($length_tab+35,$start_tab-140,9,utf8_decode('<b><i>'.$LANG["setup"][89].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_domain',$computer->fields['domain'])));
-	$pdf->addText($length_tab+35,$start_tab-160,9,utf8_decode('<b><i>'.$LANG["common"][19].' :</i></b> '.$computer->fields['serial']));
-	$pdf->addText($length_tab+35,$start_tab-180,9,utf8_decode('<b><i>'.$LANG["common"][20].' :</i></b> '.$computer->fields['otherserial']));
-	$pdf->addText($length_tab+35,$start_tab-200,9,utf8_decode('<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$computer->fields['state'])));
-	$pdf->addText($length_tab+35,$start_tab-220,9,utf8_decode('<b><i>'.$LANG["computers"][51].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_auto_update',$computer->fields['auto_update'])));
-	
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
-	
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
+		$col2 = $LANG["common"][26].' : '.convDateTime($computer->fields["date_mod"]);
+	$pdf->displayTitle($col1, $col2);
+
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][16].' :</i></b> '.$computer->fields['name'],
+		'<b><i>'.$LANG["common"][18].' :</i></b> '.$computer->fields['contact']);
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName('glpi_type_computers',$computer->fields['type']),
+		'<b><i>'.$LANG["common"][21].' :</i></b> '.$computer->fields['contact_num']);
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][22].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_model',$computer->fields['model']),
+		'<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($computer->fields['FK_users']));
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][5].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_manufacturer',$computer->fields['FK_glpi_enterprise']),
+		'<b><i>'.$LANG["common"][35].' :</i></b> '.plugin_pdf_getDropdownName('glpi_groups',$computer->fields['FK_groups']));
+	$pdf->displayLine(
+		'<b><i>'.$LANG["computers"][9].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_os',$computer->fields['os']),
+		'<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($computer->fields['tech_num']));
+	$pdf->displayLine(
+		'<b><i>'.$LANG["computers"][52].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_os_version',$computer->fields['os_version']),
+		'<b><i>'.$LANG["setup"][88].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_network',$computer->fields['network']));
+	$pdf->displayLine(
+		'<b><i>'.$LANG["computers"][53].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_os_sp',$computer->fields['os_sp']),
+		'<b><i>'.$LANG["setup"][89].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_domain',$computer->fields['domain']));
+	$pdf->displayLine(
+		'<b><i>'.$LANG["computers"][10].' :</i></b> '.$computer->fields['os_license_number'],
+		'<b><i>'.$LANG["common"][19].' :</i></b> '.$computer->fields['serial']);
+	$pdf->displayLine(
+		'<b><i>'.$LANG["computers"][11].' :</i></b> '.$computer->fields['os_license_id'],
+		'<b><i>'.$LANG["common"][20].' :</i></b> '.$computer->fields['otherserial']);
+	if($computer->fields['ocs_import'])
+		$col1 = '<b><i>'.$LANG["ocsng"][6].' '.$LANG["Menu"][33].' :</i></b> '.$LANG["choice"][1];
+	else
+		$col1 = '<b><i>'.$LANG["ocsng"][6].' '.$LANG["Menu"][33].' :</i></b> '.$LANG["choice"][0];
+	$pdf->displayLine($col1,
+		'<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$computer->fields['state']));
+	$pdf->displayLine('',
+		'<b><i>'.$LANG["computers"][51].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_auto_update',$computer->fields['auto_update']));
+
+	$pdf->setColumnsSize(100);
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$computer->fields['location']));
+		
+	$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $computer->fields['comments']);
 }
 
+function plugin_pdf_financial($pdf,$ID,$type){
+	
+	global $CFG_GLPI,$LANG;
+	
+	$ic = new Infocom();
+	$ci = new CommonItem();
+
+	$pdf->setColumnsSize(100);
+	if ($ci->getFromDB($type,$ID) && $ic->getFromDBforDevice($type,$ID)) {
+		$pdf->displayTitle("<b>".$LANG["financial"][3]."</b>");
+		
+		$pdf->setColumnsSize(50,50);
+		$pdf->displayLine(
+			"<b><i>".$LANG["financial"][26]." :</i></b> ".plugin_pdf_getDropdownName("glpi_enterprises",$ic->fields["FK_enterprise"]),
+			"<b><i>".$LANG["financial"][82]." :</i></b> ".$ic->fields["facture"]);
+		$pdf->displayLine(
+			"<b><i>".$LANG["financial"][18]." :</i></b> ".$ic->fields["num_commande"],
+			"<b><i>".$LANG["financial"][19]." :</i></b> ".$ic->fields["bon_livraison"]);
+		$pdf->displayLine(
+			"<b><i>".$LANG["financial"][14]." :</i></b> ".convDate($ic->fields["buy_date"]),
+			"<b><i>".$LANG["financial"][76]." :</i></b> ".convDate($ic->fields["use_date"]));
+		$pdf->displayLine(
+			"<b><i>".$LANG["financial"][15]." :</i></b> ".$ic->fields["warranty_duration"]." mois <b><i> Expire le</i></b> ".getWarrantyExpir($ic->fields["buy_date"],$ic->fields["warranty_duration"]),
+			"<b><i>".$LANG["financial"][87]." :</i></b> ".plugin_pdf_getDropdownName("glpi_dropdown_budget",$ic->fields["budget"])); 
+		$pdf->displayLine(
+			"<b><i>".$LANG["financial"][78]." :</i></b> ".formatNumber($ic->fields["warranty_value"]),
+			"<b><i>".$LANG["financial"][16]." :</i></b> ".$ic->fields["warranty_info"]);
+		$pdf->displayLine(
+			"<b><i>".$LANG["rulesengine"][13]." :</i></b> ".formatNumber($ic->fields["value"]),
+			"<b><i>".$LANG["financial"][81]." :</i></b> ".TableauAmort($ic->fields["amort_type"],$ic->fields["value"],$ic->fields["amort_time"],$ic->fields["amort_coeff"],$ic->fields["buy_date"],$ic->fields["use_date"],$CFG_GLPI["date_fiscale"],"n"));
+		$pdf->displayLine(
+			"<b><i>".$LANG["financial"][20]." :</i></b> 	".$ic->fields["num_immo"],
+			"<b><i>".$LANG["financial"][22]." :</i></b> ".getAmortTypeName($ic->fields["amort_type"]));
+		$pdf->displayLine(
+			"<b><i>".$LANG["financial"][23]." :</i></b> ".$ic->fields["amort_time"]." ".$LANG['financial'][9],
+			"<b><i>".$LANG["financial"][77]." :</i></b> ".$ic->fields["amort_coeff"]);
+		$pdf->displayLine(
+			"<b><i>".$LANG["financial"][89]." :</i></b> ".showTco($ci->getField('ticket_tco'),$ic->fields["value"]),
+			"<b><i>".$LANG["financial"][90]." :</i></b> ".showTco($ci->getField('ticket_tco'),$ic->fields["value"],$ic->fields["buy_date"]));
+
+		$pdf->setColumnsSize(100);
+		$col1 = "<b><i>".$LANG["setup"][247]." :</i></b> ";
+		if($ic->fields["alert"]==0)
+			$col1 .= $LANG['choice'][0];
+		else if($ic->fields["alert"]==4)
+			$col1 .= $LANG["financial"][80];
+		$pdf->displayLine($col1);
+	
+		$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $ic->fields["comments"]);
+	} else {
+		$pdf->displayTitle("<b>".$LANG['plugin_pdf']["financial"][1]."</b>");
+	}
+/*	
+	
+	*/
+}
+
+/*
 function plugin_pdf_config_software($tab,$width,$ID){
 	
 	global $LANG;
@@ -1015,105 +1010,6 @@ function plugin_pdf_port($tab,$width,$ID,$type){
 		$pdf->restoreState();
 		$pdf->addText(250,$start_tab,9,utf8_decode('<b>0 '.$LANG["networking"][37].'</b>'));		
 		}
-	
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
-}
-
-function plugin_pdf_financial($tab,$width,$ID,$type){
-	
-	global $CFG_GLPI,$LANG;
-	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
-	
-	$ic = new Infocom();
-	$ci=new CommonItem();
-	
-	$i=0;
-	
-	if ($ci->getFromDB($type,$ID))
-	if ($ic->getFromDBforDevice($type,$ID)){
-	
-	$length_tab = (($width-50)/2)-2.5;
-	
-	$pdf->saveState();
-	$pdf->setColor(0.8,0.8,0.8);
-	$pdf->filledRectangle(25,$start_tab-5,2*$length_tab+5,15);
-	$pdf->setColor(0.95,0.95,0.95);
-	
-	for($i=0;$i<11;$i++)
-		{
-		if($i<10)
-			{
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$length_tab,15);
-			$pdf->filledRectangle(25+$length_tab+5,($start_tab-25)-(20*$i),$length_tab,15);
-			}
-		else
-			{
-			$i+=2;
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),2*$length_tab+5,55);
-			}
-		}
-	$pdf->restoreState();
-	
-	$pdf->addText(250,$start_tab,9,"<b>".utf8_decode($LANG["financial"][3])."</b>");
-	
-	$pdf->addText(30,$start_tab-20,9,utf8_decode("<b><i>".$LANG["financial"][26]." :</i></b> ".plugin_pdf_getDropdownName("glpi_enterprises",$ic->fields["FK_enterprise"])));
-	$pdf->addText(30,$start_tab-40,9,utf8_decode("<b><i>".$LANG["financial"][18]." :</i></b> ".$ic->fields["num_commande"]));
-	$pdf->addText(30,$start_tab-60,9,utf8_decode("<b><i>".$LANG["financial"][14]." :</i></b> ".convDate($ic->fields["buy_date"])));
-	$pdf->addText(30,$start_tab-80,9,utf8_decode("<b><i>".$LANG["financial"][15]." :</i></b> ".$ic->fields["warranty_duration"]." mois <b><i> Expire le</i></b> ".getWarrantyExpir($ic->fields["buy_date"],$ic->fields["warranty_duration"])));
-	$pdf->addText(30,$start_tab-100,9,utf8_decode("<b><i>".$LANG["financial"][78]." :</i></b> ".formatNumber($ic->fields["warranty_value"])));
-	$pdf->addText(30,$start_tab-120,9,utf8_decode("<b><i>".$LANG["rulesengine"][13]." :</i></b> ".formatNumber($ic->fields["value"])));
-	$pdf->addText(30,$start_tab-140,9,utf8_decode("<b><i>".$LANG["financial"][20]." :</i></b> 	".$ic->fields["num_immo"]));
-	$pdf->addText(30,$start_tab-160,9,utf8_decode("<b><i>".$LANG["financial"][23]." :</i></b> ".$ic->fields["amort_time"]." an(s)"));
-	$pdf->addText(30,$start_tab-180,9,utf8_decode("<b><i>".$LANG["financial"][89]." :</i></b> ".showTco($ci->getField('ticket_tco'),$ic->fields["value"])));
-	if($ic->fields["alert"]==0)
-		$pdf->addText(30,$start_tab-200,9,utf8_decode("<b><i>".$LANG["setup"][247]." :</i></b> "));
-	elseif($ic->fields["alert"]==4)
-		$pdf->addText(30,$start_tab-200,9,utf8_decode("<b><i>".$LANG["setup"][247]." :</i></b> ".$LANG["financial"][80]));
-	$pdf->addText(30,$start_tab-220,9,utf8_decode("<b><i>".$LANG["common"][25]." :</i></b> "));
-			
-	$y=$start_tab-220;
-	$mytext=str_replace("\r\n","\n",$ic->fields["comments"]);
-	$lines = explode("\n", $mytext);
-	foreach ($lines as $line) {
-		$line = utf8_decode($line);
-		while($line = $pdf->addTextWrap(105,$y,2*$length_tab-80,10,$line)) {
-			$y-=9;
-		}
-		$y-=9;
-	}
-	
-	$pdf->addText($length_tab+35,$start_tab-20,9,utf8_decode("<b><i>".$LANG["financial"][82]." :</i></b> ".$ic->fields["facture"]));
-	$pdf->addText($length_tab+35,$start_tab-40,9,utf8_decode("<b><i>".$LANG["financial"][19]." :</i></b> ".$ic->fields["bon_livraison"]));
-	$pdf->addText($length_tab+35,$start_tab-60,9,utf8_decode("<b><i>".$LANG["financial"][76]." :</i></b> ".convDate($ic->fields["use_date"])));
-	$pdf->addText($length_tab+35,$start_tab-80,9,utf8_decode("<b><i>".$LANG["financial"][87]." :</i></b> ".plugin_pdf_getDropdownName("glpi_dropdown_budget",$ic->fields["budget"]))); 
-	$pdf->addText($length_tab+35,$start_tab-100,9,utf8_decode("<b><i>".$LANG["financial"][16]." :</i></b> ".$ic->fields["warranty_info"]));
-	$pdf->addText($length_tab+35,$start_tab-120,9,utf8_decode("<b><i>".$LANG["financial"][81]." :</i></b> ".TableauAmort($ic->fields["amort_type"],$ic->fields["value"],$ic->fields["amort_time"],$ic->fields["amort_coeff"],$ic->fields["buy_date"],$ic->fields["use_date"],$CFG_GLPI["date_fiscale"],"n")));
-	$pdf->addText($length_tab+35,$start_tab-140,9,utf8_decode("<b><i>".$LANG["financial"][22]." :</i></b> ".getAmortTypeName($ic->fields["amort_type"])));
-	$pdf->addText($length_tab+35,$start_tab-160,9,utf8_decode("<b><i>".$LANG["financial"][77]." :</i></b> ".$ic->fields["amort_coeff"]));
-	$pdf->addText($length_tab+35,$start_tab-180,9,utf8_decode("<b><i>".$LANG["financial"][90]." :</i></b> ".showTco($ci->getField('ticket_tco'),$ic->fields["value"],$ic->fields["buy_date"])));
-
-	}
-	else
-		{
-		if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addText(245,$start_tab,9,utf8_decode("<b>".$LANG['plugin_pdf']["financial"][1]."</b>"));
-		}
-	
-
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
 	
 	$tab["start_tab"] = $start_tab;
 	$tab["pdf"] = $pdf;
@@ -2399,14 +2295,111 @@ foreach($tab_id as $key => $ID)
 	
 $tab_pdf["pdf"]->ezStream();
 }
+*/
+function plugin_pdf_general($type, $tab_id, $tab){
 
-/**
- * Print out an HTML checkbox
- * @param 
- */
-function checkbox($myname,$label,$value,$checked=false)
-{
-	echo "<td><input type='checkbox' ".($checked==true?"checked='checked'":'')." name='$myname' value='$value'>".$label."</td>";
+$pdf = new simplePDF();
+
+$nb_id = count($tab_id);
+
+foreach($tab_id as $key => $ID)
+	{
+	switch($type){
+		case COMPUTER_TYPE:
+			
+			$tab_pdf["pdf"] = plugin_pdf_add_header($pdf,$ID,COMPUTER_TYPE);
+			$pdf->newPage();
+			$tab_pdf = plugin_pdf_config_computer($pdf,$ID);
+			
+			for($i=0;$i<count($tab);$i++)
+			{
+				switch($tab[$i]){
+					case 0:
+						$tab_pdf = plugin_pdf_financial($pdf,$ID,COMPUTER_TYPE);
+						//$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+					case 1:
+						//$tab_pdf = plugin_pdf_connection($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						//$tab_pdf = plugin_pdf_port($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+					case 2:
+						//$tab_pdf = plugin_pdf_device($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+					case 3:
+						//$tab_pdf = plugin_pdf_software($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+					case 4:
+						//$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						//$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+					case 5:
+						//$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+					case 6:
+						//$tab_pdf = plugin_pdf_registry($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+					case 7:
+						//$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+					case 8:
+						//$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+					case 9:
+						//$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+					case 10:
+						//$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+					case 11:
+						//$tab_pdf = plugin_pdf_volume($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						break;
+				}
+			}
+		break;
+		
+		case SOFTWARE_TYPE:
+		
+			plugin_pdf_add_header($pdf,$ID,SOFTWARE_TYPE);
+			//$tab_pdf = plugin_pdf_config_software($tab_pdf,$width,$ID);
+			
+			for($i=0;$i<count($tab);$i++)
+			{
+				switch($tab[$i]){
+					case 0:
+						//$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,0,SOFTWARE_TYPE);
+						break;
+					case 1:
+						//$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,1,SOFTWARE_TYPE);
+						break;
+					case 2:
+						//$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						//$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						break;
+					case 3:
+						//$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						break;
+					case 4:
+						//$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						//$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						break;
+					case 5:
+						//$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						break;
+					case 6:
+						//$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						break;
+					case 7:
+						//$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						break;
+					case 8:
+						//$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						break;
+				}
+			}
+		break;
+		}
+	}
+$pdf->render();	
 }
 
 ?>
