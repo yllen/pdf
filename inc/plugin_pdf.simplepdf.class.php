@@ -48,9 +48,10 @@ class simplePDF  {
 	private $colsw = array();
 	private $align = array();
 	
-	function __construct () {
+	function __construct ($format='a4', $orient='portrait') {
 		
-		$this->pdf    = new Cezpdf('a4','portrait'); // 595.28 x 841.89
+		// A4 is 595.28 x 841.89
+		$this->pdf    = new Cezpdf($format,$orient); 
 		$this->width  = $this->pdf->ez['pageWidth'];
 		$this->height = $this->pdf->ez['pageHeight'];
 		$this->pdf->openHere('Fit');

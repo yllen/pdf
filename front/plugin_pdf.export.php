@@ -59,5 +59,6 @@ for($i=0,$j=1;$i<$_POST["indice"];$i++)
 $tab[0]=-1;
 $tab_id[0]=$_POST["itemID"];
 
-plugin_pdf_general($_POST["plugin_pdf_inventory_type"],$tab_id,$tab);
+plugin_pdf_general($_POST["plugin_pdf_inventory_type"], $tab_id, $tab,
+	(isset($_POST["page"]) ? $_POST["page"] : 0));
 ?>

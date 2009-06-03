@@ -70,14 +70,23 @@ function plugin_pdf_menu_computer($action,$compID,$export=true) {
 		echo "<input type='hidden' name='indice' value='12'>";
 		echo "<input type='hidden' name='itemID' value='$compID'>";
 
-		echo "<input type='submit' value='" . (!$export?$LANG['plugin_pdf']["button"][2]:$LANG['plugin_pdf']["button"][1]) . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
+		if ($export) {
+			echo "<select name='page'>\n";
+			echo "<option value='0'>".$LANG['common'][69]."</option>\n"; // Portrait
+			echo "<option value='1'>".$LANG['common'][68]."</option>\n"; // Paysage
+			echo "</select>\n";	
+			echo "<input type='submit' value='" . $LANG['plugin_pdf']["button"][1] . "' name='generate' class='submit'></td></tr>";			
+		} else {
+			echo "<input type='submit' value='" . $LANG['plugin_pdf']["button"][2] . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
+		}
 		echo "</table></form>";
 }
 
 function plugin_pdf_menu_software($action,$softID,$export=true) {
 	global $LANG,$DB;
 	
-	echo "<form name='plugin_pdf_software' action='$action' method='post'><table class='tab_cadre_fixe'>";
+	echo "<form name='plugin_pdf_software' action='$action' method='post' ".
+		($export ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
 	$values = array();
 	$result = $DB->query("select table_num from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION['glpiID'] . " and cat=" . SOFTWARE_TYPE);
 						
@@ -110,7 +119,15 @@ function plugin_pdf_menu_software($action,$softID,$export=true) {
 	echo "<input type='hidden' name='indice' value='7'>";
 	echo "<input type='hidden' name='itemID' value='$softID'>";
 	
-	echo "<input type='submit' value='" . (!$export?$LANG['plugin_pdf']["button"][2]:$LANG['plugin_pdf']["button"][1]) . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
+	if ($export) {
+		echo "<select name='page'>\n";
+		echo "<option value='0'>".$LANG['common'][69]."</option>\n"; // Portrait
+		echo "<option value='1'>".$LANG['common'][68]."</option>\n"; // Paysage
+		echo "</select>\n";	
+		echo "<input type='submit' value='" . $LANG['plugin_pdf']["button"][1] . "' name='generate' class='submit'></td></tr>";			
+	} else {
+		echo "<input type='submit' value='" . $LANG['plugin_pdf']["button"][2] . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
+	}
 	echo "</table></form>";
 }
 
@@ -1428,9 +1445,9 @@ function plugin_pdf_history($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_general($type, $tab_id, $tab){
+function plugin_pdf_general($type, $tab_id, $tab, $page){
 
-$pdf = new simplePDF();
+$pdf = new simplePDF('a4', ($page ? 'landscape' : 'portrait'));
 
 $nb_id = count($tab_id);
 
