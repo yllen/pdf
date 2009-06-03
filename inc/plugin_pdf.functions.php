@@ -1237,214 +1237,83 @@ function plugin_pdf_note($pdf,$ID,$type){
 		
 	$pdf->displaySpace();
 }
-/*
-function plugin_pdf_reservation($tab,$width,$ID,$type){
+
+function plugin_pdf_reservation($pdf,$ID,$type){
 	
 	global $DB,$LANG,$CFG_GLPI;
 	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
-	
 	$resaID=0;
+	$user = new User();	
 	
-	$i=0;
-	
-	$pdf->ezSetMargins(200,0,200,0);
-
-	if ($resaID=isReservable($type,$ID))
-		{
-		$ri=new ReservationItem;
-		$ri->getFromDB($resaID);
+	$pdf->setColumnsSize(100);
+	if ($resaID=isReservable($type,$ID)) {
 
 		$now=$_SESSION["glpi_currenttime"];
 		$query = "SELECT * FROM glpi_reservation_resa WHERE end > '".$now."' AND id_item='$resaID' ORDER BY begin";
 		$result=$DB->query($query);
 		
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addText(245,$start_tab,9,'<b>'.utf8_decode($LANG["reservation"][35]).'</b>');
-		
-		if(($start_tab-20)-(20*$i)<50){
-					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-					$i=0;
-					$start_tab = 750;
-					}
-		
-		if ($DB->numrows($result)==0)
-			{	
-			$pdf->saveState();
-			$pdf->setColor(0.95,0.95,0.95);
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$width-50,15);
-			$pdf->restoreState();
-			$pdf->addText(265,($start_tab-20)-(20*$i),9,utf8_decode($LANG["reservation"][37]));
-			$i++;
-			
-			if(($start_tab-20)-(20*$i)<50){
-					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-					$i=0;
-					$start_tab = 750;
-					}
-			} 
-		else 
-			{
-			$pdf->saveState();
-			$pdf->setColor(0.8,0.8,0.8);
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),90,15);
-			$pdf->filledRectangle(120,($start_tab-25)-(20*$i),90,15);
-			$pdf->filledRectangle(215,($start_tab-25)-(20*$i),140,15);
-			$pdf->filledRectangle(360,($start_tab-25)-(20*$i),210,15);
-			$pdf->restoreState();
-
-			$pdf->addText(45,($start_tab-20)-(20*$i),9,'<b>'.utf8_decode($LANG["search"][8]).'</b>');
-			$pdf->addText(150,($start_tab-20)-(20*$i),9,'<b>'.utf8_decode($LANG["search"][9]).'</b>');
-			$pdf->addText(280,($start_tab-20)-(20*$i),9,'<b>'.utf8_decode($LANG["reservation"][31]).'</b>');
-			$pdf->addText(435,($start_tab-20)-(20*$i),9,'<b>'.utf8_decode($LANG["common"][25]).'</b>');
-			
-			$i++;
-			
-			if(($start_tab-20)-(20*$i)<50){
-					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-					$i=0;
-					$start_tab = 750;
-					}
-			
-			while ($data=$DB->fetch_assoc($result))
-				{
-				$pdf->saveState();
-				$pdf->setColor(0.95,0.95,0.95);
-				$pdf->filledRectangle(25,($start_tab-25)-(20*$i),90,15);
-				$pdf->filledRectangle(120,($start_tab-25)-(20*$i),90,15);
-				$pdf->filledRectangle(215,($start_tab-25)-(20*$i),140,15);
-				$pdf->filledRectangle(360,($start_tab-25)-(20*$i),210,15);
-				$pdf->restoreState();	
+		$pdf->setColumnsSize(100);
+		$pdf->displayTitle("<b>".$LANG["reservation"][35]."</b>");
 				
-				$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode(convDateTime($data["begin"])));
-				$pdf->addText(125,($start_tab-20)-(20*$i),9,utf8_decode($data["end"]));
-				$pdf->addText(220,($start_tab-20)-(20*$i),9,utf8_decode($data["id_user"]));
-				$pdf->addText(365,($start_tab-20)-(20*$i),9,utf8_decode($data["comment"]));
-				
-				$i++;
-				
-				if(($start_tab-20)-(20*$i)<50){
-					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-					$i=0;
-					$start_tab = 750;
-					}
+		if (!$DB->numrows($result)) {	
+			$pdf->displayLine("<b>".$LANG["reservation"][37]."</b>");
+			
+		} else {
+			$pdf->setColumnsSize(14,14,26,46);						
+			$pdf->displayTitle(
+				'<i>'.$LANG["search"][8].'</i>',
+				'<i>'.$LANG["search"][9].'</i>',
+				'<i>'.$LANG["reservation"][31].'</i>',
+				'<i>'.$LANG["common"][25].'</i>');
+						
+			while ($data=$DB->fetch_assoc($result))	{
+				if ($user->getFromDB($data["id_user"])) {
+					$name = formatUserName($user->fields["ID"],$user->fields["name"],$user->fields["realname"],$user->fields["firstname"]);					
+				} else {
+					$name = "(".$data["id_user"].")";
 				}
+				$pdf->displayLine(convDateTime($data["begin"]),	convDateTime($data["end"]),
+					$name, str_replace(array("\r","\n")," ",$data["comment"]));								
 			}
-		
-		$i++;
-		
-		if(($start_tab-20)-(20*$i)<50){
-					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-					$i=0;
-					$start_tab = 750;
 		}
 		
 		$query = "SELECT * FROM glpi_reservation_resa WHERE end <= '".$now."' AND id_item='$resaID' ORDER BY begin DESC";
 		$result=$DB->query($query);
 
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$width-50,15);
-		$pdf->restoreState();
-		$pdf->addText(260,($start_tab-20)-(20*$i),9,'<b>'.utf8_decode($LANG["reservation"][36]).'</b>');
+		$pdf->setColumnsSize(100);
+		$pdf->displayTitle("<b>".$LANG["reservation"][36]."</b>");
 
-		$i++;
-		
-		if(($start_tab-20)-(20*$i)<50){
-					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-					$i=0;
-					$start_tab = 750;
-					}
-
-		if ($DB->numrows($result)==0)
-			{	
-			$pdf->saveState();
-			$pdf->setColor(0.95,0.95,0.95);
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$width-50,15);
-			$pdf->restoreState();
-			$pdf->addText(265,$start_tab,9,utf8_decode($LANG["reservation"][37]));
-			} 
-		else 
-			{
-			$pdf->saveState();
-			$pdf->setColor(0.8,0.8,0.8);
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),90,15);
-			$pdf->filledRectangle(120,($start_tab-25)-(20*$i),90,15);
-			$pdf->filledRectangle(215,($start_tab-25)-(20*$i),140,15);
-			$pdf->filledRectangle(360,($start_tab-25)-(20*$i),210,15);
-			$pdf->restoreState();
-
-			$pdf->addText(45,($start_tab-20)-(20*$i),9,'<b>'.utf8_decode($LANG["search"][8]).'</b>');
-			$pdf->addText(150,($start_tab-20)-(20*$i),9,'<b>'.utf8_decode($LANG["search"][9]).'</b>');
-			$pdf->addText(280,($start_tab-20)-(20*$i),9,'<b>'.utf8_decode($LANG["reservation"][31]).'</b>');
-			$pdf->addText(435,($start_tab-20)-(20*$i),9,'<b>'.utf8_decode($LANG["common"][25]).'</b>');
+		if (!$DB->numrows($result))	{	
+			$pdf->displayLine("<b>".$LANG["reservation"][37]."</b>");
+		} else	{
+			$pdf->setColumnsSize(14,14,26,46);	
+			$pdf->displayTitle(
+				'<i>'.$LANG["search"][8].'</i>',
+				'<i>'.$LANG["search"][9].'</i>',
+				'<i>'.$LANG["reservation"][31].'</i>',
+				'<i>'.$LANG["common"][25].'</i>');
 			
-			$i++;
-			
-			if(($start_tab-20)-(20*$i)<50){
-					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-					$i=0;
-					$start_tab = 750;
-					}
-			
-			while ($data=$DB->fetch_assoc($result))
-				{
-				$pdf->saveState();
-				$pdf->setColor(0.95,0.95,0.95);
-				$pdf->filledRectangle(25,($start_tab-25)-(20*$i),90,15);
-				$pdf->filledRectangle(120,($start_tab-25)-(20*$i),90,15);
-				$pdf->filledRectangle(215,($start_tab-25)-(20*$i),140,15);
-				$pdf->filledRectangle(360,($start_tab-25)-(20*$i),210,15);
-				$pdf->restoreState();	
-				
-				$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode(convDateTime($data["begin"])));
-				$pdf->addText(125,($start_tab-20)-(20*$i),9,utf8_decode($data["end"]));
-				$pdf->addText(220,($start_tab-20)-(20*$i),9,utf8_decode($data["id_user"]));
-				$pdf->addText(365,($start_tab-20)-(20*$i),9,utf8_decode($data["comment"]));
-				
-				$i++;
-				
-				if(($start_tab-20)-(20*$i)<50){
-					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-					$i=0;
-					$start_tab = 750;
-					}
+			while ($data=$DB->fetch_assoc($result))	{
+				if ($user->getFromDB($data["id_user"])) {
+					$name = formatUserName($user->fields["ID"],$user->fields["name"],$user->fields["realname"],$user->fields["firstname"]);					
+				} else {
+					$name = "(".$data["id_user"].")";
 				}
+				$pdf->displayLine(convDateTime($data["begin"]),	convDateTime($data["end"]),
+					$name, str_replace(array("\r","\n")," ",$data["comment"]));								
 			}
+		}
 
-		} 
-	else
-			{
-			if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-			$pdf->saveState();
-			$pdf->setColor(0.8,0.8,0.8);
-			$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-			$pdf->restoreState();
-			$pdf->addText(250,$start_tab,9,'<b>'.utf8_decode($LANG["reservation"][34]).'</b>');
-			}
+	} else { // Not isReservable
+		$pdf->displayTitle("<b>".$LANG["reservation"][34]."</b>");
+	}
 		
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
-		
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;	
+	$pdf->displaySpace();
 }
 
-function plugin_pdf_history($tab,$width,$ID,$type){
+function plugin_pdf_history($pdf,$ID,$type){
 	
 	global $DB,$LANG;
-	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
 	
 	$SEARCH_OPTION=getSearchOptions();
 	
@@ -1453,156 +1322,111 @@ function plugin_pdf_history($tab,$width,$ID,$type){
 	$result = $DB->query($query);
 	$number = $DB->numrows($result);
 	
-	$pdf->saveState();
-	$pdf->setColor(0.8,0.8,0.8);
-	$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-	$pdf->restoreState();
-	$pdf->addText(280,$start_tab,9,'<b>'.utf8_decode($LANG["title"][38]).'</b>');
+	$pdf->setColumnsSize(100);
+	$pdf->displayTitle("<b>".$LANG["title"][38]."</b>");
 	
-	$i=0;
 	
-	if($number!=0){
-	while ($data =$DB->fetch_array($result)){
-		$field="";
-		if($data["linked_action"]){
-			switch ($data["linked_action"]){
+	if ($number>0) {
+		//$pdf->setColumnsSize(9,14,15,15,47);
+		$pdf->setColumnsSize(14,15,20,51);
+		$pdf->displayTitle(
+			//'<b><i>'.$LANG["common"][2].'</i></b>',
+			'<b><i>'.$LANG["common"][27].'</i></b>',
+			'<b><i>'.$LANG["common"][34].'</i></b>',
+			'<b><i>'.$LANG["event"][18].'</i></b>',
+			'<b><i>'.$LANG["event"][19].'</i></b>');
 
-				case HISTORY_ADD_DEVICE :
-					$field = getDictDeviceLabel($data["device_internal_type"]);
-					$change = $LANG["devices"][25]." ".$data[ "new_value"];	
-					break;
-
-				case HISTORY_UPDATE_DEVICE :
-					$field = getDictDeviceLabel($data["device_internal_type"]);
-					$change = getDeviceSpecifityLabel($data["device_internal_type"]).$data[ "old_value"].$data[ "new_value"];	
-					break;
-
-				case HISTORY_DELETE_DEVICE :
-					$field = getDictDeviceLabel($data["device_internal_type"]);
-					$change = $LANG["devices"][26]." ".$data["old_value"];	
-					break;
-				case HISTORY_INSTALL_SOFTWARE :
-					$field = $LANG["help"][31];
-					$change = $LANG["software"][44]." ".$data["new_value"];	
-					break;				
-				case HISTORY_UNINSTALL_SOFTWARE :
-					$field = $LANG["help"][31];
-					$change = $LANG["software"][45]." ".$data["old_value"];	
-					break;	
-				case HISTORY_DISCONNECT_DEVICE:
-					$ci = new CommonItem();
-					$ci->setType($data["device_internal_type"]);
-					$field = $ci->getType();
-					$change = $LANG["central"][6]." ".$data["old_value"];	
-					break;	
-				case HISTORY_CONNECT_DEVICE:
-					$ci = new CommonItem();
-					$ci->setType($data["device_internal_type"]);
-					$field = $ci->getType();
-					$change = $LANG["log"][55]." ".$data["new_value"];	
-					break;	
-				case HISTORY_OCS_IMPORT:
-					$ci = new CommonItem();
-					$ci->setType($data["device_internal_type"]);
-					$field = $ci->getType();
-					$change = $LANG["ocsng"][7]." ".$LANG["ocsng"][45]." : ".$data["new_value"];	
-					break;	
-				case HISTORY_OCS_DELETE:
-					$ci = new CommonItem();
-					$ci->setType($data["device_internal_type"]);
-					$field = $ci->getType();
-					$change = $LANG["ocsng"][46]." ".$LANG["ocsng"][45]." : ".$data["old_value"];	
-					break;	
-				case HISTORY_OCS_LINK:
-					$ci = new CommonItem();
-					$ci->setType($data["device_internal_type"]);
-					$field = $ci->getType();
-					$change = $LANG["ocsng"][47]." ".$LANG["ocsng"][45]." : ".$data["new_value"];	
-					break;	
-				case HISTORY_OCS_IDCHANGED:
-					$ci = new CommonItem();
-					$ci->setType($data["device_internal_type"]);
-					$field = $ci->getType();
-					$change = $LANG["ocsng"][48].$data["old_value"].$data["new_value"];	
-					break;	
-			}
-		}
-		else{
-			$fieldname="";
-			foreach($SEARCH_OPTION[COMPUTER_TYPE] as $key2 => $val2)
-				if($key2==$data["id_search_option"]){
-					$field = $val2["name"];
-					$fieldname = $val2["field"];
+		while ($data =$DB->fetch_array($result)){
+			$field="";
+			if($data["linked_action"]){
+				switch ($data["linked_action"]){
+	
+					case HISTORY_ADD_DEVICE :
+						$field = getDictDeviceLabel($data["device_internal_type"]);
+						$change = $LANG["devices"][25]." ".$data[ "new_value"];	
+						break;
+	
+					case HISTORY_UPDATE_DEVICE :
+						$field = getDictDeviceLabel($data["device_internal_type"]);
+						$change = getDeviceSpecifityLabel($data["device_internal_type"]).$data[ "old_value"].$data[ "new_value"];	
+						break;
+	
+					case HISTORY_DELETE_DEVICE :
+						$field = getDictDeviceLabel($data["device_internal_type"]);
+						$change = $LANG["devices"][26]." ".$data["old_value"];	
+						break;
+					case HISTORY_INSTALL_SOFTWARE :
+						$field = $LANG["help"][31];
+						$change = $LANG["software"][44]." ".$data["new_value"];	
+						break;				
+					case HISTORY_UNINSTALL_SOFTWARE :
+						$field = $LANG["help"][31];
+						$change = $LANG["software"][45]." ".$data["old_value"];	
+						break;	
+					case HISTORY_DISCONNECT_DEVICE:
+						$ci = new CommonItem();
+						$ci->setType($data["device_internal_type"]);
+						$field = $ci->getType();
+						$change = $LANG["central"][6]." ".$data["old_value"];	
+						break;	
+					case HISTORY_CONNECT_DEVICE:
+						$ci = new CommonItem();
+						$ci->setType($data["device_internal_type"]);
+						$field = $ci->getType();
+						$change = $LANG["log"][55]." ".$data["new_value"];	
+						break;	
+					case HISTORY_OCS_IMPORT:
+						$ci = new CommonItem();
+						$ci->setType($data["device_internal_type"]);
+						$field = $ci->getType();
+						$change = $LANG["ocsng"][7]." ".$LANG["ocsng"][45]." : ".$data["new_value"];	
+						break;	
+					case HISTORY_OCS_DELETE:
+						$ci = new CommonItem();
+						$ci->setType($data["device_internal_type"]);
+						$field = $ci->getType();
+						$change = $LANG["ocsng"][46]." ".$LANG["ocsng"][45]." : ".$data["old_value"];	
+						break;	
+					case HISTORY_OCS_LINK:
+						$ci = new CommonItem();
+						$ci->setType($data["device_internal_type"]);
+						$field = $ci->getType();
+						$change = $LANG["ocsng"][47]." ".$LANG["ocsng"][45]." : ".$data["new_value"];	
+						break;	
+					case HISTORY_OCS_IDCHANGED:
+						$ci = new CommonItem();
+						$ci->setType($data["device_internal_type"]);
+						$field = $ci->getType();
+						$change = $LANG["ocsng"][48].$data["old_value"].$data["new_value"];	
+						break;	
 				}
-				
-			if ($fieldname=="comments")
-				$change = $LANG["log"][64];
-			else
-				$change = $data[ "old_value"].$data[ "new_value"];
-			}
-		
-		for($j=0,$deb=0;$j<6;$j++,$deb++){
-					
-			if(($start_tab-20)-(20*($i+$j))<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				$deb=0;
-				}
-					
-			$pdf->saveState();
-			if($j<5)
-				$pdf->setColor(0.95,0.95,0.95);
-			else
-				$pdf->setColor(0.8,0.8,0.8);
-			$pdf->filledRectangle(25,($start_tab-25)-(20*($deb+$i)),$width-50,15);
-			$pdf->restoreState();
-		
-			switch($j){
-						case 0:
-						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,'<b><i>'.utf8_decode($LANG["common"][2].' : </i></b> '.$data["ID"]));
-						break;
-						case 1:
-						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,'<b><i>'.utf8_decode($LANG["common"][27].' : </i></b> '.convDateTime($data["date_mod"])));
-						break;
-						case 2:
-						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,'<b><i>'.utf8_decode($LANG["common"][34].' : </i></b> '.$data["user_name"]));
-						break;
-						case 3:
-						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,'<b><i>'.utf8_decode($LANG["event"][18].' : </i></b> '.$field));
-						break;
-						case 4:
-						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,'<b><i>'.utf8_decode($LANG["event"][19].' : </i></b> '.$change));
-						break;
-						case 5:
-							$i+=$deb+1;
-						break;
+			} else { // Not a linked_action
+				$fieldname="";
+				foreach($SEARCH_OPTION[COMPUTER_TYPE] as $key2 => $val2)
+					if($key2==$data["id_search_option"]){
+						$field = $val2["name"];
+						$fieldname = $val2["field"];
 					}
-				}	
+					
+				if ($fieldname=="comments")
+					$change = $LANG["log"][64];
+				else
+					$change = str_replace("&nbsp;"," ",$data["old_value"])." > ".str_replace("&nbsp;"," ",$data["new_value"]);
+			}
+			
+			$pdf->displayLine(
+				//$data["ID"],
+				convDateTime($data["date_mod"]),
+				$data["user_name"],
+				$field,
+				$change);
+		} // Each log
+	} else {
+		$pdf->displayTitle("<b>".$LANG["event"][20]."</b>");
 	}
-	}
-	else
-		{
-		if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addText(260,$start_tab,9,"<b>".utf8_decode($LANG["event"][20])."</b>");
-		}
-		
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
-	
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
+
+	$pdf->displaySpace();
 }
-*/
 
 function plugin_pdf_general($type, $tab_id, $tab){
 
@@ -1653,10 +1477,10 @@ foreach($tab_id as $key => $ID)
 						$tab_pdf = plugin_pdf_note($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 9:
-						//$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						$tab_pdf = plugin_pdf_reservation($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 10:
-						//$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						$tab_pdf = plugin_pdf_history($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 11:
 						$tab_pdf = plugin_pdf_volume($pdf,$ID,COMPUTER_TYPE);
@@ -1697,10 +1521,10 @@ foreach($tab_id as $key => $ID)
 						$tab_pdf = plugin_pdf_note($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 7:
-						//$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						$tab_pdf = plugin_pdf_reservation($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 8:
-						//$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						$tab_pdf = plugin_pdf_history($pdf,$ID,SOFTWARE_TYPE);
 						break;
 				}
 			}
