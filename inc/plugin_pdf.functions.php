@@ -38,7 +38,8 @@ function checkbox($myname,$label,$value,$checked=false) {
 function plugin_pdf_menu_computer($action,$compID,$export=true) {
 	global $LANG,$DB;
 	
-	echo "<form name='plugin_pdf_computer' action='$action' method='post'><table class='tab_cadre_fixe'>";
+	echo "<form name='plugin_pdf_computer' action='$action' method='post' " . 
+		($export ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
 	$values = array();
 	$result = $DB->query("select table_num from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION['glpiID'] . " and cat=" . COMPUTER_TYPE);
 					
@@ -198,6 +199,8 @@ function plugin_pdf_config_computer($pdf,$ID) {
 		'<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$computer->fields['location']));
 		
 	$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $computer->fields['comments']);
+	
+	$pdf->displaySpace();
 }
 
 function plugin_pdf_financial($pdf,$ID,$type){
@@ -252,9 +255,8 @@ function plugin_pdf_financial($pdf,$ID,$type){
 	} else {
 		$pdf->displayTitle("<b>".$LANG['plugin_pdf']["financial"][1]."</b>");
 	}
-/*	
-	
-	*/
+
+	$pdf->displaySpace();
 }
 
 /*
@@ -784,13 +786,10 @@ function plugin_pdf_software($tab,$width,$ID,$type){
 	
 	return $tab;
 }
-
-function plugin_pdf_connection($tab,$width,$ID,$type){
+*/
+function plugin_pdf_connection($pdf,$ID,$type){
 	
 	global $DB,$LANG;
-	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
 	
 	$items=array(PRINTER_TYPE=>$LANG["computers"][39],MONITOR_TYPE=>$LANG["computers"][40],PERIPHERAL_TYPE=>$LANG["computers"][46],PHONE_TYPE=>$LANG["computers"][55]);
 	
@@ -799,13 +798,8 @@ function plugin_pdf_connection($tab,$width,$ID,$type){
 	$info=new InfoCom();
 	$comp->getFromDB($ID);
 	
-	$i=0;
-	
-	$pdf->saveState();
-	$pdf->setColor(0.8,0.8,0.8);
-	$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-	$pdf->restoreState();
-	$pdf->addText(250,$start_tab,9,utf8_decode('<b>'.$LANG["connect"][0].' :</b>'));
+	$pdf->setColumnsSize(100);
+	$pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
 	
 	foreach ($items as $type=>$title){
 		$query = "SELECT * from glpi_connect_wire WHERE end2='$ID' AND type='".$type."'";
@@ -814,85 +808,57 @@ function plugin_pdf_connection($tab,$width,$ID,$type){
 			$resultnum = $DB->numrows($result);
 			if ($resultnum>0) {
 				
-				for ($j=0; $j < $resultnum; $j++, $i++) {
+				for ($j=0; $j < $resultnum; $j++) {
 					$tID = $DB->result($result, $j, "end1");
 					$connID = $DB->result($result, $j, "ID");
 					$ci->getFromDB($type,$tID);
 					$info->getFromDBforDevice($type,$tID) || $info->getEmpty();
 
-					$pdf->saveState();
-					$pdf->setColor(0.95,0.95,0.95);
-					if ($ci->getField("otherserial")!=null || $info->fields["num_immo"]) {
-						$pdf->filledRectangle(25,($start_tab-45)-(20*$i),$width-50, 35);
-					} else {
-						$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$width-50, 15);
-					}
-					$pdf->restoreState();
-					if ($j==0) {
-						$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode('<b><i>'.$ci->getType().' :</i></b>'));						
-					}
 
-					$tempo=$ci->getName()." - ";
+					$line1 = $ci->getName()." - ";
 					if($ci->getField("serial")!=null) {
-						$tempo .=$LANG["common"][19] . " : " .$ci->getField("serial")." - ";
+						$line1 .= $LANG["common"][19] . " : " .$ci->getField("serial")." - ";
 					}
-					$pdf->addText(120,($start_tab-20)-(20*$i),9,utf8_decode($tempo . plugin_pdf_getDropdownName("glpi_dropdown_state",$ci->getField('state'))));
+					$line1 .= plugin_pdf_getDropdownName("glpi_dropdown_state",$ci->getField('state'));
 
-					$tempo="";
+					$line2 = "";
 					if($ci->getField("otherserial")!=null) {
-						$tempo .=$LANG["common"][20] . " : " . $ci->getField("otherserial");
+						$line2 = $LANG["common"][20] . " : " . $ci->getField("otherserial");
 					}
 					if ($info->fields["num_immo"]) {
-						if ($tempo) $tempo .= " - ";
-						$tempo .=$LANG["financial"][20] . " : " . $info->fields["num_immo"];
+						if ($line2) $line2 .= " - ";
+						$line2 .= $LANG["financial"][20] . " : " . $info->fields["num_immo"];
 					}
-					if ($tempo) {
-						$i++;
-						$pdf->addText(200,($start_tab-20)-(20*$i),9,utf8_decode($tempo));
+					if ($line2) {
+						$pdf->displayText('<b>'.$ci->getType().'</b>', $line1 . "\n" . $line2, 2);
+					} else {
+						$pdf->displayText('<b>'.$ci->getType().'</b>', $line1, 1);
 					}
 				}// each device	of current type
 						
 			} else { // No row	
 					
-				$pdf->saveState();
-				$pdf->setColor(0.95,0.95,0.95);
-				$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$width-50,15);
-				$pdf->restoreState();
-
 				switch ($type){
 					case PRINTER_TYPE:
-						$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][38]));
+						$pdf->displayLine($LANG["computers"][38]);
 					break;
 					case MONITOR_TYPE:
-						$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][37]));
+						$pdf->displayLine($LANG["computers"][37]);
 					break;
 					case PERIPHERAL_TYPE:
-						$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][47]));
+						$pdf->displayLine($LANG["computers"][47]);
 					break;
 					case PHONE_TYPE:
-						$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($LANG["computers"][54]));
+						$pdf->displayLine($LANG["computers"][54]);
 					break;
 					}
-				$i++;
 			} // No row
 		} // Result
 			
-		if(($start_tab-20)-(20*$i)<50){
-			$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-			$i=0;
-			$start_tab = 750;
-		}
 	} // each type
 	
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
-		
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
-	
 }
-
+/*
 function plugin_pdf_port($tab,$width,$ID,$type){
 	
 	global $DB,$LANG;
@@ -1016,16 +982,13 @@ function plugin_pdf_port($tab,$width,$ID,$type){
 	
 	return $tab;
 }
-
-function plugin_pdf_contract($tab,$width,$ID,$type){
+*/
+function plugin_pdf_contract($pdf,$ID,$type){
 	
 	global $DB,$CFG_GLPI,$LANG;
 	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
-	
-	$ci=new CommonItem();
-	$ci->getFromDB($type,$ID);
+	$ci = new CommonItem();
+	$con = new Contract;
 
 	$query = "SELECT * FROM glpi_contract_device WHERE glpi_contract_device.FK_device = ".$ID." AND glpi_contract_device.device_type = ".$type;
 
@@ -1034,104 +997,43 @@ function plugin_pdf_contract($tab,$width,$ID,$type){
 	
 	$i=$j=0;
 	
-	if($number>0){
+	if($ci->getFromDB($type,$ID) && $number>0) {
 		
-	$pdf->saveState();
-	$pdf->setColor(0.8,0.8,0.8);
-	$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-	$pdf->filledRectangle(25,($start_tab-25)-(20*$i),100,15);
-	$pdf->filledRectangle(130,($start_tab-25)-(20*$i),100,15);
-	$pdf->filledRectangle(235,($start_tab-25)-(20*$i),100,15);
-	$pdf->filledRectangle(340,($start_tab-25)-(20*$i),80,15);
-	$pdf->filledRectangle(425,($start_tab-25)-(20*$i),60,15);
-	$pdf->filledRectangle(490,($start_tab-25)-(20*$i),80,15);
-	$pdf->restoreState();
-	$pdf->addText(260,$start_tab,9,'<b>'.utf8_decode($LANG["financial"][66]).' :</b>');
-	$pdf->addText(65,$start_tab-20,9,'<b>'.utf8_decode($LANG["common"][16]).'</b>');
-	$pdf->addText(138,$start_tab-20,9,'<b>'.utf8_decode($LANG["financial"][4]).'</b>');
-	$pdf->addText(255,$start_tab-20,9,'<b>'.utf8_decode($LANG["financial"][6]).'</b>');
-	$pdf->addText(355,$start_tab-20,9,'<b>'.utf8_decode($LANG["financial"][26]).'</b>');
-	$pdf->addText(428,$start_tab-20,9,'<b>'.utf8_decode($LANG["search"][8]).'</b>');
-	$pdf->addText(515,$start_tab-20,9,'<b>'.utf8_decode($LANG["financial"][8]).'</b>');
+		$pdf->displayTitle($LANG["financial"][66]);
+		$pdf->setColumnsSize(19,19,19,16,11,16);
+		$pdf->displayTitle(
+			$LANG["common"][16],
+			$LANG["financial"][4],
+			$LANG["financial"][6],
+			$LANG["financial"][26],
+			$LANG["search"][8],
+			$LANG["financial"][8]
+			);
 	
-	$i++;
-		
-	while ($j < $number) {
-		$cID=$DB->result($result, $j, "FK_contract");
-		$assocID=$DB->result($result, $j, "ID");
-		$con=new Contract;
-		$con->getFromDB($cID);
-		
-		$pdf->saveState();
-		$pdf->setColor(0.95,0.95,0.95);
-		$pdf->filledRectangle(25,($start_tab-25)-(20*$i),100,15);
-		$pdf->filledRectangle(130,($start_tab-25)-(20*$i),100,15);
-		$pdf->filledRectangle(235,($start_tab-25)-(20*$i),100,15);
-		$pdf->filledRectangle(340,($start_tab-25)-(20*$i),80,15);
-		$pdf->filledRectangle(425,($start_tab-25)-(20*$i),60,15);
-		$pdf->filledRectangle(490,($start_tab-25)-(20*$i),80,15);
-		$pdf->restoreState();
-		
-		if (empty($con->fields["name"]))
-			$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($con->fields["ID"]));
-		else
-			$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($con->fields["name"]));
-		
-		$pdf->addText(135,($start_tab-20)-(20*$i),9,utf8_decode($con->fields["num"]));
-		$pdf->addText(240,($start_tab-20)-(20*$i),9,utf8_decode(plugin_pdf_getDropdownName("glpi_dropdown_contract_type",$con->fields["contract_type"])));
-		
-		$temp = str_replace("<br>", "", getContractEnterprises($cID));
-		
-		if(strlen($temp)<14)
-			$pdf->addText(345,($start_tab-20)-(20*$i),9,utf8_decode($temp));
-		else
-		{
-			$temp=$pdf->addTextWrap(345,($start_tab-20)-(20*$i)+4,70,8,utf8_decode($temp));
-			$pdf->addTextWrap(345,($start_tab-20)-(20*$i)-4,70,8,utf8_decode($temp));
-		}
-		
-		$pdf->addText(430,($start_tab-20)-(20*$i),9,utf8_decode(convDate($con->fields["begin_date"])));
-		
-		if ($con->fields["begin_date"]!='' && $con->fields["begin_date"]!="0000-00-00")
-			{
-			$pdf->addText(515,($start_tab-20)-(20*$i)+4,7,utf8_decode($con->fields["duration"]." ".$LANG["financial"][57])); 
-			$pdf->addText(505,($start_tab-20)-(20*$i)-4,7,"-> ".utf8_decode(getWarrantyExpir($con->fields["begin_date"],$con->fields["duration"]))); 
-			}
-		else
-			$pdf->addText(510,($start_tab-20)-(20*$i),9,utf8_decode($con->fields["duration"]." ".$LANG["financial"][57])); 
-		
 		$i++;
-		$j++;
 		
-		if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-		}
-	}
-	else
-		{
-		if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addText(260,$start_tab,9,utf8_decode('<b>'.$LANG['plugin_pdf']["financial"][2].'</b>'));
-		}
-	
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
+		while ($j < $number) {
+			$cID=$DB->result($result, $j, "FK_contract");
+			$assocID=$DB->result($result, $j, "ID");
 		
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
+			if ($con->getFromDB($cID)) {
+				$pdf->displayLine(
+					(empty($con->fields["name"]) ? "(".$con->fields["ID"].")" : $con->fields["name"]),
+					$con->fields["num"],
+					plugin_pdf_getDropdownName("glpi_dropdown_contract_type",$con->fields["contract_type"]),
+					str_replace("<br>", " ", getContractEnterprises($cID)),
+					convDate($con->fields["begin_date"]),
+					$con->fields["duration"]." ".$LANG["financial"][57]
+					);					
+			}
+			$j++;
+		}
+	} else {
+		$pdf->displayTitle("<b>".$LANG['plugin_pdf']["financial"][2]."</b>");		
+	}	
+	$pdf->displaySpace();
 }
-
+/*
 function plugin_pdf_document($tab,$width,$ID,$type){
 	
 	global $DB,$LANG;
@@ -2316,10 +2218,10 @@ foreach($tab_id as $key => $ID)
 				switch($tab[$i]){
 					case 0:
 						$tab_pdf = plugin_pdf_financial($pdf,$ID,COMPUTER_TYPE);
-						//$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						$tab_pdf = plugin_pdf_contract ($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 1:
-						//$tab_pdf = plugin_pdf_connection($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						$tab_pdf = plugin_pdf_connection($pdf,$ID,COMPUTER_TYPE);
 						//$tab_pdf = plugin_pdf_port($tab_pdf,$width,$ID,COMPUTER_TYPE);
 						break;
 					case 2:
@@ -2372,8 +2274,8 @@ foreach($tab_id as $key => $ID)
 						//$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,1,SOFTWARE_TYPE);
 						break;
 					case 2:
-						//$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-						//$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						$tab_pdf = plugin_pdf_financial($pdf,$ID,SOFTWARE_TYPE);
+						$tab_pdf = plugin_pdf_contract($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 3:
 						//$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,SOFTWARE_TYPE);

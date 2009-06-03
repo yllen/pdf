@@ -55,8 +55,8 @@ class simplePDF  {
 		$this->height = $this->pdf->ez['pageHeight'];
 		$this->pdf->openHere('Fit');
 		
-		error_log("PDF: " . $this->width . "x" . $this->height);
-		$this->start_tab = 0;
+		// error_log("PDF: " . $this->width . "x" . $this->height);
+		$this->start_tab = $this->height;
 		$this->setBackground();
 	}	
 	
@@ -86,11 +86,16 @@ class simplePDF  {
 	}
 	
 	public function newPage () {
-		if (empty($this->header)) {
-			$this->start_tab = $this->height-45;
-		} else {
-			$this->pdf->addTextWrap(0,$this->height-45,$this->width,14,utf8_decode($this->header),'center');		
-			$this->start_tab = $this->height-70;
+		
+		if ($this->start_tab<$this->height) { // This is not the first page
+			$this->pdf->ezText("",1000);
+			$this->pdf->ezText("",9);
+		}
+		
+		$this->start_tab = $this->height-45;
+		if (!empty($this->header)) {
+			$this->pdf->addTextWrap(0,$this->start_tab,$this->width,14,utf8_decode($this->header),'center');		
+			$this->start_tab -= 30;
 		}	
 	}
 	
@@ -110,9 +115,6 @@ class simplePDF  {
 			$this->colsw[]=$z;
 			$x+=$z+5;								
 		}
-		error_log("Cols :".implode(" ",$this->cols));
-		error_log("ColsX:".implode(" ",$this->colsx));
-		error_log("ColsW:".implode(" ",$this->colsw));
 	}
 	
 	// Args are relative size of each column
@@ -143,7 +145,6 @@ class simplePDF  {
 		
 		$i=0;
 		foreach ($msgs as $msg) {	
-			error_log("Render: $msg");
 			if ($i<count($this->cols)) {
 				$this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,utf8_decode($msg),
 					(isset($this->align[$i]) ? $this->align[$i] : 'center'));
@@ -168,7 +169,6 @@ class simplePDF  {
 		
 		$i=0;
 		foreach ($msgs as $msg) {	
-			error_log("Render: $msg");
 			if ($i<count($this->cols)) {
 				$this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,utf8_decode($msg),
 					(isset($this->align[$i]) ? $this->align[$i] : 'left'));
@@ -215,6 +215,10 @@ class simplePDF  {
 			$maxline--;
 		}
 		$this->start_tab -= ($maxline*10)+10;		
+	}
+
+	public function displaySpace ($nb=1) {
+		$this->start_tab -= ($nb * 20);		
 	}
 }
 
