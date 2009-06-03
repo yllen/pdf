@@ -1055,37 +1055,24 @@ function plugin_pdf_oldticket($pdf,$ID,$type){
 	
 	$pdf->displaySpace();
 }
-/*
-function plugin_pdf_link($tab,$width,$ID,$type){
+
+function plugin_pdf_link($pdf,$ID,$type){
 	
 	global $DB,$LANG;
-	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
 	
 	$query="SELECT glpi_links.ID as ID, glpi_links.link as link, glpi_links.name as name , glpi_links.data as data from glpi_links INNER JOIN glpi_links_device ON glpi_links.ID= glpi_links_device.FK_links WHERE glpi_links_device.device_type=".$type." ORDER BY glpi_links.name";
 
 	$result=$DB->query($query);
 	
-	$pdf->ezSetMargins(100,0,200,0);
-	
-	$i=0;
-	
 	$ci=new CommonItem;
+
+	$pdf->setColumnsSize(100);
 	if ($DB->numrows($result)>0){
 		
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addText(230,$start_tab,9,'<b>'.utf8_decode($LANG["title"][33]).'</b>');		
+		$pdf->displayTitle('<b>'.$LANG["title"][33].'</b>');
 		
+		//$pdf->setColumnsSize(25,75);
 		while ($data=$DB->fetch_assoc($result)){
-
-			$pdf->saveState();
-			$pdf->setColor(0.95,0.95,0.95);
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$width-50,15);
-			$pdf->restoreState();
 			
 			$name=$data["name"];
 			if (empty($name))
@@ -1093,9 +1080,9 @@ function plugin_pdf_link($tab,$width,$ID,$type){
 
 			$link=$data["link"];
 			$file=trim($data["data"]);
+			$ci->getFromDB($type,$ID);
 			if (empty($file)){
 
-				$ci->getFromDB($type,$ID);
 				if (strpos("[NAME]",$link)){
 					$link=str_replace("[NAME]",$ci->getName(),$link);
 				}
@@ -1136,7 +1123,7 @@ function plugin_pdf_link($tab,$width,$ID,$type){
 				}
 				$ipmac=array();
 				$j=0;
-				if (strpos("[IP]",$link)||strpos("[MAC]",$link)){
+				if (strstr($link,"[IP]")||strstr($link,"[MAC]")){
 					$query2 = "SELECT ifaddr,ifmac FROM glpi_networking_ports WHERE (on_device = $ID AND device_type = ".$type.") ORDER BY logical_number";
 					$result2=$DB->query($query2);
 					if ($DB->numrows($result2)>0)
@@ -1145,60 +1132,45 @@ function plugin_pdf_link($tab,$width,$ID,$type){
 							$ipmac[$j]['ifmac']=$data2["ifmac"];
 							$j++;
 						}
-					if (count($ipmac)>0){
+					if (count($ipmac)>0){ // One link per network address
 						foreach ($ipmac as $key => $val){
 							$tmplink=$link;
 							$tmplink=str_replace("[IP]",$val['ifaddr'],$tmplink);
 							$tmplink=str_replace("[MAC]",$val['ifmac'],$tmplink);
-							$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($tmplink));
+							$pdf->displayLink("$name - $tmplink", $tmplink);						
 						}
 					}
-				} else 
-					$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($name));
-			} else {
-				$link=$data['name'];		
+				} else { // Single link (not network info)
+					$pdf->displayLink("$name - $link", $link);						
+				} 
+			} else { // Generated File
+				//$link=$data['name'];		
 				$ci->getFromDB($type,$ID);
 
-				if (strpos("[NAME]",$link)){
+				// Manage Filename
+				if (strstr($link,"[NAME]")){
 					$link=str_replace("[NAME]",$ci->getName(),$link);
 				}
 
-				if (strpos("[ID]",$link)){
+				if (strstr($link,"[LOGIN]")){
+					if (isset($_SESSION["glpiname"])){
+						$link=str_replace("[LOGIN]",$_SESSION["glpiname"],$link);
+					}
+				}
+
+				if (strstr($link,"[ID]")){
 					$link=str_replace("[ID]",$_GET["ID"],$link);
 				}
-				$pdf->addText(30,($start_tab-20)-(20*$i),9,utf8_decode($name));
+				$pdf->displayLine("$name - $link");		
 			}
-		}
-		$i++;
-			
-		if(($start_tab-20)-(20*$i)<50){
-			$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-			$i=0;
-			$start_tab = 750;
-			}
+		} // Each link
+	} else {
+		$pdf->displayTitle('<b>'.$LANG["links"][7].'</b>');
 	}
-	else
-		{
-		if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addText(260,$start_tab,9,'<b>'.utf8_decode($LANG["links"][7]).'</b>');
-		}
 	
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
-		
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
+	$pdf->displaySpace();
 }
-*/
+
 function plugin_pdf_volume($pdf,$ID,$type){
 	
 	global $DB, $LANG;
@@ -1675,7 +1647,7 @@ foreach($tab_id as $key => $ID)
 						$tab_pdf = plugin_pdf_registry($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 7:
-						//$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						$tab_pdf = plugin_pdf_link($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 8:
 						$tab_pdf = plugin_pdf_note($pdf,$ID,COMPUTER_TYPE);
@@ -1719,7 +1691,7 @@ foreach($tab_id as $key => $ID)
 						$tab_pdf = plugin_pdf_oldticket($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 5:
-						//$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						$tab_pdf = plugin_pdf_link($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 6:
 						$tab_pdf = plugin_pdf_note($pdf,$ID,SOFTWARE_TYPE);

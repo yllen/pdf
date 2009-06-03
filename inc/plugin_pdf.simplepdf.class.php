@@ -181,6 +181,31 @@ class simplePDF  {
 		$this->start_tab -= 20;
 	}
 	
+	public function displayLink ($name, $URL) {
+		
+		// New page if less than 1 line available
+		if ($this->start_tab < 30) {
+			$this->newPage();	
+		}
+		
+		$this->displayBox(0.95);
+
+		$i=0;
+		
+		$name=utf8_decode($name);
+		$w=$this->pdf->getTextWidth(9,$name);
+		$this->pdf->addLink($URL,$this->colsx[$i]+2,$this->start_tab,$this->colsx[$i]+$w+2,$this->start_tab+10);		
+		$this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,$name,
+				(isset($this->align[$i]) ? $this->align[$i] : 'left'));
+
+		$this->pdf->saveState();
+		$this->pdf->setLineStyle(0.5);
+		$this->pdf->line($this->colsx[$i]+2,$this->start_tab-3,$this->colsx[$i]+$w+2,$this->start_tab-3);		
+		$this->pdf->restoreState();
+
+		$this->start_tab -= 20;
+	}
+	
 	public function displayText ($name, $content, $maxline=5) {
 		// New page if less than 2 lines available
 		if ($this->start_tab < 50) {
