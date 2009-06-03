@@ -857,132 +857,68 @@ function plugin_pdf_connection($pdf,$ID,$type){
 			
 	} // each type
 	
+	$pdf->displaySpace();	
 }
-/*
-function plugin_pdf_port($tab,$width,$ID,$type){
+
+function plugin_pdf_port($pdf,$ID,$type){
 	
 	global $DB,$LANG;
 	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
-	
 	$query = "SELECT ID FROM glpi_networking_ports WHERE (on_device = ".$ID." AND device_type = ".COMPUTER_TYPE.") ORDER BY name, logical_number";
 	
-	$i=0;
-	
-	if ($result = $DB->query($query)) 
-		{
-		
+	$pdf->setColumnsSize(100);
+	if ($result = $DB->query($query)) {
 		$nb_connect = $DB->numrows($result);
 			
-		if ($nb_connect!=0) 
-			{
-	
-			$pdf->saveState();
-			$pdf->setColor(0.8,0.8,0.8);
-			$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-			$pdf->restoreState();
+		if (!$nb_connect) {
+			$pdf->displayTitle('<b>0 '.$LANG["networking"][37].'</b>');
 			
-			$pdf->addText(250,$start_tab,9,utf8_decode('<b>'.$nb_connect.' '.$LANG["networking"][13].' :</b>'));
+		} else { 
+			$pdf->displayTitle('<b>'.$nb_connect.' '.$LANG["networking"][13].' :</b>');
 				
-			while ($devid=$DB->fetch_row($result)) 
-				{
+			while ($devid=$DB->fetch_row($result)) {
 				
 				$netport = new Netport;
 				$netport->getfromDB(current($devid));
 				
-				for($j=0,$deb=0;$j<8;$j++,$deb++){
-					
-					if(($start_tab-20)-(20*($i+$j))<50){
-					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-					$i=0;
-					$start_tab = 750;
-					$deb=0;
+				$pdf->displayLine('<b><i>#</i></b> '.$netport->fields["logical_number"].' <b><i>          '.$LANG["common"][16].' :</i></b> '.$netport->fields["name"]);
+				$pdf->displayLine('<b><i>'.$LANG["networking"][51].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_netpoint",$netport->fields["netpoint"]));
+				$pdf->displayLine('<b><i>'.$LANG["networking"][14].' / '.$LANG["networking"][15].' :</i></b> '.$netport->fields["ifaddr"].' / '.$netport->fields["ifmac"]);
+				$pdf->displayLine('<b><i>'.$LANG["networking"][60].' / '.$LANG["networking"][61].' / '.$LANG["networking"][59].' :</i></b> '.$netport->fields["netmask"].' / '.$netport->fields["subnet"].' / '.$netport->fields["gateway"]);
+				
+				$query="SELECT * from glpi_networking_vlan WHERE FK_port='$ID'";
+				$result2=$DB->query($query);
+				if ($DB->numrows($result2)>0) {
+					$line = '<b><i>'.$LANG["networking"][56].' :</i></b>';
+					while ($line=$DB->fetch_array($result2)) {
+						$line .= ' ' . plugin_pdf_getDropdownName("glpi_dropdown_vlan",$line["FK_vlan"]);
 					}
-					
-					if(!($nb_connect==1 && $j==7)){
-					$pdf->saveState();
-					if($j<7)
-						$pdf->setColor(0.95,0.95,0.95);
-					else
-						$pdf->setColor(0.8,0.8,0.8);
-					$pdf->filledRectangle(25,($start_tab-25)-(20*($deb+$i)),$width-50,15);
-					$pdf->restoreState();
-					}
-					
-					switch($j){
-						case 0:
-						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>#</i></b> '.$netport->fields["logical_number"].' <b><i>          '.$LANG["common"][16].' :</i></b> '.$netport->fields["name"]));
-						break;
-						case 1:
-						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["networking"][51].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_netpoint",$netport->fields["netpoint"])));
-						break;
-						case 2:
-						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["networking"][14].' / '.$LANG["networking"][15].' :</i></b> '.$netport->fields["ifaddr"].' / '.$netport->fields["ifmac"]));
-						break;
-						case 3:
-						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["networking"][60].' / '.$LANG["networking"][61].' / '.$LANG["networking"][59].' :</i></b> '.$netport->fields["netmask"].' / '.$netport->fields["subnet"].' / '.$netport->fields["gateway"]));
-						break;
-						case 4:
-						$query="SELECT * from glpi_networking_vlan WHERE FK_port='$ID'";
-						$result2=$DB->query($query);
-						if ($DB->numrows($result2)>0)
-							while ($line=$DB->fetch_array($result2))
-								$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["networking"][56].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_vlan",$line["FK_vlan"])));
-						else
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["networking"][56].' :</i></b> '));
-						break;
-						case 5:
-						$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_iface",$netport->fields["iface"])));
-						break;
-						case 6:
-						$contact = new Netport;
-						$netport2 = new Netport;
-					
-						if ($contact->getContact($netport->fields["ID"]))
-							{
-							$netport2->getfromDB($contact->contact_id);
-							$netport2->getDeviceData($netport2->fields["on_device"],$netport2->fields["device_type"]);
-					
-							if($netport2->device_name!=null)	
-								$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["networking"][17].' :</i></b> '.$netport2->device_name));
-							else
-								$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["networking"][17].' :</i></b>'.$LANG["connect"][1]));
-							}
-						else
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["networking"][17].' :</i></b>'.$LANG["connect"][1]));
-						break;
-						case 7:
-							$i+=$deb+1;
-						break;
-					}
+					$pdf->displayLine($line);
 				}
+				$pdf->displayLine('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_iface",$netport->fields["iface"]));
+
+
+				$contact = new Netport;
+				$netport2 = new Netport;
+			
+				$line = '<b><i>'.$LANG["networking"][17].' :</i></b> ';
+				if ($contact->getContact($netport->fields["ID"]))
+					{
+					$netport2->getfromDB($contact->contact_id);
+					$netport2->getDeviceData($netport2->fields["on_device"],$netport2->fields["device_type"]);
+			
+					$line .= ($netport2->device_name ? $netport2->device_name : $LANG["connect"][1]);
+				} else {
+					$line .= $LANG["connect"][1];
 				}
-				if($nb_connect==1)
-					$i--;
-				$start_tab = ($start_tab-20)-(20*$i) - 20;
-			}
-		}
-	else
-		{
-		if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addText(250,$start_tab,9,utf8_decode('<b>0 '.$LANG["networking"][37].'</b>'));		
-		}
+				$pdf->displayLine($line);
+			} // each port
+		} // Found
+	} // Query
 	
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
+	$pdf->displaySpace();	
 }
-*/
+
 function plugin_pdf_contract($pdf,$ID,$type){
 	
 	global $DB,$CFG_GLPI,$LANG;
@@ -2222,7 +2158,7 @@ foreach($tab_id as $key => $ID)
 						break;
 					case 1:
 						$tab_pdf = plugin_pdf_connection($pdf,$ID,COMPUTER_TYPE);
-						//$tab_pdf = plugin_pdf_port($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						$tab_pdf = plugin_pdf_port($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 2:
 						//$tab_pdf = plugin_pdf_device($tab_pdf,$width,$ID,COMPUTER_TYPE);
