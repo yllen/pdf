@@ -342,149 +342,134 @@ function plugin_pdf_config_software($tab,$width,$ID){
 	
 	return $tab;
 }
-
-function plugin_pdf_device($tab,$width,$ID,$type){
+*/
+function plugin_pdf_device($pdf,$ID,$type){
 	
 	global $LANG;
 	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
-	
 	$computer=new Computer();
 	$computer->getFromDBwithDevices($ID);
+
 	
-	$pdf->saveState();
-	$pdf->setColor(0.8,0.8,0.8);
-	$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-	$pdf->restoreState();
-	$pdf->addText(275,$start_tab,9,'<b>'.utf8_decode($LANG["title"][30].'</b>'));
-	
-	$i=0;
+	$pdf->setColumnsSize(100);
+	$pdf->displayTitle('<b>'.$LANG["title"][30].'</b>');
+
+	$pdf->setColumnsSize(3,14,44,20,19);
 	
 	foreach($computer->devices as $key => $val) {
 		$device = new Device($val["devType"]);
 		$device->getFromDB($val["devID"]);
 		
-		$nb_x = 27	;
-		$device_x = 47;
-		$design_x = 127;
-		$other_x = 362;
-		$spec_x = 468;
-		
-		$pdf->saveState();
-		$pdf->setColor(0.95,0.95,0.95);
-		$pdf->filledRectangle(25,($start_tab-25)-(20*$i),15,15);
-		$pdf->filledRectangle(45,($start_tab-25)-(20*$i),75,15);
-		$pdf->filledRectangle(125,($start_tab-25)-(20*$i),230,15);
-		$pdf->filledRectangle(360,($start_tab-25)-(20*$i),101,15);
-		$pdf->filledRectangle(466,($start_tab-25)-(20*$i),105,15);
-		$pdf->restoreState();
-		
 		switch($device->devtype) {
 		case HDD_DEVICE :
-			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][1]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
-			$pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_hdd"][4].' :</i></b> '.$val["specificity"]));
-			if (!empty($device->fields["rpm"]))	$pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_hdd"][0].' :</i></b> '.$device->fields["rpm"]));
-			else if (!empty($device->fields["interface"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"])));
-			else if (!empty($device->fields["cache"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_hdd"][1].' :</i></b> '.$device->fields["cache"]));
+			if (!empty($device->fields["rpm"]))	$col5='<b><i>'.$LANG["device_hdd"][0].' :</i></b> '.$device->fields["rpm"];
+			else if (!empty($device->fields["interface"])) $col5='<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"]);
+			else if (!empty($device->fields["cache"])) $col5='<b><i>'.$LANG["device_hdd"][1].' :</i></b> '.$device->fields["cache"];
+			else $col5='';
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][1],
+				$device->fields["designation"],
+				'<b><i>'.$LANG["device_hdd"][4].' :</i></b> '.$val["specificity"],
+				$col5);
 			break;
 		case GFX_DEVICE :
-			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][2]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["ram"])) $pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_gfxcard"][0].' :</i></b> '.$device->fields["ram"]));
-			if (!empty($device->fields["interface"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.$device->fields["interface"]));
+			$col4 = (empty($device->fields["ram"]) ? '' : '<b><i>'.$LANG["device_gfxcard"][0].' :</i></b> '.$device->fields["ram"]);
+			$col5 = (empty($device->fields["interface"]) ? '' :  '<b><i>'.$LANG["common"][65].' :</i></b> '.$device->fields["interface"]);
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][2],
+				$device->fields["designation"],
+				$col4, $col5);
 			break;
 		case NETWORK_DEVICE :
-			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][3]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
-			$pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["networking"][15].' :</i></b> '.$val["specificity"]));
-			if (!empty($device->fields["bandwidth"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_iface"][0].' :</i></b> '.$device->fields["bandwidth"]));
+			$col5 = (empty($device->fields["bandwidth"]) ? '' : '<b><i>'.$LANG["device_iface"][0].' :</i></b> '.$device->fields["bandwidth"]);
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][3],
+				$device->fields["designation"],
+				'<b><i>'.$LANG["networking"][15].' :</i></b> '.$val["specificity"],
+				$col5);
 			break;
 		case MOBOARD_DEVICE :
-			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][5]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["chipset"])) $pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_moboard"][0].' :</i></b> '.$device->fields["chipset"]));
+			$col4 = (empty($device->fields["chipset"]) ? '' : '<b><i>'.$LANG["device_moboard"][0].' :</i></b> '.$device->fields["chipset"]);
+			$col5 = '';
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][5],
+				$device->fields["designation"],
+				$col4, $col5);
 			break;
 		case PROCESSOR_DEVICE :
-			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][4]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
-			$pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$val["specificity"]));
+			$col5 = '';
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][4],
+				$device->fields["designation"],
+				'<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$val["specificity"],
+				$col5);
 			break;
 		case RAM_DEVICE :
-			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][6]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
-			$pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["monitors"][21].' :</i></b> '.$val["specificity"]));
-			if (empty($device->fields["frequence"])) {
-				if (!empty($device->fields["type"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_ram_type",$device->fields["type"])));
-			} else {
-				if (!empty($device->fields["type"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),73,9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_ram_type",$device->fields["type"])));
-				$pdf->addTextWrap($other_x+75,($start_tab-20)-(20*$i),28,9,utf8_decode($device->fields["frequence"]));
-			}	
+			$col5 = (empty($device->fields["type"]) ? '' : '<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_ram_type",$device->fields["type"])) .
+					(empty($device->fields["frequence"]) ? '' : $device->fields["frequence"]);
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][6],
+				$device->fields["designation"],
+				'<b><i>'.$LANG["monitors"][21].' :</i></b> '.$val["specificity"],
+				$col5);
 			break;
 		case SND_DEVICE :
-			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][7]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["type"])) $pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.$device->fields["type"]));
+			$col4 = (empty($device->fields["type"]) ? '' : '<b><i>'.$LANG["common"][17].' :</i></b> '.$device->fields["type"]);
+			$col5 = '';
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][7],
+				$device->fields["designation"],
+				$col4, $col5);
 			break;
 		case DRIVE_DEVICE : 
-			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][19]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["is_writer"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["profiles"][11].' :</i></b> '.getYesNo($device->fields["is_writer"])));
-			else if (!empty($device->fields["speed"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_drive"][1].' :</i></b> '.$device->fields["speed"]));
-			else if (!empty($device->fields["frequence"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$device->fields["frequence"]));
+			if (!empty($device->fields["is_writer"])) $col4 = '<b><i>'.$LANG["profiles"][11].' :</i></b> '.getYesNo($device->fields["is_writer"]);
+			else if (!empty($device->fields["speed"])) $col4 = '<b><i>'.$LANG["device_drive"][1].' :</i></b> '.$device->fields["speed"];
+			else if (!empty($device->fields["frequence"])) $col4 = '<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$device->fields["frequence"];
+			else $col4 = '';
+			$col5 = '';
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][19],
+				$device->fields["designation"],
+				$col4, $col5);
 			break;
 		case CONTROL_DEVICE :;
-			$pdf->addTextWrap($nb_x,($start_tab-25)-(25*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-25)-(25*$i),73,9,utf8_decode($LANG["devices"][20]));
-			$pdf->addTextWrap($design_x,($start_tab-25)-(25*$i),228,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["interface"])) $pdf->addTextWrap($spec_x,($start_tab-20)-(20*$i),99,9,utf8_decode('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"])));
-			if (!empty($device->fields["raid"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_control"][0].' :</i></b> '.getYesNo($device->fields["raid"])));
+			$col4 = (empty($device->fields["interface"]) ? '' : '<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"]));
+			$col5 = (empty($device->fields["raid"]) ? '' : '<b><i>'.$LANG["device_control"][0].' :</i></b> '.getYesNo($device->fields["raid"]));
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][20],
+				$device->fields["designation"],
+				$col4, $col5);
 			break;
 		case PCI_DEVICE :
-			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][21]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
+			$col4 = '';
+			$col5 = '';
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][21],
+				$device->fields["designation"],
+				$col4, $col5);
 			break;
 		case POWER_DEVICE :
-			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][23]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["power"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_power"][0].' :</i></b> '.$device->fields["power"]));
-			else if (!empty($device->fields["atx"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["device_power"][1].' :</i></b> '.getYesNo($device->fields["atx"])));
+			$col4 = (empty($device->fields["power"]) ? '' : '<b><i>'.$LANG["device_power"][0].' :</i></b> '.$device->fields["power"]);
+			$col5 = (empty($device->fields["atx"]) ? '' : '<b><i>'.$LANG["device_power"][1].' :</i></b> '.getYesNo($device->fields["atx"]));
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][23],
+				$device->fields["designation"],
+				$col4, $col5);
 			break;
 		case CASE_DEVICE :
-			$pdf->addTextWrap($nb_x,($start_tab-20)-(20*$i),13,9,utf8_decode($val["quantity"].'x'));
-			$pdf->addTextWrap($device_x,($start_tab-20)-(20*$i),73,9,utf8_decode($LANG["devices"][22]));
-			$pdf->addTextWrap($design_x,($start_tab-20)-(20*$i),228,9,utf8_decode($device->fields["designation"]));
-			if (!empty($device->fields["type"])) $pdf->addTextWrap($other_x,($start_tab-20)-(20*$i),103,9,utf8_decode('<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_case_type",$device->fields["type"])));
+			$col4 = (empty($device->fields["type"]) ? '' : '<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_case_type",$device->fields["type"]));
+			$col5 = '';
+			$pdf->displayLine($val["quantity"].'x',
+				$LANG["devices"][22],
+				$device->fields["designation"],
+				$col4, $col5);
 			break;
 		}
-	$i++;
+	} // each device
 	
-	if(($start_tab-20)-(20*$i)<50){
-		$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-		$i=0;
-		$start_tab = 750;
-		}
-	}
-	
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
-	
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;		
+	$pdf->displaySpace();
 }
-
+/*
 function plugin_pdf_licenses($tab,$width,$ID,$show_computers,$type){
 	
 	global $DB,$LANG;
@@ -658,13 +643,10 @@ function plugin_pdf_licenses($tab,$width,$ID,$show_computers,$type){
 	
 	return $tab;
 }
-
-function plugin_pdf_software($tab,$width,$ID,$type){
+*/
+function plugin_pdf_software($pdf,$ID,$type){
 	
 	global $DB,$LANG;
-	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
 	
 	$comp=new Computer();
 	$comp->getFromDB($ID);
@@ -695,98 +677,47 @@ function plugin_pdf_software($tab,$width,$ID,$type){
 	$query = "( $query_cat ) UNION ($query_nocat) ORDER BY TYPE, category, softname, version";
 
 	$DB->query("SET SESSION group_concat_max_len = 9999999;");
-
 	$result = $DB->query($query);
-	$i = 0;
+
+	$pdf->setColumnsSize(100);
 	
-	$pdf->saveState();
-	$pdf->setColor(0.8,0.8,0.8);
-	$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-	$pdf->restoreState();
-	$pdf->addText(250,$start_tab,9,utf8_decode('<b>'.$LANG["software"][17].'</b>'));
-	
-	$cat=-1;
-	
-	if ($DB->numrows($result))
+	if ($DB->numrows($result)) {
+
+		$pdf->displayTitle('<b>'.$LANG["software"][17].'</b>');
+
+		$cat=-1;
 		while ($data=$DB->fetch_array($result)) {
 			
-			if($data["category_id"] != $cat)
-				{
+			if($data["category_id"] != $cat) {
 				$cat = $data["category_id"];
-				$catname=$data["category"];
+				$catname = ($cat ? $data["category"] : $LANG["softwarecategories"][3]);
 				
-				if (!$cat)
-					$catname=$LANG["softwarecategories"][3];
+				$pdf->setColumnsSize(100);
+				$pdf->displayTitle('<b>'.$catname.'</b>');
 				
-				$pdf->saveState();
-				$pdf->setColor(0.8,0.8,0.8);
-				$pdf->filledRectangle(25,($start_tab-25)-(20*$i),$width-50,15);
-				$pdf->restoreState();
-				$pdf->addText(240,($start_tab-20)-(20*$i),9,utf8_decode('<b>'.$catname.'</b>'));
-				
-				$i++;
-				
-				$pdf->saveState();
-				$pdf->setColor(0.8,0.8,0.8);
-				$pdf->filledRectangle(25,($start_tab-25)-(20*$i),310,15);
-				$pdf->filledRectangle(340,($start_tab-25)-(20*$i),70,15);
-				$pdf->filledRectangle(415,($start_tab-25)-(20*$i),70,15);
-				$pdf->filledRectangle(490,($start_tab-25)-(20*$i),80,15);
-				$pdf->restoreState();
-				$pdf->addTextWrap(30,($start_tab-20)-(20*$i),310,9,utf8_decode('<b>'.$LANG["common"][16].'</b>'));
-				$pdf->addTextWrap(345,($start_tab-20)-(20*$i),70,9,utf8_decode('<b>'.$LANG['state'][0].'</b>'));
-				$pdf->addTextWrap(420,($start_tab-20)-(20*$i),70,9,utf8_decode('<b>'.$LANG['software'][5].'</b>'));
-				$pdf->addTextWrap(495,($start_tab-20)-(20*$i),80,9,utf8_decode('<b>'.$LANG['software'][30].'</b>'));
-				
-				$i++;
-				}
+				$pdf->setColumnsSize(59,13,13,15);
+				$pdf->displayTitle(
+					'<b>'.$LANG["common"][16].'</b>',
+					'<b>'.$LANG['state'][0].'</b>',
+					'<b>'.$LANG['software'][5].'</b>',
+					'<b>'.$LANG['software'][30].'</b>');				
+			}
 			
 			$sw = new Software();
 			$sw->getFromDB($data['sID']);
 			
-			$pdf->saveState();
-			$pdf->setColor(0.95,0.95,0.95);
-			$pdf->filledRectangle(25,($start_tab-25)-(20*$i),310,15);
-			$pdf->filledRectangle(340,($start_tab-25)-(20*$i),70,15);
-			$pdf->filledRectangle(415,($start_tab-25)-(20*$i),70,15);
-			$pdf->filledRectangle(490,($start_tab-25)-(20*$i),80,15);
-			$pdf->restoreState();
-			
-			$pdf->addTextWrap(30,($start_tab-20)-(20*$i),310,8,utf8_decode($data['softname']));
-			$pdf->addTextWrap(345,($start_tab-20)-(20*$i),70,8,utf8_decode($data['state']));
-			$pdf->addTextWrap(420,($start_tab-20)-(20*$i),70,8,utf8_decode($data['version']));
-			if ($data["FK_computers"]==$ID) {
-				$pdf->addTextWrap(495,($start_tab-20)-(20*$i),80,8,utf8_decode(plugin_pdf_getDropdownName("glpi_dropdown_licensetypes",$data["lictype"])));
-			}
-			$i++;
-	
-			if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-		}
-	else
-		{
-		if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addText(250,$start_tab,9,'<b>'.utf8_decode($LANG['plugin_pdf']["software"][1]).'</b>');
-		}
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
-		
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
+			$pdf->displayLine(
+				$data['softname'],
+				$data['state'],
+				$data['version'],
+				($data["FK_computers"]==$ID ? plugin_pdf_getDropdownName("glpi_dropdown_licensetypes",$data["lictype"]) : ''));
+		} // Each soft
+	} else	{
+		$pdf->displayTitle('<b>'.$LANG['plugin_pdf']["software"][1].'</b>');
+	}
+	$pdf->displaySpace();
 }
-*/
+
 function plugin_pdf_connection($pdf,$ID,$type){
 	
 	global $DB,$LANG;
@@ -2008,132 +1939,8 @@ function plugin_pdf_history($tab,$width,$ID,$type){
 	
 	return $tab;
 }
-
-function plugin_pdf_newPage($pdf,$ID,$type){
-	$pdf->ezText("",1000);
-	$pdf->ezText("",9);
-	if($type!=-1)
-		$pdf = plugin_pdf_add_header($pdf,$ID,$type);
-	return $pdf;
-}
-
-function plugin_pdf_general($type,$tab_id,$tab){
-
-$pdf= new Cezpdf('a4','portrait');
-$width = $pdf->ez['pageWidth'];
-$pdf->openHere('Fit');
-$start_tab = 750;
-$tab_pdf = array("pdf"=>$pdf,"start_tab"=>$start_tab);
-
-$nb_id = count($tab_id);
-
-$tab_pdf = plugin_pdf_background($tab_pdf,$width);
-
-foreach($tab_id as $key => $ID)
-	{
-	switch($type){
-		case COMPUTER_TYPE:
-			
-			$tab_pdf["pdf"] = plugin_pdf_add_header($tab_pdf["pdf"],$ID,COMPUTER_TYPE);
-			$tab_pdf = plugin_pdf_config_computer($tab_pdf,$width,$ID);
-			
-			for($i=0;$i<count($tab);$i++)
-			{
-				switch($tab[$i]){
-					case 0:
-						$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-					case 1:
-						$tab_pdf = plugin_pdf_connection($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						$tab_pdf = plugin_pdf_port($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-					case 2:
-						$tab_pdf = plugin_pdf_device($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-					case 3:
-						$tab_pdf = plugin_pdf_software($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-					case 4:
-						$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-					case 5:
-						$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-					case 6:
-						$tab_pdf = plugin_pdf_registry($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-					case 7:
-						$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-					case 8:
-						$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-					case 9:
-						$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-					case 10:
-						$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-					case 11:
-						$tab_pdf = plugin_pdf_volume($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						break;
-				}
-			}
-		break;
-		
-		case SOFTWARE_TYPE:
-		
-			$tab_pdf["pdf"] = plugin_pdf_add_header($tab_pdf["pdf"],$ID,SOFTWARE_TYPE);
-			$tab_pdf = plugin_pdf_config_software($tab_pdf,$width,$ID);
-			
-			for($i=0;$i<count($tab);$i++)
-			{
-				switch($tab[$i]){
-					case 0:
-						$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,0,SOFTWARE_TYPE);
-						break;
-					case 1:
-						$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,1,SOFTWARE_TYPE);
-						break;
-					case 2:
-						$tab_pdf = plugin_pdf_financial($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-						$tab_pdf = plugin_pdf_contract($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-						break;
-					case 3:
-						$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-						break;
-					case 4:
-						$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-						$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-						break;
-					case 5:
-						$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-						break;
-					case 6:
-						$tab_pdf = plugin_pdf_note($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-						break;
-					case 7:
-						$tab_pdf = plugin_pdf_reservation($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-						break;
-					case 8:
-						$tab_pdf = plugin_pdf_history($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-						break;
-				}
-			}
-		break;
-		}
-	if($nb_id!=$key+1)
-		{
-		$tab_pdf["pdf"] = plugin_pdf_newPage($tab_pdf["pdf"],$ID,-1);
-		$tab_pdf["start_tab"] = 750;
-		}
-	}
-	
-$tab_pdf["pdf"]->ezStream();
-}
 */
+
 function plugin_pdf_general($type, $tab_id, $tab){
 
 $pdf = new simplePDF();
@@ -2161,10 +1968,10 @@ foreach($tab_id as $key => $ID)
 						$tab_pdf = plugin_pdf_port($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 2:
-						//$tab_pdf = plugin_pdf_device($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						$tab_pdf = plugin_pdf_device($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 3:
-						//$tab_pdf = plugin_pdf_software($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						$tab_pdf = plugin_pdf_software($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 4:
 						//$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
