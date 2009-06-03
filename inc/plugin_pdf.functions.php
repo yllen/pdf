@@ -900,13 +900,9 @@ function plugin_pdf_contract($pdf,$ID,$type){
 	}	
 	$pdf->displaySpace();
 }
-/*
-function plugin_pdf_document($tab,$width,$ID,$type){
+function plugin_pdf_document($pdf,$ID,$type){
 	
 	global $DB,$LANG;
-	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
 	
 	$query = "SELECT glpi_doc_device.ID as assocID, glpi_docs.* FROM glpi_doc_device "; 
 	$query .= "LEFT JOIN glpi_docs ON (glpi_doc_device.FK_doc=glpi_docs.ID)"; 
@@ -915,74 +911,35 @@ function plugin_pdf_document($tab,$width,$ID,$type){
 	$result = $DB->query($query);
 	$number = $DB->numrows($result);
 	
-	$i=0;
-	
-	if($number>0){
-	
-	$pdf->saveState();
-	$pdf->setColor(0.8,0.8,0.8);
-	$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-	$pdf->filledRectangle(25,($start_tab-25)-(20*$i),125,15);
-	$pdf->filledRectangle(155,($start_tab-25)-(20*$i),120,15);
-	$pdf->filledRectangle(280,($start_tab-25)-(20*$i),110,15);
-	$pdf->filledRectangle(395,($start_tab-25)-(20*$i),100,15);
-	$pdf->filledRectangle(500,($start_tab-25)-(20*$i),70,15);
-	$pdf->restoreState();
-	$pdf->addText(250,$start_tab,9,'<b>'.utf8_decode($LANG["document"][21]).' :</b>');
-	$pdf->addText(80,$start_tab-20,9,'<b>'.utf8_decode($LANG["common"][16]).'</b>');
-	$pdf->addText(195,$start_tab-20,9,'<b>'.utf8_decode($LANG["document"][2]).'</b>');
-	$pdf->addText(315,$start_tab-20,9,'<b>'.utf8_decode($LANG["document"][33]).'</b>');
-	$pdf->addText(425,$start_tab-20,9,'<b>'.utf8_decode($LANG["document"][3]).'</b>');
-	$pdf->addText(510,$start_tab-20,9,'<b>'.utf8_decode($LANG["document"][4]).'</b>');
-	
-	$i++;
+	$pdf->setColumnsSize(100);
+	if (!$number) {
+		$pdf->displayTitle('<b>'.$LANG['plugin_pdf']["document"][1].'</b>');
 		
-	while ($data=$DB->fetch_assoc($result)) {
-		
-		$pdf->saveState();
-		$pdf->setColor(0.95,0.95,0.95);
-		$pdf->filledRectangle(25,($start_tab-25)-(20*$i),125,15);
-		$pdf->filledRectangle(155,($start_tab-25)-(20*$i),120,15);
-		$pdf->filledRectangle(280,($start_tab-25)-(20*$i),110,15);
-		$pdf->filledRectangle(395,($start_tab-25)-(20*$i),100,15);
-		$pdf->filledRectangle(500,($start_tab-25)-(20*$i),70,15);
-		$pdf->restoreState();
-		
-		$pdf->addTextWrap(30,($start_tab-20)-(20*$i),125, 9,utf8_decode($data["name"]));
-		$pdf->addTextWrap(160,($start_tab-20)-(20*$i),120,9,utf8_decode($data["filename"]));
-		$pdf->addTextWrap(285,($start_tab-20)-(20*$i),110,9,utf8_decode($data["link"]));
-		$pdf->addTextWrap(400,($start_tab-20)-(20*$i),100,9,utf8_decode(plugin_pdf_getDropdownName("glpi_dropdown_rubdocs",$data["rubrique"])));
-		$pdf->addTextWrap(505,($start_tab-20)-(20*$i),70,9,utf8_decode($data["mime"]));
-		
-		$i++;
-		
-		if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-	}
-	}
-	else
-		{
-		if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addText(250,$start_tab,9,'<b>'.utf8_decode($LANG['plugin_pdf']["document"][1]).'</b>');
+	} else {
+		$pdf->displayTitle(
+			'<b>'.$LANG["document"][21].' :</b>');
+
+		$pdf->setColumnsSize(32,15,21,19,13);
+		$pdf->displayTitle(
+			'<b>'.$LANG["common"][16].'</b>',
+			'<b>'.$LANG["document"][2].'</b>',
+			'<b>'.$LANG["document"][33].'</b>',
+			'<b>'.$LANG["document"][3].'</b>',
+			'<b>'.$LANG["document"][4].'</b>');
+			
+		while ($data=$DB->fetch_assoc($result)) {
+			
+			$pdf->displayLine(
+				$data["name"],
+				basename($data["filename"]),
+				$data["link"],
+				plugin_pdf_getDropdownName("glpi_dropdown_rubdocs",$data["rubrique"]),
+				$data["mime"]);
 		}
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
-	
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
+	}
+	$pdf->displaySpace();
 }
+/*
 
 function plugin_pdf_registry($tab,$width,$ID,$type){
 	
@@ -1832,7 +1789,7 @@ foreach($tab_id as $key => $ID)
 						$tab_pdf = plugin_pdf_oldticket($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 5:
-						//$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						$tab_pdf = plugin_pdf_document($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 6:
 						//$tab_pdf = plugin_pdf_registry($tab_pdf,$width,$ID,COMPUTER_TYPE);
@@ -1875,7 +1832,7 @@ foreach($tab_id as $key => $ID)
 						$tab_pdf = plugin_pdf_contract($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 3:
-						//$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						$tab_pdf = plugin_pdf_document($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 4:
 						$tab_pdf = plugin_pdf_ticket($pdf,$ID,SOFTWARE_TYPE);
