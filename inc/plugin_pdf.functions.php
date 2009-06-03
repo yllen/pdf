@@ -1069,13 +1069,10 @@ function plugin_pdf_registry($tab,$width,$ID,$type){
 	
 	return $tab;
 }
-
-function plugin_pdf_ticket($tab,$width,$ID,$type){
+*/
+function plugin_pdf_ticket($pdf,$ID,$type){
 	
 	global $DB,$CFG_GLPI, $LANG;
-	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
 	
 	$sort="glpi_tracking.date";
 	$order=getTrackingOrderPrefs($_SESSION["glpiID"]);
@@ -1085,105 +1082,32 @@ function plugin_pdf_ticket($tab,$width,$ID,$type){
 	$query = "SELECT ".getCommonSelectForTrackingSearch()." FROM glpi_tracking ".getCommonLeftJoinForTrackingSearch()." WHERE $where and (computer = '$ID' and device_type= ".$type.") ORDER BY $sort $order";
 
 	$result = $DB->query($query);
-
-	$i = 0;
-	
 	$number = $DB->numrows($result);
 
-	if ($number > 0)
-	{
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addTextWrap(30,$start_tab,$width-60,9,'<b>'.utf8_decode($LANG['joblist'][24]." - $number ".$LANG["job"][8]).' :</b>','center');
+	$pdf->setColumnsSize(100);
+	if (!$number) {
+		$pdf->displayTitle('<b>'.$LANG['joblist'][24] . " - " . $LANG["joblist"][8].'</b>');
+		
+	} else	{
+		$pdf->displayTitle('<b>'.$LANG['joblist'][24]." - $number ".$LANG["job"][8].'</b>');
 
-		while ($data=$DB->fetch_assoc($result))
-		{
-			for($j=0,$deb=0;$j<9;$j++,$deb++){
-					
-					if(($start_tab-20)-(20*($i+$j))<50){
-					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-					$i=0;
-					$start_tab = 750;
-					$deb=0;
-					}
-					
-					if(!($number==1 && $j==8)){
-					$pdf->saveState();
-					if($j<8)
-						$pdf->setColor(0.95,0.95,0.95);
-					else
-						$pdf->setColor(0.8,0.8,0.8);
-					$pdf->filledRectangle(25,($start_tab-25)-(20*($deb+$i)),$width-50,15);
-					$pdf->restoreState();
-					}
-			
-			switch($j){
-						case 0:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["state"][0].' :</i></b>  ID'.$data["ID"].'     '.getStatusName($data["status"])));
-						break;
-						case 1:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][27].' :</i></b>       '.$LANG["joblist"][11].' : '.$data["date"]));
-						break;
-						case 2:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["joblist"][2].' :</i></b> '.getPriorityName($data["priority"])));
-						break;
-						case 3:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["job"][4].' :</i></b> '.getUserName($data["author"])));
-						break;
-						case 4:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["job"][5].' :</i></b> '.getUserName($data["assign"])));
-						break;
-						case 5:
-							$ci=new CommonItem();
-							$ci->getFromDB($data["device_type"],$data["computer"]);
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][1].' :</i></b> '.$ci->getType()));
-						break;
-						case 6:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]));
-						break;
-						case 7:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][57].' :</i></b> '.$data["name"]));
-						break;
-						case 8:
-							$i+=$deb+1;
-						break;
-					}
-				}
-				if($number==1)
-					$i--;
+		while ($data=$DB->fetch_assoc($result))	{
+			$pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b>  ID'.$data["ID"].'     '.getStatusName($data["status"]));
+			$pdf->displayLine('<b><i>'.$LANG["common"][27].' :</i></b>       '.$LANG["joblist"][11].' : '.$data["date"]);
+			$pdf->displayLine('<b><i>'.$LANG["joblist"][2].' :</i></b> '.getPriorityName($data["priority"]));
+			$pdf->displayLine('<b><i>'.$LANG["job"][4].' :</i></b> '.getUserName($data["author"]));
+			$pdf->displayLine('<b><i>'.$LANG["job"][5].' :</i></b> '.getUserName($data["assign"]));
+			$pdf->displayLine('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]);
+			$pdf->displayLine('<b><i>'.$LANG["common"][57].' :</i></b> '.$data["name"]);
 		}
 	} 
-	else
-		{
-		if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addTextWrap(30,$start_tab,$width-60,9,'<b>'.utf8_decode($LANG['joblist'][24] . " - " . $LANG["job"][8]).'</b>','center');
-		}
-	
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
-	
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
-	
+
+	$pdf->displaySpace();
 }
 
-function plugin_pdf_oldticket($tab,$width,$ID,$type){
+function plugin_pdf_oldticket($pdf,$ID,$type){
 	
 	global $DB,$CFG_GLPI, $LANG;
-	
-	$start_tab = $tab["start_tab"];
-	$pdf = $tab["pdf"];
 	
 	$sort="glpi_tracking.date";
 	$order=getTrackingOrderPrefs($_SESSION["glpiID"]);
@@ -1192,99 +1116,29 @@ function plugin_pdf_oldticket($tab,$width,$ID,$type){
 	$query = "SELECT ".getCommonSelectForTrackingSearch()." FROM glpi_tracking ".getCommonLeftJoinForTrackingSearch()." WHERE $where and (device_type = ".$type." and computer = '$ID') ORDER BY $sort $order";
 
 	$result = $DB->query($query);
-
-	$i = 0;
-	
 	$number = $DB->numrows($result);
 
-	if ($number > 0)
-	{
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addTextWrap(30,$start_tab,$width-60,9,'<b>'.utf8_decode($LANG['joblist'][25]." - $number ".$LANG["job"][8]).' :</b>','center');
+	$pdf->setColumnsSize(100);
+	if (!$number) {
+		$pdf->displayTitle('<b>'.$LANG['joblist'][25] . " - " . $LANG["joblist"][8].'</b>');
+		
+	} else	{
+		$pdf->displayTitle('<b>'.$LANG['joblist'][25]." - $number ".$LANG["job"][8].'</b>');
 
-		while ($data=$DB->fetch_assoc($result))
-		{
-			for($j=0,$deb=0;$j<9;$j++,$deb++){
-					
-					if(($start_tab-20)-(20*($i+$j))<50 && !($number==1 && $j==8)){
-					$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-					$i=0;
-					$start_tab = 750;
-					$deb=0;
-					}
-					
-					if(!($number==1 && $j==8)){
-					$pdf->saveState();
-					if($j<8)
-						$pdf->setColor(0.95,0.95,0.95);
-					else
-						$pdf->setColor(0.8,0.8,0.8);
-					$pdf->filledRectangle(25,($start_tab-25)-(20*($deb+$i)),$width-50,15);
-					$pdf->restoreState();
-					}
-			
-			switch($j){
-						case 0:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["state"][0].' :</i></b>  ID'.$data["ID"].'     '.getStatusName($data["status"])));
-						break;
-						case 1:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][27].' :</i></b>       '.$LANG["joblist"][11].' : '.$data["date"]));
-						break;
-						case 2:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["joblist"][2].' :</i></b> '.getPriorityName($data["priority"])));
-						break;
-						case 3:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["job"][4].' :</i></b> '.getUserName($data["author"])));
-						break;
-						case 4:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["job"][5].' :</i></b> '.getUserName($data["assign"])));
-						break;
-						case 5:
-							$ci=new CommonItem();
-							$ci->getFromDB($data["device_type"],$data["computer"]);
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][1].' :</i></b> '.$ci->getType()));
-						break;
-						case 6:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]));
-						break;
-						case 7:
-							$pdf->addText(27,($start_tab-20)-(20*($i+$deb)),9,utf8_decode('<b><i>'.$LANG["common"][57].' :</i></b> '.$data["name"]));
-						break;
-						case 8:
-							$i+=$deb+1;
-						break;
-					}
-				}
-				if($number==1)
-					$i--;
+		while ($data=$DB->fetch_assoc($result))	{
+			$pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b>  ID'.$data["ID"].'     '.getStatusName($data["status"]));
+			$pdf->displayLine('<b><i>'.$LANG["common"][27].' :</i></b>       '.$LANG["joblist"][11].' : '.$data["date"]);
+			$pdf->displayLine('<b><i>'.$LANG["joblist"][2].' :</i></b> '.getPriorityName($data["priority"]));
+			$pdf->displayLine('<b><i>'.$LANG["job"][4].' :</i></b> '.getUserName($data["author"]));
+			$pdf->displayLine('<b><i>'.$LANG["job"][5].' :</i></b> '.getUserName($data["assign"]));
+			$pdf->displayLine('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]);
+			$pdf->displayLine('<b><i>'.$LANG["common"][57].' :</i></b> '.$data["name"]);
 		}
 	} 
-	else
-		{
-		if(($start_tab-20)-(20*$i)<50){
-				$pdf = plugin_pdf_newPage($pdf,$ID,$type);
-				$i=0;
-				$start_tab = 750;
-				}
-		$pdf->saveState();
-		$pdf->setColor(0.8,0.8,0.8);
-		$pdf->filledRectangle(25,$start_tab-5,$width-50,15);
-		$pdf->restoreState();
-		$pdf->addTextWrap(30,$start_tab,$width-60,9,'<b>'.utf8_decode($LANG['joblist'][25] . " - " . $LANG["joblist"][8]).'</b>','center');
-		}
 	
-	$start_tab = ($start_tab-20)-(20*$i) - 20;
-	
-	$tab["start_tab"] = $start_tab;
-	$tab["pdf"] = $pdf;
-	
-	return $tab;
-	
+	$pdf->displaySpace();
 }
-
+/*
 function plugin_pdf_link($tab,$width,$ID,$type){
 	
 	global $DB,$LANG;
@@ -1974,8 +1828,8 @@ foreach($tab_id as $key => $ID)
 						$tab_pdf = plugin_pdf_software($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 4:
-						//$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
-						//$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,COMPUTER_TYPE);
+						$tab_pdf = plugin_pdf_ticket($pdf,$ID,COMPUTER_TYPE);
+						$tab_pdf = plugin_pdf_oldticket($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 5:
 						//$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,COMPUTER_TYPE);
@@ -2024,8 +1878,8 @@ foreach($tab_id as $key => $ID)
 						//$tab_pdf = plugin_pdf_document($tab_pdf,$width,$ID,SOFTWARE_TYPE);
 						break;
 					case 4:
-						//$tab_pdf = plugin_pdf_ticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
-						//$tab_pdf = plugin_pdf_oldticket($tab_pdf,$width,$ID,SOFTWARE_TYPE);
+						$tab_pdf = plugin_pdf_ticket($pdf,$ID,SOFTWARE_TYPE);
+						$tab_pdf = plugin_pdf_oldticket($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 5:
 						//$tab_pdf = plugin_pdf_link($tab_pdf,$width,$ID,SOFTWARE_TYPE);
