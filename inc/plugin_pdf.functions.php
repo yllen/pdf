@@ -31,104 +31,73 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-function checkbox($myname,$label,$value,$checked=false) {
-	echo "<td><input type='checkbox' ".($checked==true?"checked='checked'":'')." name='$myname' value='$value'>".$label."</td>";
+function plugin_pdf_checkbox($num,$label,$checked=false) {
+	echo "<td width='20%'><input type='checkbox' ".
+		($checked==true?"checked='checked'":'').
+		" name='item[$num]' value='1'>".$label."</td>";
 }
 
-function plugin_pdf_menu_computer($action,$compID,$export=true) {
-	global $LANG,$DB;
+function plugin_pdf_menu($type, $action, $ID) {
+	global $LANG, $DB, $PLUGIN_HOOKS;
+
+	if (!isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+		return;
+	} 
+	$options = doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "prefPDF", $type);
+	if (!is_array($options)) {
+		return;
+	}
 	
-	echo "<form name='plugin_pdf_computer' action='$action' method='post' " . 
-		($export ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
+	echo "<form name='plugin_pdf_$type' action='$action' method='post' " . 
+		($ID>0 ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
+
 	$values = array();
-	$result = $DB->query("select table_num from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION['glpiID'] . " and cat=" . COMPUTER_TYPE);
-					
-	while ($data = $DB->fetch_array($result))
-		$values["check".$data["table_num"]] = $data["table_num"]; 
-
-		echo "<tr><th colspan='6'>" . $LANG['plugin_pdf']["title"][2]. " : ".$LANG["Menu"][0] . "</th></tr>";
-		echo "<tr class='tab_bg_1'>";
-		checkbox("check0",$LANG["Menu"][26],0,(isset($values["check0"])?true:false));
-		checkbox("check2",$LANG["title"][30],2,(isset($values["check2"])?true:false));
-		checkbox("check4",$LANG["title"][28],4,(isset($values["check4"])?true:false));
-		checkbox("check6",$LANG["title"][43],6,(isset($values["check6"])?true:false));
-		checkbox("check8",$LANG["title"][37],8,(isset($values["check8"])?true:false));
-		checkbox("check10",$LANG["title"][38],10,(isset($values["check10"])?true:false));
-		echo "</tr>";
+	$sql = "select table_num from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION['glpiID'] . " and cat='$type'";
+	foreach ($DB->request($sql) AS $data) {
+		$values[$data["table_num"]] = $data["table_num"]; 		
+	}
 	
-		echo "<tr class='tab_bg_1'>";
-		checkbox("check1",$LANG["title"][27],1,(isset($values["check1"])?true:false));
-		checkbox("check3",$LANG["Menu"][4],3,(isset($values["check3"])?true:false));
-		checkbox("check5",$LANG["Menu"][27],5,(isset($values["check5"])?true:false));
-		checkbox("check7",$LANG["title"][34],7,(isset($values["check7"])?true:false));
-		checkbox("check9",$LANG["Menu"][17],9,(isset($values["check9"])?true:false));
-		checkbox("check11",$LANG['computers'][8],11,(isset($values["check11"])?true:false));
-		echo "</tr>";
+	$ci = new CommonItem();
+	$ci->setType($type);
+	echo "<tr><th colspan='6'>" . $LANG['plugin_pdf']["title"][2]. " : ".$ci->getType() . "</th></tr>";
 	
-		echo "<tr class='tab_bg_2'><td colspan='6' align='center'>";
-		echo "<input type='hidden' name='plugin_pdf_inventory_type' value='" . COMPUTER_TYPE . "'>";
-		echo "<input type='hidden' name='indice' value='12'>";
-		echo "<input type='hidden' name='itemID' value='$compID'>";
-
-		if ($export) {
-			echo "<select name='page'>\n";
-			echo "<option value='0'>".$LANG['common'][69]."</option>\n"; // Portrait
-			echo "<option value='1'>".$LANG['common'][68]."</option>\n"; // Paysage
-			echo "</select>\n";	
-			echo "<input type='submit' value='" . $LANG['plugin_pdf']["button"][1] . "' name='generate' class='submit'></td></tr>";			
-		} else {
-			echo "<input type='submit' value='" . $LANG['plugin_pdf']["button"][2] . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
+	$i=0;
+	foreach ($options as $num => $title) {
+		if (!$i) {
+			echo "<tr class='tab_bg_1'>";					
 		}
-		echo "</table></form>";
-}
-
-function plugin_pdf_menu_software($action,$softID,$export=true) {
-	global $LANG,$DB;
+		plugin_pdf_checkbox($num,$title,(isset($values[$num])?true:false));
+		if ($i==4) {
+			echo "</tr>";
+			$i=0;
+		} else {
+			$i++;			
+		}
+	}
+	if ($i) {
+		while ($i<=4) {
+			echo "<td width='20%'>&nbsp;</td>"; 
+			$i++;
+		}
+		echo "</tr>";
+	}
 	
-	echo "<form name='plugin_pdf_software' action='$action' method='post' ".
-		($export ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
-	$values = array();
-	$result = $DB->query("select table_num from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION['glpiID'] . " and cat=" . SOFTWARE_TYPE);
-						
-	while ($data = $DB->fetch_array($result))
-		$values["check".$data["table_num"]] = $data["table_num"]; 
-		
-	echo "<tr><th colspan='6'>" . $LANG['plugin_pdf']["title"][2]." : ".$LANG["Menu"][4] . "</th></tr>";
-	
-	echo "<tr class='tab_bg_1'>";
-	checkbox("check0",$LANG["title"][26],0,(isset($values["check0"])?true:false));
-	checkbox("check2",$LANG["Menu"][26],2,(isset($values["check2"])?true:false));
-	checkbox("check4",$LANG["title"][28],4,(isset($values["check4"])?true:false));
-	checkbox("check6",$LANG["title"][37],6,(isset($values["check6"])?true:false));
-	checkbox("check8",$LANG["title"][38],8,(isset($values["check10"])?true:false));
-	echo "<td></td>";
-	echo "</tr>";
-	
-	echo "<tr class='tab_bg_1'>";
-	
-	checkbox("check1",$LANG["software"][19],1,(isset($values["check1"])?true:false));
-	checkbox("check3",$LANG["Menu"][27],3,(isset($values["check3"])?true:false));
-	checkbox("check5",$LANG["title"][34],5,(isset($values["check5"])?true:false));
-	checkbox("check7",$LANG["Menu"][17],7,(isset($values["check7"])?true:false));
-	echo "<td></td>";
-	echo "<td></td>";
-	echo "</tr>";
-						
 	echo "<tr class='tab_bg_2'><td colspan='6' align='center'>";
-	echo "<input type='hidden' name='plugin_pdf_inventory_type' value='" . SOFTWARE_TYPE . "'>";
-	echo "<input type='hidden' name='indice' value='7'>";
-	echo "<input type='hidden' name='itemID' value='$softID'>";
-	
-	if ($export) {
+	echo "<input type='hidden' name='plugin_pdf_inventory_type' value='$type'>";
+	echo "<input type='hidden' name='indice' value='".count($options)."'>";
+
+	if ($ID>0) {
+		echo "<input type='hidden' name='itemID' value='$ID'>";
 		echo "<select name='page'>\n";
 		echo "<option value='0'>".$LANG['common'][69]."</option>\n"; // Portrait
 		echo "<option value='1'>".$LANG['common'][68]."</option>\n"; // Paysage
-		echo "</select>\n";	
+		echo "</select>&nbsp;&nbsp;&nbsp;&nbsp;\n";	
 		echo "<input type='submit' value='" . $LANG['plugin_pdf']["button"][1] . "' name='generate' class='submit'></td></tr>";			
 	} else {
 		echo "<input type='submit' value='" . $LANG['plugin_pdf']["button"][2] . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
 	}
 	echo "</table></form>";
+	
 }
 
 function plugin_pdf_getDropdownName($table,$id,$withcomment=0){
@@ -1445,7 +1414,7 @@ function plugin_pdf_history($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_general($type, $tab_id, $tab, $page){
+function plugin_pdf_general($type, $tab_id, $tab, $page=0) {
 
 $pdf = new simplePDF('a4', ($page ? 'landscape' : 'portrait'));
 

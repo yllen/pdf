@@ -41,27 +41,25 @@ include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 global $DB;
 	
 $type = $_SESSION["plugin_pdf"]["type"];
-
 unset($_SESSION["plugin_pdf"]["type"]);
 
 $tab_id = unserialize($_SESSION["plugin_pdf"]["tab_id"]);
-
 unset($_SESSION["plugin_pdf"]["tab_id"]);
-
-$tab[0]=-1;
 
 $user_id = $_SESSION['glpiID'];
 $query = "select table_num from glpi_plugin_pdf_preference WHERE user_id =".$user_id." and cat=".$type;
 $result = $DB->query($query);
 
-$i=1;
-		
-while($data = $DB->fetch_array($result))
-	{
-	$tab[$i]=$data["table_num"];
-	$i++;
-	}
+$tab = array();		
+while($data = $DB->fetch_array($result)) {
+	$tab[]=$data["table_num"];
+}
 	
-plugin_pdf_general($type,$tab_id,$tab);
+if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+	doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",
+		$type, $tab_id, $tab);
+} else {
+	die("Missing hook");
+}	
 	
 ?>

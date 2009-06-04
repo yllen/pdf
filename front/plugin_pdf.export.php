@@ -38,27 +38,31 @@ include (GLPI_ROOT."/inc/includes.php");
 include_once ("../plugin_pdf.includes.php");
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-if($_POST["plugin_pdf_inventory_type"]==COMPUTER_TYPE && isset($_SESSION["plugin_pdf"][COMPUTER_TYPE]))
-		unset($_SESSION["plugin_pdf"][COMPUTER_TYPE]);
-			
-else if($_POST["plugin_pdf_inventory_type"]==SOFTWARE_TYPE && isset($_SESSION["plugin_pdf"][SOFTWARE_TYPE]))
-		unset($_SESSION["plugin_pdf"][SOFTWARE_TYPE]);
+if (isset($_POST["plugin_pdf_inventory_type"]) && isset($_POST["itemID"])) {
+		
+	$type = $_POST["plugin_pdf_inventory_type"];
 	
-for($i=0,$j=1;$i<$_POST["indice"];$i++)
-	if(isset($_POST["check".$i])){
-		if($_POST["plugin_pdf_inventory_type"]==COMPUTER_TYPE)
-			$_SESSION["plugin_pdf"][COMPUTER_TYPE][]=$i;
-			
-		else if($_POST["plugin_pdf_inventory_type"]==SOFTWARE_TYPE)
-			$_SESSION["plugin_pdf"][SOFTWARE_TYPE][]=$i;
-			
-		$tab[$j] = $_POST["check".$i];
-		$j++;
+	if (isset($_SESSION["plugin_pdf"][$type])) {
+		unset($_SESSION["plugin_pdf"][$type]);		
+	}
+
+	$tab=array();
+	if (isset($_POST['item'])) {		
+		foreach ($_POST['item'] as $key => $val) {
+			$tab[] = $_SESSION["plugin_pdf"][$type][] = $key;
+		}
 	}
 	
-$tab[0]=-1;
-$tab_id[0]=$_POST["itemID"];
-
-plugin_pdf_general($_POST["plugin_pdf_inventory_type"], $tab_id, $tab,
-	(isset($_POST["page"]) ? $_POST["page"] : 0));
+	$tab_id[0]=$_POST["itemID"];
+	
+	if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+		doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",
+			$type, $tab_id, $tab,
+			(isset($_POST["page"]) ? $_POST["page"] : 0));
+	} else {
+		die("Missing hook");
+	}	
+} else {
+	die("Missing context");
+}
 ?>

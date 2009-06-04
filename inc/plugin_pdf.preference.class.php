@@ -39,19 +39,12 @@ class PluginPdfPreferences extends CommonDBTM {
 	}
 
 	function showForm($target) {
-		global  $LANG, $DB, $CFG_GLPI;
+		global  $LANG, $DB, $CFG_GLPI, $PLUGIN_HOOKS;
 
 		echo "<div align='center' id='pdf_type'>";
-		//echo "<table class='tab_cadre_fixe'>";
-		//echo "<tr class='tab_bg_1' align='center'><th colspan='6'>".$LANG['plugin_pdf']["title"][1]."</th></tr>";		
-		//echo "</td></tr>";
-		//echo "<tr class='tab_bg_1' align='center'><td>"; 
-		plugin_pdf_menu_computer($target,-1,false);
-		//echo "</td></tr>";		
-		//echo "<tr class='tab_bg_1' align='center'><td>"; 
-		plugin_pdf_menu_software($target,-1,false);
-		//echo "</td></tr>";		
-		//echo "</table>";
+		foreach ($PLUGIN_HOOKS['plugin_pdf'] as $type => $plug) {
+			plugin_pdf_menu($type, $target,-1);
+		}
 		echo "</div>";
 	}
 }

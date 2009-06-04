@@ -45,6 +45,12 @@ function plugin_init_pdf() {
 		$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
 		$PLUGIN_HOOKS['pre_item_delete']['pdf'] = 'plugin_pre_item_delete_pdf';
 	}
+	
+	// Define the type for which we know how to generate PDF, need :
+	// - plugin_pdf_prefPDF($type)
+	// - plugin_pdf_generatePDF($type, $tab_id, $tab, $page=0)
+	$PLUGIN_HOOKS['plugin_pdf'][COMPUTER_TYPE]='pdf';
+	$PLUGIN_HOOKS['plugin_pdf'][SOFTWARE_TYPE]='pdf';
 }
 
 	

@@ -34,6 +34,62 @@
 
 include_once ("plugin_pdf.includes.php");
 
+/**
+ * Hook : options for one type
+ * 
+ * @param $type of item
+ * 
+ * @return array of string which describe the options
+ */
+function plugin_pdf_prefPDF($type) {
+	global $LANG;
+	
+	switch ($type) {
+		case COMPUTER_TYPE:
+			return array(
+				$LANG["Menu"][26],
+				$LANG["title"][27],
+				$LANG["title"][30],
+				$LANG["Menu"][4],
+				$LANG["title"][28],
+				$LANG["Menu"][27],
+				$LANG["title"][43],
+				$LANG["title"][34],
+				$LANG["title"][37],
+				$LANG["Menu"][17],
+				$LANG["title"][38],
+				$LANG['computers'][8]
+				);
+			break;
+		case SOFTWARE_TYPE:
+			return array(
+				$LANG["title"][26],
+				$LANG["software"][19],
+				$LANG["Menu"][26],
+				$LANG["Menu"][27],
+				$LANG["title"][28],
+				$LANG["title"][34],
+				$LANG["title"][37],
+				$LANG["Menu"][17],
+				$LANG["title"][38]
+				);
+			break;
+	}
+	return false;
+}
+
+/**
+ * Hook to generate a PDF for a type
+ * 
+ * @param $type of item
+ * @param $tab_id array of ID
+ * @param $tab of option to be printed
+ * @param $page boolean true for landscape
+ */
+function plugin_pdf_generatePDF($type, $tab_id, $tab, $page=0) {
+	plugin_pdf_general($type, $tab_id, $tab, $page);	
+}
+
 function plugin_pdf_getSearchOption(){
 	global $LANG;
 	$sopt=array();
@@ -106,7 +162,7 @@ function plugin_headings_actions_pdf($type){
 
 // action heading
 function plugin_headings_pdf($type,$ID,$withtemplate=0){
-	global $CFG_GLPI;
+	global $CFG_GLPI,$PLUGIN_HOOKS;
 
 		switch ($type){
 			case PROFILE_TYPE :
@@ -118,17 +174,14 @@ function plugin_headings_pdf($type,$ID,$withtemplate=0){
 				}
 				$prof->showForm($CFG_GLPI["root_doc"]."/plugins/pdf/front/plugin_pdf.profiles.php",$ID);
 				break;
-			case COMPUTER_TYPE :
-				plugin_pdf_menu_computer("../plugins/pdf/front/plugin_pdf.export.php",$ID);
-				break;
-			case SOFTWARE_TYPE :
-				plugin_pdf_menu_software("../plugins/pdf/front/plugin_pdf.export.php",$ID);
-				break;
 			case "prefs":
 				$pref = new PluginPdfPreferences;
 				$pref->showForm($CFG_GLPI['root_doc']."/plugins/pdf/front/plugin_pdf.preferences.form.php");
-			break;
+				break;
 			default :
+				if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+					plugin_pdf_menu($type,$CFG_GLPI['root_doc']."/plugins/pdf/front/plugin_pdf.export.php",$ID);				
+				}
 			break;
 		}
 }

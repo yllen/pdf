@@ -41,12 +41,15 @@ include_once (GLPI_ROOT . "/inc/includes.php");
 if (isset ($_POST['plugin_pdf_user_preferences_save']) && isset($_POST["plugin_pdf_inventory_type"])) {
 	$DB->query("DELETE from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION["glpiID"] . " and cat=" . $_POST["plugin_pdf_inventory_type"]);
 	
-	for ($i = 0; $i < $_POST['indice']; $i++)
-		if (isset ($_POST["check" . $i]))
-			$DB->query("INSERT INTO `glpi_plugin_pdf_preference` (`id` ,`user_id` ,`cat` ,`table_num`) VALUES (NULL , '".$_SESSION["glpiID"]."', '".$_POST["plugin_pdf_inventory_type"]."', '" . $i . "');");
-	
+	if (isset($_POST['item'])) {		
+		foreach ($_POST['item'] as $key => $val) {
+			$DB->query(
+				"INSERT INTO `glpi_plugin_pdf_preference` (`id` ,`user_id` ,`cat` ,`table_num`)
+				VALUES (NULL , '".$_SESSION["glpiID"]."', '".$_POST["plugin_pdf_inventory_type"]."', '" . $key . "');");		
+		}
+	}
+
 	glpi_header($_SERVER['HTTP_REFERER']);
 }
-
 
 ?>
