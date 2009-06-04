@@ -48,7 +48,7 @@ function plugin_pdf_menu($type, $action, $ID) {
 		return;
 	}
 	
-	echo "<form name='plugin_pdf_$type' action='$action' method='post' " . 
+	echo "<form name='plugin_pdf_$type' id='plugin_pdf_$type' action='$action' method='post' " . 
 		($ID>0 ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
 
 	$values = array();
@@ -82,10 +82,14 @@ function plugin_pdf_menu($type, $action, $ID) {
 		echo "</tr>";
 	}
 	
-	echo "<tr class='tab_bg_2'><td colspan='6' align='center'>";
+	echo "<tr class='tab_bg_2'><td colspan='2' align='left'>";
+	echo "<a onclick=\"if (   markCheckboxes('plugin_pdf_$type') ) return false;\" href='".$_SERVER['PHP_SELF']."?select=all'>".$LANG['buttons'][18]."</a> / ";
+	echo "<a onclick=\"if ( unMarkCheckboxes('plugin_pdf_$type') ) return false;\" href='".$_SERVER['PHP_SELF']."?select=none'>".$LANG['buttons'][19]."</a></td>";
+
+	echo "<td colspan='4' align='center'>";
 	echo "<input type='hidden' name='plugin_pdf_inventory_type' value='$type'>";
 	echo "<input type='hidden' name='indice' value='".count($options)."'>";
-
+	
 	if ($ID>0) {
 		echo "<input type='hidden' name='itemID' value='$ID'>";
 		echo "<select name='page'>\n";
@@ -1425,51 +1429,51 @@ foreach($tab_id as $key => $ID)
 	switch($type){
 		case COMPUTER_TYPE:
 			
-			$tab_pdf["pdf"] = plugin_pdf_add_header($pdf,$ID,COMPUTER_TYPE);
+			plugin_pdf_add_header($pdf,$ID,COMPUTER_TYPE);
 			$pdf->newPage();
-			$tab_pdf = plugin_pdf_config_computer($pdf,$ID);
+			plugin_pdf_config_computer($pdf,$ID);
 			
 			for($i=0;$i<count($tab);$i++)
 			{
 				switch($tab[$i]){
 					case 0:
-						$tab_pdf = plugin_pdf_financial($pdf,$ID,COMPUTER_TYPE);
-						$tab_pdf = plugin_pdf_contract ($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_financial($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_contract ($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 1:
-						$tab_pdf = plugin_pdf_connection($pdf,$ID,COMPUTER_TYPE);
-						$tab_pdf = plugin_pdf_port($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_connection($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_port($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 2:
-						$tab_pdf = plugin_pdf_device($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_device($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 3:
-						$tab_pdf = plugin_pdf_software($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_software($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 4:
-						$tab_pdf = plugin_pdf_ticket($pdf,$ID,COMPUTER_TYPE);
-						$tab_pdf = plugin_pdf_oldticket($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_ticket($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_oldticket($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 5:
-						$tab_pdf = plugin_pdf_document($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_document($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 6:
-						$tab_pdf = plugin_pdf_registry($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_registry($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 7:
-						$tab_pdf = plugin_pdf_link($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_link($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 8:
-						$tab_pdf = plugin_pdf_note($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_note($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 9:
-						$tab_pdf = plugin_pdf_reservation($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_reservation($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 10:
-						$tab_pdf = plugin_pdf_history($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_history($pdf,$ID,COMPUTER_TYPE);
 						break;
 					case 11:
-						$tab_pdf = plugin_pdf_volume($pdf,$ID,COMPUTER_TYPE);
+						plugin_pdf_volume($pdf,$ID,COMPUTER_TYPE);
 						break;
 				}
 			}
@@ -1478,39 +1482,40 @@ foreach($tab_id as $key => $ID)
 		case SOFTWARE_TYPE:
 		
 			plugin_pdf_add_header($pdf,$ID,SOFTWARE_TYPE);
-			//$tab_pdf = plugin_pdf_config_software($tab_pdf,$width,$ID);
+			$pdf->newPage();
+			// plugin_pdf_config_software($pdf,$ID);
 			
 			for($i=0;$i<count($tab);$i++)
 			{
 				switch($tab[$i]){
 					case 0:
-						//$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,0,SOFTWARE_TYPE);
+						//plugin_pdf_licenses($pdf,$ID,0,SOFTWARE_TYPE);
 						break;
 					case 1:
-						//$tab_pdf = plugin_pdf_licenses($tab_pdf,$width,$ID,1,SOFTWARE_TYPE);
+						//plugin_pdf_licenses($pdf,$ID,1,SOFTWARE_TYPE);
 						break;
 					case 2:
-						$tab_pdf = plugin_pdf_financial($pdf,$ID,SOFTWARE_TYPE);
-						$tab_pdf = plugin_pdf_contract($pdf,$ID,SOFTWARE_TYPE);
+						plugin_pdf_financial($pdf,$ID,SOFTWARE_TYPE);
+						plugin_pdf_contract($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 3:
-						$tab_pdf = plugin_pdf_document($pdf,$ID,SOFTWARE_TYPE);
+						plugin_pdf_document($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 4:
-						$tab_pdf = plugin_pdf_ticket($pdf,$ID,SOFTWARE_TYPE);
-						$tab_pdf = plugin_pdf_oldticket($pdf,$ID,SOFTWARE_TYPE);
+						plugin_pdf_ticket($pdf,$ID,SOFTWARE_TYPE);
+						plugin_pdf_oldticket($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 5:
-						$tab_pdf = plugin_pdf_link($pdf,$ID,SOFTWARE_TYPE);
+						plugin_pdf_link($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 6:
-						$tab_pdf = plugin_pdf_note($pdf,$ID,SOFTWARE_TYPE);
+						plugin_pdf_note($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 7:
-						$tab_pdf = plugin_pdf_reservation($pdf,$ID,SOFTWARE_TYPE);
+						plugin_pdf_reservation($pdf,$ID,SOFTWARE_TYPE);
 						break;
 					case 8:
-						$tab_pdf = plugin_pdf_history($pdf,$ID,SOFTWARE_TYPE);
+						plugin_pdf_history($pdf,$ID,SOFTWARE_TYPE);
 						break;
 				}
 			}
