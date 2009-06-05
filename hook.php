@@ -63,7 +63,7 @@ function plugin_pdf_prefPDF($type) {
 			break;
 		case SOFTWARE_TYPE:
 			return array(
-				$LANG["title"][26],
+				$LANG['software'][5]."/".$LANG['software'][11],
 				$LANG["software"][19],
 				$LANG["Menu"][26],
 				$LANG["Menu"][27],
