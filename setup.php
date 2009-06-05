@@ -51,6 +51,7 @@ function plugin_init_pdf() {
 	// - plugin_pdf_generatePDF($type, $tab_id, $tab, $page=0)
 	$PLUGIN_HOOKS['plugin_pdf'][COMPUTER_TYPE]='pdf';
 	$PLUGIN_HOOKS['plugin_pdf'][SOFTWARE_TYPE]='pdf';
+	$PLUGIN_HOOKS['plugin_pdf'][SOFTWARELICENSE_TYPE]='pdf';
 }
 
 	

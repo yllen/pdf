@@ -47,31 +47,38 @@ function plugin_pdf_prefPDF($type) {
 	switch ($type) {
 		case COMPUTER_TYPE:
 			return array(
-				$LANG["Menu"][26],
-				$LANG["title"][27],
-				$LANG["title"][30],
-				$LANG["Menu"][4],
-				$LANG["title"][28],
-				$LANG["Menu"][27],
-				$LANG["title"][43],
-				$LANG["title"][34],
-				$LANG["title"][37],
-				$LANG["Menu"][17],
-				$LANG["title"][38],
-				$LANG['computers'][8]
+				$LANG["Menu"][26],		// Management
+				$LANG["title"][27],		// Connections
+				$LANG["title"][30],		// Components
+				$LANG["Menu"][4],		// Software
+				$LANG["title"][28],		// Tickets
+				$LANG["Menu"][27],		// Documents
+				$LANG["title"][43],		// Registry
+				$LANG["title"][34],		// Links
+				$LANG["title"][37],		// Notes
+				$LANG["Menu"][17],		// Reservations
+				$LANG["title"][38],		// Historical
+				$LANG['computers'][8]	//Volumes
 				);
 			break;
 		case SOFTWARE_TYPE:
 			return array(
-				$LANG['software'][5]."/".$LANG['software'][11],
-				$LANG["software"][19],
-				$LANG["Menu"][26],
-				$LANG["Menu"][27],
-				$LANG["title"][28],
-				$LANG["title"][34],
-				$LANG["title"][37],
-				$LANG["Menu"][17],
-				$LANG["title"][38]
+				$LANG['software'][5]."/".$LANG['software'][11],	// Versions/Licenses
+				$LANG["software"][19],	// Installations
+				$LANG["Menu"][26],		// Management
+				$LANG["Menu"][27],		// Documents
+				$LANG["title"][28],		// Tickets
+				$LANG["title"][34],		// Links
+				$LANG["title"][37],		// Notes
+				$LANG["Menu"][17],		// Reservations
+				$LANG["title"][38]		// Historical
+				);
+			break;
+		case SOFTWARELICENSE_TYPE:
+			return array(
+				$LANG["Menu"][26],		// Management
+				$LANG["Menu"][27],		// Documents
+				$LANG["title"][38]		// Historical
 				);
 			break;
 	}
@@ -114,24 +121,14 @@ function plugin_pdf_changeprofile()
 }
 
 function plugin_get_headings_pdf($type,$ID,$withtemplate){	
-
-	global $LANG;
+	global $LANG, $PLUGIN_HOOKS;
 
 	if ($type=="prefs") {
 		return array(
 			1 => $LANG['plugin_pdf']["title"][1],
 			);
 	}
-	
-	elseif ($type==COMPUTER_TYPE || $type==SOFTWARE_TYPE) {
-		// template case
-		if (!$withtemplate) {
-			return array(
-				1 => $LANG['plugin_pdf']["title"][1],
-				);
-		}
-	}
-	elseif ($type==PROFILE_TYPE) {
+	else if ($type==PROFILE_TYPE) {
 		if ($ID) {
 			$prof = new Profile();
 			if ($ID>0 && $prof->getFromDB($ID) && $prof->fields['interface']!='helpdesk') {
@@ -141,21 +138,34 @@ function plugin_get_headings_pdf($type,$ID,$withtemplate){
 			}
 		}
 	}
+	else if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+		if ($ID && !$withtemplate) {
+			return array(
+				1 => $LANG['plugin_pdf']["title"][1],
+				);
+		}
+	}
 	return false;
-	
 }
 	 
 function plugin_headings_actions_pdf($type){
+	global $PLUGIN_HOOKS;
 
 	switch ($type){
-		case COMPUTER_TYPE :
-		case SOFTWARE_TYPE :
 		case PROFILE_TYPE :
 		case "prefs" :
 			return array(
 					1 => "plugin_headings_pdf",
 				    );
 			break;
+		default:
+			if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+				return array(
+					1 => "plugin_headings_pdf",
+				    );
+			}
+			break;
+		
 	}
 	return false;
 }
