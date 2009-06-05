@@ -81,6 +81,12 @@ function plugin_pdf_prefPDF($type) {
 				$LANG["title"][38]		// Historical
 				);
 			break;
+		case SOFTWAREVERSION_TYPE:
+			return array(
+				$LANG["software"][19],	// Installations
+				$LANG["title"][38]		// Historical
+				);
+			break;
 	}
 	return false;
 }

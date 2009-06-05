@@ -505,6 +505,31 @@ function plugin_pdf_main_license($pdf,$ID, $main=true){
 	}	
 }
 
+function plugin_pdf_main_version($pdf,$ID){
+	global $DB,$LANG;
+	
+	$version = new SoftwareVersion;
+	
+	if ($version->getFromDB($ID)) {
+		
+		$pdf->setColumnsSize(100);
+		$pdf->displayTitle('<b><i>'.$LANG['common'][2]."</i> : $ID</b>");		
+	
+		$pdf->setColumnsSize(50,50);
+		$pdf->displayLine(
+			'<b><i>'.$LANG['common'][16].'</i></b>: '.$version->fields['name'],			
+			'<b><i>'.$LANG['help'][31].'</i></b>: '.plugin_pdf_getDropdownName('glpi_software', $version->fields['sID']));			
+		$pdf->displayLine(
+			'<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$version->fields['state']),
+			'');			
+
+		$pdf->setColumnsSize(100);
+		$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $version->fields['comments']);
+	}
+
+	$pdf->displaySpace();
+}
+
 function plugin_pdf_licenses($pdf,$sID,$infocom){
 	global $DB,$LANG;
 
@@ -540,8 +565,10 @@ function plugin_pdf_licenses($pdf,$sID,$infocom){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_installations($pdf,$sID){
+function plugin_pdf_installations($pdf,$ID,$type){
 	global $DB,$LANG;
+	
+	$crit = ($type==SOFTWARE_TYPE ? 'sID' : 'ID');
 	
 	$query = "SELECT glpi_inst_software.*,glpi_computers.name AS compname, glpi_computers.ID AS cID,
 			glpi_computers.name AS compname, glpi_computers.serial, glpi_computers.otherserial, glpi_users.name AS username,
@@ -556,7 +583,7 @@ function plugin_pdf_installations($pdf,$sID){
 		LEFT JOIN glpi_groups ON (glpi_computers.FK_groups=glpi_groups.ID)
 		LEFT JOIN glpi_users ON (glpi_computers.FK_users=glpi_users.ID)
 		LEFT JOIN glpi_softwarelicenses ON (glpi_softwarelicenses.sID=glpi_softwareversions.sID AND glpi_softwarelicenses.FK_computers=glpi_computers.ID)
-		WHERE (glpi_softwareversions.sID = '$sID') " .
+		WHERE (glpi_softwareversions.$crit = '$ID') " .
 			getEntitiesRestrictRequest(' AND', 'glpi_computers') .
 			" AND glpi_computers.deleted=0 AND glpi_computers.is_template=0 " .
 		"ORDER BY version, compname";
@@ -1457,6 +1484,21 @@ foreach($tab_id as $key => $ID)	{
 			}
 			break;
 			
+		case SOFTWAREVERSION_TYPE:
+			plugin_pdf_main_version($pdf,$ID);
+
+			foreach($tab as $i)	{
+				switch($i){
+					case 0:
+						plugin_pdf_installations($pdf,$ID,$type);
+						break;
+					case 1:
+						plugin_pdf_history($pdf,$ID,$type);
+						break;
+				}
+			}
+			break;
+			
 		case SOFTWARE_TYPE:
 			plugin_pdf_main_software($pdf,$ID);
 			
@@ -1467,7 +1509,7 @@ foreach($tab_id as $key => $ID)	{
 						plugin_pdf_licenses($pdf,$ID,in_array(2,$tab));
 						break;
 					case 1:
-						plugin_pdf_installations($pdf,$ID);
+						plugin_pdf_installations($pdf,$ID,$type);
 						break;
 					case 2:
 						// only template - plugin_pdf_financial($pdf,$ID,SOFTWARE_TYPE);

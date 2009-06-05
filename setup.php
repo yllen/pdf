@@ -52,6 +52,7 @@ function plugin_init_pdf() {
 	$PLUGIN_HOOKS['plugin_pdf'][COMPUTER_TYPE]='pdf';
 	$PLUGIN_HOOKS['plugin_pdf'][SOFTWARE_TYPE]='pdf';
 	$PLUGIN_HOOKS['plugin_pdf'][SOFTWARELICENSE_TYPE]='pdf';
+	$PLUGIN_HOOKS['plugin_pdf'][SOFTWAREVERSION_TYPE]='pdf';
 }
 
 	
