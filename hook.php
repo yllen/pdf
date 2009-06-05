@@ -203,44 +203,28 @@ function plugin_headings_pdf($type,$ID,$withtemplate=0){
 }
 
 function plugin_pdf_MassiveActions($type){
-	global $LANG;
+	global $LANG,$PLUGIN_HOOKS;
+
 	switch ($type){
-		case COMPUTER_TYPE :
-			return array(
-				"plugin_pdf_DoIt"=>$LANG['plugin_pdf']["title"][1],
-			);
-			break;
-		case SOFTWARE_TYPE:
-			return array(
-				"plugin_pdf_DoIt"=>$LANG['plugin_pdf']["title"][1],
-				);
 		case PROFILE_TYPE:
 			return array(
 				"plugin_pdf_allow"=>$LANG['plugin_pdf']["title"][1]
 				);
 			break;
-		break;
+		default:
+			if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+				return array(
+					"plugin_pdf_DoIt"=>$LANG['plugin_pdf']["title"][1]
+					);
+			}		
 	}
 	return array();
 }
 
 function plugin_pdf_MassiveActionsDisplay($type,$action){
-	global $LANG;
+	global $LANG,$PLUGIN_HOOKS;
+
 	switch ($type){
-		case COMPUTER_TYPE:
-			switch ($action){
-				case "plugin_pdf_DoIt":
-					echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
-				break;
-			}
-			break;
-		case SOFTWARE_TYPE:
-			switch ($action){
-				case "plugin_pdf_DoIt":
-					echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
-				break;
-			}
-		break;
 		case PROFILE_TYPE:
 			switch ($action){
 				case "plugin_pdf_allow":
@@ -248,7 +232,11 @@ function plugin_pdf_MassiveActionsDisplay($type,$action){
 					echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
 				break;
 			}
-		break;
+			break;
+		default:
+			if (isset($PLUGIN_HOOKS['plugin_pdf'][$type]) && $action=='plugin_pdf_DoIt') {
+				echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG["buttons"][2]."\" >";
+			}		
 	}
 	return "";
 }
