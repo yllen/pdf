@@ -61,6 +61,19 @@ function plugin_pdf_prefPDF($type) {
 				$LANG['computers'][8]	//Volumes
 				);
 			break;
+		case PRINTER_TYPE:
+			return array(
+				$LANG['cartridges'][16],// 0.Cartridges
+				$LANG["title"][27],		// 1.Connections
+				$LANG["Menu"][26],		// 2.Management
+				$LANG["Menu"][27],		// 3.Documents
+				$LANG["title"][28],		// 4.Tickets
+				$LANG["title"][34],		// 5.Links
+				$LANG["title"][37],		// 6.Notes
+				$LANG["Menu"][17],		// 7.Reservations
+				$LANG["title"][38]		// 8.Historical
+				);
+			break;
 		case SOFTWARE_TYPE:
 			return array(
 				$LANG['software'][5]."/".$LANG['software'][11],	// Versions/Licenses

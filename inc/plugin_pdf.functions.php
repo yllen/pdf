@@ -193,6 +193,68 @@ function plugin_pdf_main_computer($pdf,$ID) {
 	$pdf->displaySpace();
 }
 
+function plugin_pdf_main_printer($pdf,$ID) {
+	global $LANG;
+	
+	$printer=new Printer();
+	if (!$printer->getFromDB($ID)) return;
+	
+	$pdf->setColumnsSize(50,50);
+	$col1 = '<b>'.$LANG["common"][2].' '.$printer->fields['ID'].'</b>';
+	$col2 = $LANG["common"][26].' : '.convDateTime($printer->fields["date_mod"]);
+	if(!empty($printer->fields['tplname'])) {
+		$col2 .= ' ('.$LANG["common"][13].' : '.$printer->fields['tplname'].')';
+	}
+	$pdf->displayTitle($col1, $col2);
+
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][16].' :</i></b> '.$printer->fields['name'],
+		'<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$printer->fields['state']));
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$printer->fields['location']),
+		'<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName('glpi_type_printers',$printer->fields['type']));
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][5].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_manufacturer',$printer->fields['FK_glpi_enterprise']),
+		'<b><i>'.$LANG["common"][22].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_model_printers',$printer->fields['model']));
+	$pdf->displayLine(		
+		'<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($printer->fields['tech_num']),
+		'<b><i>'.$LANG["common"][19].' :</i></b> '.$printer->fields['serial']);
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][18].' :</i></b> '.$printer->fields['contact'],
+		'<b><i>'.$LANG["common"][20].' :</i></b> '.$printer->fields['otherserial']);
+	$col2 = '<b><i>'.$LANG['printers'][18].' :</i></b>';
+	if ($printer->fields["flags_serial"]) {
+		$col2 .= ' '.$LANG['printers'][14];
+	}
+	if ($printer->fields["flags_par"]) {
+		$col2 .= ' '.$LANG['printers'][15];
+	}
+	if ($printer->fields["flags_usb"]) {
+		$col2 .= ' '.$LANG['printers'][27];
+	}
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][21].' :</i></b> '.$printer->fields['contact_num'],
+		$col2);
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($printer->fields['FK_users']),
+		'<b><i>'.$LANG['devices'][6].' :</i></b> '.$printer->fields['ramSize']);
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][35].' :</i></b> '.plugin_pdf_getDropdownName('glpi_groups',$printer->fields['FK_groups']),
+		'<b><i>'.$LANG['printers'][30].' :</i></b> '.$printer->fields['initial_pages']);
+	$pdf->displayLine(
+		'<b><i>'.$LANG["setup"][88].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_network',$printer->fields['network']),
+		'<b><i>'.$LANG['peripherals'][33].' :</i></b> '.($printer->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
+	$pdf->displayLine(
+		'<b><i>'.$LANG["setup"][89].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_domain',$printer->fields['domain']),
+		'');
+		
+				
+	$pdf->setColumnsSize(100);		
+	$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $printer->fields['comments']);
+	
+	$pdf->displaySpace();
+}
+
 function plugin_pdf_financial($pdf,$ID,$type){
 	
 	global $CFG_GLPI,$LANG;
@@ -696,7 +758,7 @@ function plugin_pdf_software($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_connection($pdf,$ID,$type){
+function plugin_pdf_computer_connection($pdf,$ID){
 	
 	global $DB,$LANG;
 	
@@ -769,11 +831,65 @@ function plugin_pdf_connection($pdf,$ID,$type){
 	$pdf->displaySpace();	
 }
 
+function plugin_pdf_device_connection($pdf,$ID,$type){
+	
+	global $DB,$LANG;
+	
+	$comp=new Computer();
+	$info=new InfoCom();
+	
+	$pdf->setColumnsSize(100);
+	$pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
+	
+	$query = "SELECT * from glpi_connect_wire WHERE end1='$ID' AND type='".$type."'";
+	
+	if ($result=$DB->query($query)) {
+		$resultnum = $DB->numrows($result);
+		if ($resultnum>0) {
+			
+			for ($j=0; $j < $resultnum; $j++) {
+				$tID = $DB->result($result, $j, "end2");
+				$connID = $DB->result($result, $j, "ID");
+				$comp->getFromDB($tID);
+				$info->getFromDBforDevice(COMPUTER_TYPE,$tID) || $info->getEmpty();
+
+
+				$line1 = ($comp->fields['name']?$comp->fields['name']:"(".$comp->fields['ID'].")")." - ";
+				if ($comp->fields['serial']) {
+					$line1 .= $LANG["common"][19] . " : " .$comp->fields['serial']." - ";
+				}
+				$line1 .= plugin_pdf_getDropdownName("glpi_dropdown_state",$comp->fields['state']);
+
+				$line2 = "";
+				if ($comp->fields['otherserial']) {
+					$line2 .= $LANG["common"][20] . " : " .$comp->fields['otherserial']." - ";
+				}
+				if ($info->fields["num_immo"]) {
+					if ($line2) $line2 .= " - ";
+					$line2 .= $LANG["financial"][20] . " : " . $info->fields["num_immo"];
+				}
+				if ($line2) {
+					$pdf->displayText('<b>'.$LANG['help'][25].'</b>', $line1 . "\n" . $line2, 2);
+				} else {
+					$pdf->displayText('<b>'.$LANG['help'][25].'</b>', $line1, 1);
+				}
+			}// each device	of current type
+					
+		} else { // No row	
+				
+			$pdf->displayLine($LANG['connect'][1]);
+			
+		} // No row
+	} // Result
+				
+	$pdf->displaySpace();	
+}
+
 function plugin_pdf_port($pdf,$ID,$type){
 	
 	global $DB,$LANG;
 	
-	$query = "SELECT ID FROM glpi_networking_ports WHERE (on_device = ".$ID." AND device_type = ".COMPUTER_TYPE.") ORDER BY name, logical_number";
+	$query = "SELECT ID FROM glpi_networking_ports WHERE (on_device = ".$ID." AND device_type = ".$type.") ORDER BY name, logical_number";
 	
 	$pdf->setColumnsSize(100);
 	if ($result = $DB->query($query)) {
@@ -1427,7 +1543,7 @@ foreach($tab_id as $key => $ID)	{
 						plugin_pdf_contract ($pdf,$ID,$type);
 						break;
 					case 1:
-						plugin_pdf_connection($pdf,$ID,$type);
+						plugin_pdf_computer_connection($pdf,$ID);
 						plugin_pdf_port($pdf,$ID,$type);
 						break;
 					case 2:
@@ -1460,6 +1576,45 @@ foreach($tab_id as $key => $ID)	{
 						break;
 					case 11:
 						plugin_pdf_volume($pdf,$ID,$type);
+						break;
+				}
+			}
+			break;
+		
+		case PRINTER_TYPE:		
+			plugin_pdf_main_printer($pdf,$ID);
+			
+			foreach($tab as $i)	{
+				switch($i) {
+					case 0:
+						//cartyrdge
+						break;
+					case 1:
+						plugin_pdf_device_connection($pdf,$ID,$type);
+						plugin_pdf_port($pdf,$ID,$type);
+						break;
+					case 2:
+						plugin_pdf_financial($pdf,$ID,$type);
+						plugin_pdf_contract ($pdf,$ID,$type);
+						break;
+					case 3:
+						plugin_pdf_document($pdf,$ID,$type);
+						break;
+					case 4:
+						plugin_pdf_ticket($pdf,$ID,$type);
+						plugin_pdf_oldticket($pdf,$ID,$type);
+						break;
+					case 5:
+						plugin_pdf_link($pdf,$ID,$type);
+						break;
+					case 6:
+						plugin_pdf_note($pdf,$ID,$type);
+						break;
+					case 7:
+						plugin_pdf_reservation($pdf,$ID,$type);
+						break;
+					case 8:
+						plugin_pdf_history($pdf,$ID,$type);
 						break;
 				}
 			}
