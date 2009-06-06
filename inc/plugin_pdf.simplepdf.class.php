@@ -69,7 +69,7 @@ class simplePDF  {
 		$this->pdf->setStrokeColor(0,0,0);
 		$this->pdf->setLineStyle(1,'round','round');
 		$this->pdf->rectangle(20,20,$this->width-40,$this->height-40);
-		$this->pdf->addJpegFromFile(GLPI_ROOT."/plugins/pdf/pics/fd_logo.jpg",25,$this->height-50);
+		$this->pdf->addJpegFromFile(GLPI_ROOT."/plugins/pdf/pics/fd_logo.jpg",25,$this->height-50); // 61x25
 		$this->pdf->selectFont(GLPI_ROOT."/plugins/pdf/fonts/Times-Roman.afm");
 		$this->pdf->setFontFamily('Times-Roman.afm',array('b'=>'Times-Bold.afm','i'=>'Times-Italic.afm','bi'=>'Times-BoldItalic.afm'));
 		$this->pdf->restoreState();
@@ -95,7 +95,7 @@ class simplePDF  {
 		
 		$this->start_tab = $this->height-45;
 		if (!empty($this->header)) {
-			$this->pdf->addTextWrap(0,$this->start_tab,$this->width,14,utf8_decode($this->header),'center');		
+			$this->pdf->addTextWrap(85,$this->start_tab,$this->width-110,14,utf8_decode($this->header),'center');		
 			$this->start_tab -= 30;
 		}	
 	}
