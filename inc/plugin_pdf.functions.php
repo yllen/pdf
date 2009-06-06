@@ -131,19 +131,182 @@ function plugin_pdf_add_header($pdf,$ID,$type){
 	
 	$ci = new CommonItem();
 	if ($ci->getFromDB($type, $ID) && $ci->obj->can($ID,'r')) {
-		if ($ci->obj->fields['name']) {
-			if (isMultiEntitiesMode() && isset($ci->obj->fields['FK_entities'])) {
-				$entity = ' ('.plugin_pdf_getDropdownName('glpi_entities',$ci->obj->fields['FK_entities']).')'; 
-			}
+		if ($type!=TRACKING_TYPE && $ci->obj->fields['name']) {
 			$name = $ci->obj->fields['name'];
 		} else {
 			$name = $LANG["common"][2].' '.$ID;
+		}
+		if (isMultiEntitiesMode() && isset($ci->obj->fields['FK_entities'])) {
+			$entity = ' ('.plugin_pdf_getDropdownName('glpi_entities',$ci->obj->fields['FK_entities']).')'; 
 		}
 		$pdf->setHeader($ci->getType()." - <b>$name</b>$entity");
 
 		return true;
 	}
 	return false;
+}
+
+function plugin_pdf_main_ticket($pdf,$ID,$private){
+
+	GLOBAL  $LANG,$CFG_GLPI, $PDF,$DB;
+
+	$job=new Job();
+
+	if (!$job->getfromDB($ID)) return false;
+		
+	if (!haveRight("show_all_ticket","1")
+		&&$job->fields["author"]!=$_SESSION["glpiID"]
+		&&$job->fields["assign"]!=$_SESSION["glpiID"]
+		&&!(haveRight("show_group_ticket",'1')&&in_array($job->fields["FK_group"],$_SESSION["glpigroups"]))
+		&&!(haveRight("show_assign_ticket",'1')&&in_array($job->fields["assign_group"],$_SESSION["glpigroups"]))
+	 ){
+		return false;
+	}
+			
+	$pdf->setColumnsSize(100);
+	$pdf->displayTitle('<b>'.(empty($job->fields["name"])?$LANG['reminder'][15]:$name=$job->fields["name"]).'</b>');
+
+	$author_name='';
+	if ($job->fields["author"]){
+		$author=new User();
+		$author->getFromDB($job->fields["author"]);
+		$author_name=$author->getName();
+	}
+	
+	$recipient_name='';
+	if ($job->fields["recipient"]){
+		$recipient=new User();
+		$recipient->getFromDB($job->fields["recipient"]);
+		$recipient_name=$recipient->getName();
+	}
+	
+	$assign_name='';
+	if ($job->fields["assign"]){
+		$assign=new User();
+		$assign->getFromDB($job->fields["assign"]);
+		$assign_name=$assign->getName();
+	}
+	
+	$serial_item='';
+	$location_item='';
+	$item=new CommonItem();
+	if($item->getFromDB($job->fields["device_type"],$job->fields["computer"])){
+		if(isset($item->obj->fields["serial"]))
+			$serial_item="<u>".$LANG['common'][19]."</u>: ".html_clean($item->obj->fields["serial"]);
+		if(isset($item->obj->fields["location"]))
+			$location_item="<u>".$LANG['common'][15]."</u>: ".html_clean(getDropdownName("glpi_dropdown_locations",$item->obj->fields["location"]));
+	}
+	
+	if (count($_SESSION['glpiactiveentities'])>1)
+	$entity= " (".getDropdownName("glpi_entities",$job->fields["FK_entities"]).")";
+	else
+	$entity='';
+	//closedate
+	if (!strstr($job->fields["status"],"old_"))
+		$closedate ="";
+	else
+		$closedate = $LANG['joblist'][12]." : ".convdate($job->fields["closedate"]);
+	
+	$pdf->setColumnsSize(50,50);
+	$pdf->displayLine(
+		"<b><i>".$LANG['joblist'][11]."</i></b> : ".convdate($job->fields["date"])." ".$LANG['job'][2]." ".$recipient_name,
+		$closedate);
+
+	$pdf->setColumnsSize(33,34,33);
+	//row status / RequestType / realtime
+	$pdf->displayLine(
+		"<b><i>".$LANG['joblist'][0]."</i></b>: ".html_clean(getStatusName($job->fields["status"])),
+		"<b><i>".$LANG['job'][44]."</i></b>: ".html_clean(getRequestTypeName($job->fields["request_type"])),
+		"<b><i>".$LANG['job'][20]."</i></b>: ".getRealtime($job->fields["realtime"]));		
+
+	 		 		 		 
+	
+	//row3 (author / item / cost_time)
+	$pdf->displayLine(
+		"<b><i>".$LANG['job'][4]."</i></b>: ".html_clean($author_name),
+		"<b><i>".$LANG['common'][1]."</i></b>: ".html_clean($item->getType())." ".html_clean($item->getNameID()).
+					  "\n".$serial_item."\n".$location_item,
+		"<b><i>".$LANG['job'][40]."</i></b>: ".formatNumber($job->fields["cost_time"]));
+	
+	//row4 (group / attribute / cost_fixed)
+	$pdf->displayLine(
+		"<b><i>".$LANG['common'][35]."</i></b>: ".html_clean(getDropdownName("glpi_groups",$job->fields["FK_group"])),
+		"<b><i>".$LANG['job'][5]."</i></b>:",
+		"<b><i>".$LANG['job'][41]."</i></b>: ".formatNumber($job->fields["cost_fixed"]));
+	
+	//row5 (priority / assign / cost_material)
+	$pdf->displayLine(
+		"<b><i>".$LANG['joblist'][2]."</i></b>: ".html_clean(getPriorityName($job->fields["priority"])),
+		"<b><i>".$LANG['job'][6]."</i></b>: ".html_clean($assign_name),
+		"<b><i>".$LANG['job'][42]."</i></b>: ".formatNumber($job->fields["cost_material"]));
+	
+	//row6 (category / assign_ent / TotalCost)
+	$pdf->displayLine(
+		"<b><i>".$LANG['common'][36]."</i></b>: ".html_clean(getDropdownName("glpi_dropdown_tracking_category",$job->fields["category"])),
+		"<b><i>".$LANG['common'][35]."</i></b>: ".html_clean(getDropdownName("glpi_groups",$job->fields["assign_group"])),
+		"<b><i>".$LANG['job'][43]."</i></b>: ".trackingTotalCost($job->fields["realtime"],$job->fields["cost_time"],$job->fields["cost_fixed"],$job->fields["cost_material"]));
+
+		//row6 (- / assign_ent / -)
+	$pdf->displayLine(
+		'',
+		"<b><i>".$LANG['financial'][26]."</i></b>: ".html_clean(getDropdownName("glpi_enterprises",$job->fields["assign_ent"])),
+		'');
+				
+	$pdf->setColumnsSize(100);
+	$pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b>: ", $job->fields["contents"], 7);
+
+	$pdf->displaySpace();
+	
+	//////////////followups///////////
+	$pdf->displayTitle("<b>".$LANG['job'][37]."</b>");
+				
+	$RESTRICT="";
+	if (!$private)  $RESTRICT=" AND ( private='0') ";
+	
+	$query = "SELECT * 
+				FROM glpi_followups 
+				WHERE (tracking = '$ID') 
+				$RESTRICT 
+				ORDER BY date DESC";
+	$result=$DB->query($query);
+		
+	if (!$DB->numrows($result)) {
+		$pdf->displayLine($LANG['job'][12]);
+	} else while ($data=$DB->fetch_array($result)){
+		$pdf->setColumnsSize(15,15,15,55);
+		$pdf->displayTitle(
+			"<b><i>".$LANG['common'][27]."</i></b>", 	// Date
+			"<b><i>".$LANG['common'][37]."</i></b>",	// Author
+			"<b><i>".$LANG['job'][31]."</i></b>",		// Durée
+			"<b><i>".$LANG['job'][35]."</i></b>"		// Plan
+			);
+
+		$realtime='';
+		$hour=floor($data["realtime"]);
+		$minute=round(($data["realtime"]-$hour)*60,0);
+		if ($hour) $realtime="$hour ".$LANG['job'][21];
+		if ($minute||!$hour)
+			$realtime.=" $minute ".$LANG['job'][22];
+	
+		$query2="SELECT * from glpi_tracking_planning WHERE id_followup='".$data['ID']."'";
+		$result2=$DB->query($query2);
+		if ($DB->numrows($result2)==0){
+			$planification=$LANG['job'][32];	
+		} else {
+			$data2=$DB->fetch_array($result2);
+			$planification=getPlanningState($data2["state"])." - ".convDateTime($data2["begin"])." -> ".convDateTime($data2["end"])." - ".getUserName($data2["id_assign"]);
+		}
+			
+		$pdf->setColumnsSize(15,15,15,55);
+		$pdf->displayLine(
+			convDateTime($data["date"]),
+			html_clean(getUserName($data["author"])),
+			$realtime,
+			$planification);
+		$pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b>: ", $data["contents"]);
+	}
+
+	$pdf->displaySpace();
 }
 
 function plugin_pdf_main_computer($pdf,$ID) {
@@ -1925,6 +2088,18 @@ foreach($tab_id as $key => $ID)	{
 						break;
 					case 8:
 						plugin_pdf_history($pdf,$ID,$type);
+						break;
+				}
+			}
+			break;
+			
+		case TRACKING_TYPE:
+			plugin_pdf_main_ticket($pdf,$ID,in_array(0,$tab));
+			
+			foreach($tab as $i)	{
+				switch($i) {
+					case 1:
+						plugin_pdf_document($pdf,$ID,$type);
 						break;
 				}
 			}

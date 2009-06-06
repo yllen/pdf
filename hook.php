@@ -112,6 +112,12 @@ function plugin_pdf_prefPDF($type) {
 				$LANG["title"][38]		// Historical
 				);
 			break;
+		case TRACKING_TYPE:
+			return array(
+				$LANG['common'][77],	// Privé
+				$LANG["Menu"][27]		// Documents
+				);
+			break;
 	}
 	return false;
 }
