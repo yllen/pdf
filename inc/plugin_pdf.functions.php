@@ -114,6 +114,15 @@ function plugin_pdf_getDropdownName($table,$id,$withcomment=0){
 	return $name; 
 }
 
+/**
+ * Display the Page header = type name, object name, entity name
+ * 
+ * @param $pdf object for output (SimplePDF)
+ * @param $ID of the item
+ * @param $type of the item
+ * 
+ * @return boolean : true if object found and readable
+ */
 function plugin_pdf_add_header($pdf,$ID,$type){
 	
 	global $LANG;
@@ -121,15 +130,20 @@ function plugin_pdf_add_header($pdf,$ID,$type){
 	$entity = '';
 	
 	$ci = new CommonItem();
-	if ($ci->getFromDB($type, $ID) && $ci->obj->fields['name']) {
-		if (isMultiEntitiesMode() && isset($ci->obj->fields['FK_entities'])) {
-			$entity = ' ('.plugin_pdf_getDropdownName('glpi_entities',$ci->obj->fields['FK_entities']).')'; 
+	if ($ci->getFromDB($type, $ID) && $ci->obj->can($ID,'r')) {
+		if ($ci->obj->fields['name']) {
+			if (isMultiEntitiesMode() && isset($ci->obj->fields['FK_entities'])) {
+				$entity = ' ('.plugin_pdf_getDropdownName('glpi_entities',$ci->obj->fields['FK_entities']).')'; 
+			}
+			$name = $ci->obj->fields['name'];
+		} else {
+			$name = $LANG["common"][2].' '.$ID;
 		}
-		$name = $ci->obj->fields['name'];
-	} else {
-		$name = $LANG["common"][2].' '.$ID;
+		$pdf->setHeader($ci->getType()." - <b>$name</b>$entity");
+
+		return true;
 	}
-	$pdf->setHeader($ci->getType()." - <b>$name</b>$entity");
+	return false;
 }
 
 function plugin_pdf_main_computer($pdf,$ID) {
@@ -422,6 +436,8 @@ function plugin_pdf_financial($pdf,$ID,$type){
 	
 	global $CFG_GLPI,$LANG;
 	
+	if (!haveRight("infocom","r")) return false;
+
 	$ic = new Infocom();
 	$ci = new CommonItem();
 
@@ -927,6 +943,11 @@ function plugin_pdf_computer_connection($pdf,$ID){
 	
 	$items=array(PRINTER_TYPE=>$LANG["computers"][39],MONITOR_TYPE=>$LANG["computers"][40],PERIPHERAL_TYPE=>$LANG["computers"][46],PHONE_TYPE=>$LANG["computers"][55]);
 	
+	foreach ($items as $type => $title){
+		if (!haveTypeRight($type,"r")) unset($items[$type]);
+	}
+	if (!count($items)) return;
+	
 	$ci=new CommonItem();
 	$comp=new Computer();
 	$info=new InfoCom();
@@ -1111,6 +1132,8 @@ function plugin_pdf_contract($pdf,$ID,$type){
 	
 	global $DB,$CFG_GLPI,$LANG;
 	
+	if (!haveRight("contract","r")) return false;
+
 	$ci = new CommonItem();
 	$con = new Contract;
 
@@ -1164,6 +1187,8 @@ function plugin_pdf_document($pdf,$ID,$type){
 	
 	global $DB,$LANG;
 	
+	if (!haveRight("document","r"))	return false;
+
 	$query = "SELECT glpi_doc_device.ID as assocID, glpi_docs.* FROM glpi_doc_device "; 
 	$query .= "LEFT JOIN glpi_docs ON (glpi_doc_device.FK_doc=glpi_docs.ID)"; 
 	$query .= "WHERE glpi_doc_device.FK_device = ".$ID." AND glpi_doc_device.device_type = ".$type;
@@ -1248,6 +1273,8 @@ function plugin_pdf_ticket($pdf,$ID,$type){
 	
 	global $DB,$CFG_GLPI, $LANG;
 	
+	if (!haveRight("show_all_ticket","1")) return;
+
 	$sort="glpi_tracking.date";
 	$order=getTrackingOrderPrefs($_SESSION["glpiID"]);
 
@@ -1283,6 +1310,8 @@ function plugin_pdf_oldticket($pdf,$ID,$type){
 	
 	global $DB,$CFG_GLPI, $LANG;
 	
+	if (!haveRight("show_all_ticket","1")) return;
+
 	$sort="glpi_tracking.date";
 	$order=getTrackingOrderPrefs($_SESSION["glpiID"]);
 
@@ -1316,6 +1345,8 @@ function plugin_pdf_oldticket($pdf,$ID,$type){
 function plugin_pdf_link($pdf,$ID,$type){
 	
 	global $DB,$LANG;
+	
+	if (!haveRight("link","r")) return false;
 	
 	$query="SELECT glpi_links.ID as ID, glpi_links.link as link, glpi_links.name as name , glpi_links.data as data from glpi_links INNER JOIN glpi_links_device ON glpi_links.ID= glpi_links_device.FK_links WHERE glpi_links_device.device_type=".$type." ORDER BY glpi_links.name";
 
@@ -1498,7 +1529,9 @@ function plugin_pdf_note($pdf,$ID,$type){
 function plugin_pdf_reservation($pdf,$ID,$type){
 	
 	global $DB,$LANG,$CFG_GLPI;
-	
+
+	if (!haveRight("reservation_central","r")) return;
+		
 	$resaID=0;
 	$user = new User();	
 	
@@ -1692,8 +1725,13 @@ $pdf = new simplePDF('a4', ($page ? 'landscape' : 'portrait'));
 $nb_id = count($tab_id);
 
 foreach($tab_id as $key => $ID)	{
-	plugin_pdf_add_header($pdf,$ID,$type);
-	$pdf->newPage();
+	
+	if (plugin_pdf_add_header($pdf,$ID,$type)) {
+		$pdf->newPage();
+	} else {
+		// Object not found or no right to read
+		continue;
+	}
 
 	switch($type){
 		case COMPUTER_TYPE:		
