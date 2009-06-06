@@ -255,6 +255,71 @@ function plugin_pdf_main_printer($pdf,$ID) {
 	$pdf->displaySpace();
 }
 
+function plugin_pdf_main_monitor($pdf,$ID) {
+	global $LANG;
+	
+	$item=new Monitor();
+	if (!$item->getFromDB($ID)) return;
+	
+	$pdf->setColumnsSize(50,50);
+	$col1 = '<b>'.$LANG["common"][2].' '.$item->fields['ID'].'</b>';
+	$col2 = $LANG["common"][26].' : '.convDateTime($item->fields["date_mod"]);
+	if(!empty($printer->fields['tplname'])) {
+		$col2 .= ' ('.$LANG["common"][13].' : '.$item->fields['tplname'].')';
+	}
+	$pdf->displayTitle($col1, $col2);
+
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][16].' :</i></b> '.$item->fields['name'],
+		'<b><i>'.$LANG['peripherals'][33].' :</i></b> '.($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$item->fields['location']),
+		'<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName('glpi_type_monitors',$item->fields['type']));
+	$pdf->displayLine(		
+		'<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($item->fields['tech_num']),
+		'<b><i>'.$LANG["common"][22].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_model_monitors',$item->fields['model']));
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][5].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_manufacturer',$item->fields['FK_glpi_enterprise']),
+		'<b><i>'.$LANG["common"][19].' :</i></b> '.$item->fields['serial']);
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][18].' :</i></b> '.$item->fields['contact'],
+		'<b><i>'.$LANG["common"][20].' :</i></b> '.$item->fields['otherserial']);
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][21].' :</i></b> '.$item->fields['contact_num'],
+		'<b><i>'.$LANG['monitors'][21].' :</i></b> '.$item->fields['size']);
+
+	$col2 = '<b><i>'.$LANG['monitors'][18].' :</i></b>';
+	if ($item->fields["flags_micro"]) {
+		$col2 .= ' '.$LANG['monitors'][14];
+	}
+	if ($item->fields["flags_speaker"]) {
+		$col2 .= ' '.$LANG['monitors'][15];
+	}
+	if ($item->fields["flags_subd"]) {
+		$col2 .= ' '.$LANG['monitors'][19];
+	}
+	if ($item->fields["flags_bnc"]) {
+		$col2 .= ' '.$LANG['monitors'][20];
+	}
+	if ($item->fields["flags_dvi"]) {
+		$col2 .= ' '.$LANG['monitors'][32];
+	}
+	if ($item->fields["flags_pivot"]) {
+		$col2 .= ' '.$LANG['monitors'][33];
+	}
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($item->fields['FK_users']),
+		$col2);
+	$pdf->displayLine(
+		'<b><i>'.$LANG["common"][35].' :</i></b> '.plugin_pdf_getDropdownName('glpi_groups',$item->fields['FK_groups']),
+		'<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$item->fields['state']));
+
+	$pdf->setColumnsSize(100);		
+	$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $item->fields['comments']);
+	
+	$pdf->displaySpace();
+}
+
 function plugin_pdf_cartridges($pdf, $instID, $old=false) {
 	global $DB,$CFG_GLPI, $LANG;
 
@@ -1713,6 +1778,41 @@ foreach($tab_id as $key => $ID)	{
 						plugin_pdf_reservation($pdf,$ID,$type);
 						break;
 					case 8:
+						plugin_pdf_history($pdf,$ID,$type);
+						break;
+				}
+			}
+			break;
+		
+		case MONITOR_TYPE:		
+			plugin_pdf_main_monitor($pdf,$ID);
+			
+			foreach($tab as $i)	{
+				switch($i) {
+					case 0:
+						plugin_pdf_device_connection($pdf,$ID,$type);
+						break;
+					case 1:
+						plugin_pdf_financial($pdf,$ID,$type);
+						plugin_pdf_contract ($pdf,$ID,$type);
+						break;
+					case 2:
+						plugin_pdf_document($pdf,$ID,$type);
+						break;
+					case 3:
+						plugin_pdf_ticket($pdf,$ID,$type);
+						plugin_pdf_oldticket($pdf,$ID,$type);
+						break;
+					case 4:
+						plugin_pdf_link($pdf,$ID,$type);
+						break;
+					case 5:
+						plugin_pdf_note($pdf,$ID,$type);
+						break;
+					case 6:
+						plugin_pdf_reservation($pdf,$ID,$type);
+						break;
+					case 7:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
 				}
