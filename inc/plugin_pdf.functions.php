@@ -255,6 +255,104 @@ function plugin_pdf_main_printer($pdf,$ID) {
 	$pdf->displaySpace();
 }
 
+function plugin_pdf_cartridges($pdf, $instID, $old=false) {
+	global $DB,$CFG_GLPI, $LANG;
+
+	if (!haveRight("cartridge","r")) return false;
+
+	$query = "SELECT glpi_cartridges_type.ID as tID, glpi_cartridges_type.deleted as deleted, glpi_cartridges_type.ref as ref,
+			glpi_cartridges_type.name as type, glpi_cartridges.ID as ID, glpi_cartridges.pages as pages, 
+			glpi_cartridges.date_use as date_use, glpi_cartridges.date_out as date_out, glpi_cartridges.date_in as date_in";
+	if ($old==0){
+		$query.= " FROM glpi_cartridges, glpi_cartridges_type 
+			WHERE glpi_cartridges.date_out IS NULL AND glpi_cartridges.FK_glpi_printers= '$instID' 
+				AND glpi_cartridges.FK_glpi_cartridges_type  = glpi_cartridges_type.ID 
+			ORDER BY glpi_cartridges.date_out ASC, glpi_cartridges.date_use DESC, glpi_cartridges.date_in";
+	} else {
+		$query.= " FROM glpi_cartridges, glpi_cartridges_type 
+			WHERE glpi_cartridges.date_out IS NOT NULL AND glpi_cartridges.FK_glpi_printers= '$instID' 
+			AND glpi_cartridges.FK_glpi_cartridges_type  = glpi_cartridges_type.ID 
+			ORDER BY glpi_cartridges.date_out ASC, glpi_cartridges.date_use DESC, glpi_cartridges.date_in";
+	}
+	
+	$result = $DB->query($query);
+	$number = $DB->numrows($result);
+	$i = 0;
+	$p=new Printer;
+	$p->getFromDB($instID);
+	$pages=$p->fields['initial_pages'];
+
+	$pdf->setColumnsSize(100);
+	$pdf->displayTitle("<b>".($old ? $LANG['cartridges'][35] : $LANG['cartridges'][33] )."</b>");
+
+	if (!$number) {
+		$pdf->displayLine($LANG['search'][15]);		
+	} else {
+			
+		$pdf->setColumnsSize(25,13,12,12,12,26);	
+		$pdf->displayTitle(
+			'<b><i>'.$LANG['cartridges'][12],
+			$LANG['consumables'][23],
+			$LANG['cartridges'][24],
+			$LANG['consumables'][26],
+			$LANG['search'][9],
+			$LANG['cartridges'][39].'</b></i>');
+
+		$stock_time=0;
+		$use_time=0;	
+		$pages_printed=0;
+		$nb_pages_printed=0;
+		$ci=new CommonItem();
+		while ($data=$DB->fetch_array($result)) {
+			$date_in=convDate($data["date_in"]);
+			$date_use=convDate($data["date_use"]);
+			$date_out=convDate($data["date_out"]);
+
+			$col1 = $data["type"]." - ".$data["ref"];
+			$col2 = getCartridgeStatus($data["date_use"], $data["date_out"]);
+			$col6 = '';
+	
+			$tmp_dbeg=explode("-",$data["date_in"]);
+			$tmp_dend=explode("-",$data["date_use"]);
+	
+			$stock_time_tmp= mktime(0,0,0,$tmp_dend[1],$tmp_dend[2],$tmp_dend[0]) 
+				- mktime(0,0,0,$tmp_dbeg[1],$tmp_dbeg[2],$tmp_dbeg[0]);
+			$stock_time+=$stock_time_tmp;
+	
+			if ($old){
+				$tmp_dbeg=explode("-",$data["date_use"]);
+				$tmp_dend=explode("-",$data["date_out"]);
+	
+				$use_time_tmp= mktime(0,0,0,$tmp_dend[1],$tmp_dend[2],$tmp_dend[0]) 
+					- mktime(0,0,0,$tmp_dbeg[1],$tmp_dbeg[2],$tmp_dbeg[0]);		
+				$use_time+=$use_time_tmp;
+
+				$col6 = $data['pages'];
+				if ($pages<$data['pages']){
+					$pages_printed+=$data['pages']-$pages;
+					$nb_pages_printed++;
+					$col6 .= " (". ($data['pages']-$pages)." ".$LANG['printers'][31].")";
+					$pages=$data['pages'];
+				}
+			}
+			$pdf->displayLine($col1, $col2, $date_in, $date_use, $date_out, $col6);		
+		} // Each cartridge	
+	}
+
+	if ($old) {
+		if ($number>0){
+			if ($nb_pages_printed==0) $nb_pages_printed=1;
+
+			$pdf->setColumnsSize(33,33,34);
+			$pdf->displayTitle(
+				"<b><i>".$LANG['cartridges'][40].":</i></b> ".round($stock_time/$number/60/60/24/30.5,1)." ".$LANG['financial'][57],
+				"<b><i>".$LANG['cartridges'][41].":</i></b> ".round($use_time/$number/60/60/24/30.5,1)." ".$LANG['financial'][57],
+				"<b><i>".$LANG['cartridges'][42].":</i></b> ".round($pages_printed/$nb_pages_printed));
+		}
+		$pdf->displaySpace();	
+	}	
+}
+
 function plugin_pdf_financial($pdf,$ID,$type){
 	
 	global $CFG_GLPI,$LANG;
@@ -1587,7 +1685,8 @@ foreach($tab_id as $key => $ID)	{
 			foreach($tab as $i)	{
 				switch($i) {
 					case 0:
-						//cartyrdge
+						plugin_pdf_cartridges($pdf,$ID,false);
+						plugin_pdf_cartridges($pdf,$ID,true);
 						break;
 					case 1:
 						plugin_pdf_device_connection($pdf,$ID,$type);
