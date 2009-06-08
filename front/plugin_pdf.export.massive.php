@@ -47,13 +47,12 @@ unset($_SESSION["plugin_pdf"]["type"]);
 $tab_id = unserialize($_SESSION["plugin_pdf"]["tab_id"]);
 unset($_SESSION["plugin_pdf"]["tab_id"]);
 
-$user_id = $_SESSION['glpiID'];
-$query = "select table_num from glpi_plugin_pdf_preference WHERE user_id =".$user_id." and cat=".$type;
+$query = "select tabref from glpi_plugin_pdf_preference WHERE FK_users =".$_SESSION['glpiID']." and device_type=".$type;
 $result = $DB->query($query);
 
 $tab = array();		
 while($data = $DB->fetch_array($result)) {
-	$tab[]=$data["table_num"];
+	$tab[]=$data["tabref"];
 }
 	
 if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {

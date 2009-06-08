@@ -51,10 +51,15 @@ function plugin_pdf_menu($type, $action, $ID) {
 	echo "<form name='plugin_pdf_$type' id='plugin_pdf_$type' action='$action' method='post' " . 
 		($ID>0 ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
 
+	$landscape = false;
 	$values = array();
-	$sql = "select table_num from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION['glpiID'] . " and cat='$type'";
+	$sql = "select tabref from glpi_plugin_pdf_preference WHERE FK_users =" . $_SESSION['glpiID'] . " and device_type='$type'";
 	foreach ($DB->request($sql) AS $data) {
-		$values[$data["table_num"]] = $data["table_num"]; 		
+		if ($data["tabref"]=='landscape') {
+			$landscape = true;
+		} else {
+			$values[$data["tabref"]] = $data["tabref"]; 		
+		}
 	}
 	
 	$ci = new CommonItem();
@@ -90,12 +95,13 @@ function plugin_pdf_menu($type, $action, $ID) {
 	echo "<input type='hidden' name='plugin_pdf_inventory_type' value='$type'>";
 	echo "<input type='hidden' name='indice' value='".count($options)."'>";
 	
+	echo "<select name='page'>\n";
+	echo "<option value='0'>".$LANG['common'][69]."</option>\n"; // Portrait
+	echo "<option value='1'".($landscape?"selected='selected'":'').">".$LANG['common'][68]."</option>\n"; // Paysage
+	echo "</select>&nbsp;&nbsp;&nbsp;&nbsp;\n";	
+
 	if ($ID>0) {
 		echo "<input type='hidden' name='itemID' value='$ID'>";
-		echo "<select name='page'>\n";
-		echo "<option value='0'>".$LANG['common'][69]."</option>\n"; // Portrait
-		echo "<option value='1'>".$LANG['common'][68]."</option>\n"; // Paysage
-		echo "</select>&nbsp;&nbsp;&nbsp;&nbsp;\n";	
 		echo "<input type='submit' value='" . $LANG['plugin_pdf']["button"][1] . "' name='generate' class='submit'></td></tr>";			
 	} else {
 		echo "<input type='submit' value='" . $LANG['plugin_pdf']["button"][2] . "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";

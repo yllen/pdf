@@ -354,16 +354,33 @@ function plugin_pdf_install() {
 			
 	$DB->query($query) or die($DB->error());	
 
-	$query= "CREATE TABLE IF NOT EXISTS `glpi_plugin_pdf_preference` (
-  	`id` int(11) NOT NULL auto_increment,
-  	`user_id` int(11) NOT NULL,
-  	`cat` varchar(255) NOT NULL,
-  	`table_num` int(11) NOT NULL default -1,
-  	PRIMARY KEY  (`id`)
-	) ENGINE=MyISAM;";
-			
-	$DB->query($query) or die($DB->error());
+	if (!TableExists('glpi_plugin_pdf_preference')) {
+		$query= "CREATE TABLE `glpi_plugin_pdf_preference` (
+		  `id` int(11) NOT NULL AUTO_INCREMENT,
+		  `FK_users` int(11) NOT NULL COMMENT 'RELATION to glpi_users (ID)',
+		  `device_type` int(11) NOT NULL COMMENT 'see define.php *_TYPE constant',
+		  `tabref` varchar(255) NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name',
+		  PRIMARY KEY (`id`)
+		) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+		$DB->query($query) or die($DB->error());
+	}
 	
+	if (FieldExists('glpi_plugin_pdf_preference','user_id')) {
+		$query= "ALTER TABLE `glpi_plugin_pdf_preference`
+			CHANGE `user_id` `FK_users` INT( 11 ) NOT NULL COMMENT 'RELATION to glpi_users (ID)'";		
+		$DB->query($query) or die($DB->error());
+	}
+	if (FieldExists('glpi_plugin_pdf_preference','cat')) {
+		$query= "ALTER TABLE `glpi_plugin_pdf_preference`
+			CHANGE `cat` `device_type` INT NOT NULL COMMENT 'see define.php *_TYPE constant'";
+		$DB->query($query) or die($DB->error());
+	}
+	if (FieldExists('glpi_plugin_pdf_preference','table_num')) {
+		$query= "ALTER TABLE `glpi_plugin_pdf_preference` 
+			CHANGE `table_num` `tabref` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name'";
+		$DB->query($query) or die($DB->error());
+	}
+ 
 	// Give right to current Profile
 	$prof =  new PluginPdfProfile();
 	$prof->add(array(

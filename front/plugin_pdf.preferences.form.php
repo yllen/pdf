@@ -39,14 +39,19 @@ include_once (GLPI_ROOT . "/inc/includes.php");
 
 //Save user preferences
 if (isset ($_POST['plugin_pdf_user_preferences_save']) && isset($_POST["plugin_pdf_inventory_type"])) {
-	$DB->query("DELETE from glpi_plugin_pdf_preference WHERE user_id =" . $_SESSION["glpiID"] . " and cat=" . $_POST["plugin_pdf_inventory_type"]);
+	$DB->query("DELETE from glpi_plugin_pdf_preference WHERE FK_users =" . $_SESSION["glpiID"] . " and device_type=" . $_POST["plugin_pdf_inventory_type"]);
 	
 	if (isset($_POST['item'])) {		
 		foreach ($_POST['item'] as $key => $val) {
 			$DB->query(
-				"INSERT INTO `glpi_plugin_pdf_preference` (`id` ,`user_id` ,`cat` ,`table_num`)
+				"INSERT INTO `glpi_plugin_pdf_preference` (`id` ,`FK_users` ,`device_type` ,`tabref`)
 				VALUES (NULL , '".$_SESSION["glpiID"]."', '".$_POST["plugin_pdf_inventory_type"]."', '" . $key . "');");		
 		}
+	}
+	if (isset($_POST["page"]) && $_POST["page"]) {
+			$DB->query(
+				"INSERT INTO `glpi_plugin_pdf_preference` (`id` ,`FK_users` ,`device_type` ,`tabref`)
+				VALUES (NULL , '".$_SESSION["glpiID"]."', '".$_POST["plugin_pdf_inventory_type"]."', 'landscape');");				
 	}
 
 	glpi_header($_SERVER['HTTP_REFERER']);
