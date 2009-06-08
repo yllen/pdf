@@ -1927,7 +1927,7 @@ function plugin_pdf_history($pdf,$ID,$type){
 						$ci = new CommonItem();
 						$ci->setType($data["device_internal_type"]);
 						$field = $ci->getType();
-						$change = $LANG["log"][55]." ".$data["new_value"];	
+						$change = $LANG["log"][27]." ".$data["new_value"];	
 						break;	
 					case HISTORY_OCS_IMPORT:
 						$ci = new CommonItem();
