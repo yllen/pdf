@@ -42,11 +42,41 @@ function plugin_pdf_menu($type, $action, $ID) {
 
 	if (!isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
 		return;
-	} 
+	}
+
+	// Main options 
 	$options = doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "prefPDF", $type);
 	if (!is_array($options)) {
 		return;
 	}
+
+	// Plugin options
+	if (isset($PLUGIN_HOOKS["headings"]) && is_array($PLUGIN_HOOKS["headings"])) {
+		foreach ($PLUGIN_HOOKS["headings"] as $plug => $funcname) {
+			if (file_exists(GLPI_ROOT . "/plugins/$plug/hook.php")) {
+				include_once(GLPI_ROOT . "/plugins/$plug/hook.php");
+			}
+
+			if (function_exists($funcname) 
+				&& isset($PLUGIN_HOOKS["headings_action"][$plug])
+				&& function_exists($funcaction=$PLUGIN_HOOKS["headings_action"][$plug])) {
+					$title = $funcname($type,1,'');				
+					$calls = $funcaction($type,1,'');
+					
+					if (is_array($title)&&count($title)){
+
+						foreach ($title as $key => $val){
+							$opt=$plug."_".$key;
+							
+							if (isset($calls[$key]) 
+								&& function_exists($calls[$key]."_PDF")) {
+									$options[$opt]=$val;										
+								}
+						}
+					}
+			}
+		}
+	}				
 	
 	echo "<form name='plugin_pdf_$type' id='plugin_pdf_$type' action='$action' method='post' " . 
 		($ID>0 ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
@@ -1988,6 +2018,35 @@ function plugin_pdf_history($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
+function plugin_pdf_pluginhook($onglet,$pdf,$ID,$type) {
+	global $PLUGIN_HOOKS;
+	
+	if (preg_match("/^(.*)_([0-9]*)$/",$onglet,$split)) {
+		$plug = $split[1];
+		$ID_onglet = $split[2];
+
+		if (isset($PLUGIN_HOOKS["headings_action"][$plug])){
+			if (file_exists(GLPI_ROOT . "/plugins/$plug/hook.php")) {
+				include_once(GLPI_ROOT . "/plugins/$plug/hook.php");
+			}
+
+			$function=$PLUGIN_HOOKS["headings_action"][$plug];
+			if (function_exists($function)){
+				$actions=$function($type);
+
+				if (isset($actions[$ID_onglet]) && function_exists($actions[$ID_onglet].'_PDF')){
+					
+					$function=$actions[$ID_onglet].'_PDF';
+					$function($pdf,$ID,$type);
+					return true;
+				}	
+			}
+		}
+
+	}
+	
+}
+
 function plugin_pdf_general($type, $tab_id, $tab, $page=0) {
 
 $pdf = new simplePDF('a4', ($page ? 'landscape' : 'portrait'));
@@ -2048,6 +2107,8 @@ foreach($tab_id as $key => $ID)	{
 					case 20:
 						plugin_pdf_volume($pdf,$ID,$type);
 						break;
+					default:
+						plugin_pdf_pluginhook($i,$pdf,$ID,$type);
 				}
 			}
 			break;
@@ -2088,6 +2149,8 @@ foreach($tab_id as $key => $ID)	{
 					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
+					default:
+						plugin_pdf_pluginhook($i,$pdf,$ID,$type);
 				}
 			}
 			break;
@@ -2123,6 +2186,8 @@ foreach($tab_id as $key => $ID)	{
 					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
+					default:
+						plugin_pdf_pluginhook($i,$pdf,$ID,$type);
 				}
 			}
 			break;
@@ -2158,6 +2223,8 @@ foreach($tab_id as $key => $ID)	{
 					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
+					default:
+						plugin_pdf_pluginhook($i,$pdf,$ID,$type);
 				}
 			}
 			break;
@@ -2193,6 +2260,8 @@ foreach($tab_id as $key => $ID)	{
 					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
+					default:
+						plugin_pdf_pluginhook($i,$pdf,$ID,$type);
 				}
 			}
 			break;
@@ -2212,6 +2281,8 @@ foreach($tab_id as $key => $ID)	{
 					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
+					default:
+						plugin_pdf_pluginhook($i,$pdf,$ID,$type);
 				}
 			}
 			break;
@@ -2227,6 +2298,8 @@ foreach($tab_id as $key => $ID)	{
 					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
+					default:
+						plugin_pdf_pluginhook($i,$pdf,$ID,$type);
 				}
 			}
 			break;
@@ -2266,6 +2339,8 @@ foreach($tab_id as $key => $ID)	{
 					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
+					default:
+						plugin_pdf_pluginhook($i,$pdf,$ID,$type);
 				}
 			}
 			break;
@@ -2278,6 +2353,8 @@ foreach($tab_id as $key => $ID)	{
 					case 5:
 						plugin_pdf_document($pdf,$ID,$type);
 						break;
+					default:
+						plugin_pdf_pluginhook($i,$pdf,$ID,$type);
 				}
 			}
 			break;
