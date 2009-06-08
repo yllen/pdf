@@ -43,107 +43,61 @@ include_once ("plugin_pdf.includes.php");
  */
 function plugin_pdf_prefPDF($type) {
 	global $LANG;
-	
+
+	$tabs=array();	
 	switch ($type) {
 		case COMPUTER_TYPE:
-			return array(
-				$LANG["Menu"][26],		// Management
-				$LANG["title"][27],		// Connections
-				$LANG["title"][30],		// Components
-				$LANG["Menu"][4],		// Software
-				$LANG["title"][28],		// Tickets
-				$LANG["Menu"][27],		// Documents
-				$LANG["title"][43],		// Registry
-				$LANG["title"][34],		// Links
-				$LANG["title"][37],		// Notes
-				$LANG["Menu"][17],		// Reservations
-				$LANG["title"][38],		// Historical
-				$LANG['computers'][8]	//Volumes
-				);
+			require_once(GLPI_ROOT."/inc/computer.class.php");
+			$item = new Computer();
+			$tabs = $item->defineTabs(1,'');
+			if (isset($tabs[13])) unset($tabs[13]); // OCSNG
 			break;
 		case PRINTER_TYPE:
-			return array(
-				$LANG['cartridges'][16],// 0.Cartridges
-				$LANG["title"][27],		// 1.Connections
-				$LANG["Menu"][26],		// 2.Management
-				$LANG["Menu"][27],		// 3.Documents
-				$LANG["title"][28],		// 4.Tickets
-				$LANG["title"][34],		// 5.Links
-				$LANG["title"][37],		// 6.Notes
-				$LANG["Menu"][17],		// 7.Reservations
-				$LANG["title"][38]		// 8.Historical
-				);
+			require_once(GLPI_ROOT."/inc/printer.class.php");
+			$item = new Printer();
+			$tabs = $item->defineTabs(1,'');
 			break;
 		case MONITOR_TYPE:
-			return array(
-				$LANG["title"][27],		// 0.Connections
-				$LANG["Menu"][26],		// 1.Management
-				$LANG["Menu"][27],		// 2.Documents
-				$LANG["title"][28],		// 3.Tickets
-				$LANG["title"][34],		// 4.Links
-				$LANG["title"][37],		// 5.Notes
-				$LANG["Menu"][17],		// 6.Reservations
-				$LANG["title"][38]		// 7.Historical
-				);
+			require_once(GLPI_ROOT."/inc/monitor.class.php");
+			$item = new Monitor();
+			$tabs = $item->defineTabs(1,'');
 			break;
 		case PHONE_TYPE:
-			return array(
-				$LANG["title"][27],		// 0.Connections
-				$LANG["Menu"][26],		// 1.Management
-				$LANG["Menu"][27],		// 2.Documents
-				$LANG["title"][28],		// 3.Tickets
-				$LANG["title"][34],		// 4.Links
-				$LANG["title"][37],		// 5.Notes
-				$LANG["Menu"][17],		// 6.Reservations
-				$LANG["title"][38]		// 7.Historical
-				);
+			require_once(GLPI_ROOT."/inc/phone.class.php");
+			$item = new Phone();
+			$tabs = $item->defineTabs(1,'');
 			break;
 		case PERIPHERAL_TYPE:
-			return array(
-				$LANG["title"][27],		// 0.Connections
-				$LANG["Menu"][26],		// 1.Management
-				$LANG["Menu"][27],		// 2.Documents
-				$LANG["title"][28],		// 3.Tickets
-				$LANG["title"][34],		// 4.Links
-				$LANG["title"][37],		// 5.Notes
-				$LANG["Menu"][17],		// 6.Reservations
-				$LANG["title"][38]		// 7.Historical
-				);
+			require_once(GLPI_ROOT."/inc/peripheral.class.php");
+			$item = new Peripheral();
+			$tabs = $item->defineTabs(1,'');
 			break;
 		case SOFTWARE_TYPE:
-			return array(
-				$LANG['software'][5]."/".$LANG['software'][11],	// Versions/Licenses
-				$LANG["software"][19],	// Installations
-				$LANG["Menu"][26],		// Management
-				$LANG["Menu"][27],		// Documents
-				$LANG["title"][28],		// Tickets
-				$LANG["title"][34],		// Links
-				$LANG["title"][37],		// Notes
-				$LANG["Menu"][17],		// Reservations
-				$LANG["title"][38]		// Historical
-				);
+			require_once(GLPI_ROOT."/inc/software.class.php");
+			$item = new Software();
+			$tabs = $item->defineTabs(1,'');
+			if (isset($tabs[21])) unset($tabs[21]); // Merge
 			break;
 		case SOFTWARELICENSE_TYPE:
-			return array(
-				$LANG["Menu"][26],		// Management
-				$LANG["Menu"][27],		// Documents
-				$LANG["title"][38]		// Historical
-				);
+			require_once(GLPI_ROOT."/inc/software.class.php");
+			$item = new SoftwareLicense();
+			$tabs = $item->defineTabs(1,'');
+			if (isset($tabs[1])) unset($tabs[1]); // Main : TODO
 			break;
 		case SOFTWAREVERSION_TYPE:
-			return array(
-				$LANG["software"][19],	// Installations
-				$LANG["title"][38]		// Historical
-				);
+			require_once(GLPI_ROOT."/inc/software.class.php");
+			$item = new SoftwareVersion();
+			$tabs = $item->defineTabs(1,'');
+			if (isset($tabs[1])) unset($tabs[1]); // Main : TODO
 			break;
 		case TRACKING_TYPE:
 			return array(
-				$LANG['common'][77],	// Privé
-				$LANG["Menu"][27]		// Documents
+				'private' => $LANG['common'][77],		// Privé
+				5 => $LANG["Menu"][27]		// Documents
 				);
 			break;
 	}
-	return false;
+	return $tabs;
 }
 
 /**

@@ -2008,44 +2008,44 @@ foreach($tab_id as $key => $ID)	{
 			plugin_pdf_main_computer($pdf,$ID);
 			
 			foreach($tab as $i)	{
-				switch($i) {
-					case 0:
+				switch($i) { // See Computer::defineTabs();
+					case 4:
 						plugin_pdf_financial($pdf,$ID,$type);
 						plugin_pdf_contract ($pdf,$ID,$type);
 						break;
-					case 1:
+					case 3:
 						plugin_pdf_computer_connection($pdf,$ID);
 						plugin_pdf_port($pdf,$ID,$type);
 						break;
-					case 2:
+					case 1:
 						plugin_pdf_device($pdf,$ID,$type);
 						break;
-					case 3:
+					case 2:
 						plugin_pdf_software($pdf,$ID,$type);
 						break;
-					case 4:
+					case 6:
 						plugin_pdf_ticket($pdf,$ID,$type);
 						plugin_pdf_oldticket($pdf,$ID,$type);
 						break;
 					case 5:
 						plugin_pdf_document($pdf,$ID,$type);
 						break;
-					case 6:
+					case 14:
 						plugin_pdf_registry($pdf,$ID,$type);
 						break;
 					case 7:
 						plugin_pdf_link($pdf,$ID,$type);
 						break;
-					case 8:
+					case 10:
 						plugin_pdf_note($pdf,$ID,$type);
 						break;
-					case 9:
+					case 11:
 						plugin_pdf_reservation($pdf,$ID,$type);
 						break;
-					case 10:
+					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
-					case 11:
+					case 20:
 						plugin_pdf_volume($pdf,$ID,$type);
 						break;
 				}
@@ -2056,36 +2056,36 @@ foreach($tab_id as $key => $ID)	{
 			plugin_pdf_main_printer($pdf,$ID);
 			
 			foreach($tab as $i)	{
-				switch($i) {
-					case 0:
+				switch($i) {  // See Printer::defineTabs();
+					case 1:
 						plugin_pdf_cartridges($pdf,$ID,false);
 						plugin_pdf_cartridges($pdf,$ID,true);
 						break;
-					case 1:
+					case 3:
 						plugin_pdf_device_connection($pdf,$ID,$type);
 						plugin_pdf_port($pdf,$ID,$type);
 						break;
-					case 2:
+					case 4:
 						plugin_pdf_financial($pdf,$ID,$type);
 						plugin_pdf_contract ($pdf,$ID,$type);
 						break;
-					case 3:
+					case 5:
 						plugin_pdf_document($pdf,$ID,$type);
 						break;
-					case 4:
+					case 6:
 						plugin_pdf_ticket($pdf,$ID,$type);
 						plugin_pdf_oldticket($pdf,$ID,$type);
 						break;
-					case 5:
+					case 7:
 						plugin_pdf_link($pdf,$ID,$type);
 						break;
-					case 6:
+					case 10:
 						plugin_pdf_note($pdf,$ID,$type);
 						break;
-					case 7:
+					case 11:
 						plugin_pdf_reservation($pdf,$ID,$type);
 						break;
-					case 8:
+					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
 				}
@@ -2096,31 +2096,31 @@ foreach($tab_id as $key => $ID)	{
 			plugin_pdf_main_monitor($pdf,$ID);
 			
 			foreach($tab as $i)	{
-				switch($i) {
-					case 0:
+				switch($i) { // See Monitor::defineTabs();
+					case 1:
 						plugin_pdf_device_connection($pdf,$ID,$type);
 						break;
-					case 1:
+					case 4:
 						plugin_pdf_financial($pdf,$ID,$type);
 						plugin_pdf_contract ($pdf,$ID,$type);
 						break;
-					case 2:
+					case 5:
 						plugin_pdf_document($pdf,$ID,$type);
 						break;
-					case 3:
+					case 6:
 						plugin_pdf_ticket($pdf,$ID,$type);
 						plugin_pdf_oldticket($pdf,$ID,$type);
 						break;
-					case 4:
+					case 7:
 						plugin_pdf_link($pdf,$ID,$type);
 						break;
-					case 5:
+					case 10:
 						plugin_pdf_note($pdf,$ID,$type);
 						break;
-					case 6:
+					case 11:
 						plugin_pdf_reservation($pdf,$ID,$type);
 						break;
-					case 7:
+					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
 				}
@@ -2131,31 +2131,31 @@ foreach($tab_id as $key => $ID)	{
 			plugin_pdf_main_peripheral($pdf,$ID);
 			
 			foreach($tab as $i)	{
-				switch($i) {
-					case 0:
+				switch($i) { // See Peripheral::defineTabs();
+					case 1:
 						plugin_pdf_device_connection($pdf,$ID,$type);
 						break;
-					case 1:
+					case 4:
 						plugin_pdf_financial($pdf,$ID,$type);
 						plugin_pdf_contract ($pdf,$ID,$type);
 						break;
-					case 2:
+					case 5:
 						plugin_pdf_document($pdf,$ID,$type);
 						break;
-					case 3:
+					case 6:
 						plugin_pdf_ticket($pdf,$ID,$type);
 						plugin_pdf_oldticket($pdf,$ID,$type);
 						break;
-					case 4:
+					case 7:
 						plugin_pdf_link($pdf,$ID,$type);
 						break;
-					case 5:
+					case 10:
 						plugin_pdf_note($pdf,$ID,$type);
 						break;
-					case 6:
+					case 11:
 						plugin_pdf_reservation($pdf,$ID,$type);
 						break;
-					case 7:
+					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
 				}
@@ -2166,31 +2166,31 @@ foreach($tab_id as $key => $ID)	{
 			plugin_pdf_main_phone($pdf,$ID);
 			
 			foreach($tab as $i)	{
-				switch($i) {
-					case 0:
+				switch($i) { // See Phone::defineTabs();
+					case 1:
 						plugin_pdf_device_connection($pdf,$ID,$type);
 						break;
-					case 1:
+					case 4:
 						plugin_pdf_financial($pdf,$ID,$type);
 						plugin_pdf_contract ($pdf,$ID,$type);
 						break;
-					case 2:
+					case 5:
 						plugin_pdf_document($pdf,$ID,$type);
 						break;
-					case 3:
+					case 6:
 						plugin_pdf_ticket($pdf,$ID,$type);
 						plugin_pdf_oldticket($pdf,$ID,$type);
 						break;
-					case 4:
+					case 7:
 						plugin_pdf_link($pdf,$ID,$type);
 						break;
-					case 5:
+					case 10:
 						plugin_pdf_note($pdf,$ID,$type);
 						break;
-					case 6:
+					case 11:
 						plugin_pdf_reservation($pdf,$ID,$type);
 						break;
-					case 7:
+					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
 				}
@@ -2201,15 +2201,15 @@ foreach($tab_id as $key => $ID)	{
 			plugin_pdf_main_license($pdf,$ID);
 
 			foreach($tab as $i)	{
-				switch($i){
-					case 0:
+				switch($i){ // See SoftwareLicense::defineTabs();
+					case 4:
 						plugin_pdf_financial($pdf,$ID,$type);
 						plugin_pdf_contract($pdf,$ID,$type);
 						break;
-					case 1:
+					case 5:
 						plugin_pdf_document($pdf,$ID,$type);
 						break;
-					case 2:
+					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
 				}
@@ -2220,11 +2220,11 @@ foreach($tab_id as $key => $ID)	{
 			plugin_pdf_main_version($pdf,$ID);
 
 			foreach($tab as $i)	{
-				switch($i){
-					case 0:
+				switch($i){ // See SoftwareVersion::defineTabs();
+					case 2:
 						plugin_pdf_installations($pdf,$ID,$type);
 						break;
-					case 1:
+					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
 				}
@@ -2235,35 +2235,35 @@ foreach($tab_id as $key => $ID)	{
 			plugin_pdf_main_software($pdf,$ID);
 			
 			foreach($tab as $i)	{
-				switch($i) {
-					case 0:
+				switch($i) { // See Software::defineTabs();
+					case 1:
 						plugin_pdf_versions($pdf,$ID);
 						plugin_pdf_licenses($pdf,$ID,in_array(2,$tab));
 						break;
-					case 1:
+					case 2:
 						plugin_pdf_installations($pdf,$ID,$type);
 						break;
-					case 2:
+					case 4:
 						// only template - plugin_pdf_financial($pdf,$ID,SOFTWARE_TYPE);
 						plugin_pdf_contract($pdf,$ID,$type);
 						break;
-					case 3:
+					case 5:
 						plugin_pdf_document($pdf,$ID,$type);
 						break;
-					case 4:
+					case 6:
 						plugin_pdf_ticket($pdf,$ID,$type);
 						plugin_pdf_oldticket($pdf,$ID,$type);
 						break;
-					case 5:
+					case 7:
 						plugin_pdf_link($pdf,$ID,$type);
 						break;
-					case 6:
+					case 10:
 						plugin_pdf_note($pdf,$ID,$type);
 						break;
-					case 7:
+					case 11:
 						plugin_pdf_reservation($pdf,$ID,$type);
 						break;
-					case 8:
+					case 12:
 						plugin_pdf_history($pdf,$ID,$type);
 						break;
 				}
@@ -2271,11 +2271,11 @@ foreach($tab_id as $key => $ID)	{
 			break;
 			
 		case TRACKING_TYPE:
-			plugin_pdf_main_ticket($pdf,$ID,in_array(0,$tab));
-			
+			plugin_pdf_main_ticket($pdf,$ID,in_array('private',$tab));
+
 			foreach($tab as $i)	{
-				switch($i) {
-					case 1:
+				switch($i) { // Value not from Job::defineTabs but from plugin_pdf_prefPDF
+					case 5:
 						plugin_pdf_document($pdf,$ID,$type);
 						break;
 				}
