@@ -55,6 +55,7 @@ function plugin_init_pdf() {
 	$PLUGIN_HOOKS['plugin_pdf'][SOFTWAREVERSION_TYPE]='pdf';
 	$PLUGIN_HOOKS['plugin_pdf'][PRINTER_TYPE]='pdf';
 	$PLUGIN_HOOKS['plugin_pdf'][MONITOR_TYPE]='pdf';
+	$PLUGIN_HOOKS['plugin_pdf'][PHONE_TYPE]='pdf';
 	$PLUGIN_HOOKS['plugin_pdf'][TRACKING_TYPE]='pdf';
 }
 
