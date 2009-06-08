@@ -98,6 +98,18 @@ function plugin_pdf_prefPDF($type) {
 				$LANG["title"][38]		// 7.Historical
 				);
 			break;
+		case PERIPHERAL_TYPE:
+			return array(
+				$LANG["title"][27],		// 0.Connections
+				$LANG["Menu"][26],		// 1.Management
+				$LANG["Menu"][27],		// 2.Documents
+				$LANG["title"][28],		// 3.Tickets
+				$LANG["title"][34],		// 4.Links
+				$LANG["title"][37],		// 5.Notes
+				$LANG["Menu"][17],		// 6.Reservations
+				$LANG["title"][38]		// 7.Historical
+				);
+			break;
 		case SOFTWARE_TYPE:
 			return array(
 				$LANG['software'][5]."/".$LANG['software'][11],	// Versions/Licenses
