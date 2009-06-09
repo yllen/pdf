@@ -58,8 +58,8 @@ function plugin_pdf_menu($type, $action, $ID) {
 			}
 
 			if (function_exists($funcname) 
-				&& isset($PLUGIN_HOOKS["headings_action"][$plug])
-				&& function_exists($funcaction=$PLUGIN_HOOKS["headings_action"][$plug])) {
+				&& isset($PLUGIN_HOOKS["headings_actionpdf"][$plug])
+				&& function_exists($funcaction=$PLUGIN_HOOKS["headings_actionpdf"][$plug])) {
 					$title = $funcname($type,1,'');				
 					$calls = $funcaction($type,1,'');
 					
@@ -69,7 +69,7 @@ function plugin_pdf_menu($type, $action, $ID) {
 							$opt=$plug."_".$key;
 							
 							if (isset($calls[$key]) 
-								&& function_exists($calls[$key]."_PDF")) {
+								&& function_exists($calls[$key])) {
 									$options[$opt]=$val;										
 								}
 						}
@@ -2025,18 +2025,18 @@ function plugin_pdf_pluginhook($onglet,$pdf,$ID,$type) {
 		$plug = $split[1];
 		$ID_onglet = $split[2];
 
-		if (isset($PLUGIN_HOOKS["headings_action"][$plug])){
+		if (isset($PLUGIN_HOOKS["headings_actionpdf"][$plug])){
 			if (file_exists(GLPI_ROOT . "/plugins/$plug/hook.php")) {
 				include_once(GLPI_ROOT . "/plugins/$plug/hook.php");
 			}
 
-			$function=$PLUGIN_HOOKS["headings_action"][$plug];
+			$function=$PLUGIN_HOOKS["headings_actionpdf"][$plug];
 			if (function_exists($function)){
 				$actions=$function($type);
 
-				if (isset($actions[$ID_onglet]) && function_exists($actions[$ID_onglet].'_PDF')){
+				if (isset($actions[$ID_onglet]) && function_exists($actions[$ID_onglet])){
 					
-					$function=$actions[$ID_onglet].'_PDF';
+					$function=$actions[$ID_onglet];
 					$function($pdf,$ID,$type);
 					return true;
 				}	
