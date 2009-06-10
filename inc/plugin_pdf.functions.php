@@ -140,16 +140,6 @@ function plugin_pdf_menu($type, $action, $ID) {
 	
 }
 
-function plugin_pdf_getDropdownName($table,$id,$withcomment=0){
-	
-	$name = html_clean(getDropdownName($table,$id,$withcomment));
-	
-	if($name=="&nbsp;")
-		$name="";
-	
-	return $name; 
-}
-
 /**
  * Display the Page header = type name, object name, entity name
  * 
@@ -173,7 +163,7 @@ function plugin_pdf_add_header($pdf,$ID,$type){
 			$name = $LANG["common"][2].' '.$ID;
 		}
 		if (isMultiEntitiesMode() && isset($ci->obj->fields['FK_entities'])) {
-			$entity = ' ('.plugin_pdf_getDropdownName('glpi_entities',$ci->obj->fields['FK_entities']).')'; 
+			$entity = ' ('.html_clean(getDropdownName('glpi_entities',$ci->obj->fields['FK_entities'])).')'; 
 		}
 		$pdf->setHeader($ci->getType()." - <b>$name</b>$entity");
 
@@ -365,23 +355,23 @@ function plugin_pdf_main_computer($pdf,$ID) {
 		'<b><i>'.$LANG["common"][16].' :</i></b> '.$computer->fields['name'],
 		'<b><i>'.$LANG["common"][18].' :</i></b> '.$computer->fields['contact']);
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName('glpi_type_computers',$computer->fields['type']),
+		'<b><i>'.$LANG["common"][17].' :</i></b> '.html_clean(getDropdownName('glpi_type_computers',$computer->fields['type'])),
 		'<b><i>'.$LANG["common"][21].' :</i></b> '.$computer->fields['contact_num']);
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][22].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_model',$computer->fields['model']),
+		'<b><i>'.$LANG["common"][22].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_model',$computer->fields['model'])),
 		'<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($computer->fields['FK_users']));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][5].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_manufacturer',$computer->fields['FK_glpi_enterprise']),
-		'<b><i>'.$LANG["common"][35].' :</i></b> '.plugin_pdf_getDropdownName('glpi_groups',$computer->fields['FK_groups']));
+		'<b><i>'.$LANG["common"][5].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_manufacturer',$computer->fields['FK_glpi_enterprise'])),
+		'<b><i>'.$LANG["common"][35].' :</i></b> '.html_clean(getDropdownName('glpi_groups',$computer->fields['FK_groups'])));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["computers"][9].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_os',$computer->fields['os']),
+		'<b><i>'.$LANG["computers"][9].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_os',$computer->fields['os'])),
 		'<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($computer->fields['tech_num']));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["computers"][52].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_os_version',$computer->fields['os_version']),
-		'<b><i>'.$LANG["setup"][88].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_network',$computer->fields['network']));
+		'<b><i>'.$LANG["computers"][52].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_os_version',$computer->fields['os_version'])),
+		'<b><i>'.$LANG["setup"][88].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_network',$computer->fields['network'])));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["computers"][53].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_os_sp',$computer->fields['os_sp']),
-		'<b><i>'.$LANG["setup"][89].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_domain',$computer->fields['domain']));
+		'<b><i>'.$LANG["computers"][53].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_os_sp',$computer->fields['os_sp'])),
+		'<b><i>'.$LANG["setup"][89].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_domain',$computer->fields['domain'])));
 	$pdf->displayLine(
 		'<b><i>'.$LANG["computers"][10].' :</i></b> '.$computer->fields['os_license_number'],
 		'<b><i>'.$LANG["common"][19].' :</i></b> '.$computer->fields['serial']);
@@ -393,13 +383,13 @@ function plugin_pdf_main_computer($pdf,$ID) {
 	else
 		$col1 = '<b><i>'.$LANG["ocsng"][6].' '.$LANG["Menu"][33].' :</i></b> '.$LANG["choice"][0];
 	$pdf->displayLine($col1,
-		'<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$computer->fields['state']));
+		'<b><i>'.$LANG["state"][0].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_state',$computer->fields['state'])));
 	$pdf->displayLine('',
-		'<b><i>'.$LANG["computers"][51].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_auto_update',$computer->fields['auto_update']));
+		'<b><i>'.$LANG["computers"][51].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_auto_update',$computer->fields['auto_update'])));
 
 	$pdf->setColumnsSize(100);
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$computer->fields['location']));
+		'<b><i>'.$LANG["common"][15].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_locations',$computer->fields['location'])));
 		
 	$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $computer->fields['comments']);
 	
@@ -422,13 +412,13 @@ function plugin_pdf_main_printer($pdf,$ID) {
 
 	$pdf->displayLine(
 		'<b><i>'.$LANG["common"][16].' :</i></b> '.$printer->fields['name'],
-		'<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$printer->fields['state']));
+		'<b><i>'.$LANG["state"][0].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_state',$printer->fields['state'])));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$printer->fields['location']),
-		'<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName('glpi_type_printers',$printer->fields['type']));
+		'<b><i>'.$LANG["common"][15].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_locations',$printer->fields['location'])),
+		'<b><i>'.$LANG["common"][17].' :</i></b> '.html_clean(getDropdownName('glpi_type_printers',$printer->fields['type'])));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][5].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_manufacturer',$printer->fields['FK_glpi_enterprise']),
-		'<b><i>'.$LANG["common"][22].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_model_printers',$printer->fields['model']));
+		'<b><i>'.$LANG["common"][5].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_manufacturer',$printer->fields['FK_glpi_enterprise'])),
+		'<b><i>'.$LANG["common"][22].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_model_printers',$printer->fields['model'])));
 	$pdf->displayLine(		
 		'<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($printer->fields['tech_num']),
 		'<b><i>'.$LANG["common"][19].' :</i></b> '.$printer->fields['serial']);
@@ -453,13 +443,13 @@ function plugin_pdf_main_printer($pdf,$ID) {
 		'<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($printer->fields['FK_users']),
 		'<b><i>'.$LANG['devices'][6].' :</i></b> '.$printer->fields['ramSize']);
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][35].' :</i></b> '.plugin_pdf_getDropdownName('glpi_groups',$printer->fields['FK_groups']),
+		'<b><i>'.$LANG["common"][35].' :</i></b> '.html_clean(getDropdownName('glpi_groups',$printer->fields['FK_groups'])),
 		'<b><i>'.$LANG['printers'][30].' :</i></b> '.$printer->fields['initial_pages']);
 	$pdf->displayLine(
-		'<b><i>'.$LANG["setup"][88].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_network',$printer->fields['network']),
+		'<b><i>'.$LANG["setup"][88].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_network',$printer->fields['network'])),
 		'<b><i>'.$LANG['peripherals'][33].' :</i></b> '.($printer->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["setup"][89].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_domain',$printer->fields['domain']),
+		'<b><i>'.$LANG["setup"][89].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_domain',$printer->fields['domain'])),
 		'');
 		
 				
@@ -487,13 +477,13 @@ function plugin_pdf_main_monitor($pdf,$ID) {
 		'<b><i>'.$LANG["common"][16].' :</i></b> '.$item->fields['name'],
 		'<b><i>'.$LANG['peripherals'][33].' :</i></b> '.($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$item->fields['location']),
-		'<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName('glpi_type_monitors',$item->fields['type']));
+		'<b><i>'.$LANG["common"][15].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_locations',$item->fields['location'])),
+		'<b><i>'.$LANG["common"][17].' :</i></b> '.html_clean(getDropdownName('glpi_type_monitors',$item->fields['type'])));
 	$pdf->displayLine(		
 		'<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($item->fields['tech_num']),
-		'<b><i>'.$LANG["common"][22].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_model_monitors',$item->fields['model']));
+		'<b><i>'.$LANG["common"][22].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_model_monitors',$item->fields['model'])));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][5].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_manufacturer',$item->fields['FK_glpi_enterprise']),
+		'<b><i>'.$LANG["common"][5].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_manufacturer',$item->fields['FK_glpi_enterprise'])),
 		'<b><i>'.$LANG["common"][19].' :</i></b> '.$item->fields['serial']);
 	$pdf->displayLine(
 		'<b><i>'.$LANG["common"][18].' :</i></b> '.$item->fields['contact'],
@@ -525,8 +515,8 @@ function plugin_pdf_main_monitor($pdf,$ID) {
 		'<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($item->fields['FK_users']),
 		'<b><i>'.$LANG['monitors'][18].' : </i></b>'.implode(', ',$opts));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][35].' :</i></b> '.plugin_pdf_getDropdownName('glpi_groups',$item->fields['FK_groups']),
-		'<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$item->fields['state']));
+		'<b><i>'.$LANG["common"][35].' :</i></b> '.html_clean(getDropdownName('glpi_groups',$item->fields['FK_groups'])),
+		'<b><i>'.$LANG["state"][0].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_state',$item->fields['state'])));
 
 	$pdf->setColumnsSize(100);		
 	$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $item->fields['comments']);
@@ -551,11 +541,11 @@ function plugin_pdf_main_phone($pdf,$ID) {
 		'<b><i>'.$LANG["common"][16].' :</i></b> '.$item->fields['name'],
 		'<b><i>'.$LANG['peripherals'][33].' :</i></b> '.($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$item->fields['location']),
+		'<b><i>'.$LANG["common"][15].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_locations',$item->fields['location'])),
 		'<b><i>'.$LANG['phones'][36].' :</i></b> '.getYesNo($item->fields['power']));
 	$pdf->displayLine(		
 		'<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($item->fields['tech_num']),
-		'<b><i>'.$LANG["common"][5].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_manufacturer',$item->fields['FK_glpi_enterprise']));
+		'<b><i>'.$LANG["common"][5].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_manufacturer',$item->fields['FK_glpi_enterprise'])));
 	$pdf->displayLine(
 		'<b><i>'.$LANG["common"][21].' :</i></b> '.$item->fields['contact_num'],
 		'<b><i>'.$LANG['phones'][18].' :</i></b> '.$item->fields['brand']);
@@ -566,13 +556,13 @@ function plugin_pdf_main_phone($pdf,$ID) {
 		'<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($item->fields['FK_users']),
 		'<b><i>'.$LANG["common"][20].' :</i></b> '.$item->fields['otherserial']);
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][35].' :</i></b> '.plugin_pdf_getDropdownName('glpi_groups',$item->fields['FK_groups']),
+		'<b><i>'.$LANG["common"][35].' :</i></b> '.html_clean(getDropdownName('glpi_groups',$item->fields['FK_groups'])),
 		'<b><i>'.$LANG['setup'][71].' :</i></b> '.$item->fields['firmware']);
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName('glpi_type_pĥones',$item->fields['type']),
-		'<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$item->fields['state']));
+		'<b><i>'.$LANG["common"][17].' :</i></b> '.html_clean(getDropdownName('glpi_type_pĥones',$item->fields['type'])),
+		'<b><i>'.$LANG["state"][0].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_state',$item->fields['state'])));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][22].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_model_phones',$item->fields['model']),
+		'<b><i>'.$LANG["common"][22].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_model_phones',$item->fields['model'])),
 		'<b><i>'.$LANG['phones'][40].' :</i></b> '.$item->fields['number_line']);
 
 	$opts=array();
@@ -608,14 +598,14 @@ function plugin_pdf_main_peripheral($pdf,$ID) {
 		'<b><i>'.$LANG["common"][16].' :</i></b> '.$item->fields['name'],
 		'<b><i>'.$LANG['peripherals'][33].' :</i></b> '.($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$item->fields['location']),
-		'<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName('glpi_type_peripherals',$item->fields['type']));
+		'<b><i>'.$LANG["common"][15].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_locations',$item->fields['location'])),
+		'<b><i>'.$LANG["common"][17].' :</i></b> '.html_clean(getDropdownName('glpi_type_peripherals',$item->fields['type'])));
 	$pdf->displayLine(		
 		'<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($item->fields['tech_num']),
-		'<b><i>'.$LANG["common"][22].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_model_peripherals',$item->fields['model']));
+		'<b><i>'.$LANG["common"][22].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_model_peripherals',$item->fields['model'])));
 	$pdf->displayLine(
 		'<b><i>'.$LANG["common"][21].' :</i></b> '.$item->fields['contact_num'],
-		'<b><i>'.$LANG["common"][5].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_manufacturer',$item->fields['FK_glpi_enterprise']));
+		'<b><i>'.$LANG["common"][5].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_manufacturer',$item->fields['FK_glpi_enterprise'])));
 	$pdf->displayLine(
 		'<b><i>'.$LANG["common"][18].' :</i></b> '.$item->fields['contact'],
 		'<b><i>'.$LANG['phones'][18].' :</i></b> '.$item->fields['brand']);
@@ -623,10 +613,10 @@ function plugin_pdf_main_peripheral($pdf,$ID) {
 		'<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($item->fields['FK_users']),
 		'<b><i>'.$LANG["common"][19].' :</i></b> '.$item->fields['serial']);
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][35].' :</i></b> '.plugin_pdf_getDropdownName('glpi_groups',$item->fields['FK_groups']),
+		'<b><i>'.$LANG["common"][35].' :</i></b> '.html_clean(getDropdownName('glpi_groups',$item->fields['FK_groups'])),
 		'<b><i>'.$LANG["common"][20].' :</i></b> '.$item->fields['otherserial']);
 	$pdf->displayLine('',
-		'<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$item->fields['state']));
+		'<b><i>'.$LANG["state"][0].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_state',$item->fields['state'])));
 
 	$pdf->setColumnsSize(100);		
 	$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $item->fields['comments']);
@@ -747,7 +737,7 @@ function plugin_pdf_financial($pdf,$ID,$type){
 		
 		$pdf->setColumnsSize(50,50);
 		$pdf->displayLine(
-			"<b><i>".$LANG["financial"][26]." :</i></b> ".plugin_pdf_getDropdownName("glpi_enterprises",$ic->fields["FK_enterprise"]),
+			"<b><i>".$LANG["financial"][26]." :</i></b> ".html_clean(getDropdownName("glpi_enterprises",$ic->fields["FK_enterprise"])),
 			"<b><i>".$LANG["financial"][82]." :</i></b> ".$ic->fields["facture"]);
 		$pdf->displayLine(
 			"<b><i>".$LANG["financial"][18]." :</i></b> ".$ic->fields["num_commande"],
@@ -757,7 +747,7 @@ function plugin_pdf_financial($pdf,$ID,$type){
 			"<b><i>".$LANG["financial"][76]." :</i></b> ".convDate($ic->fields["use_date"]));
 		$pdf->displayLine(
 			"<b><i>".$LANG["financial"][15]." :</i></b> ".$ic->fields["warranty_duration"]." mois <b><i> Expire le</i></b> ".getWarrantyExpir($ic->fields["buy_date"],$ic->fields["warranty_duration"]),
-			"<b><i>".$LANG["financial"][87]." :</i></b> ".plugin_pdf_getDropdownName("glpi_dropdown_budget",$ic->fields["budget"])); 
+			"<b><i>".$LANG["financial"][87]." :</i></b> ".html_clean(getDropdownName("glpi_dropdown_budget",$ic->fields["budget"]))); 
 		$pdf->displayLine(
 			"<b><i>".$LANG["financial"][78]." :</i></b> ".formatNumber($ic->fields["warranty_value"]),
 			"<b><i>".$LANG["financial"][16]." :</i></b> ".$ic->fields["warranty_info"]);
@@ -808,18 +798,18 @@ function plugin_pdf_main_software($pdf,$ID){
 
 	$pdf->displayLine(
 		'<b><i>'.$LANG["common"][16].' :</i></b> '.$software->fields['name'],
-		'<b><i>'.$LANG["common"][36].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_software_category',$software->fields["category"]));
+		'<b><i>'.$LANG["common"][36].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_software_category',$software->fields["category"])));
 	$pdf->displayLine(
-		'<b><i>'.$LANG["software"][3].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_os',$software->fields['platform']),
-		'<b><i>'.$LANG["common"][5].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_manufacturer',$software->fields['FK_glpi_enterprise']));
+		'<b><i>'.$LANG["software"][3].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_os',$software->fields['platform'])),
+		'<b><i>'.$LANG["common"][5].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_manufacturer',$software->fields['FK_glpi_enterprise'])));
 	$pdf->displayLine(
 		'<b><i>'.$LANG["common"][34].' :</i></b> '.getUserName($software->fields["FK_users"]),
-		'<b><i>'.$LANG["common"][35].' :</i></b> '.plugin_pdf_getDropdownName('glpi_groups',$software->fields['FK_groups']));
+		'<b><i>'.$LANG["common"][35].' :</i></b> '.html_clean(getDropdownName('glpi_groups',$software->fields['FK_groups'])));
 	$pdf->displayLine(
 		'<b><i>'.$LANG["common"][10].' :</i></b> '.getUserName($software->fields["tech_num"]),
 		'<b><i>'.$LANG["software"][46].' :</i></b> ' . ($software->fields['helpdesk_visible']?$LANG["choice"][1]:$LANG["choice"][0]));
 	if ($software->fields["update_software"]>0) {
-		$col2 = '<b><i> '.$LANG["pager"][2].' </i></b> '.plugin_pdf_getDropdownName('glpi_software',$software->fields["update_software"]);
+		$col2 = '<b><i> '.$LANG["pager"][2].' </i></b> '.html_clean(getDropdownName('glpi_software',$software->fields["update_software"]));
 	} else {	 
 		$col2 = '';
 	}
@@ -829,7 +819,7 @@ function plugin_pdf_main_software($pdf,$ID){
 
 	$pdf->setColumnsSize(100);
 	$pdf->displayLine(
-		'<b><i>'.$LANG["common"][15].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_locations',$software->fields['location']));
+		'<b><i>'.$LANG["common"][15].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_locations',$software->fields['location'])));
 
 	$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $software->fields['comments']);
 	
@@ -856,7 +846,7 @@ function plugin_pdf_device($pdf,$ID,$type){
 		switch($device->devtype) {
 		case HDD_DEVICE :
 			if (!empty($device->fields["rpm"]))	$col5='<b><i>'.$LANG["device_hdd"][0].' :</i></b> '.$device->fields["rpm"];
-			else if (!empty($device->fields["interface"])) $col5='<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"]);
+			else if (!empty($device->fields["interface"])) $col5='<b><i>'.$LANG["common"][65].' :</i></b> '.html_clean(getDropdownName("glpi_dropdown_interface",$device->fields["interface"]));
 			else if (!empty($device->fields["cache"])) $col5='<b><i>'.$LANG["device_hdd"][1].' :</i></b> '.$device->fields["cache"];
 			else $col5='';
 			$pdf->displayLine($val["quantity"].'x',
@@ -898,7 +888,7 @@ function plugin_pdf_device($pdf,$ID,$type){
 				$col5);
 			break;
 		case RAM_DEVICE :
-			$col5 = (empty($device->fields["type"]) ? '' : '<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_ram_type",$device->fields["type"])) .
+			$col5 = (empty($device->fields["type"]) ? '' : '<b><i>'.$LANG["common"][17].' :</i></b> '.html_clean(getDropdownName("glpi_dropdown_ram_type",$device->fields["type"]))) .
 					(empty($device->fields["frequence"]) ? '' : $device->fields["frequence"]);
 			$pdf->displayLine($val["quantity"].'x',
 				$LANG["devices"][6],
@@ -926,7 +916,7 @@ function plugin_pdf_device($pdf,$ID,$type){
 				$col4, $col5);
 			break;
 		case CONTROL_DEVICE :;
-			$col4 = (empty($device->fields["interface"]) ? '' : '<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_interface",$device->fields["interface"]));
+			$col4 = (empty($device->fields["interface"]) ? '' : '<b><i>'.$LANG["common"][65].' :</i></b> '.html_clean(getDropdownName("glpi_dropdown_interface",$device->fields["interface"])));
 			$col5 = (empty($device->fields["raid"]) ? '' : '<b><i>'.$LANG["device_control"][0].' :</i></b> '.getYesNo($device->fields["raid"]));
 			$pdf->displayLine($val["quantity"].'x',
 				$LANG["devices"][20],
@@ -950,7 +940,7 @@ function plugin_pdf_device($pdf,$ID,$type){
 				$col4, $col5);
 			break;
 		case CASE_DEVICE :
-			$col4 = (empty($device->fields["type"]) ? '' : '<b><i>'.$LANG["common"][17].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_case_type",$device->fields["type"]));
+			$col4 = (empty($device->fields["type"]) ? '' : '<b><i>'.$LANG["common"][17].' :</i></b> '.html_clean(getDropdownName("glpi_dropdown_case_type",$device->fields["type"])));
 			$col5 = '';
 			$pdf->displayLine($val["quantity"].'x',
 				$LANG["devices"][22],
@@ -1016,26 +1006,26 @@ function plugin_pdf_main_license($pdf,$ID, $main=true){
 		$pdf->setColumnsSize(100);
 		$entity = '';
 		if (isMultiEntitiesMode() && !$main) {
-			$entity = ' ('.plugin_pdf_getDropdownName('glpi_entities',$license->fields['FK_entities']).')'; 
+			$entity = ' ('.html_clean(getDropdownName('glpi_entities',$license->fields['FK_entities'])).')'; 
 		}
 		$pdf->displayTitle('<b><i>'.$LANG['common'][2]."</i> : $ID</b>$entity");		
 	
 		$pdf->setColumnsSize(50,50);
 		$pdf->displayLine(
 			'<b><i>'.$LANG['common'][16].'</i></b>: '.$license->fields['name'],			
-			'<b><i>'.$LANG['help'][31].'</i></b>: '.plugin_pdf_getDropdownName('glpi_software', $license->fields['sID']));			
+			'<b><i>'.$LANG['help'][31].'</i></b>: '.html_clean(getDropdownName('glpi_software', $license->fields['sID'])));			
 		$pdf->displayLine(
 			'<b><i>'.$LANG['common'][19].'</i></b>: '.$license->fields['serial'],			
 			'<b><i>'.$LANG['common'][20].'</i></b>: '.$license->fields['otherserial']);			
 		$pdf->displayLine(
-			'<b><i>'.$LANG['common'][17].'</i></b>: '.plugin_pdf_getDropdownName('glpi_dropdown_licensetypes',$license->fields['type']),			
+			'<b><i>'.$LANG['common'][17].'</i></b>: '.html_clean(getDropdownName('glpi_dropdown_licensetypes',$license->fields['type'])),			
 			'<b><i>'.$LANG['tracking'][29].'</i></b>: '.($license->fields['number']>0?$license->fields['number']:$LANG['software'][4]));			
 		$pdf->displayLine(
-			'<b><i>'.$LANG['software'][1].'</i></b>: '.plugin_pdf_getDropdownName('glpi_softwareversions',$license->fields['buy_version']),			
-			'<b><i>'.$LANG['software'][2].'</i></b>: '.plugin_pdf_getDropdownName('glpi_softwareversions',$license->fields['use_version']));			
+			'<b><i>'.$LANG['software'][1].'</i></b>: '.html_clean(getDropdownName('glpi_softwareversions',$license->fields['buy_version'])),			
+			'<b><i>'.$LANG['software'][2].'</i></b>: '.html_clean(getDropdownName('glpi_softwareversions',$license->fields['use_version'])));			
 		$pdf->displayLine(
 			'<b><i>'.$LANG['software'][32].'</i></b>: '.convDate($license->fields['expire']),			
-			'<b><i>'.$LANG['help'][25].'</i></b>: '.($license->fields['FK_computers']?plugin_pdf_getDropdownName("glpi_computers",$license->fields['FK_computers']):''));			
+			'<b><i>'.$LANG['help'][25].'</i></b>: '.($license->fields['FK_computers']?html_clean(getDropdownName("glpi_computers",$license->fields['FK_computers'])):''));			
 	
 		$pdf->setColumnsSize(100);
 		$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $license->fields['comments']);
@@ -1059,9 +1049,9 @@ function plugin_pdf_main_version($pdf,$ID){
 		$pdf->setColumnsSize(50,50);
 		$pdf->displayLine(
 			'<b><i>'.$LANG['common'][16].'</i></b>: '.$version->fields['name'],			
-			'<b><i>'.$LANG['help'][31].'</i></b>: '.plugin_pdf_getDropdownName('glpi_software', $version->fields['sID']));			
+			'<b><i>'.$LANG['help'][31].'</i></b>: '.html_clean(getDropdownName('glpi_software', $version->fields['sID'])));			
 		$pdf->displayLine(
-			'<b><i>'.$LANG["state"][0].' :</i></b> '.plugin_pdf_getDropdownName('glpi_dropdown_state',$version->fields['state']),
+			'<b><i>'.$LANG["state"][0].' :</i></b> '.html_clean(getDropdownName('glpi_dropdown_state',$version->fields['state'])),
 			'');			
 
 		$pdf->setColumnsSize(100);
@@ -1229,7 +1219,7 @@ function plugin_pdf_software($pdf,$ID,$type){
 				$data['softname'],
 				$data['state'],
 				$data['version'],
-				($data["FK_computers"]==$ID ? plugin_pdf_getDropdownName("glpi_dropdown_licensetypes",$data["lictype"]) : ''));
+				($data["FK_computers"]==$ID ? html_clean(getDropdownName("glpi_dropdown_licensetypes",$data["lictype"])) : ''));
 		} // Each soft
 	} else	{
 		$pdf->displayTitle('<b>'.$LANG['plugin_pdf']["software"][1].'</b>');
@@ -1274,7 +1264,7 @@ function plugin_pdf_computer_connection($pdf,$ID){
 					if($ci->getField("serial")!=null) {
 						$line1 .= $LANG["common"][19] . " : " .$ci->getField("serial")." - ";
 					}
-					$line1 .= plugin_pdf_getDropdownName("glpi_dropdown_state",$ci->getField('state'));
+					$line1 .= html_clean(getDropdownName("glpi_dropdown_state",$ci->getField('state')));
 
 					$line2 = "";
 					if($ci->getField("otherserial")!=null) {
@@ -1342,7 +1332,7 @@ function plugin_pdf_device_connection($pdf,$ID,$type){
 				if ($comp->fields['serial']) {
 					$line1 .= $LANG["common"][19] . " : " .$comp->fields['serial']." - ";
 				}
-				$line1 .= plugin_pdf_getDropdownName("glpi_dropdown_state",$comp->fields['state']);
+				$line1 .= html_clean(getDropdownName("glpi_dropdown_state",$comp->fields['state']));
 
 				$line2 = "";
 				if ($comp->fields['otherserial']) {
@@ -1391,7 +1381,7 @@ function plugin_pdf_port($pdf,$ID,$type){
 				$netport->getfromDB(current($devid));
 				
 				$pdf->displayLine('<b><i>#</i></b> '.$netport->fields["logical_number"].' <b><i>          '.$LANG["common"][16].' :</i></b> '.$netport->fields["name"]);
-				$pdf->displayLine('<b><i>'.$LANG["networking"][51].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_netpoint",$netport->fields["netpoint"]));
+				$pdf->displayLine('<b><i>'.$LANG["networking"][51].' :</i></b> '.html_clean(getDropdownName("glpi_dropdown_netpoint",$netport->fields["netpoint"])));
 				$pdf->displayLine('<b><i>'.$LANG["networking"][14].' / '.$LANG["networking"][15].' :</i></b> '.$netport->fields["ifaddr"].' / '.$netport->fields["ifmac"]);
 				$pdf->displayLine('<b><i>'.$LANG["networking"][60].' / '.$LANG["networking"][61].' / '.$LANG["networking"][59].' :</i></b> '.$netport->fields["netmask"].' / '.$netport->fields["subnet"].' / '.$netport->fields["gateway"]);
 				
@@ -1400,11 +1390,11 @@ function plugin_pdf_port($pdf,$ID,$type){
 				if ($DB->numrows($result2)>0) {
 					$line = '<b><i>'.$LANG["networking"][56].' :</i></b>';
 					while ($line=$DB->fetch_array($result2)) {
-						$line .= ' ' . plugin_pdf_getDropdownName("glpi_dropdown_vlan",$line["FK_vlan"]);
+						$line .= ' ' . html_clean(getDropdownName("glpi_dropdown_vlan",$line["FK_vlan"]));
 					}
 					$pdf->displayLine($line);
 				}
-				$pdf->displayLine('<b><i>'.$LANG["common"][65].' :</i></b> '.plugin_pdf_getDropdownName("glpi_dropdown_iface",$netport->fields["iface"]));
+				$pdf->displayLine('<b><i>'.$LANG["common"][65].' :</i></b> '.html_clean(getDropdownName("glpi_dropdown_iface",$netport->fields["iface"])));
 
 
 				$contact = new Netport;
@@ -1469,7 +1459,7 @@ function plugin_pdf_contract($pdf,$ID,$type){
 				$pdf->displayLine(
 					(empty($con->fields["name"]) ? "(".$con->fields["ID"].")" : $con->fields["name"]),
 					$con->fields["num"],
-					plugin_pdf_getDropdownName("glpi_dropdown_contract_type",$con->fields["contract_type"]),
+					html_clean(getDropdownName("glpi_dropdown_contract_type",$con->fields["contract_type"])),
 					str_replace("<br>", " ", getContractEnterprises($cID)),
 					convDate($con->fields["begin_date"]),
 					$con->fields["duration"]." ".$LANG["financial"][57]
@@ -1518,7 +1508,7 @@ function plugin_pdf_document($pdf,$ID,$type){
 				$data["name"],
 				basename($data["filename"]),
 				$data["link"],
-				plugin_pdf_getDropdownName("glpi_dropdown_rubdocs",$data["rubrique"]),
+				html_clean(getDropdownName("glpi_dropdown_rubdocs",$data["rubrique"])),
 				$data["mime"]);
 		}
 	}
@@ -1697,17 +1687,17 @@ function plugin_pdf_link($pdf,$ID,$type){
 
 				if (strpos("[LOCATION]",$link)){
 					if ($tmp=$ci->getField('location')){
-						$link=str_replace("[LOCATION]",plugin_pdf_getDropdownName("glpi_dropdown_locations",$tmp),$link);
+						$link=str_replace("[LOCATION]",html_clean(getDropdownName("glpi_dropdown_locations",$tmp)),$link);
 					}
 				}
 				if (strpos("[NETWORK]",$link)){
 					if ($tmp=$ci->getField('network')){
-						$link=str_replace("[NETWORK]",plugin_pdf_getDropdownName("glpi_dropdown_network",$tmp),$link);
+						$link=str_replace("[NETWORK]",html_clean(getDropdownName("glpi_dropdown_network",$tmp)),$link);
 					}
 				}
 				if (strpos("[DOMAIN]",$link)){
 					if ($tmp=$ci->getField('domain'))
-						$link=str_replace("[DOMAIN]",plugin_pdf_getDropdownName("glpi_dropdown_domain",$tmp),$link);
+						$link=str_replace("[DOMAIN]",html_clean(getDropdownName("glpi_dropdown_domain",$tmp)),$link);
 				}
 				$ipmac=array();
 				$j=0;
