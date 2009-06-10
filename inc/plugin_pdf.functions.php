@@ -142,7 +142,7 @@ function plugin_pdf_menu($type, $action, $ID) {
 
 function plugin_pdf_getDropdownName($table,$id,$withcomment=0){
 	
-	$name = getDropdownName($table,$id,$withcomment);
+	$name = html_clean(getDropdownName($table,$id,$withcomment));
 	
 	if($name=="&nbsp;")
 		$name="";
