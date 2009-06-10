@@ -1913,10 +1913,11 @@ function plugin_pdf_history($pdf,$ID,$type){
 	$number = $DB->numrows($result);
 	
 	$pdf->setColumnsSize(100);
-	$pdf->displayTitle("<b>".$LANG["title"][38]."</b>");
-	
 	
 	if ($number>0) {
+		
+		$pdf->displayTitle("<b>".$LANG["title"][38]."</b>");
+		
 		//$pdf->setColumnsSize(9,14,15,15,47);
 		$pdf->setColumnsSize(14,15,20,51);
 		$pdf->displayTitle(
