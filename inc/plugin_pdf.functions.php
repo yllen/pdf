@@ -1983,7 +1983,7 @@ function plugin_pdf_history($pdf,$ID,$type){
 				}
 			} else { // Not a linked_action
 				$fieldname="";
-				foreach($SEARCH_OPTION[COMPUTER_TYPE] as $key2 => $val2)
+				foreach($SEARCH_OPTION[$type] as $key2 => $val2)
 					if($key2==$data["id_search_option"]){
 						$field = $val2["name"];
 						$fieldname = $val2["field"];
