@@ -207,40 +207,63 @@ class simplePDF  {
 		$this->start_tab -= 20;
 	}
 	
-	public function displayText ($name, $content, $maxline=5) {
-		// New page if less than 2 lines available
-		if ($this->start_tab < 50) {
+	/*
+	 * Display a multi-line Box : 1 column only
+	 * 
+	 * @param $name string display on the left, before text
+	 * @param $content string of text display on right (multi-line)
+	 * @param $minline integer for minimum box size
+	 * @param $maxline interger for maximum box size (1 page = 80 lines)
+	 */
+	public function displayText ($name, $content, $minline=3, $maxline=100) {
+		// New page if less than $minline available
+		if ($this->start_tab < (20+10/$minline)) {
 			$this->newPage();	
 		}
 
-		$avail = ($this->start_tab - 15)/10;
-		if ($avail < $maxline) $maxline = $avail;
-
-		// The Box		
+		// The Box	Initial Size = $minline
+		$gray = 0.95;	
 		$this->pdf->saveState();
-		$this->pdf->setColor(0.95,0.95,0.95);
-		$this->pdf->filledRectangle(25,$this->start_tab-$maxline*10+5,$this->width-50,$maxline*10+5);
+		$this->pdf->setColor($gray,$gray,$gray);
+		$this->pdf->filledRectangle(25, $bottom = $this->start_tab-$minline*10+5, $this->width-50, $minline*10+5);
 		$this->pdf->restoreState();
 
+		// Title
 		$name = utf8_decode($name);
 		$x = 30 + $this->pdf->getTextWidth(9, $name);
-		
 		$this->pdf->addText(27,$this->start_tab,9,$name);
 			
 		$temp=str_replace("\r\n","\n",$content);
-		$lines=explode("\n", $temp);
-		foreach ($lines as $line) {
-			if (!$maxline) break;
-			$line=utf8_decode($line);
-			while($line = $this->pdf->addTextWrap($x,$this->start_tab,$this->width-$x-25,9,$line)) {
-				if (!$maxline) break;
-				$this->start_tab -= 10;
-				$maxline--;
+		$lines=explode("\n", utf8_decode($temp));
+		$line=current($lines);
+
+		// Content
+		while ($line!==false && $maxline>0) {
+			// Need a new page ?
+			if ($this->start_tab < 30) {
+				$this->newPage();
+				$bottom = $this->start_tab + 10;
+			}
+			// Extent initial box
+			if ($this->start_tab < $bottom) {
+				$newbottom = $this->start_tab-5;
+				$this->pdf->saveState();
+				$this->pdf->setColor($gray,$gray,$gray);
+				$this->pdf->filledRectangle(25, $newbottom, $this->width-50, ($bottom - $newbottom));
+				$this->pdf->restoreState();				
+				$bottom = $newbottom;
+			}
+			if (!empty($line)) {
+				$line = $this->pdf->addTextWrap($x,$this->start_tab,$this->width-$x-25,9,$line);
+			}
+			if (empty($line)) {
+				$line = next($lines);	
 			}
 			$this->start_tab -= 10;
 			$maxline--;
 		}
-		$this->start_tab -= ($maxline*10)+10;		
+		// Final position = behind the box
+		$this->start_tab = $bottom - 10;
 	}
 
 	public function displaySpace ($nb=1) {

@@ -1808,7 +1808,7 @@ function plugin_pdf_note($pdf,$ID,$type){
 	if(utf8_strlen($note)>0)
 		{
 		$pdf->displayTitle('<b>'.$LANG["title"][37].'</b>');
-		$pdf->displayText('', $note, 10);		
+		$pdf->displayText('', $note, 5);		
 	} else {
 		$pdf->displayTitle('<b>'.$LANG['plugin_pdf']["note"][1].'</b>');
 	}
