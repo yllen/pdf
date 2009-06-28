@@ -263,7 +263,7 @@ class simplePDF  {
 			$maxline--;
 		}
 		// Final position = behind the box
-		$this->start_tab = $bottom - 10;
+		$this->start_tab = $bottom - 15;
 	}
 
 	public function displaySpace ($nb=1) {
