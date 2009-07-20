@@ -32,22 +32,43 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-Version 0.1:
+Version 0.6.1 
 
-Fiches ordinateurs imprimable.
-Cards computers printable. 
+	253	Add italian translation
+	259	add Turkish translation
+	
+	https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.1
 
-Version 0.2:
+Version 0.6.0 
 
-Fiches logiciels imprimable.
-Cards softwares printable.
+	120	Software correction with 0.72 modification
+	240	GLPI 0.72 migration
+	242	Provides HOOK for other plugins
+	243	Generate PDF for printer
+	244	Generate PDF for Monitor
+	245	Generate PDF for Phones
+	246	Generate PDF for Peripherals
+	241	Clean up code for maintenability
+
+	https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.0
+
+Version 0.4
+
+Gestion des droits par profil.
+Profiles right management.
 
 Version 0.3
 
 Export massive en pdf avec gestion des préférences utilisateur.
 Massive export to pdf with management of the preferences user.
 
-Version 0.4
+Version 0.2:
 
-Gestion des droits par profil.
-Profiles right management.
+Fiches logiciels imprimable.
+Cards softwares printable.
+
+Version 0.1:
+
+Fiches ordinateurs imprimable.
+Cards computers printable. 
+

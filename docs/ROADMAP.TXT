@@ -32,24 +32,5 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-Continuer pour toutes les fiches:
 
-- Moniteurs
-- Réseaux
-- P�riphériques
-- Imprimantes
-- Cartouches
-- Consommables
-- Téléphones
-- Statuts
-
-To continue for all the cards: 
-
-- Monitors 
-- Networks 
-- Peripherals 
-- Printers 
-- Cartridges 
-- Consumable 
-- Telephones 
-- Statutes
+See : https://dev.indepnet.net/plugins/query?group=milestone&component=pdf&order=priority
