@@ -66,7 +66,7 @@ function plugin_version_pdf() {
 
 	return array( 
 		'name'    => $LANG['plugin_pdf']["title"][1],
-		'version' => '0.6.0',
+		'version' => '0.6.1',
 		'author' => 'Dévi Balpe, Remi Collet, Walid Nouh',
 		'homepage'=> $LANG['plugin_pdf']["config"][8],
 		'minGlpiVersion' => '0.72', // Not needed in 0.72, only to avoid installation on 0.71 

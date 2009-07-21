@@ -34,8 +34,9 @@
 
 Version 0.6.1 
 
-	253	Add italian translation
+	251	Don't print private followup
 	259	add Turkish translation
+	253	Add italian translation
 	
 	https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.1
 
