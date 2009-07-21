@@ -287,8 +287,14 @@ function plugin_pdf_main_ticket($pdf,$ID,$private){
 	$pdf->displayTitle("<b>".$LANG['job'][37]."</b>");
 				
 	$RESTRICT="";
-	if (!$private)  $RESTRICT=" AND ( private='0') ";
-	
+	if (!$private) {
+		// Don't show private'
+		$RESTRICT=" AND ( private='0') ";
+	} if (!haveRight("show_full_ticket","1")) {
+		// No right, only show connected user private one
+		$RESTRICT=" AND ( private='0' OR author ='".$_SESSION["glpiID"]."' ) ";
+	}
+
 	$query = "SELECT * 
 				FROM glpi_followups 
 				WHERE (tracking = '$ID') 
