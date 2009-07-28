@@ -32,6 +32,12 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
+version 0.6.2
+
+	283	Add es-ES translation
+	
+	https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.2
+	
 Version 0.6.1 
 
 	251	Don't print private followup
