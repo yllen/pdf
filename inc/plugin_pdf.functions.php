@@ -218,9 +218,9 @@ function plugin_pdf_main_ticket($pdf,$ID,$private){
 	$item=new CommonItem();
 	if($item->getFromDB($job->fields["device_type"],$job->fields["computer"])){
 		if(isset($item->obj->fields["serial"]))
-			$serial_item="<u>".$LANG['common'][19]."</u>: ".html_clean($item->obj->fields["serial"]);
+			$serial_item=" <b><i>".$LANG['common'][19]."</i></b>: ".html_clean($item->obj->fields["serial"]);
 		if(isset($item->obj->fields["location"]))
-			$location_item="<u>".$LANG['common'][15]."</u>: ".html_clean(getDropdownName("glpi_dropdown_locations",$item->obj->fields["location"]));
+			$location_item=" <b><i>".$LANG['common'][15]."</i></b>: ".html_clean(getDropdownName("glpi_dropdown_locations",$item->obj->fields["location"]));
 	}
 	
 	if (count($_SESSION['glpiactiveentities'])>1)
@@ -247,38 +247,36 @@ function plugin_pdf_main_ticket($pdf,$ID,$private){
 
 	 		 		 		 
 	
-	//row3 (author / item / cost_time)
+	//row3 (author / attribute / cost_time)
 	$pdf->displayLine(
 		"<b><i>".$LANG['job'][4]."</i></b>: ".html_clean($author_name),
-		"<b><i>".$LANG['common'][1]."</i></b>: ".html_clean($item->getType())." ".html_clean($item->getNameID()).
-					  "\n".$serial_item."\n".$location_item,
+		"<b><i>".$LANG['job'][5]."</i></b>:",
 		"<b><i>".$LANG['job'][40]."</i></b>: ".formatNumber($job->fields["cost_time"]));
 	
-	//row4 (group / attribute / cost_fixed)
+	//row4 (group / assign / cost_fixed)
 	$pdf->displayLine(
 		"<b><i>".$LANG['common'][35]."</i></b>: ".html_clean(getDropdownName("glpi_groups",$job->fields["FK_group"])),
-		"<b><i>".$LANG['job'][5]."</i></b>:",
+		"<b><i>".$LANG['job'][6]."</i></b>: ".html_clean($assign_name),
 		"<b><i>".$LANG['job'][41]."</i></b>: ".formatNumber($job->fields["cost_fixed"]));
 	
-	//row5 (priority / assign / cost_material)
+	//row5 (priority / assign_ent / cost_material)
 	$pdf->displayLine(
 		"<b><i>".$LANG['joblist'][2]."</i></b>: ".html_clean(getPriorityName($job->fields["priority"])),
-		"<b><i>".$LANG['job'][6]."</i></b>: ".html_clean($assign_name),
+		"<b><i>".$LANG['common'][35]."</i></b>: ".html_clean(getDropdownName("glpi_groups",$job->fields["assign_group"])),
 		"<b><i>".$LANG['job'][42]."</i></b>: ".formatNumber($job->fields["cost_material"]));
 	
 	//row6 (category / assign_ent / TotalCost)
 	$pdf->displayLine(
 		"<b><i>".$LANG['common'][36]."</i></b>: ".html_clean(getDropdownName("glpi_dropdown_tracking_category",$job->fields["category"])),
-		"<b><i>".$LANG['common'][35]."</i></b>: ".html_clean(getDropdownName("glpi_groups",$job->fields["assign_group"])),
+		"<b><i>".$LANG['financial'][26]."</i></b>: ".html_clean(getDropdownName("glpi_enterprises",$job->fields["assign_ent"])),
 		"<b><i>".$LANG['job'][43]."</i></b>: ".trackingTotalCost($job->fields["realtime"],$job->fields["cost_time"],$job->fields["cost_fixed"],$job->fields["cost_material"]));
 
-		//row6 (- / assign_ent / -)
-	$pdf->displayLine(
-		'',
-		"<b><i>".$LANG['financial'][26]."</i></b>: ".html_clean(getDropdownName("glpi_enterprises",$job->fields["assign_ent"])),
-		'');
 				
 	$pdf->setColumnsSize(100);
+	$pdf->displayLine(
+		"<b><i>".$LANG['common'][1]."</i></b>: ".html_clean($item->getType())." ".html_clean($item->getNameID()).
+					$serial_item . $location_item);
+					
 	$pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b>: ", $job->fields["contents"], 7);
 
 	$pdf->displaySpace();
