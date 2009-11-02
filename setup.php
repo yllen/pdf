@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------
  GLPI - Gestionnaire Libre de Parc Informatique
  Copyright (C) 2003-2008 by the INDEPNET Development Team.
- 
+
  http://indepnet.net/   http://glpi-project.org/
  ----------------------------------------------------------------------
 
@@ -31,60 +31,64 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
+foreach (glob(GLPI_ROOT . '/plugins/pdf/inc/*.php') as $file) {
+   include_once ($file);
+}
 
 function plugin_init_pdf() {
-	global $PLUGIN_HOOKS;
-	
-	$PLUGIN_HOOKS['change_profile']['pdf'] = 'plugin_pdf_changeprofile';
-	$PLUGIN_HOOKS['plugin_types'][PROFILE_TYPE]='pdf';
-	
-	if (isset($_SESSION["glpi_plugin_pdf_profile"]) && $_SESSION["glpi_plugin_pdf_profile"]["use"])
-	{
-		$PLUGIN_HOOKS['use_massive_action']['pdf']=1;
-		$PLUGIN_HOOKS['headings']['pdf'] = 'plugin_get_headings_pdf';
-		$PLUGIN_HOOKS['headings_action']['pdf'] = 'plugin_headings_actions_pdf';
-		$PLUGIN_HOOKS['pre_item_delete']['pdf'] = 'plugin_pre_item_delete_pdf';
-	}
-	
-	// Define the type for which we know how to generate PDF, need :
-	// - plugin_pdf_prefPDF($type)
-	// - plugin_pdf_generatePDF($type, $tab_id, $tab, $page=0)
-	$PLUGIN_HOOKS['plugin_pdf'][COMPUTER_TYPE]='pdf';
-	$PLUGIN_HOOKS['plugin_pdf'][SOFTWARE_TYPE]='pdf';
-	$PLUGIN_HOOKS['plugin_pdf'][SOFTWARELICENSE_TYPE]='pdf';
-	$PLUGIN_HOOKS['plugin_pdf'][SOFTWAREVERSION_TYPE]='pdf';
-	$PLUGIN_HOOKS['plugin_pdf'][PRINTER_TYPE]='pdf';
-	$PLUGIN_HOOKS['plugin_pdf'][MONITOR_TYPE]='pdf';
-	$PLUGIN_HOOKS['plugin_pdf'][PHONE_TYPE]='pdf';
-	$PLUGIN_HOOKS['plugin_pdf'][PERIPHERAL_TYPE]='pdf';
-	$PLUGIN_HOOKS['plugin_pdf'][TRACKING_TYPE]='pdf';
+   global $PLUGIN_HOOKS;
+
+   $PLUGIN_HOOKS['change_profile']['pdf'] = 'plugin_pdf_changeprofile';
+   $PLUGIN_HOOKS['plugin_types'][PROFILE_TYPE]='pdf';
+
+   if (isset($_SESSION["glpi_plugin_pdf_profile"])
+       && $_SESSION["glpi_plugin_pdf_profile"]["use"]) {
+
+      $PLUGIN_HOOKS['use_massive_action']['pdf']   = 1;
+      $PLUGIN_HOOKS['headings']['pdf']             = 'plugin_pdf_get_headings';
+      $PLUGIN_HOOKS['headings_action']['pdf']      = 'plugin_pdf_headings_actions';
+      $PLUGIN_HOOKS['pre_item_delete']['pdf']      = 'plugin_pdf_pre_item_delete';
+   }
+
+   // Define the type for which we know how to generate PDF, need :
+   // - plugin_pdf_prefPDF($type)
+   // - plugin_pdf_generatePDF($type, $tab_id, $tab, $page=0)
+   $PLUGIN_HOOKS['plugin_pdf'][COMPUTER_TYPE]        = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf'][SOFTWARE_TYPE]        = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf'][SOFTWARELICENSE_TYPE] = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf'][SOFTWAREVERSION_TYPE] = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf'][PRINTER_TYPE]         = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf'][MONITOR_TYPE]         = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf'][PHONE_TYPE]           = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf'][PERIPHERAL_TYPE]      = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf'][TRACKING_TYPE]        = 'pdf';
 }
 
-	
+
 function plugin_version_pdf() {
-	global $LANG;
+   global $LANG;
 
-	return array( 
-		'name'    => $LANG['plugin_pdf']["title"][1],
-		'version' => '0.6.1',
-		'author' => 'Dévi Balpe, Remi Collet, Walid Nouh',
-		'homepage'=> $LANG['plugin_pdf']["config"][8],
-		'minGlpiVersion' => '0.72', // Not needed in 0.72, only to avoid installation on 0.71 
-		);
+   return array('name'     => $LANG['plugin_pdf']['title'][1],
+                'version'  => '0.7.0',
+                'author'   => 'Dévi Balpe, Remi Collet, Walid Nouh',
+                'homepage' => "https://forge.indepnet.net/wiki/pdf/",
+                'minGlpiVersion' => '0.80');
 }
+
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_pdf_check_prerequisites(){
-	if (GLPI_VERSION >= 0.72){
-		return true;
-	} else {
-		echo "GLPI version not compatible need 0.72";
-	}
+
+   if (GLPI_VERSION >= 0.80){
+      return true;
+   }
+   echo "This plugin requires GLPI 0.80 or later";
 }
+
 
 // Config process for plugin : need to return true if succeeded : may display messages or add to message after redirect
 function plugin_pdf_check_config(){
-	return TableExists("glpi_plugin_pdf_profiles");
+   return TableExists("glpi_plugin_pdf_profiles");
 }
 
 ?>

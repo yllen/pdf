@@ -1,6 +1,5 @@
 <?php
 
-
 /*
    ----------------------------------------------------------------------
    GLPI - Gestionnaire Libre de Parc Informatique
@@ -33,30 +32,31 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-$NEEDED_ITEMS=array("profile");
+$NEEDED_ITEMS = array('profile');
 
-if(!defined('GLPI_ROOT')){
-	define('GLPI_ROOT', '../../..'); 
+if (!defined('GLPI_ROOT')) {
+   define('GLPI_ROOT', '../../..');
 }
+
 include_once (GLPI_ROOT . "/inc/includes.php");
 checkRight("profile","r");
 
-
-include_once ("../plugin_pdf.includes.php");
 // Mainly usefull if not actived
 usePLugin('pdf',true);
 
 $prof = new PluginPdfProfile();
 
-if(!isset($_POST["ID"])) die();	
+//if (!isset($_POST["id"])) {
+//    die();
+//}
 
-if (isset($_POST["update_user_profile"])){
-	checkRight("profile","w");
-	$prof->update($_POST);
-	if ($_SESSION['glpiactiveprofile']['ID']==$_POST["ID"])
-		$_SESSION["glpi_plugin_pdf_profile"]=$prof->fields;
-	glpi_header($_SERVER['HTTP_REFERER']);
+if (isset($_POST["update_user_profile"])) {
+   checkRight("profile","w");
+   $prof->update($_POST);
+//   if ($_SESSION['glpiactiveprofile']['id']==$_POST["id"]) {
+//      $_SESSION["glpi_plugin_pdf_profile"]=$prof->fields;
+//   }
+   glpi_header($_SERVER['HTTP_REFERER']);
 }
 
 ?>
-

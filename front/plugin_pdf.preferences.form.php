@@ -1,6 +1,5 @@
 <?php
 
-
 /*
    ----------------------------------------------------------------------
    GLPI - Gestionnaire Libre de Parc Informatique
@@ -32,29 +31,36 @@
 // Original Author of file: Balpe Dévi / Remi Collet
 // Purpose of file:
 // ----------------------------------------------------------------------
-if(!defined('GLPI_ROOT')){
-	define('GLPI_ROOT', '../../..'); 
+if(!defined('GLPI_ROOT')) {
+   define('GLPI_ROOT', '../../..');
 }
+
 include_once (GLPI_ROOT . "/inc/includes.php");
 
 //Save user preferences
-if (isset ($_POST['plugin_pdf_user_preferences_save']) && isset($_POST["plugin_pdf_inventory_type"])) {
-	$DB->query("DELETE from glpi_plugin_pdf_preference WHERE FK_users =" . $_SESSION["glpiID"] . " and device_type=" . $_POST["plugin_pdf_inventory_type"]);
-	
-	if (isset($_POST['item'])) {		
-		foreach ($_POST['item'] as $key => $val) {
-			$DB->query(
-				"INSERT INTO `glpi_plugin_pdf_preference` (`id` ,`FK_users` ,`device_type` ,`tabref`)
-				VALUES (NULL , '".$_SESSION["glpiID"]."', '".$_POST["plugin_pdf_inventory_type"]."', '" . $key . "');");		
-		}
-	}
-	if (isset($_POST["page"]) && $_POST["page"]) {
-			$DB->query(
-				"INSERT INTO `glpi_plugin_pdf_preference` (`id` ,`FK_users` ,`device_type` ,`tabref`)
-				VALUES (NULL , '".$_SESSION["glpiID"]."', '".$_POST["plugin_pdf_inventory_type"]."', 'landscape');");				
-	}
+if (isset($_POST['plugin_pdf_user_preferences_save'])
+    && isset($_POST["plugin_pdf_inventory_type"])) {
 
-	glpi_header($_SERVER['HTTP_REFERER']);
+   $DB->query("DELETE
+               FROM `glpi_plugin_pdf_preference`
+               WHERE `users_id` =" . $_SESSION["glpiID"] . "
+                     AND `itemtype` = " . $_POST["plugin_pdf_inventory_type"]);
+
+   if (isset($_POST['item'])) {
+      foreach ($_POST['item'] as $key => $val) {
+         $DB->query("INSERT INTO
+                     `glpi_plugin_pdf_preference` (`id` ,`users_id` ,`itemtype` ,`tabref`)
+                     VALUES (NULL , '".$_SESSION["glpiID"]."',
+                             '".$_POST["plugin_pdf_inventory_type"]."', '$key')");
+      }
+   }
+   if (isset($_POST["page"]) && $_POST["page"]) {
+      $DB->query("INSERT INTO
+                  `glpi_plugin_pdf_preference` (`id` ,`users_id` ,`itemtype` ,`tabref`)
+                  VALUES (NULL , '".$_SESSION["glpiID"]."',
+                          '".$_POST["plugin_pdf_inventory_type"]."', 'landscape')");
+   }
+   glpi_header($_SERVER['HTTP_REFERER']);
 }
 
 ?>

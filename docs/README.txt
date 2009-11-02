@@ -9,7 +9,7 @@
 
  LICENSE
 
-	This file is part of GLPI.
+   This file is part of GLPI.
 
     GLPI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ Author :BALPE Dévi
 1 - Presentation
 This plugin enables you to print with format pdf all the mitres of a card computer 
 or a software of the inventory. 
-Compatibility 0.70
+Compatibility : Glpi 0.80
 
 2 - Installation
 
@@ -45,3 +45,7 @@ Compatibility 0.70
 - Uncompress it in the plugins directory of your glpi installation
 
 Once copied in the repertory, in the mitre plugin you will see appearing “Impression pdf”.
+
+3 - Documentation
+
+https://forge.indepnet.net/wiki/pdf/En_manual

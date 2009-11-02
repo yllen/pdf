@@ -31,23 +31,19 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-$LANG['plugin_pdf']["title"][1]="Nyomtatás PDF-be";
-$LANG['plugin_pdf']["title"][2]="Válaszdki a pdf-be nyomtatandó táblákat";
+$LANG['plugin_pdf']['title'][1]  = "Nyomtatás PDF-be";
+$LANG['plugin_pdf']['title'][2]  = "Válaszdki a pdf-be nyomtatandó táblákat";
 
-$LANG['plugin_pdf']["button"][1]="Nyomtatás";
-$LANG['plugin_pdf']["button"][2]="Mentés";
+$LANG['plugin_pdf']['button'][1] = "Nyomtatás";
+$LANG['plugin_pdf']['button'][2] = "Mentés";
 
-$LANG['plugin_pdf']["config"][1]="PDF modul beállítása";
-$LANG['plugin_pdf']["config"][6]="Profiles right management";
-$LANG['plugin_pdf']["config"][7]="Jogok a következő profilhoz";
-$LANG['plugin_pdf']["config"][8]="http://www.glpi-project.org/spip.php?article248";
+$LANG['plugin_pdf']['note'][1]   = "Nincs megjegyzés";
 
-$LANG['plugin_pdf']["note"][1]="Nincs megjegyzés";
+$LANG['plugin_pdf']['document'][1]  = "Nincs hozzárendelt dokumentum";
 
-$LANG['plugin_pdf']["document"][1]="Nincs hozzárendelt dokumentum";
+$LANG['plugin_pdf']['financial'][1] = "Nincs pénzügyi információ";
+$LANG['plugin_pdf']['financial'][2] = "Nincs hozzárendelt szerződés";
 
-$LANG['plugin_pdf']["financial"][1]="Nincs pénzügyi információ";
-$LANG['plugin_pdf']["financial"][2]="Nincs hozzárendelt szerződés";
+$LANG['plugin_pdf']['software'][1]  = "Nincs telepített szoftver";
 
-$LANG['plugin_pdf']["software"][1]="Nincs telepített szoftver";
 ?>

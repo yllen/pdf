@@ -4,7 +4,7 @@
  ----------------------------------------------------------------------
  GLPI - Gestionnaire Libre de Parc Informatique
  Copyright (C) 2003-2008 by the INDEPNET Development Team.
- 
+
  http://indepnet.net/   http://glpi-project.org/
  ----------------------------------------------------------------------
 
@@ -34,20 +34,23 @@
 
 class PluginPdfPreferences extends CommonDBTM {
 
-	function PluginPdfPreferences() {
-		$this->table = "glpi_plugin_pdf_preference";
-	}
+   function __construct() {
+      $this->table = "glpi_plugin_pdf_preference";
+   }
 
-	function showForm($target) {
-		global  $LANG, $DB, $CFG_GLPI, $PLUGIN_HOOKS;
 
-		echo "<div align='center' id='pdf_type'>";
-		foreach ($PLUGIN_HOOKS['plugin_pdf'] as $type => $plug) {
-			if (haveTypeRight($type,'r')) {
-				plugin_pdf_menu($type, $target,-1);
-			}
-		}
-		echo "</div>";
-	}
+   function showForm($target) {
+      global  $LANG, $DB, $CFG_GLPI, $PLUGIN_HOOKS;
+
+      echo "<div class='center' id='pdf_type'>";
+      foreach ($PLUGIN_HOOKS['plugin_pdf'] as $type => $plug) {
+         if (haveTypeRight($type,'r')) {
+            plugin_pdf_menu($type, $target,-1);
+         }
+      }
+      echo "</div>";
+   }
+
 }
+
 ?>

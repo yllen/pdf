@@ -31,23 +31,19 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-$LANG['plugin_pdf']["title"][1]="Impresión a pdf";
-$LANG['plugin_pdf']["title"][2]="Elegir las tablas a imprimir a pdf";
+$LANG['plugin_pdf']['title'][1]  = "Impresión a pdf";
+$LANG['plugin_pdf']['title'][2]  = "Elegir las tablas a imprimir a pdf";
 
-$LANG['plugin_pdf']["button"][1]="Imprimir";
-$LANG['plugin_pdf']["button"][2]="Guardar";
+$LANG['plugin_pdf']['button'][1] = "Imprimir";
+$LANG['plugin_pdf']['button'][2] = "Guardar";
 
-$LANG['plugin_pdf']["config"][1]="Configuración del plugin de Impresión a pdf";
-$LANG['plugin_pdf']["config"][6]="Gestión de los permisos por perfil";
-$LANG['plugin_pdf']["config"][7]="Permisos para el perfil";
-$LANG['plugin_pdf']["config"][8]="http://www.glpi-project.org/spip.php?article229";
+$LANG['plugin_pdf']['note'][1]   = "Ninguna nota encontrada";
 
-$LANG['plugin_pdf']["note"][1]="Ninguna nota encontrada";
+$LANG['plugin_pdf']['document'][1]  = "Ningún documento asociado";
 
-$LANG['plugin_pdf']["document"][1]="Ningún documento asociado";
+$LANG['plugin_pdf']['financial'][1] = "Ninguna información financiera";
+$LANG['plugin_pdf']['financial'][2] = "Ningún contrato asociado";
 
-$LANG['plugin_pdf']["financial"][1]="Ninguna información financiera";
-$LANG['plugin_pdf']["financial"][2]="Ningún contrato asociado";
+$LANG['plugin_pdf']['software'][1]  = "Ningún programa instalado";
 
-$LANG['plugin_pdf']["software"][1]="Ningún programa instalado";
 ?>

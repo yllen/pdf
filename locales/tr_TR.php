@@ -27,27 +27,23 @@
  ------------------------------------------------------------------------
 */
 
-// Original Author of file: Mehmet Kutlu inanc 
+// Original Author of file: Mehmet Kutlu inanc
 // Purpose of file: Turkish translation
 // ----------------------------------------------------------------------
 
-$LANG['plugin_pdf']["title"][1]="Pdf olarak yazdır";
-$LANG['plugin_pdf']["title"][2]="PDF olarak yazdırmak için tablo seçiniz";
+$LANG['plugin_pdf']['title'][1]  = "Pdf olarak yazdır";
+$LANG['plugin_pdf']['title'][2]  = "PDF olarak yazdırmak için tablo seçiniz";
 
-$LANG['plugin_pdf']["button"][1]="Yazdır";
-$LANG['plugin_pdf']["button"][2]="Kaydet";
+$LANG['plugin_pdf']['button'][1] = "Yazdır";
+$LANG['plugin_pdf']['button'][2] = "Kaydet";
 
-$LANG['plugin_pdf']["config"][1]="Pdf eklentisi yapılandırması";
-$LANG['plugin_pdf']["config"][6]="Profil yetki yönetimi";
-$LANG['plugin_pdf']["config"][7]="Profil yetkileri";
-$LANG['plugin_pdf']["config"][8]="http://www.glpi-project.org/spip.php?article248";
+$LANG['plugin_pdf']['note'][1]   = "Not bulunamadı";
 
-$LANG['plugin_pdf']["note"][1]="Not bulunamadı";
+$LANG['plugin_pdf']['document'][1]  = "İlgili döküman bulunamadı";
 
-$LANG['plugin_pdf']["document"][1]="İlgili döküman bulunamadı";
+$LANG['plugin_pdf']['financial'][1] = "Finansal bilgi bulunamadı";
+$LANG['plugin_pdf']['financial'][2] = "İlgili sözleşme bulunamadı";
 
-$LANG['plugin_pdf']["financial"][1]="Finansal bilgi bulunamadı";
-$LANG['plugin_pdf']["financial"][2]="İlgili sözleşme bulunamadı";
+$LANG['plugin_pdf']['software'][1]  = "Kurulu yazılım bulunamadı";
 
-$LANG['plugin_pdf']["software"][1]="Kurulu yazılım bulunamadı";
 ?>

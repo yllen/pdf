@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------
  GLPI - Gestionnaire Libre de Parc Informatique
  Copyright (C) 2003-2008 by the INDEPNET Development Team.
- 
+
  http://indepnet.net/   http://glpi-project.org/
  ----------------------------------------------------------------------
 
@@ -32,6 +32,7 @@
 // ----------------------------------------------------------------------
 
 define('GLPI_ROOT', '../..');
+
 include (GLPI_ROOT."/inc/includes.php");
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 

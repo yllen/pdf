@@ -1,9 +1,10 @@
 <?php
+
 /*
  ----------------------------------------------------------------------
  GLPI - Gestionnaire Libre de Parc Informatique
  Copyright (C) 2003-2008 by the INDEPNET Development Team.
- 
+
  http://indepnet.net/   http://glpi-project.org/
  ----------------------------------------------------------------------
 
@@ -32,38 +33,39 @@
 // ----------------------------------------------------------------------
 
 
-$NEEDED_ITEMS=array("computer","device","networking","monitor","printer","tracking","software",
-	"cartridge","peripheral","reservation","infocom","contract","document","user","link","phone","registry");
+$NEEDED_ITEMS = array('cartridge','computer','contract','device','document','infocom','link',
+                      'monitor','networking','peripheral','phone','printer','registry','reservation',
+                      'software','tracking','user');
+
 define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT."/inc/includes.php");
-include_once ("../plugin_pdf.includes.php");
+usePlugin ('pdf', true);
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
 if (isset($_POST["plugin_pdf_inventory_type"]) && isset($_POST["itemID"])) {
-		
-	$type = $_POST["plugin_pdf_inventory_type"];
-	
-	if (isset($_SESSION["plugin_pdf"][$type])) {
-		unset($_SESSION["plugin_pdf"][$type]);		
-	}
+   $type = $_POST["plugin_pdf_inventory_type"];
 
-	$tab=array();
-	if (isset($_POST['item'])) {		
-		foreach ($_POST['item'] as $key => $val) {
-			$tab[] = $_SESSION["plugin_pdf"][$type][] = $key;
-		}
-	}
-	
-	$tab_id[0]=$_POST["itemID"];
-	
-	if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-		doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",
-			$type, $tab_id, $tab,
-			(isset($_POST["page"]) ? $_POST["page"] : 0));
-	} else {
-		die("Missing hook");
-	}	
+   if (isset($_SESSION["plugin_pdf"][$type])) {
+      unset($_SESSION["plugin_pdf"][$type]);
+   }
+
+   $tab=array();
+   if (isset($_POST['item'])) {
+      foreach ($_POST['item'] as $key => $val) {
+         $tab[] = $_SESSION["plugin_pdf"][$type][] = $key;
+      }
+   }
+
+   $tab_id[0]=$_POST["itemID"];
+
+   if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+      doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$type, $tab_id, $tab,
+                (isset($_POST["page"]) ? $_POST["page"] : 0));
+   } else {
+      die("Missing hook");
+   }
 } else {
-	die("Missing context");
+   die("Missing context");
 }
+
 ?>

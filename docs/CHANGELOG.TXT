@@ -32,50 +32,44 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
+version 0.7.0
+   glpi version 0.80
+   
 version 0.6.2
+   283   Add es-ES translation
+   https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.2
 
-	283	Add es-ES translation
-	
-	https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.2
-	
 Version 0.6.1 
-
-	251	Don't print private followup
-	259	add Turkish translation
-	253	Add italian translation
-	
-	https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.1
+   251   Don't print private followup
+   259   add Turkish translation
+   253   Add italian translation
+   https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.1
 
 Version 0.6.0 
 
-	120	Software correction with 0.72 modification
-	240	GLPI 0.72 migration
-	242	Provides HOOK for other plugins
-	243	Generate PDF for printer
-	244	Generate PDF for Monitor
-	245	Generate PDF for Phones
-	246	Generate PDF for Peripherals
-	241	Clean up code for maintenability
-
-	https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.0
+   120   Software correction with 0.72 modification
+   240   GLPI 0.72 migration
+   242   Provides HOOK for other plugins
+   243   Generate PDF for printer
+   244   Generate PDF for Monitor
+   245   Generate PDF for Phones
+   246   Generate PDF for Peripherals
+   241   Clean up code for maintenability
+   https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.0
 
 Version 0.4
-
-Gestion des droits par profil.
-Profiles right management.
+   Gestion des droits par profil.
+   Profiles right management.
 
 Version 0.3
-
-Export massive en pdf avec gestion des préférences utilisateur.
-Massive export to pdf with management of the preferences user.
+   Export massive en pdf avec gestion des préférences utilisateur.
+   Massive export to pdf with management of the preferences user.
 
 Version 0.2:
-
-Fiches logiciels imprimable.
-Cards softwares printable.
+   Fiches logiciels imprimable.
+   Cards softwares printable.
 
 Version 0.1:
-
-Fiches ordinateurs imprimable.
-Cards computers printable. 
+   Fiches ordinateurs imprimable.
+   Cards computers printable. 
 

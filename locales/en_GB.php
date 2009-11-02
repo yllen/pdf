@@ -31,23 +31,19 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-$LANG['plugin_pdf']["title"][1]="Print to pdf";
-$LANG['plugin_pdf']["title"][2]="Choose the tables to print in pdf";
+$LANG['plugin_pdf']['title'][1]  = "Print to pdf";
+$LANG['plugin_pdf']['title'][2]  = "Choose the tables to print in pdf";
 
-$LANG['plugin_pdf']["button"][1]="Print";
-$LANG['plugin_pdf']["button"][2]="Save";
+$LANG['plugin_pdf']['button'][1] = "Print";
+$LANG['plugin_pdf']['button'][2] = "Save";
 
-$LANG['plugin_pdf']["config"][1]="Configuration of pdf plugin";
-$LANG['plugin_pdf']["config"][6]="Profiles right management";
-$LANG['plugin_pdf']["config"][7]="Right for profile";
-$LANG['plugin_pdf']["config"][8]="http://www.glpi-project.org/spip.php?article248";
+$LANG['plugin_pdf']['note'][1]   = "No note found";
 
-$LANG['plugin_pdf']["note"][1]="No note found";
+$LANG['plugin_pdf']['document'][1]  = "No associated documents";
 
-$LANG['plugin_pdf']["document"][1]="No associated documents";
+$LANG['plugin_pdf']['financial'][1] = "No financial information";
+$LANG['plugin_pdf']['financial'][2] = "No associated contract";
 
-$LANG['plugin_pdf']["financial"][1]="No financial information";
-$LANG['plugin_pdf']["financial"][2]="No associated contract";
+$LANG['plugin_pdf']['software'][1]  = "No installed software";
 
-$LANG['plugin_pdf']["software"][1]="No installed software";
 ?>

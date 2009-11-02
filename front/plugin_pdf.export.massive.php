@@ -1,9 +1,10 @@
 <?php
+
 /*
  ----------------------------------------------------------------------
  GLPI - Gestionnaire Libre de Parc Informatique
  Copyright (C) 2003-2008 by the INDEPNET Development Team.
- 
+
  http://indepnet.net/   http://glpi-project.org/
  ----------------------------------------------------------------------
 
@@ -32,34 +33,36 @@
 // ----------------------------------------------------------------------
 
 
-$NEEDED_ITEMS=array("computer","device","networking","monitor","printer","tracking","software",
-	"cartridge","peripheral","reservation","infocom","contract","document","user","link","phone","registry");
+$NEEDED_ITEMS = array('cartridge','computer','contract','device','document','infocom','link',
+                      'monitor','networking','peripheral','phone','printer','registry','reservation',
+                      'software','tracking','user');
+
 define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT."/inc/includes.php");
-include_once ("../plugin_pdf.includes.php");
+usePlugin('pdf', true);
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-global $DB;
-	
 $type = $_SESSION["plugin_pdf"]["type"];
 unset($_SESSION["plugin_pdf"]["type"]);
 
 $tab_id = unserialize($_SESSION["plugin_pdf"]["tab_id"]);
 unset($_SESSION["plugin_pdf"]["tab_id"]);
 
-$query = "select tabref from glpi_plugin_pdf_preference WHERE FK_users =".$_SESSION['glpiID']." and device_type=".$type;
+$query = "SELECT `tabref`
+          FROM `glpi_plugin_pdf_preference`
+          WHERE `users_ID` = '".$_SESSION['glpiID']."'
+                AND `itemtype` = '$type'";
 $result = $DB->query($query);
 
-$tab = array();		
-while($data = $DB->fetch_array($result)) {
-	$tab[]=$data["tabref"];
+$tab = array();
+while ($data = $DB->fetch_array($result)) {
+   $tab[]=$data["tabref"];
 }
-	
+
 if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-	doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",
-		$type, $tab_id, $tab);
+   doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$type, $tab_id, $tab);
 } else {
-	die("Missing hook");
-}	
-	
+   die("Missing hook");
+}
+
 ?>
