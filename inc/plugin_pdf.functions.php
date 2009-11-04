@@ -249,12 +249,12 @@ function plugin_pdf_main_ticket($pdf,$ID,$private) {
    if (!strstr($job->fields["status"],"old_")) {
       $closedate = "";
    } else {
-      $closedate = $LANG['joblist'][12]." : ".convdate($job->fields["closedate"]);
+      $closedate = $LANG['joblist'][12]." : ".convDateTime($job->fields["closedate"]);
    }
 
    $pdf->setColumnsSize(50,50);
-   $pdf->displayLine("<b><i>".$LANG['joblist'][11]."</i></b> : ".convdate($job->fields["date"])." ".
-                     $LANG['job'][2]." ".$recipient_name,$closedate);
+   $pdf->displayLine("<b><i>".$LANG['joblist'][11]."</i></b> : ".convDateTime($job->fields["date"]).
+                     " ".$LANG['job'][2]." ".$recipient_name,$closedate);
 
    $pdf->setColumnsSize(33,34,33);
    //row status / RequestType / realtime
