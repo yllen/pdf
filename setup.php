@@ -70,8 +70,8 @@ function plugin_version_pdf() {
 
    return array('name'     => $LANG['plugin_pdf']['title'][1],
                 'version'  => '0.7.0',
-                'author'   => 'Dévi Balpe, Remi Collet, Walid Nouh',
-                'homepage' => "https://forge.indepnet.net/wiki/pdf/",
+                'author'   => 'Dévi Balpe, Remi Collet, Nelly Lasson, Walid Nouh',
+                'homepage' => 'https://forge.indepnet.net/wiki/pdf/',
                 'minGlpiVersion' => '0.80');
 }
 
