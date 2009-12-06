@@ -918,7 +918,7 @@ function plugin_pdf_financial($pdf,$ID,$type) {
 
       $pdf->displayLine(
          "<b><i>".$LANG["financial"][20]." :</i></b> 	".$ic->fields["immo_number"],
-         "<b><i>".$LANG["financial"][22]." :</i></b> ".getAmortTypeName($ic->fields["sink_type"]));
+         "<b><i>".$LANG["financial"][22]." :</i></b> ".Infocom::getAmortTypeName($ic->fields["sink_type"]));
 
       $pdf->displayLine("<b><i>".$LANG["financial"][23]." :</i></b> ".$ic->fields["sink_time"]." ".
                                  $LANG['financial'][9],
