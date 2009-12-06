@@ -908,13 +908,13 @@ function plugin_pdf_financial($pdf,$ID,$type) {
 
       $pdf->displayLine(
          "<b><i>".$LANG["rulesengine"][13]." :</i></b> ".formatNumber($ic->fields["value"]),
-         "<b><i>".$LANG["financial"][81]." :</i></b> ".TableauAmort($ic->fields["sink_type"],
-                                                                    $ic->fields["value"],
-                                                                    $ic->fields["sink_time"],
-                                                                    $ic->fields["sink_coeff"],
-                                                                    $ic->fields["buy_date"],
-                                                                    $ic->fields["use_date"],
-                                                                    $CFG_GLPI['date_tax'],"n"));
+         "<b><i>".$LANG["financial"][81]." :</i></b> ".Infocom::Amort($ic->fields["sink_type"],
+                                                                      $ic->fields["value"],
+                                                                      $ic->fields["sink_time"],
+                                                                      $ic->fields["sink_coeff"],
+                                                                      $ic->fields["buy_date"],
+                                                                      $ic->fields["use_date"],
+                                                                      $CFG_GLPI['date_tax'],"n"));
 
       $pdf->displayLine(
          "<b><i>".$LANG["financial"][20]." :</i></b> 	".$ic->fields["immo_number"],
@@ -925,11 +925,10 @@ function plugin_pdf_financial($pdf,$ID,$type) {
                         "<b><i>".$LANG["financial"][77]." :</i></b> ".$ic->fields["sink_coeff"]);
 
       $pdf->displayLine(
-         "<b><i>".$LANG["financial"][89]." :</i></b> ".showTco($ci->getField('ticket_tco'),
-                                                               $ic->fields["value"]),
-         "<b><i>".$LANG["financial"][90]." :</i></b> ".showTco($ci->getField('ticket_tco'),
-                                                               $ic->fields["value"],
-                                                               $ic->fields["buy_date"]));
+         "<b><i>".$LANG["financial"][89]." :</i></b> ".
+            Infocom::showTco($ci->getField('ticket_tco'), $ic->fields["value"]),
+         "<b><i>".$LANG["financial"][90]." :</i></b> ".
+            Infocom::showTco($ci->getField('ticket_tco'), $ic->fields["value"], $ic->fields["buy_date"]));
 
       $pdf->setColumnsSize(100);
       $col1 = "<b><i>".$LANG["setup"][247]." :</i></b> ";
