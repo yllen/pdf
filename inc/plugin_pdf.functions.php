@@ -818,7 +818,7 @@ function plugin_pdf_cartridges($pdf, $instID, $old=false) {
          $date_out = convDate($data["date_out"]);
 
          $col1 = $data["name"]." - ".$data["ref"];
-         $col2 = getCartridgeStatus($data["date_use"], $data["date_out"]);
+         $col2 = Cartridge::getStatus($data["date_use"], $data["date_out"]);
          $col6 = '';
 
          $tmp_dbeg = explode("-",$data["date_in"]);
