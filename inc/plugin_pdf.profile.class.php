@@ -75,7 +75,7 @@ class PluginPdfProfile extends CommonDBTM {
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr><th colspan='2' class='center b'>".
             $LANG['plugin_pdf']['config'][7]. " " .$this->fields["profile"]."</th></tr>";
-	//		getDropdownName('glpi_profiles', $ID) . "</th></tr>\n";
+	//		CommonDropdown::getDropdownName('glpi_profiles', $ID) . "</th></tr>\n";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>".$LANG['plugin_pdf']['title'][1]."&nbsp;:</td><td>";
