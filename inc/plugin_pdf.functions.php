@@ -226,16 +226,18 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
 
    $serial_item = '';
    $location_item = '';
-   $item = new CommonItem();
-   if ($item->getFromDB($job->fields["itemtype"],$job->fields["items_id"])) {
-      if (isset($item->obj->fields["serial"])) {
-         $serial_item = " <b><i>".$LANG['common'][19]."</i></b> : ".
-                         html_clean($item->obj->fields["serial"]);
-      }
-      if (isset($item->obj->fields["locations_id"])) {
-         $location_item = " <b><i>".$LANG['common'][15]."</i></b> : ".
-                          html_clean(getDropdownName("glpi_locations",
-                                                     $item->obj->fields["locations_id"]));
+   if ($job->fields["itemtype"] && class_exists($job->fields["itemtype"])) {
+      $item = new $job->fields["itemtype"]();
+      if ($item->getFromDB($job->fields["items_id"])) {
+         if (isset($item->fields["serial"])) {
+            $serial_item = " <b><i>".$LANG['common'][19]."</i></b> : ".
+                            html_clean($item->fields["serial"]);
+         }
+         if (isset($item->fields["locations_id"])) {
+            $location_item = " <b><i>".$LANG['common'][15]."</i></b> : ".
+                             html_clean(getDropdownName("glpi_locations",
+                                                        $item->fields["locations_id"]));
+         }
       }
    }
 
@@ -797,7 +799,7 @@ function plugin_pdf_cartridges($pdf, $p, $old=false) {
       $use_time = 0;
       $pages_printed = 0;
       $nb_pages_printed = 0;
-      $ci = new CommonItem();
+
       while ($data=$DB->fetch_array($result)) {
          $date_in  = convDate($data["date_in"]);
          $date_use = convDate($data["date_use"]);
@@ -2125,41 +2127,59 @@ function plugin_pdf_history($pdf, $item){
 						$change = $LANG["software"][45]." ".$data["old_value"];
 						break;
 					case HISTORY_DISCONNECT_DEVICE:
-						$ci = new CommonItem();
-						$ci->setType($data["device_internal_type"]);
-						$field = $ci->getType();
+                  $field=NOT_AVAILABLE;
+                  if (class_exists($data["devicetype"])) {
+                     $item = new $data["devicetype"]();
+                     $field = $item->getTypeName();
+                  }
 						$change = $LANG['log'][26]." ".$data["old_value"];
 						break;
-					case HISTORY_CONNECT_DEVICE:
-						$ci = new CommonItem();
-						$ci->setType($data["device_internal_type"]);
-						$field = $ci->getType();
-						$change = $LANG["log"][27]." ".$data["new_value"];
+               case HISTORY_CONNECT_DEVICE:
+                  $field=NOT_AVAILABLE;
+                  if (class_exists($data["devicetype"])) {
+                     $item = new $data["devicetype"]();
+                     $field = $item->getTypeName();
+                  }
+                  $change = $LANG["log"][27]." ".$data["new_value"];
+                  break;
+               case HISTORY_OCS_DELETE:
+                  if (haveRight("view_ocsng","r")) {
+                     $field="";
+                     $change = $LANG["ocsng"][7]." ".$LANG["ocsng"][45]." : ".$data["new_value"];
+                  } else {
+                     $display_history = false;
+                  }
+                  break;
+               case HISTORY_OCS_DELETE:
+                  if (haveRight("view_ocsng","r")) {
+                     $field="";
+                     $change = $LANG["ocsng"][46]." ".$LANG["ocsng"][45]." : ".$data["old_value"];
+                     $change.= "&nbsp;"."\"".$data["old_value"]."\"";
+                  } else {
+                     $display_history = false;
+                  }
 						break;
-					case HISTORY_OCS_IMPORT:
-						$ci = new CommonItem();
-						$ci->setType($data["device_internal_type"]);
-						$field = $ci->getType();
-						$change = $LANG["ocsng"][7]." ".$LANG["ocsng"][45]." : ".$data["new_value"];
-						break;
-					case HISTORY_OCS_DELETE:
-						$ci = new CommonItem();
-						$ci->setType($data["device_internal_type"]);
-						$field = $ci->getType();
-						$change = $LANG["ocsng"][46]." ".$LANG["ocsng"][45]." : ".$data["old_value"];
-						break;
-					case HISTORY_OCS_LINK:
-						$ci = new CommonItem();
-						$ci->setType($data["device_internal_type"]);
-						$field = $ci->getType();
-						$change = $LANG["ocsng"][47]." ".$LANG["ocsng"][45]." : ".$data["new_value"];
-						break;
+               case HISTORY_OCS_LINK:
+                  if (haveRight("view_ocsng","r")) {
+                     $field=NOT_AVAILABLE;
+                     if (class_exists($data["devicetype"])) {
+                        $item = new $data["devicetype"]();
+                        $field = $item->getTypeName();
+                     }
+                     $change = $LANG["ocsng"][47]." ".$LANG["ocsng"][45]." : ".$data["new_value"];
+                  } else {
+                     $display_history = false;
+                  }
+                  break;
 					case HISTORY_OCS_IDCHANGED:
-						$ci = new CommonItem();
-						$ci->setType($data["device_internal_type"]);
-						$field = $ci->getType();
-						$change = $LANG["ocsng"][48].$data["old_value"].$data["new_value"];
-						break;
+                  if (haveRight("view_ocsng","r")) {
+                     $field="";
+                     $change = $LANG["ocsng"][48].' : "'.$data["old_value"].
+                               '" --> "'.$data["new_value"].'"';
+                  } else {
+                     $display_history = false;
+                  }
+                  break;
 				}
 			} else { // Not a linked_action
 				$fieldname="";
