@@ -39,15 +39,20 @@ function plugin_pdf_checkbox($num,$label,$checked=false) {
 }
 
 
-function plugin_pdf_menu($type, $action, $ID) {
+function plugin_pdf_menu($item, $action) {
    global $LANG, $DB, $PLUGIN_HOOKS;
+
+   $type = get_class($item);
+
+   // $ID set if current object, not set from preference
+   $ID = $item->getField('id');
 
    if (!isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
       return;
    }
 
    // Main options
-   $options = doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "prefPDF", $type);
+   $options = doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "prefPDF", $item);
    if (!is_array($options)) {
       return;
    }
@@ -59,17 +64,17 @@ function plugin_pdf_menu($type, $action, $ID) {
             include_once(GLPI_ROOT . "/plugins/$plug/hook.php");
          }
 
-         if (function_exists($funcname)
+         if (is_callable($funcname)
              && isset($PLUGIN_HOOKS["headings_actionpdf"][$plug])
-             && function_exists($funcaction=$PLUGIN_HOOKS["headings_actionpdf"][$plug])) {
+             && is_callable($funcaction=$PLUGIN_HOOKS["headings_actionpdf"][$plug])) {
 
-            $title = $funcname($type,1,'');
-            $calls = $funcaction($type,1,'');
+            $title = call_user_func($funcname,$item,'');
+            $calls = call_user_func($funcaction,$item,'');
 
             if (is_array($title) && count($title)) {
                foreach ($title as $key => $val) {
                   $opt = $plug."_".$key;
-                  if (isset($calls[$key]) && function_exists($calls[$key])) {
+                  if (isset($calls[$key]) && is_callable($calls[$key])) {
                      $options[$opt]=$val;
                   }
                }
@@ -79,7 +84,7 @@ function plugin_pdf_menu($type, $action, $ID) {
    }
 
    echo "<form name='plugin_pdf_$type' id='plugin_pdf_$type' action='$action' method='post' ".
-         ($ID>0 ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
+         ($ID ? "target='_blank'" : '')."><table class='tab_cadre_fixe'>";
 
    $landscape = false;
    $values = array();
@@ -96,9 +101,7 @@ function plugin_pdf_menu($type, $action, $ID) {
       }
    }
 
-   $ci = new CommonItem();
-   $ci->setType($type);
-   echo "<tr><th colspan='6'>" . $LANG['plugin_pdf']['title'][2]. "&nbsp;: ".$ci->getType() .
+   echo "<tr><th colspan='6'>" . $LANG['plugin_pdf']['title'][2]. "&nbsp;: ".$item->getTypeName() .
         "</th></tr>";
 
    $i = 0;
@@ -138,7 +141,7 @@ function plugin_pdf_menu($type, $action, $ID) {
         "</option>\n"; // Paysage
    echo "</select>&nbsp;&nbsp;&nbsp;&nbsp;\n";
 
-   if ($ID>0) {
+   if ($ID) {
       echo "<input type='hidden' name='itemID' value='$ID'>";
       echo "<input type='submit' value='" . $LANG['plugin_pdf']['button'][1] .
             "' name='generate' class='submit'></td></tr>";
@@ -159,22 +162,22 @@ function plugin_pdf_menu($type, $action, $ID) {
  *
  * @return boolean : true if object found and readable
  */
-function plugin_pdf_add_header($pdf,$ID,$type) {
+function plugin_pdf_add_header($pdf,$ID,$item) {
    global $LANG;
 
+
    $entity = '';
-   $ci = new CommonItem();
-   if ($ci->getFromDB($type, $ID) && $ci->obj->can($ID,'r')) {
-      if ($type!=TRACKING_TYPE && $ci->obj->fields['name']) {
-         $name = $ci->obj->fields['name'];
+   if ($item->getFromDB($ID) && $item->can($ID,'r')) {
+      if (get_class($item)!='Ticket' && $item->fields['name']) {
+         $name = $item->fields['name'];
       } else {
          $name = $LANG["common"][2].' '.$ID;
       }
-      if (isMultiEntitiesMode() && isset($ci->obj->fields['FK_entities'])) {
+      if (isMultiEntitiesMode() && isset($item->fields['FK_entities'])) {
          $entity = ' ('.html_clean(getDropdownName('glpi_entities',
-                                                   $ci->obj->fields['entities_id'])).')';
+                                                   $item->fields['entities_id'])).')';
       }
-      $pdf->setHeader($ci->getType()." - <b>$name</b>$entity");
+      $pdf->setHeader($item->getTypeName()." - <b>$name</b>$entity");
 
       return true;
    }
@@ -182,14 +185,10 @@ function plugin_pdf_add_header($pdf,$ID,$type) {
 }
 
 
-function plugin_pdf_main_ticket($pdf,$ID,$private) {
+function plugin_pdf_main_ticket($pdf,$job,$private) {
    global $LANG,$CFG_GLPI, $PDF,$DB;
 
-   $job=new Job();
-   if (!$job->getfromDB($ID)) {
-      return false;
-   }
-
+   $ID = $job->getField('id');
    if (!haveRight("show_all_ticket","1")
        && $job->fields["users_id"] != $_SESSION["glpiID"]
        && $job->fields["users_id_assign"] != $_SESSION["glpiID"]
@@ -371,11 +370,10 @@ function plugin_pdf_main_ticket($pdf,$ID,$private) {
 }
 
 
-function plugin_pdf_main_computer($pdf,$ID) {
+function plugin_pdf_main_computer($pdf,$computer) {
    global $LANG;
 
-   $computer = new Computer();
-   $computer->getFromDB($ID);
+   $ID = $computer->getField('id');
 
    $pdf->setColumnsSize(50,50);
    $col1 = '<b>'.$LANG['common'][2].' '.$computer->fields['id'].'</b>';
@@ -458,13 +456,10 @@ function plugin_pdf_main_computer($pdf,$ID) {
 }
 
 
-function plugin_pdf_main_printer($pdf,$ID) {
+function plugin_pdf_main_printer($pdf,$printer) {
    global $LANG;
 
-   $printer = new Printer();
-   if (!$printer->getFromDB($ID)) {
-      return;
-   }
+   $ID = $printer->getField('id');
 
    $pdf->setColumnsSize(50,50);
    $col1 = '<b>'.$LANG['common'][2].' '.$printer->fields['id'].'</b>';
@@ -540,13 +535,10 @@ function plugin_pdf_main_printer($pdf,$ID) {
 }
 
 
-function plugin_pdf_main_monitor($pdf,$ID) {
+function plugin_pdf_main_monitor($pdf,$item) {
    global $LANG;
 
-   $item=new Monitor();
-   if (!$item->getFromDB($ID)) {
-      return;
-   }
+   $ID = $item->getField('id');
 
    $pdf->setColumnsSize(50,50);
    $col1 = '<b>'.$LANG['common'][2].' '.$item->fields['id'].'</b>';
@@ -624,13 +616,10 @@ function plugin_pdf_main_monitor($pdf,$ID) {
 }
 
 
-function plugin_pdf_main_phone($pdf,$ID) {
+function plugin_pdf_main_phone($pdf, $item) {
    global $LANG;
 
-   $item = new Phone();
-   if (!$item->getFromDB($ID)) {
-      return;
-   }
+   $ID = $item->getField('id');
 
    $pdf->setColumnsSize(50,50);
    $col1 = '<b>'.$LANG['common'][2].' '.$item->fields['id'].'</b>';
@@ -699,13 +688,10 @@ function plugin_pdf_main_phone($pdf,$ID) {
 }
 
 
-function plugin_pdf_main_peripheral($pdf,$ID) {
+function plugin_pdf_main_peripheral($pdf, $item) {
    global $LANG;
 
-   $item = new Peripheral();
-   if (!$item->getFromDB($ID)) {
-      return;
-   }
+   $ID = $item->getField('id');
 
    $pdf->setColumnsSize(50,50);
    $col1 = '<b>'.$LANG['common'][2].' '.$item->fields['id'].'</b>';
@@ -759,8 +745,10 @@ function plugin_pdf_main_peripheral($pdf,$ID) {
 }
 
 
-function plugin_pdf_cartridges($pdf, $instID, $old=false) {
+function plugin_pdf_cartridges($pdf, $p, $old=false) {
    global $DB,$CFG_GLPI, $LANG;
+
+   $instID = $p->getField('id');
 
    if (!haveRight("cartridge","r")) {
       return false;
@@ -789,8 +777,6 @@ function plugin_pdf_cartridges($pdf, $instID, $old=false) {
    $result = $DB->query($query);
    $number = $DB->numrows($result);
    $i = 0;
-   $p = new Printer;
-   $p->getFromDB($instID);
    $pages=$p->fields['init_pages_counter'];
 
    $pdf->setColumnsSize(100);
@@ -868,18 +854,18 @@ function plugin_pdf_cartridges($pdf, $instID, $old=false) {
 }
 
 
-function plugin_pdf_financial($pdf,$ID,$type) {
+function plugin_pdf_financial($pdf,$item) {
    global $CFG_GLPI,$LANG;
 
+   $ID = $item->getField();
    if (!haveRight("infocom","r")) {
       return false;
    }
 
    $ic = new Infocom();
-   $ci = new CommonItem();
 
    $pdf->setColumnsSize(100);
-   if ($ci->getFromDB($type,$ID) && $ic->getFromDBforDevice($type,$ID)) {
+   if ($ic->getFromDBforDevice(get_class($item),$ID)) {
       $pdf->displayTitle("<b>".$LANG["financial"][3]."</b>");
 
       $pdf->setColumnsSize(50,50);
@@ -926,9 +912,9 @@ function plugin_pdf_financial($pdf,$ID,$type) {
 
       $pdf->displayLine(
          "<b><i>".$LANG["financial"][89]." :</i></b> ".
-            Infocom::showTco($ci->getField('ticket_tco'), $ic->fields["value"]),
+            Infocom::showTco($item->getField('ticket_tco'), $ic->fields["value"]),
          "<b><i>".$LANG["financial"][90]." :</i></b> ".
-            Infocom::showTco($ci->getField('ticket_tco'), $ic->fields["value"], $ic->fields["buy_date"]));
+            Infocom::showTco($item->getField('ticket_tco'), $ic->fields["value"], $ic->fields["buy_date"]));
 
       $pdf->setColumnsSize(100);
       $col1 = "<b><i>".$LANG["setup"][247]." :</i></b> ";
@@ -947,11 +933,10 @@ function plugin_pdf_financial($pdf,$ID,$type) {
 }
 
 
-function plugin_pdf_main_software($pdf,$ID) {
+function plugin_pdf_main_software($pdf,$software) {
    global $LANG;
 
-   $software = new Software();
-   $software->getFromDB($ID);
+   $ID = $software->getField('id');
 
    $col1 = '<b>'.$LANG['common'][2].' '.$software->fields['id'].')</b>';
    $col2 = '<b>'.$LANG['common'][26].' : '.convDateTime($software->fields['date_mod']).'</b>';
@@ -1009,11 +994,10 @@ function plugin_pdf_main_software($pdf,$ID) {
 }
 
 
-function plugin_pdf_device($pdf,$ID,$type) {
+function plugin_pdf_device($pdf, $computer) {
    global $LANG;
 
-   $computer = new Computer();
-   $computer->getFromDBwithDevices($ID);
+   $computer->getFromDBwithDevices($computer>getField('id'));
 
 
 	$pdf->setColumnsSize(100);
@@ -1135,9 +1119,10 @@ function plugin_pdf_device($pdf,$ID,$type) {
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_versions($pdf,$sID){
+function plugin_pdf_versions($pdf,$item){
 	global $DB,$LANG;
 
+   $sID = $item->getField('id');
 	$query = "SELECT glpi_softwareversions.*,glpi_dropdown_state.name AS sname FROM glpi_softwareversions
 			LEFT JOIN glpi_dropdown_state ON (glpi_dropdown_state.ID=glpi_softwareversions.state)
 			WHERE (sID = '$sID') ORDER BY name";
@@ -1178,12 +1163,10 @@ function plugin_pdf_versions($pdf,$sID){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_main_license($pdf,$ID, $main=true){
+function plugin_pdf_main_license($pdf,$license, $main=true){
 	global $DB,$LANG;
 
-	$license = new SoftwareLicense;
-
-	if ($license->getFromDB($ID)) {
+   $ID = $license->getField('id');
 
 		$pdf->setColumnsSize(100);
 		$entity = '';
@@ -1211,19 +1194,17 @@ function plugin_pdf_main_license($pdf,$ID, $main=true){
 
 		$pdf->setColumnsSize(100);
 		$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $license->fields['comments']);
-	}
 
 	if ($main) {
 		$pdf->displaySpace();
 	}
 }
 
-function plugin_pdf_main_version($pdf,$ID){
+function plugin_pdf_main_version($pdf,$version){
 	global $DB,$LANG;
 
-	$version = new SoftwareVersion;
+   $ID = $version->getField('id');
 
-	if ($version->getFromDB($ID)) {
 
 		$pdf->setColumnsSize(100);
 		$pdf->displayTitle('<b><i>'.$LANG['common'][2]."</i> : $ID</b>");
@@ -1238,18 +1219,16 @@ function plugin_pdf_main_version($pdf,$ID){
 
 		$pdf->setColumnsSize(100);
 		$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $version->fields['comments']);
-	}
 
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_licenses($pdf,$sID,$infocom){
+function plugin_pdf_licenses($pdf,$software,$infocom){
 	global $DB,$LANG;
 
-	$software = new Software;
+   $sID = $software->getField('id');
 	$license = new SoftwareLicense;
 
-	$software->getFromDB($sID);
 
 	$query = "SELECT ID
 		FROM glpi_softwarelicenses
@@ -1278,10 +1257,12 @@ function plugin_pdf_licenses($pdf,$sID,$infocom){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_installations($pdf,$ID,$type){
+function plugin_pdf_installations($pdf,$item){
 	global $DB,$LANG;
 
-	$crit = ($type==SOFTWARE_TYPE ? 'sID' : 'ID');
+   $ID = $item->getField('id');
+   $type = get_class($item);
+	$crit = ($type=='Software' ? 'sID' : 'ID');
 
 	$query = "SELECT glpi_inst_software.*,glpi_computers.name AS compname, glpi_computers.ID AS cID,
 			glpi_computers.name AS compname, glpi_computers.serial, glpi_computers.otherserial, glpi_users.name AS username,
@@ -1335,12 +1316,11 @@ function plugin_pdf_installations($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_software($pdf,$ID,$type){
+function plugin_pdf_software($pdf,$comp){
+   global $DB,$LANG;
 
-	global $DB,$LANG;
+   $ID = $item->getField('id');
 
-	$comp=new Computer();
-	$comp->getFromDB($ID);
 	$FK_entities=$comp->fields["FK_entities"];
 
 	$query_cat = "SELECT 1 as TYPE, glpi_dropdown_software_category.name as category, glpi_software.category as category_id,
@@ -1409,26 +1389,28 @@ function plugin_pdf_software($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_computer_connection($pdf,$ID){
-
+function plugin_pdf_computer_connection($pdf,$comp){
 	global $DB,$LANG;
 
-	$items=array(PRINTER_TYPE=>$LANG["computers"][39],MONITOR_TYPE=>$LANG["computers"][40],PERIPHERAL_TYPE=>$LANG["computers"][46],PHONE_TYPE=>$LANG["computers"][55]);
+   $ID = $comp->getField('id');
+   $items=array('Pinter'     => $LANG["computers"][39],
+                'Monitor'    => $LANG["computers"][40],
+                'Peripheral' => $LANG["computers"][46],
+                'Phone'      => $LANG["computers"][55]);
 
-	foreach ($items as $type => $title){
-		if (!haveTypeRight($type,"r")) unset($items[$type]);
-	}
-	if (!count($items)) return;
-
-	$ci=new CommonItem();
-	$comp=new Computer();
 	$info=new InfoCom();
-	$comp->getFromDB($ID);
 
 	$pdf->setColumnsSize(100);
 	$pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
 
 	foreach ($items as $type=>$title){
+      if (!class_exists($type)) {
+         continue;
+      }
+      $item = new $type();
+      if (!$item->canView()) {
+         continue;
+      }
 		$query = "SELECT * from glpi_connect_wire WHERE end2='$ID' AND type='".$type."'";
 
 		if ($result=$DB->query($query)) {
@@ -1438,44 +1420,44 @@ function plugin_pdf_computer_connection($pdf,$ID){
 				for ($j=0; $j < $resultnum; $j++) {
 					$tID = $DB->result($result, $j, "end1");
 					$connID = $DB->result($result, $j, "ID");
-					$ci->getFromDB($type,$tID);
+					$item->getFromDB($tID);
 					$info->getFromDBforDevice($type,$tID) || $info->getEmpty();
 
 
-					$line1 = $ci->getName()." - ";
-					if($ci->getField("serial")!=null) {
-						$line1 .= $LANG["common"][19] . " : " .$ci->getField("serial")." - ";
+					$line1 = $item->getName()." - ";
+					if($item->getField("serial")!=null) {
+						$line1 .= $LANG["common"][19] . " : " .$item->getField("serial")." - ";
 					}
-					$line1 .= html_clean(getDropdownName("glpi_dropdown_state",$ci->getField('state')));
+					$line1 .= html_clean(getDropdownName("glpi_dropdown_state",$item->getField('state')));
 
 					$line2 = "";
-					if($ci->getField("otherserial")!=null) {
-						$line2 = $LANG["common"][20] . " : " . $ci->getField("otherserial");
+					if($item->getField("otherserial")!=null) {
+						$line2 = $LANG["common"][20] . " : " . $item->getField("otherserial");
 					}
 					if ($info->fields["num_immo"]) {
 						if ($line2) $line2 .= " - ";
 						$line2 .= $LANG["financial"][20] . " : " . $info->fields["num_immo"];
 					}
 					if ($line2) {
-						$pdf->displayText('<b>'.$ci->getType().'</b>', $line1 . "\n" . $line2, 2);
+						$pdf->displayText('<b>'.$item->getTypeName().'</b>', $line1 . "\n" . $line2, 2);
 					} else {
-						$pdf->displayText('<b>'.$ci->getType().'</b>', $line1, 1);
+						$pdf->displayText('<b>'.$item->getTypeName().'</b>', $line1, 1);
 					}
 				}// each device	of current type
 
 			} else { // No row
 
 				switch ($type){
-					case PRINTER_TYPE:
+					case 'Pinter':
 						$pdf->displayLine($LANG["computers"][38]);
 					break;
-					case MONITOR_TYPE:
+					case 'Monitor':
 						$pdf->displayLine($LANG["computers"][37]);
 					break;
-					case PERIPHERAL_TYPE:
+					case 'Peripheral':
 						$pdf->displayLine($LANG["computers"][47]);
 					break;
-					case PHONE_TYPE:
+					case 'Phone':
 						$pdf->displayLine($LANG["computers"][54]);
 					break;
 					}
@@ -1487,11 +1469,13 @@ function plugin_pdf_computer_connection($pdf,$ID){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_device_connection($pdf,$ID,$type){
+function plugin_pdf_device_connection($pdf,$comp){
 
 	global $DB,$LANG;
 
-	$comp=new Computer();
+   $ID = $item->getField('id');
+   $type = get_class($comp);
+
 	$info=new InfoCom();
 
 	$pdf->setColumnsSize(100);
@@ -1507,7 +1491,7 @@ function plugin_pdf_device_connection($pdf,$ID,$type){
 				$tID = $DB->result($result, $j, "end2");
 				$connID = $DB->result($result, $j, "ID");
 				$comp->getFromDB($tID);
-				$info->getFromDBforDevice(COMPUTER_TYPE,$tID) || $info->getEmpty();
+				$info->getFromDBforDevice('Computer',$tID) || $info->getEmpty();
 
 
 				$line1 = ($comp->fields['name']?$comp->fields['name']:"(".$comp->fields['ID'].")")." - ";
@@ -1541,9 +1525,12 @@ function plugin_pdf_device_connection($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_port($pdf,$ID,$type){
+function plugin_pdf_port($pdf,$item){
 
 	global $DB,$LANG;
+
+   $ID = $item->getField('id');
+   $type = get_class($item);
 
 	$query = "SELECT ID FROM glpi_networking_ports WHERE (on_device = ".$ID." AND device_type = ".$type.") ORDER BY name, logical_number";
 
@@ -1600,14 +1587,14 @@ function plugin_pdf_port($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_contract($pdf,$ID,$type){
+function plugin_pdf_contract($pdf,$item){
 
 	global $DB,$CFG_GLPI,$LANG;
 
 	if (!haveRight("contract","r")) return false;
 
-	$ci = new CommonItem();
-	$con = new Contract;
+   $ID = $item->getField('id');
+   $type = get_class($item);
 
 	$query = "SELECT * FROM glpi_contract_device WHERE glpi_contract_device.FK_device = ".$ID." AND glpi_contract_device.device_type = ".$type;
 
@@ -1617,7 +1604,7 @@ function plugin_pdf_contract($pdf,$ID,$type){
 	$i=$j=0;
 
 	$pdf->setColumnsSize(100);
-	if($ci->getFromDB($type,$ID) && $number>0) {
+	if($number>0) {
 
 		$pdf->displayTitle($LANG["financial"][66]);
 
@@ -1655,10 +1642,12 @@ function plugin_pdf_contract($pdf,$ID,$type){
 
 	$pdf->displaySpace();
 }
-function plugin_pdf_document($pdf,$ID,$type){
+function plugin_pdf_document($pdf, $item){
 
 	global $DB,$LANG;
 
+   $ID = $item->getField('id');
+   $type = get_class($item);
 	if (!haveRight("document","r"))	return false;
 
 	$query = "SELECT glpi_doc_device.ID as assocID, glpi_docs.* FROM glpi_doc_device ";
@@ -1697,9 +1686,10 @@ function plugin_pdf_document($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_registry($pdf,$ID,$type){
-
+function plugin_pdf_registry($pdf, $item){
 	global $DB,$LANG;
+
+   $ID = $item->getField('id');
 
 	$REGISTRY_HIVE=array("HKEY_CLASSES_ROOT",
 	"HKEY_CURRENT_USER",
@@ -1741,9 +1731,11 @@ function plugin_pdf_registry($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_ticket($pdf,$ID,$type){
-
+function plugin_pdf_ticket($pdf, $item){
 	global $DB,$CFG_GLPI, $LANG;
+
+   $ID = $item->getField('id');
+   $type = get_class($item);
 
 	if (!haveRight("show_all_ticket","1")) return;
 
@@ -1778,10 +1770,12 @@ function plugin_pdf_ticket($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_oldticket($pdf,$ID,$type){
+function plugin_pdf_oldticket($pdf, $item){
 
 	global $DB,$CFG_GLPI, $LANG;
 
+   $ID = $item->getField('id');
+   $type = get_class($item);
 	if (!haveRight("show_all_ticket","1")) return;
 
 	$sort="glpi_tracking.date";
@@ -1814,17 +1808,17 @@ function plugin_pdf_oldticket($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_link($pdf,$ID,$type){
+function plugin_pdf_link($pdf, $item){
 
 	global $DB,$LANG;
 
 	if (!haveRight("link","r")) return false;
+   $ID = $item->getField('id');
+   $type = get_class($item);
 
 	$query="SELECT glpi_links.ID as ID, glpi_links.link as link, glpi_links.name as name , glpi_links.data as data from glpi_links INNER JOIN glpi_links_device ON glpi_links.ID= glpi_links_device.FK_links WHERE glpi_links_device.device_type=".$type." ORDER BY glpi_links.name";
 
 	$result=$DB->query($query);
-
-	$ci=new CommonItem;
 
 	$pdf->setColumnsSize(100);
 	if ($DB->numrows($result)>0){
@@ -1840,23 +1834,22 @@ function plugin_pdf_link($pdf,$ID,$type){
 
 			$link=$data["link"];
 			$file=trim($data["data"]);
-			$ci->getFromDB($type,$ID);
 			if (empty($file)){
 
 				if (strpos("[NAME]",$link)){
-					$link=str_replace("[NAME]",$ci->getName(),$link);
+					$link=str_replace("[NAME]",$item->getName(),$link);
 				}
 				if (strpos("[ID]",$link)){
 					$link=str_replace("[ID]",$ID,$link);
 				}
 
 				if (strpos("[SERIAL]",$link)){
-					if ($tmp=$ci->getField('serial')){
+					if ($tmp=$item->getField('serial')){
 						$link=str_replace("[SERIAL]",$tmp,$link);
 					}
 				}
 				if (strpos("[OTHERSERIAL]",$link)){
-					if ($tmp=$ci->getField('otherserial')){
+					if ($tmp=$item->getField('otherserial')){
 						$link=str_replace("[OTHERSERIAL]",$tmp,$link);
 					}
 				}
@@ -1931,9 +1924,11 @@ function plugin_pdf_link($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_volume($pdf,$ID,$type){
-
+function plugin_pdf_volume($pdf, $item){
 	global $DB, $LANG;
+
+   $ID = $item->getField('id');
+   $type = get_class($item);
 
 	$query = "SELECT glpi_dropdown_filesystems.name as fsname, glpi_computerdisks.*
 		FROM glpi_computerdisks
@@ -1977,14 +1972,14 @@ function plugin_pdf_volume($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_note($pdf,$ID,$type){
+function plugin_pdf_note($pdf, $item){
 
 	global $LANG;
 
-	$ci =new CommonItem;
-	$ci->getfromDB ($type,$ID);
+   $ID = $item->getField('id');
+   $type = get_class($item);
 
-	$note = trim($ci->getField('notes'));
+	$note = trim($item->getField('notes'));
 
 	$pdf->setColumnsSize(100);
 	if(utf8_strlen($note)>0)
@@ -1998,10 +1993,12 @@ function plugin_pdf_note($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_reservation($pdf,$ID,$type){
+function plugin_pdf_reservation($pdf, $item){
 
 	global $DB,$LANG,$CFG_GLPI;
 
+   $ID = $item->getField('id');
+   $type = get_class($item);
 	if (!haveRight("reservation_central","r")) return;
 
 	$resaID=0;
@@ -2073,11 +2070,12 @@ function plugin_pdf_reservation($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_history($pdf,$ID,$type){
-
+function plugin_pdf_history($pdf, $item){
 	global $DB,$LANG;
 
 	$SEARCH_OPTION=getSearchOptions();
+   $ID = $item->getField('id');
+   $type = get_class($item);
 
 	$query="SELECT * FROM glpi_history WHERE FK_glpi_device='".$ID."' AND device_type='".$type."' ORDER BY  ID DESC;";
 
@@ -2191,7 +2189,7 @@ function plugin_pdf_history($pdf,$ID,$type){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_pluginhook($onglet,$pdf,$ID,$type) {
+function plugin_pdf_pluginhook($onglet,$pdf,$item) {
 	global $PLUGIN_HOOKS;
 
 	if (preg_match("/^(.*)_([0-9]*)$/",$onglet,$split)) {
@@ -2202,15 +2200,15 @@ function plugin_pdf_pluginhook($onglet,$pdf,$ID,$type) {
 			if (file_exists(GLPI_ROOT . "/plugins/$plug/hook.php")) {
 				include_once(GLPI_ROOT . "/plugins/$plug/hook.php");
 			}
-
 			$function=$PLUGIN_HOOKS["headings_actionpdf"][$plug];
-			if (function_exists($function)){
-				$actions=$function($type);
+         logInFile('php-errors',"plugin_pdf_pluginhook($onglet)=>$function\n");
+			if (is_callable($function)){
+				$actions=call_user_func($function, $item);
+            logInFile('php-errors',"plugin_pdf_pluginhook($onglet)=>".$actions[$ID_onglet]."\n");
 
-				if (isset($actions[$ID_onglet]) && function_exists($actions[$ID_onglet])){
+				if (isset($actions[$ID_onglet]) && is_callable($actions[$ID_onglet])){
 
-					$function=$actions[$ID_onglet];
-					$function($pdf,$ID,$type);
+					call_user_func($actions[$ID_onglet], $pdf, $item);
 					return true;
 				}
 			}
@@ -2220,364 +2218,364 @@ function plugin_pdf_pluginhook($onglet,$pdf,$ID,$type) {
 
 }
 
-function plugin_pdf_general($type, $tab_id, $tab, $page=0) {
+function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
    $pdf = new simplePDF('a4', ($page ? 'landscape' : 'portrait'));
 
    $nb_id = count($tab_id);
 
    foreach($tab_id as $key => $id) {
-      if (plugin_pdf_add_header($pdf,$id,$type)) {
+      if (plugin_pdf_add_header($pdf,$id,$item)) {
          $pdf->newPage();
       } else {
          // Object not found or no right to read
          continue;
       }
 
-      switch($type) {
-         case COMPUTER_TYPE :
-            plugin_pdf_main_computer($pdf,$id);
+      switch(get_class($item)) {
+         case 'Computer' :
+            plugin_pdf_main_computer($pdf,$item);
             foreach($tab as $i) {
                switch($i) { // See Computer::defineTabs();
                   case 4 :
-                     plugin_pdf_financial($pdf,$id,$type);
-                     plugin_pdf_contract ($pdf,$id,$type);
+                     plugin_pdf_financial($pdf,$item);
+                     plugin_pdf_contract ($pdf,$item);
                      break;
 
                   case 3 :
-                     plugin_pdf_computer_connection($pdf,$id);
-                     plugin_pdf_port($pdf,$id,$type);
+                     plugin_pdf_computer_connection($pdf,$item);
+                     plugin_pdf_port($pdf,$item);
                      break;
 
                   case 1 :
-                     plugin_pdf_device($pdf,$id,$type);
+                     plugin_pdf_device($pdf,$item);
                      break;
 
                   case 2 :
-                     plugin_pdf_software($pdf,$id,$type);
+                     plugin_pdf_software($pdf,$item);
                      break;
 
                   case 6 :
-                     plugin_pdf_ticket($pdf,$id,$type);
-                     plugin_pdf_oldticket($pdf,$id,$type);
+                     plugin_pdf_ticket($pdf,$item);
+                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 5 :
-                     plugin_pdf_document($pdf,$id,$type);
+                     plugin_pdf_document($pdf,$item);
                      break;
 
                   case 14 :
-                     plugin_pdf_registry($pdf,$id,$type);
+                     plugin_pdf_registry($pdf,$item);
                      break;
 
                   case 7 :
-                     plugin_pdf_link($pdf,$id,$type);
+                     plugin_pdf_link($pdf,$item);
                      break;
 
                   case 10 :
-                     plugin_pdf_note($pdf,$id,$type);
+                     plugin_pdf_note($pdf,$item);
                      break;
 
                   case 11 :
-                     plugin_pdf_reservation($pdf,$id,$type);
+                     plugin_pdf_reservation($pdf,$item);
                      break;
 
                   case 12 :
-                     plugin_pdf_history($pdf,$id,$type);
+                     plugin_pdf_history($pdf,$item);
                      break;
 
                   case 20 :
-                     plugin_pdf_volume($pdf,$id,$type);
+                     plugin_pdf_volume($pdf,$item);
                      break;
 
                   default :
-                     plugin_pdf_pluginhook($i,$pdf,$id,$type);
+                     plugin_pdf_pluginhook($i,$pdf,$item);
                }
             }
             break;
 
-         case PRINTER_TYPE :
-            plugin_pdf_main_printer($pdf,$id);
+         case 'Printer' :
+            plugin_pdf_main_printer($pdf,$item);
             foreach($tab as $i) {
                switch($i) {  // See Printer::defineTabs();
                   case 1 :
-                     plugin_pdf_cartridges($pdf,$id,false);
-                     plugin_pdf_cartridges($pdf,$id,true);
+                     plugin_pdf_cartridges($pdf,$item,false);
+                     plugin_pdf_cartridges($pdf,$item,true);
                      break;
 
                   case 3 :
-                     plugin_pdf_device_connection($pdf,$id,$type);
-                     plugin_pdf_port($pdf,$id,$type);
+                     plugin_pdf_device_connection($pdf,$item);
+                     plugin_pdf_port($pdf,$item);
                      break;
 
                   case 4 :
-                     plugin_pdf_financial($pdf,$id,$type);
-                     plugin_pdf_contract ($pdf,$id,$type);
+                     plugin_pdf_financial($pdf,$item);
+                     plugin_pdf_contract ($pdf,$item);
                      break;
 
                   case 5 :
-                     plugin_pdf_document($pdf,$id,$type);
+                     plugin_pdf_document($pdf,$item);
                      break;
 
                   case 6 :
-                     plugin_pdf_ticket($pdf,$id,$type);
-                     plugin_pdf_oldticket($pdf,$id,$type);
+                     plugin_pdf_ticket($pdf,$item);
+                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 7 :
-                     plugin_pdf_link($pdf,$id,$type);
+                     plugin_pdf_link($pdf,$item);
                      break;
 
                   case 10 :
-                     plugin_pdf_note($pdf,$id,$type);
+                     plugin_pdf_note($pdf,$item);
                      break;
 
                   case 11 :
-                     plugin_pdf_reservation($pdf,$id,$type);
+                     plugin_pdf_reservation($pdf,$item);
                      break;
 
                   case 12 :
-                     plugin_pdf_history($pdf,$id,$type);
+                     plugin_pdf_history($pdf,$item);
                      break;
 
                   default :
-                     plugin_pdf_pluginhook($i,$pdf,$id,$type);
+                     plugin_pdf_pluginhook($i,$pdf,$item);
                }
             }
             break;
 
-         case MONITOR_TYPE :
-            plugin_pdf_main_monitor($pdf,$id);
+         case 'Monitor' :
+            plugin_pdf_main_monitor($pdf,$item);
             foreach($tab as $i) {
                switch($i) { // See Monitor::defineTabs();
                   case 1 :
-                     plugin_pdf_device_connection($pdf,$id,$type);
+                     plugin_pdf_device_connection($pdf,$item);
                      break;
 
                   case 4 :
-                     plugin_pdf_financial($pdf,$id,$type);
-                     plugin_pdf_contract ($pdf,$id,$type);
+                     plugin_pdf_financial($pdf,$item);
+                     plugin_pdf_contract ($pdf,$item);
                      break;
 
                   case 5 :
-                     plugin_pdf_document($pdf,$id,$type);
+                     plugin_pdf_document($pdf,$item);
                      break;
 
                   case 6 :
-                     plugin_pdf_ticket($pdf,$id,$type);
-                     plugin_pdf_oldticket($pdf,$id,$type);
+                     plugin_pdf_ticket($pdf,$item);
+                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 7 :
-                     plugin_pdf_link($pdf,$id,$type);
+                     plugin_pdf_link($pdf,$item);
                      break;
 
                   case 10 :
-                     plugin_pdf_note($pdf,$id,$type);
+                     plugin_pdf_note($pdf,$item);
                      break;
 
                   case 11 :
-                     plugin_pdf_reservation($pdf,$id,$type);
+                     plugin_pdf_reservation($pdf,$item);
                      break;
 
                   case 12 :
-                     plugin_pdf_history($pdf,$id,$type);
+                     plugin_pdf_history($pdf,$item);
                      break;
 
                   default :
-                     plugin_pdf_pluginhook($i,$pdf,$id,$type);
+                     plugin_pdf_pluginhook($i,$pdf,$item);
                }
             }
             break;
 
-         case PERIPHERAL_TYPE :
-            plugin_pdf_main_peripheral($pdf,$id);
+         case 'Peripheral' :
+            plugin_pdf_main_peripheral($pdf,$item);
             foreach($tab as $i) {
                switch($i) { // See Peripheral::defineTabs();
                   case 1 :
-                     plugin_pdf_device_connection($pdf,$id,$type);
+                     plugin_pdf_device_connection($pdf,$item);
                      break;
 
                   case 4 :
-                     plugin_pdf_financial($pdf,$id,$type);
-                     plugin_pdf_contract ($pdf,$id,$type);
+                     plugin_pdf_financial($pdf,$item);
+                     plugin_pdf_contract ($pdf,$item);
                      break;
 
                   case 5 :
-                     plugin_pdf_document($pdf,$id,$type);
+                     plugin_pdf_document($pdf,$item);
                      break;
 
                   case 6 :
-                     plugin_pdf_ticket($pdf,$id,$type);
-                     plugin_pdf_oldticket($pdf,$id,$type);
+                     plugin_pdf_ticket($pdf,$item);
+                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 7 :
-                     plugin_pdf_link($pdf,$id,$type);
+                     plugin_pdf_link($pdf,$item);
                      break;
 
                   case 10 :
-                     plugin_pdf_note($pdf,$id,$type);
+                     plugin_pdf_note($pdf,$item);
                      break;
 
                   case 11 :
-                     plugin_pdf_reservation($pdf,$id,$type);
+                     plugin_pdf_reservation($pdf,$item);
                      break;
 
                   case 12 :
-                     plugin_pdf_history($pdf,$id,$type);
+                     plugin_pdf_history($pdf,$item);
                      break;
 
                   default :
-                     plugin_pdf_pluginhook($i,$pdf,$id,$type);
+                     plugin_pdf_pluginhook($i,$pdf,$item);
                }
             }
             break;
 
-         case PHONE_TYPE :
-            plugin_pdf_main_phone($pdf,$id);
+         case 'Phone' :
+            plugin_pdf_main_phone($pdf,$item);
             foreach($tab as $i) {
                switch($i) { // See Phone::defineTabs();
                   case 1 :
-                     plugin_pdf_device_connection($pdf,$id,$type);
+                     plugin_pdf_device_connection($pdf,$item);
                      break;
 
                   case 4 :
-                     plugin_pdf_financial($pdf,$id,$type);
-                     plugin_pdf_contract ($pdf,$id,$type);
+                     plugin_pdf_financial($pdf,$item);
+                     plugin_pdf_contract ($pdf,$item);
                      break;
 
                   case 5 :
-                     plugin_pdf_document($pdf,$id,$type);
+                     plugin_pdf_document($pdf,$item);
                      break;
 
                   case 6 :
-                     plugin_pdf_ticket($pdf,$id,$type);
-                     plugin_pdf_oldticket($pdf,$id,$type);
+                     plugin_pdf_ticket($pdf,$item);
+                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 7 :
-                     plugin_pdf_link($pdf,$id,$type);
+                     plugin_pdf_link($pdf,$item);
                      break;
 
                   case 10 :
-                     plugin_pdf_note($pdf,$id,$type);
+                     plugin_pdf_note($pdf,$item);
                      break;
 
                   case 11 :
-                     plugin_pdf_reservation($pdf,$id,$type);
+                     plugin_pdf_reservation($pdf,$item);
                      break;
 
                   case 12 :
-                     plugin_pdf_history($pdf,$id,$type);
+                     plugin_pdf_history($pdf,$item);
                      break;
 
                   default :
-                     plugin_pdf_pluginhook($i,$pdf,$id,$type);
+                     plugin_pdf_pluginhook($i,$pdf,$item);
                }
             }
             break;
 
-         case SOFTWARELICENSE_TYPE :
-            plugin_pdf_main_license($pdf,$id);
+         case 'SoftwareLicense' :
+            plugin_pdf_main_license($pdf,$item);
             foreach($tab as $i) {
                switch($i) { // See SoftwareLicense::defineTabs();
                   case 4 :
-                     plugin_pdf_financial($pdf,$id,$type);
-                     plugin_pdf_contract($pdf,$id,$type);
+                     plugin_pdf_financial($pdf,$item);
+                     plugin_pdf_contract($pdf,$item);
                      break;
 
                   case 5 :
-                     plugin_pdf_document($pdf,$id,$type);
+                     plugin_pdf_document($pdf,$item);
                      break;
 
                   case 12 :
-                     plugin_pdf_history($pdf,$id,$type);
+                     plugin_pdf_history($pdf,$item);
                      break;
 
                   default :
-                     plugin_pdf_pluginhook($i,$pdf,$id,$type);
+                     plugin_pdf_pluginhook($i,$pdf,$item);
                }
             }
             break;
 
-         case SOFTWAREVERSION_TYPE :
-            plugin_pdf_main_version($pdf,$id);
+         case 'SoftwareVersion' :
+            plugin_pdf_main_version($pdf,$item);
             foreach($tab as $i) {
                switch($i) { // See SoftwareVersion::defineTabs();
                   case 2 :
-                     plugin_pdf_installations($pdf,$id,$type);
+                     plugin_pdf_installations($pdf,$item);
                      break;
 
                   case 12 :
-                     plugin_pdf_history($pdf,$id,$type);
+                     plugin_pdf_history($pdf,$item);
                      break;
 
                   default :
-                     plugin_pdf_pluginhook($i,$pdf,$id,$type);
+                     plugin_pdf_pluginhook($i,$pdf,$item);
                }
             }
             break;
 
-         case SOFTWARE_TYPE :
-            plugin_pdf_main_software($pdf,$id);
+         case 'Software' :
+            plugin_pdf_main_software($pdf,$item);
             foreach($tab as $i) {
                switch($i) { // See Software::defineTabs();
                   case 1 :
-                     plugin_pdf_versions($pdf,$id);
-                     plugin_pdf_licenses($pdf,$id,in_array(2,$tab));
+                     plugin_pdf_versions($pdf,$item);
+                     plugin_pdf_licenses($pdf,$item,in_array(2,$tab));
                      break;
 
                   case 2 :
-                     plugin_pdf_installations($pdf,$id,$type);
+                     plugin_pdf_installations($pdf,$item);
                      break;
 
                   case 4 :
                      // only template - plugin_pdf_financial($pdf,$ID,SOFTWARE_TYPE);
-                     plugin_pdf_contract($pdf,$id,$type);
+                     plugin_pdf_contract($pdf,$item);
                      break;
 
                   case 5 :
-                     plugin_pdf_document($pdf,$id,$type);
+                     plugin_pdf_document($pdf,$item);
                      break;
 
                   case 6 :
-                     plugin_pdf_ticket($pdf,$id,$type);
-                     plugin_pdf_oldticket($pdf,$id,$type);
+                     plugin_pdf_ticket($pdf,$item);
+                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 7 :
-                     plugin_pdf_link($pdf,$id,$type);
+                     plugin_pdf_link($pdf,$item);
                      break;
 
                   case 10 :
-                     plugin_pdf_note($pdf,$id,$type);
+                     plugin_pdf_note($pdf,$item);
                      break;
 
                   case 11 :
-                     plugin_pdf_reservation($pdf,$id,$type);
+                     plugin_pdf_reservation($pdf,$item);
                      break;
 
                   case 12 :
-                     plugin_pdf_history($pdf,$id,$type);
+                     plugin_pdf_history($pdf,$item);
                      break;
 
                   default :
-                     plugin_pdf_pluginhook($i,$pdf,$id,$type);
+                     plugin_pdf_pluginhook($i,$pdf,$item);
                }
             }
             break;
 
-         case TRACKING_TYPE :
-            plugin_pdf_main_ticket($pdf,$id,in_array('private',$tab));
+         case 'Ticket' :
+            plugin_pdf_main_ticket($pdf,$item,in_array('private',$tab));
             foreach($tab as $i) {
                switch($i) { // Value not from Job::defineTabs but from plugin_pdf_prefPDF
                   case 5 :
-                     plugin_pdf_document($pdf,$id,$type);
+                     plugin_pdf_document($pdf,$item);
                      break;
 
                   default :
-                     plugin_pdf_pluginhook($i,$pdf,$id,$type);
+                     plugin_pdf_pluginhook($i,$pdf,$item);
                }
             }
             break;

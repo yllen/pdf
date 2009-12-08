@@ -44,8 +44,12 @@ class PluginPdfPreferences extends CommonDBTM {
 
       echo "<div class='center' id='pdf_type'>";
       foreach ($PLUGIN_HOOKS['plugin_pdf'] as $type => $plug) {
-         if (haveTypeRight($type,'r')) {
-            plugin_pdf_menu($type, $target,-1);
+         if (!class_exists($type)) {
+            continue;
+         }
+         $item = new $type();
+         if ($item->canView()) {
+            plugin_pdf_menu($item, $target);
          }
       }
       echo "</div>";

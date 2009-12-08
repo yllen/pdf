@@ -42,8 +42,11 @@ include (GLPI_ROOT."/inc/includes.php");
 usePlugin ('pdf', true);
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-if (isset($_POST["plugin_pdf_inventory_type"]) && isset($_POST["itemID"])) {
+if (isset($_POST["plugin_pdf_inventory_type"])
+    && class_exists($_POST["plugin_pdf_inventory_type"])
+    && isset($_POST["itemID"])) {
    $type = $_POST["plugin_pdf_inventory_type"];
+   $item = new $type();
 
    if (isset($_SESSION["plugin_pdf"][$type])) {
       unset($_SESSION["plugin_pdf"][$type]);
@@ -59,7 +62,7 @@ if (isset($_POST["plugin_pdf_inventory_type"]) && isset($_POST["itemID"])) {
    $tab_id[0]=$_POST["itemID"];
 
    if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-      doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$type, $tab_id, $tab,
+      doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$item, $tab_id, $tab,
                 (isset($_POST["page"]) ? $_POST["page"] : 0));
    } else {
       die("Missing hook");

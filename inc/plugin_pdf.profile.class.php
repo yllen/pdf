@@ -40,13 +40,10 @@ class PluginPdfProfile extends CommonDBTM {
    }
 
 
-   function createProfile($id) {
+   function createProfile($profile) {
 
-      $profile = new Profile();
-      $profile->getFromDB($id);
-      $name = $profile->fields["name"];
-      $this->add(array('id'=>$id,
-                       'profile'=>$name));
+      return $this->add(array('id'      => $profile->getField('id'),
+                              'profile' => $profile->getField('name')));
    }
 
 

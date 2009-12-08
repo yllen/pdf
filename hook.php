@@ -40,72 +40,47 @@
  *
  * @return array of string which describe the options
  */
-function plugin_pdf_prefPDF($type) {
+function plugin_pdf_prefPDF($item) {
    global $LANG;
 
    $tabs = array();
-   switch ($type) {
-      case COMPUTER_TYPE :
-         require_once(GLPI_ROOT."/inc/computer.class.php");
-         $item = new Computer();
+   switch (get_class($item)) {
+      case 'Computer' :
          $tabs = $item->defineTabs(1,'');
          if (isset($tabs[13])) {
             unset($tabs[13]); // OCSNG
          }
-      break;
+         break;
 
-      case PRINTER_TYPE :
-         require_once(GLPI_ROOT."/inc/printer.class.php");
-         $item = new Printer();
+      case 'Printer' :
+      case 'Monitor' :
+      case 'Phone' :
+      case 'Peripheral' :
          $tabs = $item->defineTabs(1,'');
          break;
 
-      case MONITOR_TYPE :
-         require_once(GLPI_ROOT."/inc/monitor.class.php");
-         $item = new Monitor();
-         $tabs = $item->defineTabs(1,'');
-         break;
-
-      case PHONE_TYPE :
-         require_once(GLPI_ROOT."/inc/phone.class.php");
-         $item = new Phone();
-         $tabs = $item->defineTabs(1,'');
-         break;
-
-      case PERIPHERAL_TYPE :
-         require_once(GLPI_ROOT."/inc/peripheral.class.php");
-         $item = new Peripheral();
-         $tabs = $item->defineTabs(1,'');
-         break;
-
-      case SOFTWARE_TYPE :
-         require_once(GLPI_ROOT."/inc/software.class.php");
-         $item = new Software();
+      case 'Software' :
          $tabs = $item->defineTabs(1,'');
          if (isset($tabs[21])) {
             unset($tabs[21]); // Merge
          }
          break;
 
-      case SOFTWARELICENSE_TYPE :
-         require_once(GLPI_ROOT."/inc/software.class.php");
-         $item = new SoftwareLicense();
+      case 'SoftwareLicense' :
          $tabs = $item->defineTabs(1,'');
          if (isset($tabs[1])) {
             unset($tabs[1]); // Main : TODO
          }
          break;
 
-      case SOFTWAREVERSION_TYPE :
-         require_once(GLPI_ROOT."/inc/software.class.php");
-         $item = new SoftwareVersion();
+      case 'SoftwareVersion' :
          $tabs = $item->defineTabs(1,'');
          if (isset($tabs[1])) {
             unset($tabs[1]); // Main : TODO
          }
          break;
 
-      case TRACKING_TYPE :
+      case 'Ticket' :
          return array('private' => $LANG['common'][77], // Privé
                       5         => $LANG["Menu"][27]);  // Documents
    }
@@ -121,8 +96,8 @@ function plugin_pdf_prefPDF($type) {
  * @param $tab of option to be printed
  * @param $page boolean true for landscape
  */
-function plugin_pdf_generatePDF($type, $tab_id, $tab, $page=0) {
-   plugin_pdf_general($type, $tab_id, $tab, $page);
+function plugin_pdf_generatePDF($item, $tab_id, $tab, $page=0) {
+   plugin_pdf_general($item, $tab_id, $tab, $page);
 }
 
 
@@ -153,22 +128,20 @@ function plugin_pdf_changeprofile() {
 }
 
 
-function plugin_pdf_get_headings($type,$ID,$withtemplate) {
+function plugin_pdf_get_headings($item, $withtemplate) {
    global $LANG, $PLUGIN_HOOKS;
 
-   if ($type=="prefs") {
+   $type = get_class($item);
+   if ($type == 'Preference') {
       return array(1 => $LANG['plugin_pdf']['title'][1]);
 
-   } else if ($type==PROFILE_TYPE) {
-      if ($ID) {
-         $prof = new Profile();
-         if ($ID>0 && $prof->getFromDB($ID) && $prof->fields['interface']!='helpdesk') {
-            return array(1 => $LANG['plugin_pdf']['title'][1]);
-         }
+   } else if ($type == 'Profile') {
+      if ($prof->fields['interface']!='helpdesk') {
+         return array(1 => $LANG['plugin_pdf']['title'][1]);
       }
 
    } else if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-      if ($ID && !$withtemplate) {
+      if (!$withtemplate) {
          return array( 1 => $LANG['plugin_pdf']['title'][1]);
       }
    }
@@ -176,12 +149,13 @@ function plugin_pdf_get_headings($type,$ID,$withtemplate) {
 }
 
 
-function plugin_pdf_headings_actions($type) {
+function plugin_pdf_headings_actions($item) {
    global $PLUGIN_HOOKS;
 
+   $type = get_class($item);
    switch ($type) {
-      case PROFILE_TYPE :
-      case "prefs" :
+      case 'Profile' :
+      case 'Preference' :
          return array(1 => "plugin_pdf_headings");
 
       default :
@@ -194,27 +168,27 @@ function plugin_pdf_headings_actions($type) {
 
 
 // action heading
-function plugin_pdf_headings($type,$ID,$withtemplate=0) {
+function plugin_pdf_headings($item,$withtemplate=0) {
    global $CFG_GLPI,$PLUGIN_HOOKS;
 
+   $type = get_class($item);
    switch ($type) {
-      case PROFILE_TYPE :
+      case 'Profile' :
          $prof =  new PluginPdfProfile();
-         if (!$prof->GetfromDB($ID)) {
-            $prof->createProfile($ID);
+         $ID = $item->getField('id');
+         if ($prof->GetfromDB($ID) || $prof->createProfile($item)) {
+            $prof->showForm($CFG_GLPI["root_doc"]."/plugins/pdf/front/plugin_pdf.profiles.php",$ID);
          }
-         $prof->showForm($CFG_GLPI["root_doc"]."/plugins/pdf/front/plugin_pdf.profiles.php",$ID);
          break;
 
-      case "prefs" :
+      case 'Preference' :
          $pref = new PluginPdfPreferences;
          $pref->showForm($CFG_GLPI['root_doc']."/plugins/pdf/front/plugin_pdf.preferences.form.php");
          break;
 
       default :
          if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-            plugin_pdf_menu($type,$CFG_GLPI['root_doc']."/plugins/pdf/front/plugin_pdf.export.php",
-                            $ID);
+            plugin_pdf_menu($item,$CFG_GLPI['root_doc']."/plugins/pdf/front/plugin_pdf.export.php");
          }
    }
 }
@@ -332,7 +306,7 @@ function plugin_pdf_install() {
                `glpi_plugin_pdf_preference` (
                   `id` int(11) NOT NULL AUTO_INCREMENT,
                   `users_id` int(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',
-                  `itemtype` int(11) NOT NULL COMMENT 'see define.php *_TYPE constant',
+                  `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',
                   `tabref` varchar(255) NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name',
                   PRIMARY KEY (`id`)
                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
@@ -344,7 +318,7 @@ function plugin_pdf_install() {
          $query .= " CHANGE `user_id` `users_id` INT(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',";
       }
       if (FieldExists('glpi_plugin_pdf_preference','cat')) {
-         $query .= " CHANGE `cat` `itemtype` INT(11) NOT NULL COMMENT 'see define.php *_TYPE constant',";
+         $query .= " CHANGE `cat` `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',";
       }
       if (FieldExists('glpi_plugin_pdf_preference','table_num')) {
          $query .= " CHANGE `table_num` `tabref` VARCHAR(255) NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name'";
@@ -355,7 +329,7 @@ function plugin_pdf_install() {
          $query .= " CHANGE `FK_users` `users_id` INT(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',";
       }
       if (FieldExists('glpi_plugin_pdf_preference','device_type')) {
-         $query .= " CHANGE `device_type` `itemtype` INT(11) NOT NULL COMMENT 'see define.php *_TYPE constant'";
+         $query .= " CHANGE `device_type` `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant'";
       }
       $DB->query($query) or die($DB->error());
    }
