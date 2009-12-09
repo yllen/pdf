@@ -34,9 +34,23 @@
 
 class PluginPdfProfile extends CommonDBTM {
 
-   function __construct() {
-      $this->table="glpi_plugin_pdf_profiles";
-      $this->type=-1;
+   public $table = 'glpi_plugin_pdf_profiles';
+   public $type  = PLUGIN_PDF_PROFILE;
+
+
+   function getSearchOptions() {
+      global $LANG;
+
+      $tab = array();
+
+      $tab['common'] = $LANG['pulse2'][1];
+
+      $tab['table']     = 'glpi_plugin_pdf_profiles';
+      $tab['field']     = 'use';
+      $tab['linkfield'] = 'id';$LANG['plugin_pdf']['title'][1];
+      $tab['datatype']  = 'bool';
+
+      return $tab;
    }
 
 
@@ -61,7 +75,16 @@ class PluginPdfProfile extends CommonDBTM {
    function showForm($target,$ID) {
       global $LANG,$DB;
 
-      if (!haveRight("profile","r")) {
+      if ($ID > 0) {
+         $this->check($ID,'r');
+      } else {
+         $this->check(-1,'w');
+         $this->getEmpty();
+      }
+
+      $canedit = $this->can($ID,'w');
+
+/*      if (!haveRight("profile","r")) {
         return false;
       }
       $canedit=haveRight("profile","w");
@@ -70,12 +93,12 @@ class PluginPdfProfile extends CommonDBTM {
         $this->getFromDB($ID);
         $prof->getFromDB($ID);
       }
-
+*/
       echo "<form action='$target' method='post'>";
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr><th colspan='2' class='center b'>".
             $LANG['plugin_pdf']['config'][7]. " " .$this->fields["profile"]."</th></tr>";
-	//		CommonDropdown::getDropdownName('glpi_profiles', $ID) . "</th></tr>\n";
+	//		getDropdownName('glpi_profiles', $ID) . "</th></tr>\n";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>".$LANG['plugin_pdf']['title'][1]."&nbsp;:</td><td>";

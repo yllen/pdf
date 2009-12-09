@@ -9,7 +9,7 @@
 
  LICENSE
 
-	This file is part of GLPI.
+   This file is part of GLPI.
 
     GLPI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -36,10 +36,20 @@ foreach (glob(GLPI_ROOT . '/plugins/pdf/inc/*.php') as $file) {
 }
 
 function plugin_init_pdf() {
-   global $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS,$LANG;
 
-   $PLUGIN_HOOKS['change_profile']['pdf'] = 'plugin_pdf_changeprofile';
-   $PLUGIN_HOOKS['plugin_types'][PROFILE_TYPE]='pdf';
+   // Params : plugin name - string type - number - attributes
+   registerPluginType('pdf', 'PLUGIN_PDF_PROFILE', 3250,
+                      array('classname'              => 'PluginPdfProfile',
+                            'tablename'              => 'glpi_plugin_pdf_profils',
+                            'searchpage'             => 'front/profile.php'));
+
+   registerPluginType('pdf', 'PLUGIN_PULSE2_PREFERENCE', 3251,
+                      array('classname'              => 'PluginPdfPreference',
+                            'tablename'              => 'glpi_plugin_pdf_prferences',
+                            'formpage'               => 'front/preference.form.php'));
+
+   $PLUGIN_HOOKS['change_profile']['pdf']       = 'plugin_pdf_changeprofile';
 
    if (isset($_SESSION["glpi_plugin_pdf_profile"])
        && $_SESSION["glpi_plugin_pdf_profile"]["use"]) {

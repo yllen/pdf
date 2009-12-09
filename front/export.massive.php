@@ -10,7 +10,7 @@
 
  LICENSE
 
-	This file is part of GLPI.
+   This file is part of GLPI.
 
     GLPI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ $tab_id = unserialize($_SESSION["plugin_pdf"]["tab_id"]);
 unset($_SESSION["plugin_pdf"]["tab_id"]);
 
 $query = "SELECT `tabref`
-          FROM `glpi_plugin_pdf_preference`
+          FROM `glpi_plugin_pdf_preferences`
           WHERE `users_ID` = '".$_SESSION['glpiID']."'
                 AND `itemtype` = '$type'";
 $result = $DB->query($query);

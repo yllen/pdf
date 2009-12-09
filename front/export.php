@@ -10,7 +10,7 @@
 
  LICENSE
 
-	This file is part of GLPI.
+   This file is part of GLPI.
 
     GLPI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,29 +32,38 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-class PluginPdfPreferences extends CommonDBTM {
 
-   function __construct() {
-      $this->table = "glpi_plugin_pdf_preference";
-   }
+$NEEDED_ITEMS = array('cartridge','computer','contract','device','document','infocom','link',
+                      'monitor','networking','peripheral','phone','printer','registry','reservation',
+                      'software','tracking','user');
 
+define('GLPI_ROOT', '../../..');
+include (GLPI_ROOT."/inc/includes.php");
+usePlugin('pdf', true);
+include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-   function showForm($target) {
-      global  $LANG, $DB, $CFG_GLPI, $PLUGIN_HOOKS;
+$type = $_SESSION["plugin_pdf"]["type"];
+unset($_SESSION["plugin_pdf"]["type"]);
+$item = new $type();
 
-      echo "<div class='center' id='pdf_type'>";
-      foreach ($PLUGIN_HOOKS['plugin_pdf'] as $type => $plug) {
-         if (!class_exists($type)) {
-            continue;
-         }
-         $item = new $type();
-         if ($item->canView()) {
-            plugin_pdf_menu($item, $target);
-         }
-      }
-      echo "</div>";
-   }
+$tab_id = unserialize($_SESSION["plugin_pdf"]["tab_id"]);
+unset($_SESSION["plugin_pdf"]["tab_id"]);
 
+$query = "SELECT `tabref`
+          FROM `glpi_plugin_pdf_preferences`
+          WHERE `users_ID` = '".$_SESSION['glpiID']."'
+                AND `itemtype` = '$type'";
+$result = $DB->query($query);
+
+$tab = array();
+while ($data = $DB->fetch_array($result)) {
+   $tab[]=$data["tabref"];
+}
+
+if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+   doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$item, $tab_id, $tab);
+} else {
+   die("Missing hook");
 }
 
 ?>

@@ -42,21 +42,21 @@ if (isset($_POST['plugin_pdf_user_preferences_save'])
     && isset($_POST["plugin_pdf_inventory_type"])) {
 
    $DB->query("DELETE
-               FROM `glpi_plugin_pdf_preference`
+               FROM `glpi_plugin_pdf_preferences`
                WHERE `users_id` =" . $_SESSION["glpiID"] . "
                      AND `itemtype` = " . $_POST["plugin_pdf_inventory_type"]);
 
    if (isset($_POST['item'])) {
       foreach ($_POST['item'] as $key => $val) {
          $DB->query("INSERT INTO
-                     `glpi_plugin_pdf_preference` (`id` ,`users_id` ,`itemtype` ,`tabref`)
+                     `glpi_plugin_pdf_preferences` (`id` ,`users_id` ,`itemtype` ,`tabref`)
                      VALUES (NULL , '".$_SESSION["glpiID"]."',
                              '".$_POST["plugin_pdf_inventory_type"]."', '$key')");
       }
    }
    if (isset($_POST["page"]) && $_POST["page"]) {
       $DB->query("INSERT INTO
-                  `glpi_plugin_pdf_preference` (`id` ,`users_id` ,`itemtype` ,`tabref`)
+                  `glpi_plugin_pdf_preferences` (`id` ,`users_id` ,`itemtype` ,`tabref`)
                   VALUES (NULL , '".$_SESSION["glpiID"]."',
                           '".$_POST["plugin_pdf_inventory_type"]."', 'landscape')");
    }

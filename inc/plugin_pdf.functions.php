@@ -32,125 +32,6 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-function plugin_pdf_checkbox($num,$label,$checked=false) {
-
-   echo "<td width='20%'><input type='checkbox' ".($checked==true?"checked='checked'":'').
-         " name='item[$num]' value='1'>".$label."</td>";
-}
-
-
-function plugin_pdf_menu($item, $action) {
-   global $LANG, $DB, $PLUGIN_HOOKS;
-
-   $type = get_class($item);
-
-   // $ID set if current object, not set from preference
-   $ID = $item->getField('id');
-
-   if (!isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-      return;
-   }
-
-   // Main options
-   $options = doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "prefPDF", $item);
-   if (!is_array($options)) {
-      return;
-   }
-
-   // Plugin options
-   if (isset($PLUGIN_HOOKS["headings"]) && is_array($PLUGIN_HOOKS["headings"])) {
-      foreach ($PLUGIN_HOOKS["headings"] as $plug => $funcname) {
-         if (file_exists(GLPI_ROOT . "/plugins/$plug/hook.php")) {
-            include_once(GLPI_ROOT . "/plugins/$plug/hook.php");
-         }
-
-         if (is_callable($funcname)
-             && isset($PLUGIN_HOOKS["headings_actionpdf"][$plug])
-             && is_callable($funcaction=$PLUGIN_HOOKS["headings_actionpdf"][$plug])) {
-
-            $title = call_user_func($funcname,$item,'');
-            $calls = call_user_func($funcaction,$item,'');
-
-            if (is_array($title) && count($title)) {
-               foreach ($title as $key => $val) {
-                  $opt = $plug."_".$key;
-                  if (isset($calls[$key]) && is_callable($calls[$key])) {
-                     $options[$opt]=$val;
-                  }
-               }
-            }
-         }
-      }
-   }
-
-   echo "<form name='plugin_pdf_$type' id='plugin_pdf_$type' action='$action' method='post' ".
-         ($ID ? "target='_blank'" : '')."><table class='tab_cadre_fixe'>";
-
-   $landscape = false;
-   $values = array();
-   $sql = "SELECT `tabref`
-           FROM `glpi_plugin_pdf_preference`
-           WHERE `users_ID` = " . $_SESSION['glpiID'] . "
-                 AND `itemtype` = '$type'";
-
-   foreach ($DB->request($sql) AS $data) {
-      if ($data["tabref"]=='landscape') {
-         $landscape = true;
-      } else {
-         $values[$data["tabref"]] = $data["tabref"];
-      }
-   }
-
-   echo "<tr><th colspan='6'>" . $LANG['plugin_pdf']['title'][2]. "&nbsp;: ".$item->getTypeName() .
-        "</th></tr>";
-
-   $i = 0;
-   foreach ($options as $num => $title) {
-      if (!$i) {
-         echo "<tr class='tab_bg_1'>";
-      }
-      plugin_pdf_checkbox($num,$title,(isset($values[$num])?true:false));
-      if ($i==4) {
-         echo "</tr>";
-         $i = 0;
-      } else {
-         $i++;
-      }
-   }
-   if ($i) {
-      while ($i<=4) {
-         echo "<td width='20%'>&nbsp;</td>";
-         $i++;
-      }
-      echo "</tr>";
-   }
-
-   echo "<tr class='tab_bg_2'><td colspan='2' class='left'>";
-   echo "<a onclick=\"if (markCheckboxes('plugin_pdf_$type') ) return false;\" href='".
-         $_SERVER['PHP_SELF']."?select=all'>".$LANG['buttons'][18]."</a> / ";
-   echo "<a onclick=\"if (unMarkCheckboxes('plugin_pdf_$type') ) return false;\" href='".
-         $_SERVER['PHP_SELF']."?select=none'>".$LANG['buttons'][19]."</a></td>";
-
-   echo "<td colspan='4' class='center'>";
-   echo "<input type='hidden' name='plugin_pdf_inventory_type' value='$type'>";
-   echo "<input type='hidden' name='indice' value='".count($options)."'>";
-
-   echo "<select name='page'>\n";
-   echo "<option value='0'>".$LANG['common'][69]."</option>\n"; // Portrait
-   echo "<option value='1'".($landscape?"selected='selected'":'').">".$LANG['common'][68].
-        "</option>\n"; // Paysage
-   echo "</select>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-
-   if ($ID) {
-      echo "<input type='hidden' name='itemID' value='$ID'>";
-      echo "<input type='submit' value='" . $LANG['plugin_pdf']['button'][1] .
-            "' name='generate' class='submit'></td></tr>";
-   } else {
-      echo "<input type='submit' value='" . $LANG['plugin_pdf']['button'][2] .
-            "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
-   }
-   echo "</table></form>";
-}
 
 
 /**
@@ -165,7 +46,6 @@ function plugin_pdf_menu($item, $action) {
 function plugin_pdf_add_header($pdf,$ID,$item) {
    global $LANG;
 
-
    $entity = '';
    if ($item->getFromDB($ID) && $item->can($ID,'r')) {
       if (get_class($item)!='Ticket' && $item->fields['name']) {
@@ -173,7 +53,7 @@ function plugin_pdf_add_header($pdf,$ID,$item) {
       } else {
          $name = $LANG["common"][2].' '.$ID;
       }
-      if (isMultiEntitiesMode() && isset($item->fields['FK_entities'])) {
+      if (isMultiEntitiesMode() && isset($item->fields['entities_id'])) {
          $entity = ' ('.html_clean(CommonDropdown::getDropdownName('glpi_entities',
                                                    $item->fields['entities_id'])).')';
       }
@@ -230,13 +110,15 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
       $item = new $job->fields["itemtype"]();
       if ($item->getFromDB($job->fields["items_id"])) {
          if (isset($item->fields["serial"])) {
-            $serial_item = " <b><i>".$LANG['common'][19]."</i></b> : ".
-                            html_clean($item->fields["serial"]);
+            $serial_item =
+               " <b><i>".$LANG['common'][19]."</i></b> : ".
+                              html_clean($item->fields["serial"]);
          }
          if (isset($item->fields["locations_id"])) {
-            $location_item = " <b><i>".$LANG['common'][15]."</i></b> : ".
-                             html_clean(CommonDropdown::getDropdownName("glpi_locations",
-                                                        $item->fields["locations_id"]));
+            $location_item =
+               " <b><i>".$LANG['common'][15]."</i></b> : ".
+                  html_clean(CommonDropdown::getDropdownName("glpi_locations",
+                                                             $item->fields["locations_id"]));
          }
       }
    }
@@ -263,7 +145,8 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
       "<b><i>".$LANG['joblist'][0]."</i></b> : ".
             html_clean(getStatusName($job->fields["status"])),
       "<b><i>".$LANG['job'][44]."</i></b> : ".
-            html_clean(CommonDropdown::getDropdownName('glpi_requesttypes',$job->fields['requesttypes_id'])),
+            html_clean(CommonDropdown::getDropdownName('glpi_requesttypes',
+                                       $job->fields['requesttypes_id'])),
       "<b><i>".$LANG['job'][20]."</i></b> : ".getRealtime($job->fields["realtime"]));
 
    //row3 (author / attribute / cost_time)
@@ -275,7 +158,7 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
    //row4 (group / assign / cost_fixed)
    $pdf->displayLine(
       "<b><i>".$LANG['common'][35]."</i></b> : ".
-            html_clean(CommonDropdown::getDropdownName("glpi_groups",$job->fields["groups_id"])),
+            html_clean(getDropdownName("glpi_groups",$job->fields["groups_id"])),
       "<b><i>".$LANG['job'][6]."</i></b> : ".html_clean($assign_name),
       "<b><i>".$LANG['job'][41]."</i></b> : ".formatNumber($job->fields["cost_fixed"]));
 
@@ -284,19 +167,22 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
       "<b><i>".$LANG['joblist'][2]."</i></b> : ".
             html_clean(getPriorityName($job->fields["priority"])),
       "<b><i>".$LANG['common'][35]."</i></b> : ".
-            html_clean(CommonDropdown::getDropdownName("glpi_groups",$job->fields["groups_id_assign"])),
+            html_clean(CommonDropdown::getDropdownName("glpi_groups",
+                                                       $job->fields["groups_id_assign"])),
       "<b><i>".$LANG['job'][42]."</i></b> : ".formatNumber($job->fields["cost_material"]));
 
    //row6 (category / assign_ent / TotalCost)
    $pdf->displayLine(
       "<b><i>".$LANG['common'][36]."</i></b> : ".
-            html_clean(CommonDropdown::getDropdownName("glpi_ticketscategories",$job->fields["ticketscategories_id"])),
+            html_clean(CommonDropdown::getDropdownName("glpi_ticketcategories",
+                                                       $job->fields["ticketcategories_id"])),
       "<b><i>".$LANG['financial'][26]."</i></b> : ".
-            html_clean(CommonDropdown::getDropdownName("glpi_suppliers",$job->fields["suppliers_id_assign"])),
+            html_clean(CommonDropdown::getDropdownName("glpi_suppliers",
+                                                       $job->fields["suppliers_id_assign"])),
       "<b><i>".$LANG['job'][43]."</i></b> : ".trackingTotalCost($job->fields["realtime"],
-                                                                     $job->fields["cost_time"],
-                                                                     $job->fields["cost_fixed"],
-                                                                     $job->fields["cost_material"]));
+                                                                $job->fields["cost_time"],
+                                                                $job->fields["cost_fixed"],
+                                                                $job->fields["cost_material"]));
 
    $pdf->setColumnsSize(100);
    $pdf->displayLine(
@@ -322,7 +208,7 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
    }
 
    $query = "SELECT *
-             FROM `glpi_ticketsfollowups`
+             FROM `glpi_ticketfollowups`
              WHERE `tickets_id` = '$ID'
              $RESTRICT
              ORDER BY `date` DESC";
@@ -336,7 +222,7 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
          $pdf->displayTitle("<b><i>".$LANG['common'][27]."</i></b>", // Date
                             "<b><i>".$LANG['common'][37]."</i></b>", // Author
                             "<b><i>".$LANG['job'][31]."</i></b>",    // Durée
-                            "<b><i>".$LANG['job'][35]."</i></b>");     // Plan
+                            "<b><i>".$LANG['job'][35]."</i></b>");   // Plan
 
          $realtime = '';
          $hour = floor($data["realtime"]);
@@ -349,8 +235,8 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
          }
 
          $query2 = "SELECT *
-                    FROM `glpi_ticketsplannings`
-                    WHERE `ticketsfollowups_id` = '".$data['id']."'";
+                    FROM `glpi_ticketplannings`
+                    WHERE `ticketfollowups_id` = '".$data['id']."'";
          $result2=$DB->query($query2);
 
          if ($DB->numrows($result2)==0) {
@@ -394,20 +280,23 @@ function plugin_pdf_main_computer($pdf,$computer) {
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][15].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_locations',$computer->fields['locations_id'])),
+         html_clean(CommonDropdown::getDropdownName('glpi_locations',
+                                                    $computer->fields['locations_id'])),
       '<b><i>'.$LANG['common'][17].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_computerstypes',$computer->fields['computerstypes_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_computertypes',
+                                                    $computer->fields['computertypes_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($computer->fields['users_id_tech']),
       '<b><i>'.$LANG['common'][5].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',$computer->fields['manufacturers_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',
+                                                    $computer->fields['manufacturers_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][21].' :</i></b> '.$computer->fields['contact_num'],
       '<b><i>'.$LANG['common'][22].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_computersmodels',
-                                    $computer->fields['computersmodels_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_computermodels',
+                                                    $computer->fields['computermodels_id'])));
 
    $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$computer->fields['contact'],
                      '<b><i>'.$LANG['common'][19].' :</i></b> '.$computer->fields['serial']);
@@ -420,22 +309,23 @@ function plugin_pdf_main_computer($pdf,$computer) {
       '<b><i>'.$LANG['common'][35].' :</i></b> '.
          html_clean(CommonDropdown::getDropdownName('glpi_groups',$computer->fields['groups_id'])),
       '<b><i>'.$LANG['setup'][88].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_networks',$computer->fields['networks_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_networks',
+                                                    $computer->fields['networks_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['setup'][89].' :</i></b> '.
          html_clean(CommonDropdown::getDropdownName('glpi_domains',$computer->fields['domains_id'])),
       '<b><i>'.$LANG['computers'][53].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_operatingsystemsservicepacks',
-                                    $computer->fields['operatingsystemsservicepacks_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_operatingsystemservicepacks',
+                                             $computer->fields['operatingsystemservicepacks_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['computers'][9].' :</i></b> '.
          html_clean(CommonDropdown::getDropdownName('glpi_operatingsystems',
                                     $computer->fields['operatingsystems_id'])),
       '<b><i>'.$LANG['computers'][52].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_operatingsystemsversions',
-                                    $computer->fields['operatingsystemsversions_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_operatingsystemversions',
+                                                $computer->fields['operatingsystemversions_id'])));
 
 
    $pdf->displayLine(
@@ -449,7 +339,8 @@ function plugin_pdf_main_computer($pdf,$computer) {
    }
 
    $pdf->displayLine($col1,'<b><i>'.$LANG['computers'][51].' :</i></b> '.
-      html_clean(CommonDropdown::getDropdownName('glpi_autoupdatesystems',$computer->fields['autoupdatesystems_id'])));
+      html_clean(CommonDropdown::getDropdownName('glpi_autoupdatesystems',
+                                                 $computer->fields['autoupdatesystems_id'])));
 
    $pdf->setColumnsSize(100);
    $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $computer->fields['comment']);
@@ -480,17 +371,20 @@ function plugin_pdf_main_printer($pdf,$printer) {
       '<b><i>'.$LANG['common'][15].' :</i></b> '.
          html_clean(CommonDropdown::getDropdownName('glpi_locations',$printer->fields['locations_id'])),
       '<b><i>'.$LANG['common'][17].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_printerstypes',$printer->fields['printerstypes_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_printertypes',
+                                                    $printer->fields['printertypes_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($printer->fields['users_id_tech']),
       '<b><i>'.$LANG['common'][5].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',$printer->fields['manufacturers_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',
+                                                    $printer->fields['manufacturers_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][21].' :</i></b> '.$printer->fields['contact_num'],
       '<b><i>'.$LANG['common'][22].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_printersmodels',$printer->fields['printersmodels_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_printermodels',
+                                                    $printer->fields['printermodels_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][18].' :</i></b> '.$printer->fields['contact'],
@@ -510,7 +404,8 @@ function plugin_pdf_main_printer($pdf,$printer) {
       '<b><i>'.$LANG['setup'][89].' :</i></b> '.
          html_clean(CommonDropdown::getDropdownName('glpi_domains',$printer->fields['domains_id'])),
      '<b><i>'.$LANG['setup'][88].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_networks',$printer->fields['networks_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_networks',
+                                                    $printer->fields['networks_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['devices'][6].' :</i></b> '.$printer->fields['memory_size'],
@@ -558,19 +453,23 @@ function plugin_pdf_main_monitor($pdf,$item) {
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][15].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_locations',$item->fields['locations_id'])),
+            html_clean(CommonDropdown::getDropdownName('glpi_locations',
+                                                       $item->fields['locations_id'])),
       '<b><i>'.$LANG['common'][17].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_monitorstypes',$item->fields['monitorstypes_id'])));
+            html_clean(CommonDropdown::getDropdownName('glpi_monitortypes',
+                                                       $item->fields['monitortypes_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($item->fields['users_id_tech']),
       '<b><i>'.$LANG['common'][5].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',$item->fields['manufacturers_id'])));
+            html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',
+                                                       $item->fields['manufacturers_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][21].' :</i></b> '.$item->fields['contact_num'],
       '<b><i>'.$LANG['common'][22].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_monitorsmodels',$item->fields['monitorsmodels_id'])));
+            html_clean(CommonDropdown::getDropdownName('glpi_monitormodels',
+                                                       $item->fields['monitormodels_id'])));
 
    $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$item->fields['contact'],
                      '<b><i>'.$LANG['common'][19].' :</i></b> '.$item->fields['serial']);
@@ -618,7 +517,7 @@ function plugin_pdf_main_monitor($pdf,$item) {
 }
 
 
-function plugin_pdf_main_phone($pdf, $item) {
+function plugin_pdf_main_phone($pdf,$item) {
    global $LANG;
 
    $ID = $item->getField('id');
@@ -639,19 +538,23 @@ function plugin_pdf_main_phone($pdf, $item) {
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][15].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_locations',$item->fields['locations_id'])),
+            html_clean(CommonDropdown::getDropdownName('glpi_locations',
+                                                       $item->fields['locations_id'])),
       '<b><i>'.$LANG['common'][17].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_pĥonestypes',$item->fields['phonestypes_id'])));
+            html_clean(CommonDropdown::getDropdownName('glpi_pĥonetypes',
+                                                       $item->fields['phonetypes_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($item->fields['users_id_tech']),
       '<b><i>'.$LANG['common'][5].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',$item->fields['manufacturers_id'])));
+            html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',
+                                                       $item->fields['manufacturers_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][21].' :</i></b> '.$item->fields['contact_num'],
       '<b><i>'.$LANG['common'][22].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_phonesmodels',$item->fields['phonesmodels_id'])));
+            html_clean(CommonDropdown::getDropdownName('glpi_phonemodels',
+                                                       $item->fields['phonemodels_id'])));
 
    $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$item->fields['contact'],
                      '<b><i>'.$LANG['common'][19].' :</i></b> '.$item->fields['serial']);
@@ -668,7 +571,7 @@ function plugin_pdf_main_phone($pdf, $item) {
 
    $pdf->displayLine(
       '<b><i>'.$LANG['phones'][18].' :</i></b> '.$item->fields['brand'],
-      '<b><i>'.$LANG['phones'][36].' :</i></b> '.getYesNo($item->fields['phonespowersupplies_id']));
+      '<b><i>'.$LANG['phones'][36].' :</i></b> '.getYesNo($item->fields['phonepowersupplies_id']));
 
    $pdf->displayLine('<b><i>'.$LANG['setup'][71].' :</i></b> '.$item->fields['firmware'],
                      '<b><i>'.$LANG['phones'][40].' :</i></b> '.$item->fields['number_line']);
@@ -690,7 +593,7 @@ function plugin_pdf_main_phone($pdf, $item) {
 }
 
 
-function plugin_pdf_main_peripheral($pdf, $item) {
+function plugin_pdf_main_peripheral($pdf,$item) {
    global $LANG;
 
    $ID = $item->getField('id');
@@ -707,23 +610,26 @@ function plugin_pdf_main_peripheral($pdf, $item) {
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][16].' :</i></b> '.$item->fields['name'],
       '<b><i>'.$LANG['state'][0].' :</i></b> '.
-                        html_clean(CommonDropdown::getDropdownName('glpi_states',$item->fields['states_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_states',$item->fields['states_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][15].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_locations',$item->fields['locations_id'])),
+         html_clean(CommonDropdown::getDropdownName('glpi_locations',$item->fields['locations_id'])),
       '<b><i>'.$LANG['common'][17].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_peripheralstypes',$item->fields['peripheralstypes_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_peripheraltypes',
+                                                    $item->fields['peripheraltypes_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($item->fields['users_id_tech']),
       '<b><i>'.$LANG['common'][5].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',$item->fields['manufacturers_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',
+                                                    $item->fields['manufacturers_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][21].' :</i></b> '.$item->fields['contact_num'],
       '<b><i>'.$LANG['common'][22].' :</i></b> '.
-         html_clean(CommonDropdown::getDropdownName('glpi_peripheralsmodels',$item->fields['peripheralsmodels_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_peripheralmodels',
+                                                    $item->fields['peripheralmodels_id'])));
 
    $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$item->fields['contact'],
                      '<b><i>'.$LANG['common'][19].' :</i></b> '.$item->fields['serial']);
@@ -734,9 +640,9 @@ function plugin_pdf_main_peripheral($pdf, $item) {
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][35].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_groups',$item->fields['groups_id'])),
+         html_clean(CommonDropdown::getDropdownName('glpi_groups',$item->fields['groups_id'])),
       '<b><i>'.$LANG['peripherals'][33].' :</i></b> '.
-            ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
+         ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 
    $pdf->displayLine('<b><i>'.$LANG['phones'][18].' :</i></b> '.$item->fields['brand']);
 
@@ -760,18 +666,18 @@ function plugin_pdf_cartridges($pdf, $p, $old=false) {
    if ($old) {
       $dateout = " IS NOT NULL ";
    }
-   $query = "SELECT `glpi_cartridgesitems`.`id` AS tid,
-                    `glpi_cartridgesitems`.`ref`,
-                    `glpi_cartridgesitems`.`name`,
+   $query = "SELECT `glpi_cartridgeitems`.`id` AS tid,
+                    `glpi_cartridgeitems`.`ref`,
+                    `glpi_cartridgeitems`.`name`,
                     `glpi_cartridges`.`id`,
                     `glpi_cartridges`.`pages`,
                     `glpi_cartridges`.`date_use`,
                     `glpi_cartridges`.`date_out`,
                     `glpi_cartridges`.`date_in`
-             FROM `glpi_cartridges`, `glpi_cartridgesitems`
+             FROM `glpi_cartridges`, `glpi_cartridgeitems`
              WHERE `glpi_cartridges`.`date_out` $dateout
                    AND `glpi_cartridges`.`printers_id` = '$instID'
-                   AND `glpi_cartridges`.`cartridgesitems_id` = `glpi_cartridgesitems`.`id`
+                   AND `glpi_cartridges`.`cartridgeitems_id` = `glpi_cartridgeitems`.`id`
              ORDER BY `glpi_cartridges`.`date_out` ASC,
                       `glpi_cartridges`.`date_use` DESC,
                       `glpi_cartridges`.`date_in`";
@@ -799,7 +705,6 @@ function plugin_pdf_cartridges($pdf, $p, $old=false) {
       $use_time = 0;
       $pages_printed = 0;
       $nb_pages_printed = 0;
-
       while ($data=$DB->fetch_array($result)) {
          $date_in  = convDate($data["date_in"]);
          $date_use = convDate($data["date_use"]);
@@ -860,6 +765,7 @@ function plugin_pdf_financial($pdf,$item) {
    global $CFG_GLPI,$LANG;
 
    $ID = $item->getField();
+
    if (!haveRight("infocom","r")) {
       return false;
    }
@@ -873,7 +779,7 @@ function plugin_pdf_financial($pdf,$item) {
       $pdf->setColumnsSize(50,50);
       $pdf->displayLine(
          "<b><i>".$LANG["financial"][26]." :</i></b> ".
-               html_clean(CommonDropdown::getDropdownName("glpi_suppliers",$ic->fields["suppliers_id"])),
+            html_clean(CommonDropdown::getDropdownName("glpi_suppliers",$ic->fields["suppliers_id"])),
          "<b><i>".$LANG["financial"][82]." :</i></b> ".$ic->fields["bill"]);
 
       $pdf->displayLine("<b><i>".$LANG["financial"][18]." :</i></b> ".$ic->fields["order_number"],
@@ -905,18 +811,20 @@ function plugin_pdf_financial($pdf,$item) {
                                                                       $CFG_GLPI['date_tax'],"n"));
 
       $pdf->displayLine(
-         "<b><i>".$LANG["financial"][20]." :</i></b> 	".$ic->fields["immo_number"],
-         "<b><i>".$LANG["financial"][22]." :</i></b> ".Infocom::getAmortTypeName($ic->fields["sink_type"]));
+         "<b><i>".$LANG["financial"][20]." :</i></b> ".$ic->fields["immo_number"],
+         "<b><i>".$LANG["financial"][22]." :</i></b> ".
+               Infocom::getAmortTypeName($ic->fields["sink_type"]));
 
       $pdf->displayLine("<b><i>".$LANG["financial"][23]." :</i></b> ".$ic->fields["sink_time"]." ".
                                  $LANG['financial'][9],
                         "<b><i>".$LANG["financial"][77]." :</i></b> ".$ic->fields["sink_coeff"]);
 
       $pdf->displayLine(
-         "<b><i>".$LANG["financial"][89]." :</i></b> ".
-            Infocom::showTco($item->getField('ticket_tco'), $ic->fields["value"]),
-         "<b><i>".$LANG["financial"][90]." :</i></b> ".
-            Infocom::showTco($item->getField('ticket_tco'), $ic->fields["value"], $ic->fields["buy_date"]));
+         "<b><i>".$LANG["financial"][89]." :</i></b> ".Infocom::showTco($item->getField('ticket_tco'),
+                                                                        $ic->fields["value"]),
+         "<b><i>".$LANG["financial"][90]." :</i></b> ".Infocom::showTco($item->getField('ticket_tco'),
+                                                                        $ic->fields["value"],
+                                                                        $ic->fields["buy_date"]));
 
       $pdf->setColumnsSize(100);
       $col1 = "<b><i>".$LANG["setup"][247]." :</i></b> ";
@@ -953,33 +861,36 @@ function plugin_pdf_main_software($pdf,$software) {
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][16].' :</i></b> '.$software->fields['name'],
       '<b><i>'.$LANG['common'][36].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_softwarescategories',
-                                       $software->fields['softwarescategories_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_softwarecategories',
+                                                    $software->fields['softwarecategories_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][15].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_locations',$software->fields['locations_id'])),
+         html_clean(CommonDropdown::getDropdownName('glpi_locations',
+                                                    $software->fields['locations_id'])),
       '<b><i>'.$LANG['software'][3].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_operatingsystems',
-                                       $software->fields['operatingsystems_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_operatingsystems',
+                                                    $software->fields['operatingsystems_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($software->fields['users_id_tech']),
       '<b><i>'.$LANG['software'][46].' :</i></b> ' .
-            ($software->fields['is_helpdesk_visible']?$LANG['choice'][1]:$LANG['choice'][0]));
+         ($software->fields['is_helpdesk_visible']?$LANG['choice'][1]:$LANG['choice'][0]));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][5].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',$software->fields['manufacturers_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_manufacturers',
+                                                    $software->fields['manufacturers_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($software->fields['users_id']),
       '<b><i>'.$LANG['common'][35].' :</i></b> '.
-            html_clean(CommonDropdown::getDropdownName('glpi_groups',$software->fields['groups_id'])));
+         html_clean(CommonDropdown::getDropdownName('glpi_groups',$software->fields['groups_id'])));
 
    if ($software->fields['softwares_id']>0) {
       $col2 = '<b><i> '.$LANG['pager'][2].' </i></b> '.
-               html_clean(CommonDropdown::getDropdownName('glpi_softwares',$software->fields['softwares_id']));
+               html_clean(CommonDropdown::getDropdownName('glpi_softwares',
+                                                          $software->fields['softwares_id']));
    } else {
       $col2 = '';
    }
@@ -996,7 +907,7 @@ function plugin_pdf_main_software($pdf,$software) {
 }
 
 
-function plugin_pdf_device($pdf, $computer) {
+function plugin_pdf_device($pdf,$computer) {
    global $LANG;
 
    $computer->getFromDBwithDevices($computer>getField('id'));
@@ -1125,6 +1036,7 @@ function plugin_pdf_versions($pdf,$item){
 	global $DB,$LANG;
 
    $sID = $item->getField('id');
+
 	$query = "SELECT glpi_softwareversions.*,glpi_dropdown_state.name AS sname FROM glpi_softwareversions
 			LEFT JOIN glpi_dropdown_state ON (glpi_dropdown_state.ID=glpi_softwareversions.state)
 			WHERE (sID = '$sID') ORDER BY name";
@@ -1168,7 +1080,9 @@ function plugin_pdf_versions($pdf,$item){
 function plugin_pdf_main_license($pdf,$license, $main=true){
 	global $DB,$LANG;
 
-   $ID = $license->getField('id');
+	$ID = $license->getField('id');
+
+
 
 		$pdf->setColumnsSize(100);
 		$entity = '';
@@ -1264,7 +1178,8 @@ function plugin_pdf_installations($pdf,$item){
 
    $ID = $item->getField('id');
    $type = get_class($item);
-	$crit = ($type=='Software' ? 'sID' : 'ID');
+   $crit = ($type=='Software' ? 'sID' : 'ID');
+
 
 	$query = "SELECT glpi_inst_software.*,glpi_computers.name AS compname, glpi_computers.ID AS cID,
 			glpi_computers.name AS compname, glpi_computers.serial, glpi_computers.otherserial, glpi_users.name AS username,
@@ -1319,7 +1234,9 @@ function plugin_pdf_installations($pdf,$item){
 }
 
 function plugin_pdf_software($pdf,$comp){
-   global $DB,$LANG;
+
+
+	global $DB,$LANG;
 
    $ID = $item->getField('id');
 
@@ -1391,21 +1308,22 @@ function plugin_pdf_software($pdf,$comp){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_computer_connection($pdf,$comp){
-	global $DB,$LANG;
+function plugin_pdf_computer_connection ($pdf,$comp){
+   global $DB,$LANG;
 
    $ID = $comp->getField('id');
-   $items=array('Pinter'     => $LANG["computers"][39],
-                'Monitor'    => $LANG["computers"][40],
-                'Peripheral' => $LANG["computers"][46],
-                'Phone'      => $LANG["computers"][55]);
 
-	$info=new InfoCom();
+   $items = array('Printer'    => $LANG["computers"][39],
+                  'Monitor'    => $LANG["computers"][40],
+                  'Peripheral' => $LANG["computers"][46],
+                  'Phone'      => $LANG["computers"][55]);
 
-	$pdf->setColumnsSize(100);
-	$pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
+   $info = new InfoCom();
 
-	foreach ($items as $type=>$title){
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
+
+   foreach ($items as $type=>$title) {
       if (!class_exists($type)) {
          continue;
       }
@@ -1427,7 +1345,7 @@ function plugin_pdf_computer_connection($pdf,$comp){
 
 
 					$line1 = $item->getName()." - ";
-					if($item->getField("serial")!=null) {
+					if ($item->getField("serial")!=null) {
 						$line1 .= $LANG["common"][19] . " : " .$item->getField("serial")." - ";
 					}
 					$line1 .= html_clean(CommonDropdown::getDropdownName("glpi_dropdown_state",$item->getField('state')));
@@ -1450,7 +1368,7 @@ function plugin_pdf_computer_connection($pdf,$comp){
 			} else { // No row
 
 				switch ($type){
-					case 'Pinter':
+					case 'Printer':
 						$pdf->displayLine($LANG["computers"][38]);
 					break;
 					case 'Monitor':
@@ -1595,9 +1513,8 @@ function plugin_pdf_contract($pdf,$item){
 
 	if (!haveRight("contract","r")) return false;
 
-   $ID = $item->getField('id');
    $type = get_class($item);
-
+   $ID = $item->getField('id');
 	$query = "SELECT * FROM glpi_contract_device WHERE glpi_contract_device.FK_device = ".$ID." AND glpi_contract_device.device_type = ".$type;
 
 	$result = $DB->query($query);
@@ -1607,6 +1524,7 @@ function plugin_pdf_contract($pdf,$item){
 
 	$pdf->setColumnsSize(100);
 	if($number>0) {
+
 
 		$pdf->displayTitle($LANG["financial"][66]);
 
@@ -1644,12 +1562,13 @@ function plugin_pdf_contract($pdf,$item){
 
 	$pdf->displaySpace();
 }
-function plugin_pdf_document($pdf, $item){
+function plugin_pdf_document($pdf,$item){
 
 	global $DB,$LANG;
 
    $ID = $item->getField('id');
    $type = get_class($item);
+
 	if (!haveRight("document","r"))	return false;
 
 	$query = "SELECT glpi_doc_device.ID as assocID, glpi_docs.* FROM glpi_doc_device ";
@@ -1688,7 +1607,8 @@ function plugin_pdf_document($pdf, $item){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_registry($pdf, $item){
+function plugin_pdf_registry($pdf,$item){
+
 	global $DB,$LANG;
 
    $ID = $item->getField('id');
@@ -1733,7 +1653,8 @@ function plugin_pdf_registry($pdf, $item){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_ticket($pdf, $item){
+function plugin_pdf_ticket($pdf,$item){
+
 	global $DB,$CFG_GLPI, $LANG;
 
    $ID = $item->getField('id');
@@ -1772,12 +1693,13 @@ function plugin_pdf_ticket($pdf, $item){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_oldticket($pdf, $item){
+function plugin_pdf_oldticket($pdf,$item){
 
 	global $DB,$CFG_GLPI, $LANG;
 
    $ID = $item->getField('id');
    $type = get_class($item);
+
 	if (!haveRight("show_all_ticket","1")) return;
 
 	$sort="glpi_tracking.date";
@@ -1810,13 +1732,14 @@ function plugin_pdf_oldticket($pdf, $item){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_link($pdf, $item){
+function plugin_pdf_link($pdf,$item){
 
 	global $DB,$LANG;
 
-	if (!haveRight("link","r")) return false;
    $ID = $item->getField('id');
    $type = get_class($item);
+
+	if (!haveRight("link","r")) return false;
 
 	$query="SELECT glpi_links.ID as ID, glpi_links.link as link, glpi_links.name as name , glpi_links.data as data from glpi_links INNER JOIN glpi_links_device ON glpi_links.ID= glpi_links_device.FK_links WHERE glpi_links_device.device_type=".$type." ORDER BY glpi_links.name";
 
@@ -1857,23 +1780,23 @@ function plugin_pdf_link($pdf, $item){
 				}
 
 				if (strpos("[LOCATIONID]",$link)){
-					if ($tmp=$ci->getField('location')){
+					if ($tmp=$item->getField('location')){
 						$link=str_replace("[LOCATIONID]",$tmp,$link);
 					}
 				}
 
 				if (strpos("[LOCATION]",$link)){
-					if ($tmp=$ci->getField('location')){
+					if ($tmp=$item->getField('location')){
 						$link=str_replace("[LOCATION]",html_clean(CommonDropdown::getDropdownName("glpi_dropdown_locations",$tmp)),$link);
 					}
 				}
 				if (strpos("[NETWORK]",$link)){
-					if ($tmp=$ci->getField('network')){
+					if ($tmp=$item->getField('network')){
 						$link=str_replace("[NETWORK]",html_clean(CommonDropdown::getDropdownName("glpi_dropdown_network",$tmp)),$link);
 					}
 				}
 				if (strpos("[DOMAIN]",$link)){
-					if ($tmp=$ci->getField('domain'))
+					if ($tmp=$item->getField('domain'))
 						$link=str_replace("[DOMAIN]",html_clean(CommonDropdown::getDropdownName("glpi_dropdown_domain",$tmp)),$link);
 				}
 				$ipmac=array();
@@ -1926,7 +1849,8 @@ function plugin_pdf_link($pdf, $item){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_volume($pdf, $item){
+function plugin_pdf_volume($pdf,$item){
+
 	global $DB, $LANG;
 
    $ID = $item->getField('id');
@@ -1974,7 +1898,7 @@ function plugin_pdf_volume($pdf, $item){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_note($pdf, $item){
+function plugin_pdf_note($pdf,$item){
 
 	global $LANG;
 
@@ -1995,12 +1919,13 @@ function plugin_pdf_note($pdf, $item){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_reservation($pdf, $item){
+function plugin_pdf_reservation($pdf,$item){
 
 	global $DB,$LANG,$CFG_GLPI;
 
    $ID = $item->getField('id');
    $type = get_class($item);
+
 	if (!haveRight("reservation_central","r")) return;
 
 	$resaID=0;
@@ -2072,12 +1997,14 @@ function plugin_pdf_reservation($pdf, $item){
 	$pdf->displaySpace();
 }
 
-function plugin_pdf_history($pdf, $item){
+function plugin_pdf_history($pdf,$item){
+
 	global $DB,$LANG;
 
-	$SEARCH_OPTION=getSearchOptions();
    $ID = $item->getField('id');
    $type = get_class($item);
+
+	$SEARCH_OPTION=getSearchOptions();
 
 	$query="SELECT * FROM glpi_history WHERE FK_glpi_device='".$ID."' AND device_type='".$type."' ORDER BY  ID DESC;";
 
@@ -2141,7 +2068,7 @@ function plugin_pdf_history($pdf, $item){
                      $field = $item->getTypeName();
                   }
                   $change = $LANG["log"][27]." ".$data["new_value"];
-                  break;
+
                case HISTORY_OCS_DELETE:
                   if (haveRight("view_ocsng","r")) {
                      $field="";
@@ -2158,7 +2085,7 @@ function plugin_pdf_history($pdf, $item){
                   } else {
                      $display_history = false;
                   }
-						break;
+                  break;
                case HISTORY_OCS_LINK:
                   if (haveRight("view_ocsng","r")) {
                      $field=NOT_AVAILABLE;
@@ -2179,7 +2106,7 @@ function plugin_pdf_history($pdf, $item){
                   } else {
                      $display_history = false;
                   }
-                  break;
+						break;
 				}
 			} else { // Not a linked_action
 				$fieldname="";
@@ -2220,15 +2147,16 @@ function plugin_pdf_pluginhook($onglet,$pdf,$item) {
 			if (file_exists(GLPI_ROOT . "/plugins/$plug/hook.php")) {
 				include_once(GLPI_ROOT . "/plugins/$plug/hook.php");
 			}
+
 			$function=$PLUGIN_HOOKS["headings_actionpdf"][$plug];
          logInFile('php-errors',"plugin_pdf_pluginhook($onglet)=>$function\n");
-			if (is_callable($function)){
-				$actions=call_user_func($function, $item);
+         if (is_callable($function)){
+            $actions=call_user_func($function, $item);
             logInFile('php-errors',"plugin_pdf_pluginhook($onglet)=>".$actions[$ID_onglet]."\n");
 
-				if (isset($actions[$ID_onglet]) && is_callable($actions[$ID_onglet])){
 
-					call_user_func($actions[$ID_onglet], $pdf, $item);
+				if (isset($actions[$ID_onglet]) && is_callable($actions[$ID_onglet])){
+               call_user_func($actions[$ID_onglet], $pdf, $item);
 					return true;
 				}
 			}

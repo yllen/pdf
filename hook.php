@@ -50,7 +50,7 @@ function plugin_pdf_prefPDF($item) {
          if (isset($tabs[13])) {
             unset($tabs[13]); // OCSNG
          }
-         break;
+      break;
 
       case 'Printer' :
       case 'Monitor' :
@@ -82,7 +82,7 @@ function plugin_pdf_prefPDF($item) {
 
       case 'Ticket' :
          return array('private' => $LANG['common'][77], // Privé
-                      5         => $LANG["Menu"][27]);  // Documents
+                      5         => $LANG['Menu'][27]);  // Documents
    }
    return $tabs;
 }
@@ -101,25 +101,9 @@ function plugin_pdf_generatePDF($item, $tab_id, $tab, $page=0) {
 }
 
 
-function plugin_pdf_getSearchOption(){
-   global $LANG;
-
-   $tab=array();
-
-   // Use a plugin type reservation to avoid conflict
-   $tab[3250]['table']     = 'glpi_plugin_pdf_profiles';
-   $tab[3250]['field']     = 'use';
-   $tab[3250]['linkfield'] = 'id';
-   $tab[3250]['name']      = $LANG['plugin_pdf']['title'][1];
-   $tab[3250]['datatype']  = 'bool';
-
-   return $tab;
-}
-
-
 function plugin_pdf_changeprofile() {
 
-   $prof=new PluginPdfProfile();
+   $prof = new PluginPdfProfile();
    if ($prof->getFromDB($_SESSION['glpiactiveprofile']['id'])) {
       $_SESSION["glpi_plugin_pdf_profile"] = $prof->fields;
    } else {
@@ -128,7 +112,7 @@ function plugin_pdf_changeprofile() {
 }
 
 
-function plugin_pdf_get_headings($item, $withtemplate) {
+function plugin_pdf_get_headings($item,$ID,$withtemplate) {
    global $LANG, $PLUGIN_HOOKS;
 
    $type = get_class($item);
@@ -171,7 +155,9 @@ function plugin_pdf_headings_actions($item) {
 function plugin_pdf_headings($item,$withtemplate=0) {
    global $CFG_GLPI,$PLUGIN_HOOKS;
 
+   $pref = new PluginPdfPreference;
    $type = get_class($item);
+
    switch ($type) {
       case 'Profile' :
          $prof =  new PluginPdfProfile();
@@ -182,13 +168,12 @@ function plugin_pdf_headings($item,$withtemplate=0) {
          break;
 
       case 'Preference' :
-         $pref = new PluginPdfPreferences;
-         $pref->showForm($CFG_GLPI['root_doc']."/plugins/pdf/front/plugin_pdf.preferences.form.php");
+         $pref->showForm($CFG_GLPI['root_doc']."/plugins/pdf/front/preference.form.php");
          break;
 
       default :
          if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-            plugin_pdf_menu($item,$CFG_GLPI['root_doc']."/plugins/pdf/front/plugin_pdf.export.php");
+            $pref->menu($item,$CFG_GLPI['root_doc']."/plugins/pdf/front/export.php", $ID);
          }
    }
 }
@@ -244,7 +229,7 @@ function plugin_pdf_MassiveActionsProcess($data){
          $_SESSION["plugin_pdf"]["type"] = $data["device_type"];
          $_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
          echo "<script type='text/javascript'>
-               location.href='../plugins/pdf/front/plugin_pdf.export.massive.php'</script>";
+               location.href='../plugins/pdf/front/export.massive.php'</script>";
          break;
 
       case "plugin_pdf_allow" :
@@ -272,7 +257,7 @@ function plugin_pdf_pre_item_delete($input) {
       switch ($input["_item_type_"]) {
          case PROFILE_TYPE :
             // Manipulate data if needed
-            $PluginPdfProfile=new PluginPdfProfile;
+            $PluginPdfProfile = new PluginPdfProfile;
             $PluginPdfProfile->cleanProfiles($input["id"]);
             break;
       }
@@ -282,7 +267,7 @@ function plugin_pdf_pre_item_delete($input) {
 
 
 function plugin_pdf_install() {
-   $DB = new DB;
+   global $DB;
 
    if (!TableExists('glpi_plugin_pdf_profiles')) {
       $query= "CREATE TABLE IF NOT EXISTS
@@ -303,7 +288,7 @@ function plugin_pdf_install() {
 
    if (!TableExists('glpi_plugin_pdf_preference')) {
       $query= "CREATE TABLE IF NOT EXISTS
-               `glpi_plugin_pdf_preference` (
+               `glpi_plugin_pdf_preferences` (
                   `id` int(11) NOT NULL AUTO_INCREMENT,
                   `users_id` int(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',
                   `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',
@@ -312,24 +297,25 @@ function plugin_pdf_install() {
                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
       $DB->query($query) or die($DB->error());
    } else {
-      $query = "ALTER TABLE `glpi_plugin_pdf_preference` ";
+      $DB->query("RENAME TABLE `glpi_plugin_pdf_preference` TO `glpi_plugin_pdf_preferences`");
+      $query = "ALTER TABLE `glpi_plugin_pdf_preferences` ";
       // 0.6.0
-      if (FieldExists('glpi_plugin_pdf_preference','user_id')) {
+      if (FieldExists('glpi_plugin_pdf_preferences','user_id')) {
          $query .= " CHANGE `user_id` `users_id` INT(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',";
       }
-      if (FieldExists('glpi_plugin_pdf_preference','cat')) {
-         $query .= " CHANGE `cat` `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',";
+      if (FieldExists('glpi_plugin_pdf_preferences','cat')) {
+         $query .= " CHANGE `cat` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',";
       }
-      if (FieldExists('glpi_plugin_pdf_preference','table_num')) {
+      if (FieldExists('glpi_plugin_pdf_preferences','table_num')) {
          $query .= " CHANGE `table_num` `tabref` VARCHAR(255) NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name'";
       }
 
       // 0.6.1
-      if (FieldExists('glpi_plugin_pdf_preference','FK_users')) {
+      if (FieldExists('glpi_plugin_pdf_preferences','FK_users')) {
          $query .= " CHANGE `FK_users` `users_id` INT(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',";
       }
-      if (FieldExists('glpi_plugin_pdf_preference','device_type')) {
-         $query .= " CHANGE `device_type` `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant'";
+      if (FieldExists('glpi_plugin_pdf_preferences','device_type')) {
+         $query .= " CHANGE `device_type` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant'";
       }
       $DB->query($query) or die($DB->error());
    }
@@ -346,6 +332,9 @@ function plugin_pdf_uninstall() {
    global $DB;
 
    $query = "DROP TABLE IF EXISTS `glpi_plugin_pdf_preference`";
+   $DB->query($query) or die($DB->error());
+
+   $query = "DROP TABLE IF EXISTS `glpi_plugin_pdf_preferences`";
    $DB->query($query) or die($DB->error());
 
    $query = "DROP TABLE IF EXISTS `glpi_plugin_pdf_profiles`";

@@ -46,10 +46,6 @@ usePLugin('pdf',true);
 
 $prof = new PluginPdfProfile();
 
-//if (!isset($_POST["id"])) {
-//    die();
-//}
-
 if (isset($_POST["update_user_profile"])) {
    checkRight("profile","w");
    $prof->update($_POST);

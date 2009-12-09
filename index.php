@@ -9,7 +9,7 @@
 
  LICENSE
 
-	This file is part of GLPI.
+   This file is part of GLPI.
 
     GLPI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
 commonHeader($LANG['plugin_pdf']["title"][1],$_SERVER['PHP_SELF'],"pdf");
 
-glpi_header("front/plugin_pdf.preference.php");
+glpi_header("front/preferences.php");
 
 commonFooter();
 ?>
