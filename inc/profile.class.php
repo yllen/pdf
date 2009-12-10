@@ -87,7 +87,7 @@ class PluginPdfProfile extends CommonDBTM {
       echo "<form action='$target' method='post'>";
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr><th colspan='2' class='center b'>".
-            $LANG['plugin_pdf']['config'][7]. " " .$this->fields["profile"]."</th></tr>";
+            $LANG['plugin_pdf']['title'][1]. " - " .$this->fields["profile"]."</th></tr>";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>".$LANG['plugin_pdf']['title'][1]."&nbsp;:</td><td>";
@@ -116,5 +116,12 @@ class PluginPdfProfile extends CommonDBTM {
        }
    }
 
+   function canView() {
+      return haveRight('profile','r');
+   }
+
+   function canCreate() {
+      return haveRight('profile','w');
+   }
 }
 ?>

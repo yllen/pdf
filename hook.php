@@ -153,7 +153,7 @@ function plugin_pdf_headings($item,$withtemplate=0) {
          $prof =  new PluginPdfProfile();
          $ID = $item->getField('id');
          if ($prof->GetfromDB($ID) || $prof->createProfile($item)) {
-            $prof->showForm($CFG_GLPI["root_doc"]."/plugins/pdf/front/profiles.php",$ID);
+            $prof->showForm($CFG_GLPI["root_doc"]."/plugins/pdf/front/profile.php",$ID);
          }
          break;
 
