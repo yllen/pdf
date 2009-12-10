@@ -214,9 +214,11 @@ function plugin_pdf_MassiveActionsProcess($data){
    switch ($data["action"]) {
       case "plugin_pdf_DoIt" :
          foreach ($data['item'] as $key => $val) {
-            $tab_id[]=$key;
+            if ($val) {
+               $tab_id[]=$key;
+            }
          }
-         $_SESSION["plugin_pdf"]["type"] = $data["device_type"];
+         $_SESSION["plugin_pdf"]["type"] = $data["itemtype"];
          $_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
          echo "<script type='text/javascript'>
                location.href='../plugins/pdf/front/export.massive.php'</script>";

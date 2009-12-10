@@ -37,28 +37,34 @@ include (GLPI_ROOT."/inc/includes.php");
 usePlugin('pdf', true);
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-$type = $_SESSION["plugin_pdf"]["type"];
-unset($_SESSION["plugin_pdf"]["type"]);
-$item = new $type();
+if (isset($_POST["plugin_pdf_inventory_type"])
+    && class_exists($_POST["plugin_pdf_inventory_type"])
+    && isset($_POST["itemID"])) {
 
-$tab_id = unserialize($_SESSION["plugin_pdf"]["tab_id"]);
-unset($_SESSION["plugin_pdf"]["tab_id"]);
+   $type = $_POST["plugin_pdf_inventory_type"];
+   $item = new $type();
 
-$query = "SELECT `tabref`
-          FROM `glpi_plugin_pdf_preferences`
-          WHERE `users_ID` = '".$_SESSION['glpiID']."'
-                AND `itemtype` = '$type'";
-$result = $DB->query($query);
+   if (isset($_SESSION["plugin_pdf"][$type])) {
+      unset($_SESSION["plugin_pdf"][$type]);
+   }
 
-$tab = array();
-while ($data = $DB->fetch_array($result)) {
-   $tab[]=$data["tabref"];
-}
+   $tab = array();
+   if (isset($_POST['item'])) {
+      foreach ($_POST['item'] as $key => $val) {
+         $tab[] = $_SESSION["plugin_pdf"][$type][] = $key;
+      }
+   }
 
-if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-   doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$item, $tab_id, $tab);
+   $tab_id[0] = $_POST["itemID"];
+
+   if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+      doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$item, $tab_id, $tab,
+                (isset($_POST["page"]) ? $_POST["page"] : 0));
+   } else {
+      die("Missing hook");
+   }
 } else {
-   die("Missing hook");
+   die("Missing context");
 }
 
 ?>

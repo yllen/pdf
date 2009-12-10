@@ -32,8 +32,6 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-
-
 /**
  * Display the Page header = type name, object name, entity name
  *
@@ -158,14 +156,14 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
    //row4 (group / assign / cost_fixed)
    $pdf->displayLine(
       "<b><i>".$LANG['common'][35]."</i></b> : ".
-            html_clean(getDropdownName("glpi_groups",$job->fields["groups_id"])),
+            html_clean(CommonDropdown::getDropdownName("glpi_groups",$job->fields["groups_id"])),
       "<b><i>".$LANG['job'][6]."</i></b> : ".html_clean($assign_name),
       "<b><i>".$LANG['job'][41]."</i></b> : ".formatNumber($job->fields["cost_fixed"]));
 
    //row5 (priority / assign_ent / cost_material)
    $pdf->displayLine(
       "<b><i>".$LANG['joblist'][2]."</i></b> : ".
-            html_clean(getPriorityName($job->fields["priority"])),
+            html_clean(Ticket::getPriorityName($job->fields["priority"])),
       "<b><i>".$LANG['common'][35]."</i></b> : ".
             html_clean(CommonDropdown::getDropdownName("glpi_groups",
                                                        $job->fields["groups_id_assign"])),
@@ -186,7 +184,7 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
 
    $pdf->setColumnsSize(100);
    $pdf->displayLine(
-      "<b><i>".$LANG['common'][1]."</i></b> : ".html_clean($item->getType())." ".
+      "<b><i>".$LANG['common'][1]."</i></b> : ".html_clean($item->getTypeName())." ".
             html_clean($item->getNameID()).$serial_item . $location_item);
 
    $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", $job->fields["content"], 7);
@@ -243,7 +241,7 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
             $planification=$LANG['job'][32];
          } else {
             $data2 = $DB->fetch_array($result2);
-            $planification = getPlanningState($data2["state"])." - ".convDateTime($data2["begin"]).
+            $planification = Planning::getState($data2["state"])." - ".convDateTime($data2["begin"]).
                              " -> ".convDateTime($data2["end"])." - ".getUserName($data2["users_id"]);
          }
 
