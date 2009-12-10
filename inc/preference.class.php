@@ -62,8 +62,8 @@ class PluginPdfPreference extends CommonDBTM {
     }
 
 
-    function menu($item, $action) {
-       global $LANG, $DB, $PLUGIN_HOOKS;
+   function menu($item, $action) {
+      global $LANG, $DB, $PLUGIN_HOOKS;
 
       $type = get_class($item);
 
@@ -92,7 +92,7 @@ class PluginPdfPreference extends CommonDBTM {
                  && is_callable($funcaction=$PLUGIN_HOOKS["headings_actionpdf"][$plug])) {
 
                 $title = call_user_func($funcname,$item,'');
-                $calls = call_user_func($funcname,$item,'');
+                $calls = call_user_func($funcaction,$item,'');
 
                 if (is_array($title) && count($title)) {
                    foreach ($title as $key => $val) {

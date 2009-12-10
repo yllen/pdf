@@ -115,7 +115,7 @@ function plugin_pdf_get_headings($item,$withtemplate) {
       }
 
    } else if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-      if (!$withtemplate) {
+      if ($item->getField('id') && !$withtemplate) {
          return array( 1 => $LANG['plugin_pdf']['title'][1]);
       }
    }
