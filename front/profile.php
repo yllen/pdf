@@ -32,8 +32,6 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-$NEEDED_ITEMS = array('profile');
-
 if (!defined('GLPI_ROOT')) {
    define('GLPI_ROOT', '../../..');
 }
@@ -49,9 +47,6 @@ $prof = new PluginPdfProfile();
 if (isset($_POST["update_user_profile"])) {
    checkRight("profile","w");
    $prof->update($_POST);
-//   if ($_SESSION['glpiactiveprofile']['id']==$_POST["id"]) {
-//      $_SESSION["glpi_plugin_pdf_profile"]=$prof->fields;
-//   }
    glpi_header($_SERVER['HTTP_REFERER']);
 }
 

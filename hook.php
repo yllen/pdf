@@ -32,6 +32,7 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
+include_once (GLPI_ROOT . '/plugins/pdf/inc/functions.php');
 
 /**
  * Hook : options for one type
@@ -101,18 +102,7 @@ function plugin_pdf_generatePDF($item, $tab_id, $tab, $page=0) {
 }
 
 
-function plugin_pdf_changeprofile() {
-
-   $prof = new PluginPdfProfile();
-   if ($prof->getFromDB($_SESSION['glpiactiveprofile']['id'])) {
-      $_SESSION["glpi_plugin_pdf_profile"] = $prof->fields;
-   } else {
-      unset($_SESSION["glpi_plugin_pdf_profile"]);
-   }
-}
-
-
-function plugin_pdf_get_headings($item,$ID,$withtemplate) {
+function plugin_pdf_get_headings($item,$withtemplate) {
    global $LANG, $PLUGIN_HOOKS;
 
    $type = get_class($item);
@@ -163,7 +153,7 @@ function plugin_pdf_headings($item,$withtemplate=0) {
          $prof =  new PluginPdfProfile();
          $ID = $item->getField('id');
          if ($prof->GetfromDB($ID) || $prof->createProfile($item)) {
-            $prof->showForm($CFG_GLPI["root_doc"]."/plugins/pdf/front/plugin_pdf.profiles.php",$ID);
+            $prof->showForm($CFG_GLPI["root_doc"]."/plugins/pdf/front/profiles.php",$ID);
          }
          break;
 
@@ -173,7 +163,7 @@ function plugin_pdf_headings($item,$withtemplate=0) {
 
       default :
          if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-            $pref->menu($item,$CFG_GLPI['root_doc']."/plugins/pdf/front/export.php", $ID);
+            $pref->menu($item,$CFG_GLPI['root_doc']."/plugins/pdf/front/export.php");
          }
    }
 }
@@ -183,7 +173,7 @@ function plugin_pdf_MassiveActions($type) {
    global $LANG,$PLUGIN_HOOKS;
 
    switch ($type) {
-      case PROFILE_TYPE :
+      case 'Profile' :
          return array("plugin_pdf_allow"=>$LANG['plugin_pdf']['title'][1]);
 
       default :
@@ -199,7 +189,7 @@ function plugin_pdf_MassiveActionsDisplay($type,$action) {
    global $LANG,$PLUGIN_HOOKS;
 
    switch ($type) {
-      case PROFILE_TYPE :
+      case 'Profile' :
          switch ($action) {
             case "plugin_pdf_allow":
                dropdownYesNo('use');
@@ -255,7 +245,7 @@ function plugin_pdf_pre_item_delete($input) {
 
    if (isset($input["_item_type_"])) {
       switch ($input["_item_type_"]) {
-         case PROFILE_TYPE :
+         case 'Profile' :
             // Manipulate data if needed
             $PluginPdfProfile = new PluginPdfProfile;
             $PluginPdfProfile->cleanProfiles($input["id"]);
@@ -304,7 +294,7 @@ function plugin_pdf_install() {
          $query .= " CHANGE `user_id` `users_id` INT(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',";
       }
       if (FieldExists('glpi_plugin_pdf_preferences','cat')) {
-         $query .= " CHANGE `cat` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',";
+         $query .= " CHANGE `cat` `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',";
       }
       if (FieldExists('glpi_plugin_pdf_preferences','table_num')) {
          $query .= " CHANGE `table_num` `tabref` VARCHAR(255) NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name'";
@@ -315,12 +305,13 @@ function plugin_pdf_install() {
          $query .= " CHANGE `FK_users` `users_id` INT(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',";
       }
       if (FieldExists('glpi_plugin_pdf_preferences','device_type')) {
-         $query .= " CHANGE `device_type` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant'";
+         $query .= " CHANGE `device_type` `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant'";
       }
       $DB->query($query) or die($DB->error());
    }
 
    // Give right to current Profile
+   include_once (GLPI_ROOT . '/plugins/pdf/inc/profile.class.php');
    $prof =  new PluginPdfProfile();
    $prof->add(array('id'   => $_SESSION['glpiactiveprofile']['id'],
                     'use'  => 1));

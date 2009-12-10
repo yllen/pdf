@@ -35,7 +35,7 @@
 class PluginPdfPreference extends CommonDBTM {
 
    public $table = 'glpi_plugin_pdf_preferences';
-   public $type  = PLUGIN_PDF_PREFERENCE;
+   public $type  = 'PluginPdfPreference';
 
 
    function showForm($target) {
@@ -48,7 +48,7 @@ class PluginPdfPreference extends CommonDBTM {
          }
          $item = new $type();
          if ($item->canView()) {
-            menu($item, $target);
+            $this->menu($item, $target);
          }
       }
       echo "</div>";

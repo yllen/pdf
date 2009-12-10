@@ -35,7 +35,7 @@
 class PluginPdfProfile extends CommonDBTM {
 
    public $table = 'glpi_plugin_pdf_profiles';
-   public $type  = PLUGIN_PDF_PROFILE;
+   public $type  = 'PluginPdfProfile';
 
 
    function getSearchOptions() {
@@ -84,21 +84,10 @@ class PluginPdfProfile extends CommonDBTM {
 
       $canedit = $this->can($ID,'w');
 
-/*      if (!haveRight("profile","r")) {
-        return false;
-      }
-      $canedit=haveRight("profile","w");
-      $prof = new Profile();
-      if ($ID) {
-        $this->getFromDB($ID);
-        $prof->getFromDB($ID);
-      }
-*/
       echo "<form action='$target' method='post'>";
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr><th colspan='2' class='center b'>".
             $LANG['plugin_pdf']['config'][7]. " " .$this->fields["profile"]."</th></tr>";
-	//		getDropdownName('glpi_profiles', $ID) . "</th></tr>\n";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>".$LANG['plugin_pdf']['title'][1]."&nbsp;:</td><td>";
@@ -115,6 +104,17 @@ class PluginPdfProfile extends CommonDBTM {
       }
       echo "</table></form>";
    }
-}
 
+
+   static function changeprofile() {
+
+      $tmp = new self();
+       if ($tmp->getFromDB($_SESSION['glpiactiveprofile']['id'])) {
+          $_SESSION["glpi_plugin_pdf_profile"] = $tmp->fields;
+       } else {
+          unset($_SESSION["glpi_plugin_pdf_profile"]);
+       }
+   }
+
+}
 ?>

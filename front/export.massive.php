@@ -32,11 +32,6 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-
-$NEEDED_ITEMS = array('cartridge','computer','contract','device','document','infocom','link',
-                      'monitor','networking','peripheral','phone','printer','registry','reservation',
-                      'software','tracking','user');
-
 define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT."/inc/includes.php");
 usePlugin('pdf', true);

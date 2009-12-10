@@ -2168,7 +2168,7 @@ function plugin_pdf_pluginhook($onglet,$pdf,$item) {
 
 function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
-   $pdf = new simplePDF('a4', ($page ? 'landscape' : 'portrait'));
+   $pdf = new PluginPdfSimplePDF('a4', ($page ? 'landscape' : 'portrait'));
 
    $nb_id = count($tab_id);
 

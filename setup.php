@@ -31,25 +31,21 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-foreach (glob(GLPI_ROOT . '/plugins/pdf/inc/*.php') as $file) {
-   include_once ($file);
-}
-
 function plugin_init_pdf() {
    global $PLUGIN_HOOKS,$LANG;
 
    // Params : plugin name - string type - number - attributes
-   registerPluginType('pdf', 'PLUGIN_PDF_PROFILE', 3250,
-                      array('classname'              => 'PluginPdfProfile',
-                            'tablename'              => 'glpi_plugin_pdf_profils',
-                            'searchpage'             => 'front/profile.php'));
+   Plugin::registerClass('PluginPdfProfile',
+                          array('classname'              => 'PluginPdfProfile',
+                                'tablename'              => 'glpi_plugin_pdf_profiles',
+                                'searchpage'             => 'front/profile.php'));
 
-   registerPluginType('pdf', 'PLUGIN_PULSE2_PREFERENCE', 3251,
-                      array('classname'              => 'PluginPdfPreference',
-                            'tablename'              => 'glpi_plugin_pdf_prferences',
-                            'formpage'               => 'front/preference.form.php'));
+   Plugin::registerClass('PluginPdfPreference',
+                          array('classname'              => 'PluginPdfPreference',
+                                'tablename'              => 'glpi_plugin_pdf_prferences',
+                                'formpage'               => 'front/preference.form.php'));
 
-   $PLUGIN_HOOKS['change_profile']['pdf']       = 'plugin_pdf_changeprofile';
+   $PLUGIN_HOOKS['change_profile']['pdf'] = array('PluginPdfProfile','changeprofile');
 
    if (isset($_SESSION["glpi_plugin_pdf_profile"])
        && $_SESSION["glpi_plugin_pdf_profile"]["use"]) {
@@ -63,15 +59,15 @@ function plugin_init_pdf() {
    // Define the type for which we know how to generate PDF, need :
    // - plugin_pdf_prefPDF($type)
    // - plugin_pdf_generatePDF($type, $tab_id, $tab, $page=0)
-   $PLUGIN_HOOKS['plugin_pdf'][COMPUTER_TYPE]        = 'pdf';
-   $PLUGIN_HOOKS['plugin_pdf'][SOFTWARE_TYPE]        = 'pdf';
-   $PLUGIN_HOOKS['plugin_pdf'][SOFTWARELICENSE_TYPE] = 'pdf';
-   $PLUGIN_HOOKS['plugin_pdf'][SOFTWAREVERSION_TYPE] = 'pdf';
-   $PLUGIN_HOOKS['plugin_pdf'][PRINTER_TYPE]         = 'pdf';
-   $PLUGIN_HOOKS['plugin_pdf'][MONITOR_TYPE]         = 'pdf';
-   $PLUGIN_HOOKS['plugin_pdf'][PHONE_TYPE]           = 'pdf';
-   $PLUGIN_HOOKS['plugin_pdf'][PERIPHERAL_TYPE]      = 'pdf';
-   $PLUGIN_HOOKS['plugin_pdf'][TRACKING_TYPE]        = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf']['Computer']        = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf']['Software']        = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf']['SoftwareLicense'] = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf']['SoftwareVersion'] = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf']['Printer']         = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf']['Monitor']         = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf']['Phone']           = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf']['Peripheral']      = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf']['Ticket']          = 'pdf';
 }
 
 

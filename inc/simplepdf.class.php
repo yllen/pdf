@@ -33,7 +33,7 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-class simplePDF {
+class PluginPdfSimplePDF {
 
    private $df;
 

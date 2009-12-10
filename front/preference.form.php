@@ -31,7 +31,7 @@
 // Original Author of file: Balpe Dévi / Remi Collet
 // Purpose of file:
 // ----------------------------------------------------------------------
-if(!defined('GLPI_ROOT')) {
+if (!defined('GLPI_ROOT')) {
    define('GLPI_ROOT', '../../..');
 }
 
@@ -44,7 +44,7 @@ if (isset($_POST['plugin_pdf_user_preferences_save'])
    $DB->query("DELETE
                FROM `glpi_plugin_pdf_preferences`
                WHERE `users_id` =" . $_SESSION["glpiID"] . "
-                     AND `itemtype` = " . $_POST["plugin_pdf_inventory_type"]);
+                     AND `itemtype` = '" . $_POST["plugin_pdf_inventory_type"])."'";
 
    if (isset($_POST['item'])) {
       foreach ($_POST['item'] as $key => $val) {
