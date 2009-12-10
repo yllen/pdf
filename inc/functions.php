@@ -1077,7 +1077,7 @@ function plugin_pdf_versions($pdf,$item){
          $pdf->setColumnsAlign('left','left','right','left');
 
          for ($tot=$nb=0 ; $data=$DB->fetch_assoc($result) ; $tot+=$nb) {
-            $nb = countInstallationsForVersion($data['id']);
+            $nb = Computer_SoftwareVersion::countForVersion($data['id']);
             $pdf->displayLine((empty($data['name'])?"(".$data['id'].")":$data['name']),
                               $data['sname'], $nb,
                               str_replace(array("\r","\n")," ",$data['comment']));
