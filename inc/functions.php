@@ -1094,101 +1094,119 @@ function plugin_pdf_versions($pdf,$item){
 }
 
 
-function plugin_pdf_main_license($pdf,$license, $main=true){
-	global $DB,$LANG;
+function plugin_pdf_main_license($pdf,$license, $main=true) {
+   global $DB,$LANG;
 
-	$ID = $license->getField('id');
+   $ID = $license->getField('id');
 
+   $pdf->setColumnsSize(100);
+   $entity = '';
+   if (isMultiEntitiesMode() && !$main) {
+      $entity = ' ('.html_clean(CommonDropdown::getDropdownName('glpi_entities',
+                                                                $license->fields['entities_id'])).')';
+   }
+   $pdf->displayTitle('<b><i>'.$LANG['common'][2]."</i> : $ID</b>$entity");
 
+   $pdf->setColumnsSize(50,50);
 
-		$pdf->setColumnsSize(100);
-		$entity = '';
-		if (isMultiEntitiesMode() && !$main) {
-			$entity = ' ('.html_clean(CommonDropdown::getDropdownName('glpi_entities',$license->fields['FK_entities'])).')';
-		}
-		$pdf->displayTitle('<b><i>'.$LANG['common'][2]."</i> : $ID</b>$entity");
+   $pdf->displayLine(
+      '<b><i>'.$LANG['common'][16].'</i></b>: '.$license->fields['name'],
+      '<b><i>'.$LANG['help'][31].'</i></b>: '.
+         html_clean(CommonDropdown::getDropdownName('glpi_softwares',
+                                                    $license->fields['softwares_id'])));
+   $pdf->displayLine(
+      '<b><i>'.$LANG['common'][19].'</i></b>: '.$license->fields['serial'],
+      '<b><i>'.$LANG['common'][20].'</i></b>: '.$license->fields['otherserial']);
 
-		$pdf->setColumnsSize(50,50);
-		$pdf->displayLine(
-			'<b><i>'.$LANG['common'][16].'</i></b>: '.$license->fields['name'],
-			'<b><i>'.$LANG['help'][31].'</i></b>: '.html_clean(CommonDropdown::getDropdownName('glpi_software', $license->fields['sID'])));
-		$pdf->displayLine(
-			'<b><i>'.$LANG['common'][19].'</i></b>: '.$license->fields['serial'],
-			'<b><i>'.$LANG['common'][20].'</i></b>: '.$license->fields['otherserial']);
-		$pdf->displayLine(
-			'<b><i>'.$LANG['common'][17].'</i></b>: '.html_clean(CommonDropdown::getDropdownName('glpi_dropdown_licensetypes',$license->fields['type'])),
-			'<b><i>'.$LANG['tracking'][29].'</i></b>: '.($license->fields['number']>0?$license->fields['number']:$LANG['software'][4]));
-		$pdf->displayLine(
-			'<b><i>'.$LANG['software'][1].'</i></b>: '.html_clean(CommonDropdown::getDropdownName('glpi_softwareversions',$license->fields['buy_version'])),
-			'<b><i>'.$LANG['software'][2].'</i></b>: '.html_clean(CommonDropdown::getDropdownName('glpi_softwareversions',$license->fields['use_version'])));
-		$pdf->displayLine(
-			'<b><i>'.$LANG['software'][32].'</i></b>: '.convDate($license->fields['expire']),
-			'<b><i>'.$LANG['help'][25].'</i></b>: '.($license->fields['FK_computers']?html_clean(CommonDropdown::getDropdownName("glpi_computers",$license->fields['FK_computers'])):''));
+   $pdf->displayLine(
+      '<b><i>'.$LANG['common'][17].'</i></b>: '.
+         html_clean(CommonDropdown::getDropdownName('glpi_licensetypes',
+                                                    $license->fields['licensetypes_id'])),
+      '<b><i>'.$LANG['tracking'][29].'</i></b>: '.
+         ($license->fields['number']>0?$license->fields['number']:$LANG['software'][4]));
 
-		$pdf->setColumnsSize(100);
-		$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $license->fields['comments']);
+   $pdf->displayLine(
+      '<b><i>'.$LANG['software'][1].'</i></b>: '.
+         html_clean(CommonDropdown::getDropdownName('glpi_softwareversions',
+                                                    $license->fields['softwareversions_id_buy'])),
+      '<b><i>'.$LANG['software'][2].'</i></b>: '.
+         html_clean(CommonDropdown::getDropdownName('glpi_softwareversions',
+                                                    $license->fields['softwareversions_id_use'])));
 
-	if ($main) {
-		$pdf->displaySpace();
-	}
+   $pdf->displayLine(
+      '<b><i>'.$LANG['software'][32].'</i></b>: '.convDate($license->fields['expire']),
+      '<b><i>'.$LANG['help'][25].'</i></b>: '.
+         ($license->fields['computers_id']?html_clean(CommonDropdown::getDropdownName("glpi_computers",
+                                                            $license->fields['computers_id'])):''));
+
+   $pdf->setColumnsSize(100);
+   $pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $license->fields['comment']);
+
+   if ($main) {
+   $pdf->displaySpace();
+   }
 }
 
-function plugin_pdf_main_version($pdf,$version){
-	global $DB,$LANG;
+
+function plugin_pdf_main_version($pdf,$version) {
+   global $DB,$LANG;
 
    $ID = $version->getField('id');
 
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle('<b><i>'.$LANG['common'][2]."</i> : $ID</b>");
 
-		$pdf->setColumnsSize(100);
-		$pdf->displayTitle('<b><i>'.$LANG['common'][2]."</i> : $ID</b>");
+   $pdf->setColumnsSize(50,50);
 
-		$pdf->setColumnsSize(50,50);
-		$pdf->displayLine(
-			'<b><i>'.$LANG['common'][16].'</i></b>: '.$version->fields['name'],
-			'<b><i>'.$LANG['help'][31].'</i></b>: '.html_clean(CommonDropdown::getDropdownName('glpi_software', $version->fields['sID'])));
-		$pdf->displayLine(
-			'<b><i>'.$LANG["state"][0].' :</i></b> '.html_clean(CommonDropdown::getDropdownName('glpi_dropdown_state',$version->fields['state'])),
-			'');
+   $pdf->displayLine(
+      '<b><i>'.$LANG['common'][16].'</i></b>: '.$version->fields['name'],
+      '<b><i>'.$LANG['help'][31].'</i></b>: '.
+         html_clean(CommonDropdown::getDropdownName('glpi_softwares',
+                                                    $version->fields['softwares_id'])));
 
-		$pdf->setColumnsSize(100);
-		$pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $version->fields['comments']);
+   $pdf->displayLine(
+      '<b><i>'.$LANG["state"][0].' :</i></b> '.
+         html_clean(CommonDropdown::getDropdownName('glpi_states',$version->fields['states_id'])),
+      '');
 
-	$pdf->displaySpace();
+   $pdf->setColumnsSize(100);
+   $pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $version->fields['comment']);
+   $pdf->displaySpace();
 }
 
-function plugin_pdf_licenses($pdf,$software,$infocom){
-	global $DB,$LANG;
+
+function plugin_pdf_licenses($pdf,$software,$infocom) {
+   global $DB,$LANG;
 
    $sID = $software->getField('id');
-	$license = new SoftwareLicense;
+   $license = new SoftwareLicense;
 
+   $query = "SELECT `id`
+             FROM `glpi_softwarelicenses`
+             WHERE `softwares_id` = '$sID' " .
+             getEntitiesRestrictRequest('AND', 'glpi_softwarelicenses', '', '', true) . "
+             ORDER BY `name`";
 
-	$query = "SELECT ID
-		FROM glpi_softwarelicenses
-		WHERE (sID = '$sID') " .
-			getEntitiesRestrictRequest('AND', 'glpi_softwarelicenses', '', '', true) .
-		"ORDER BY name";
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle('<b>'.$LANG['software'][11].'</b>');
 
-	$pdf->setColumnsSize(100);
-	$pdf->displayTitle('<b>'.$LANG['software'][11].'</b>');
-
-	if ($result=$DB->query($query)){
-		if ($DB->numrows($result)){
-			for ($tot=0;$data=$DB->fetch_assoc($result);){
-				plugin_pdf_main_license($pdf,$data['ID'],false);
-				if ($infocom) {
-					plugin_pdf_financial($pdf,$data['ID'],SOFTWARELICENSE_TYPE);
-				}
-			}
-		} else {
-			$pdf->displayLine($LANG['search'][15]);
-		}
-	} else {
-		$pdf->displayLine($LANG['search'][15]."!");
-	}
-
-	$pdf->displaySpace();
+   if ($result = $DB->query($query)) {
+      if ($DB->numrows($result)) {
+         for ($tot=0 ; $data=$DB->fetch_assoc($result) ; ) {
+            plugin_pdf_main_license($pdf,$data['id'],false);
+            if ($infocom) {
+               plugin_pdf_financial($pdf,$data['id'],'SoftwareLicense');
+            }
+         }
+      } else {
+         $pdf->displayLine($LANG['search'][15]);
+      }
+   } else {
+      $pdf->displayLine($LANG['search'][15]."!");
+   }
+   $pdf->displaySpace();
 }
+
 
 function plugin_pdf_installations($pdf,$item){
 	global $DB,$LANG;
