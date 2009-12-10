@@ -110,7 +110,7 @@ function plugin_pdf_get_headings($item,$withtemplate) {
       return array(1 => $LANG['plugin_pdf']['title'][1]);
 
    } else if ($type == 'Profile') {
-      if ($prof->fields['interface']!='helpdesk') {
+      if ($item->fields['interface']!='helpdesk') {
          return array(1 => $LANG['plugin_pdf']['title'][1]);
       }
 
