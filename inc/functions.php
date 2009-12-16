@@ -1184,9 +1184,11 @@ function plugin_pdf_licenses($pdf,$software,$infocom) {
    if ($result = $DB->query($query)) {
       if ($DB->numrows($result)) {
          for ($tot=0 ; $data=$DB->fetch_assoc($result) ; ) {
-            plugin_pdf_main_license($pdf,$license,false);
-            if ($infocom) {
-               plugin_pdf_financial($pdf,$data['id'],'SoftwareLicense');
+            if ($license->getFromDB($data['id'])) {
+               plugin_pdf_main_license($pdf,$license,false);
+               if ($infocom) {
+                  plugin_pdf_financial($pdf,$data['id'],'SoftwareLicense');
+               }
             }
          }
       } else {
@@ -1200,139 +1202,161 @@ function plugin_pdf_licenses($pdf,$software,$infocom) {
 
 
 function plugin_pdf_installations($pdf,$item){
-	global $DB,$LANG;
+   global $DB,$LANG;
 
    $ID = $item->getField('id');
    $type = get_class($item);
-   $crit = ($type=='Software' ? 'sID' : 'ID');
+   $crit = ($type=='Software' ? 'softwares_id' : 'id');
 
+   $query = "SELECT `glpi_computers_softwareversions`.*,
+                    `glpi_computers`.`name` AS compname,
+                    `glpi_computers`.`id` AS cID,
+                    `glpi_computers`.`serial`,
+                    `glpi_computers`.`otherserial`,
+                    `glpi_softwareversions`.`name` AS version,
+                    `glpi_softwareversions`.`id`,
+                    `glpi_softwareversions`.`softwares_id`,
+                    `glpi_softwareversions`.`name`,
+                    `glpi_entities`.`completename`,
+                    `glpi_locations`.`completename` AS location,
+                    `glpi_softwarelicenses`.`name` AS lname,
+                    `glpi_softwarelicenses`.`id`
+                FROM `glpi_computers_softwareversions`
+                INNER JOIN `glpi_softwareversions`
+                     ON (`glpi_computers_softwareversions`.`softwareversions_id` = `glpi_softwareversions`.`id`)
+                INNER JOIN `glpi_computers`
+                     ON (`glpi_computers_softwareversions`.`computers_id` = `glpi_computers`.`id`)
+                LEFT JOIN `glpi_entities` 
+                     ON (`glpi_computers`.`entities_id` = `glpi_entities`.`id`)
+                LEFT JOIN `glpi_locations` 
+                     ON (`glpi_computers`.`locations_id` = `glpi_locations`.`id`)
+                LEFT JOIN `glpi_softwarelicenses`
+                     ON (`glpi_softwarelicenses`.`softwares_id` = `glpi_softwareversions`.`softwares_id`
+                         AND `glpi_softwarelicenses`.`computers_id` = `glpi_computers`.`id`)
+                WHERE (`glpi_softwareversions`.`$crit` = '$ID') " .
+                       getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
+                       AND `glpi_computers`.`is_deleted` = '0'
+                       AND `glpi_computers`.`is_template` = '0'
+                ORDER BY version, compname";
 
-	$query = "SELECT glpi_inst_software.*,glpi_computers.name AS compname, glpi_computers.ID AS cID,
-			glpi_computers.name AS compname, glpi_computers.serial, glpi_computers.otherserial, glpi_users.name AS username,
-			glpi_softwareversions.name as version, glpi_softwareversions.ID as vID, glpi_softwareversions.sID as sID, glpi_softwareversions.name as vername,
-			glpi_entities.completename AS entity, glpi_dropdown_locations.completename AS location, glpi_groups.name AS groupe,
-			glpi_softwarelicenses.name AS lname, glpi_softwarelicenses.ID AS lID
-		FROM glpi_inst_software
-		INNER JOIN glpi_softwareversions ON (glpi_inst_software.vID = glpi_softwareversions.ID)
-		INNER JOIN glpi_computers ON (glpi_inst_software.cID = glpi_computers.ID)
-		LEFT JOIN glpi_entities ON (glpi_computers.FK_entities=glpi_entities.ID)
-		LEFT JOIN glpi_dropdown_locations ON (glpi_computers.location=glpi_dropdown_locations.ID)
-		LEFT JOIN glpi_groups ON (glpi_computers.FK_groups=glpi_groups.ID)
-		LEFT JOIN glpi_users ON (glpi_computers.FK_users=glpi_users.ID)
-		LEFT JOIN glpi_softwarelicenses ON (glpi_softwarelicenses.sID=glpi_softwareversions.sID AND glpi_softwarelicenses.FK_computers=glpi_computers.ID)
-		WHERE (glpi_softwareversions.$crit = '$ID') " .
-			getEntitiesRestrictRequest(' AND', 'glpi_computers') .
-			" AND glpi_computers.deleted=0 AND glpi_computers.is_template=0 " .
-		"ORDER BY version, compname";
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle('<b>'.$LANG['software'][19].'</b>');
 
-	$pdf->setColumnsSize(100);
-	$pdf->displayTitle('<b>'.$LANG['software'][19].'</b>');
+   if ($result = $DB->query($query)) {
+      if ($DB->numrows($result)>0) {
+         $pdf->setColumnsSize(14,16,15,15,22,18);
+         $pdf->displayTitle('<b><i>'.$LANG['software'][5],  // vername
+                                     $LANG['common'][16],   // compname
+                                     $LANG['common'][19],   // serial
+                                     $LANG['common'][20],   // asset
+                                     $LANG['common'][15],   // location
+                                     $LANG['software'][11].'</i></b>'); // licname
 
-	if ($result=$DB->query($query)) {
-		if ($DB->numrows($result)>0) {
-			$pdf->setColumnsSize(14,16,15,15,22,18);
-			$pdf->displayTitle(
-				'<b><i>'.$LANG['software'][5], 	// vername
-				$LANG['common'][16],	// compname
-				$LANG['common'][19],	// serial
-				$LANG['common'][20],	// asset
-				$LANG['common'][15],	// location
-				$LANG['software'][11].'</i></b>');	// licname
+         while ($data = $DB->fetch_assoc($result)) {
+            $compname = $data['compname'];
+            if (empty($compname) || $_SESSION['glpiID']) {
+               $compname .= " (".$data['cID'].")";
+            }
+            $pdf->displayLine($data['version'], $compname,$data['serial'], $data['otherserial'],
+                              $data['location'], $data['lname']);
+         }
 
-			while ($data=$DB->fetch_assoc($result)) {
-				$compname=$data['compname'];
-				if (empty($compname) || $_SESSION['glpiview_ID']) {
-					$compname .= " (".$data['cID'].")";
-				}
-				$pdf->displayLine(
-					$data['version'], $compname,
-					$data['serial'], $data['otherserial'],
-					$data['location'], $data['lname']);
-			}
-		} else {
-			$pdf->displayLine($LANG['search'][15]);
-		}
-	} else {
-		$pdf->displayLine($LANG['search'][15]."!");
-	}
+      } else {
+         $pdf->displayLine($LANG['search'][15]);
+      }
 
-	$pdf->displaySpace();
+   } else {
+      $pdf->displayLine($LANG['search'][15]."!");
+   }
+   $pdf->displaySpace();
 }
+
 
 function plugin_pdf_software($pdf,$comp){
+   global $DB,$LANG;
 
+   $ID = $comp->getField('id');
+   $entities_id = $comp->fields["entities_id"];
 
-	global $DB,$LANG;
+   $query = " `glpi_softwarecategories`.`name` AS category, 
+              `glpi_softwares`.`softwarecategories_id` AS category_id,
+              `glpi_softwares`.`name` AS softname, 
+              `glpi_computers_softwareversions`.`id` AS ID, 
+              `glpi_softwares`.`is_deleted`, 
+              `glpi_states`.`name` AS state,
+              `glpi_softwareversions`.`softwares_id` AS sID, 
+              `glpi_softwareversions`.`name` AS version,
+              `glpi_softwarelicenses`.`computers_id`,
+              `glpi_softwarelicenses`.`softwarelicensetypes_id` AS lictype
+             FROM `glpi_computers_softwareversions`
+             LEFT JOIN `glpi_softwareversions` 
+               ON (`glpi_computers_softwareversions`.`softwareversions_id` = `glpi_softwareversions`.`id`)
+             LEFT JOIN `glpi_states` 
+               ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
+             LEFT JOIN `glpi_softwarelicenses` 
+               ON (`glpi_softwareversions`.`softwares_id` = `glpi_softwarelicenses`.`softwares_id`
+                   AND `glpi_softwarelicenses`.`computers_id` = '$ID')
+             LEFT JOIN `glpi_softwares` 
+               ON (`glpi_softwareversions`.`softwares_id` = `glpi_softwares`.`id`)
+             LEFT JOIN `glpi_softwarecategories` 
+               ON (`glpi_softwarecategories`.`id` = `glpi_softwares`.`softwarecategories_id`)
+             WHERE `glpi_computers_softwareversions`.`computers_id` = '$ID'";
 
-   $ID = $item->getField('id');
+   $query_cat = "SELECT 1 as TYPE, 
+                 $query 
+                  AND `glpi_softwares`.`softwarecategories_id` > '0' ";
 
-	$FK_entities=$comp->fields["FK_entities"];
+   $query_nocat = "SELECT 2 as TYPE, 
+                   $query 
+                    AND (`glpi_softwares`.`softwarecategories_id` <= '0'
+                         OR `glpi_softwares`.`softwarecategories_id` IS NULL )";
 
-	$query_cat = "SELECT 1 as TYPE, glpi_dropdown_software_category.name as category, glpi_software.category as category_id,
-		glpi_software.name as softname, glpi_inst_software.ID as ID, glpi_software.deleted, glpi_dropdown_state.name AS state,
-		glpi_softwareversions.sID, glpi_softwareversions.name AS version,glpi_softwarelicenses.FK_computers AS FK_computers,glpi_softwarelicenses.type AS lictype
-		FROM glpi_inst_software
-		LEFT JOIN glpi_softwareversions ON ( glpi_inst_software.vID = glpi_softwareversions.ID )
-		LEFT JOIN glpi_dropdown_state ON ( glpi_dropdown_state.ID = glpi_softwareversions.state )
-		LEFT JOIN glpi_softwarelicenses ON ( glpi_softwareversions.sID = glpi_softwarelicenses.sID AND glpi_softwarelicenses.FK_computers = '$ID')
-		LEFT JOIN glpi_software ON (glpi_softwareversions.sID = glpi_software.ID)
-		LEFT JOIN glpi_dropdown_software_category ON (glpi_dropdown_software_category.ID = glpi_software.category)";
-	$query_cat .= " WHERE glpi_inst_software.cID = '$ID' AND glpi_software.category > 0";
+   $sql = "( $query_cat ) 
+           UNION 
+           ($query_nocat) 
+           ORDER BY TYPE, category, softname, version";
 
-	$query_nocat = "SELECT 2 as TYPE, glpi_dropdown_software_category.name as category, glpi_software.category as category_id,
-		glpi_software.name as softname, glpi_inst_software.ID as ID, glpi_software.deleted, glpi_dropdown_state.name AS state,
-		glpi_softwareversions.sID, glpi_softwareversions.name AS version,glpi_softwarelicenses.FK_computers AS FK_computers,glpi_softwarelicenses.type AS lictype
-	    FROM glpi_inst_software
-		LEFT JOIN glpi_softwareversions ON ( glpi_inst_software.vID = glpi_softwareversions.ID )
-		LEFT JOIN glpi_dropdown_state ON ( glpi_dropdown_state.ID = glpi_softwareversions.state )
-		LEFT JOIN glpi_softwarelicenses ON ( glpi_softwareversions.sID = glpi_softwarelicenses.sID AND glpi_softwarelicenses.FK_computers = '$ID')
-	    LEFT JOIN glpi_software ON (glpi_softwareversions.sID = glpi_software.ID)
-	    LEFT JOIN glpi_dropdown_software_category ON (glpi_dropdown_software_category.ID = glpi_software.category)";
-	$query_nocat .= " WHERE glpi_inst_software.cID = '$ID' AND (glpi_software.category <= 0 OR glpi_software.category IS NULL )";
+   $DB->query("SET SESSION group_concat_max_len = 9999999;");
+   $result = $DB->query($sql);
 
-	$query = "( $query_cat ) UNION ($query_nocat) ORDER BY TYPE, category, softname, version";
+   $pdf->setColumnsSize(100);
 
-	$DB->query("SET SESSION group_concat_max_len = 9999999;");
-	$result = $DB->query($query);
+   if ($DB->numrows($result)) {
+      $pdf->displayTitle('<b>'.$LANG["software"][17].'</b>');
 
-	$pdf->setColumnsSize(100);
+      $cat = -1;
+      while ($data=$DB->fetch_array($result)) {
+         if ($data["category_id"] != $cat) {
+            $cat = $data["category_id"];
+            $catname = ($cat ? $data["category"] : $LANG["softwarecategories"][3]);
 
-	if ($DB->numrows($result)) {
+            $pdf->setColumnsSize(100);
+            $pdf->displayTitle('<b>'.$catname.'</b>');
 
-		$pdf->displayTitle('<b>'.$LANG["software"][17].'</b>');
+            $pdf->setColumnsSize(59,13,13,15);
+            $pdf->displayTitle('<b>'.$LANG['common'][16].'</b>',
+                               '<b>'.$LANG['state'][0].'</b>',
+                               '<b>'.$LANG['software'][5].'</b>',
+                               '<b>'.$LANG['software'][30].'</b>');
+         }
 
-		$cat=-1;
-		while ($data=$DB->fetch_array($result)) {
+         $sw = new Software();
+         $sw->getFromDB($data['sID']);
 
-			if($data["category_id"] != $cat) {
-				$cat = $data["category_id"];
-				$catname = ($cat ? $data["category"] : $LANG["softwarecategories"][3]);
+         $pdf->displayLine(
+            $data['softname'],
+            $data['state'],
+            $data['version'],
+            ($data['computers_id'] == $ID ? html_clean(Dropdown::getDropdownName("glpi_softwarelicensetypes",
+                                                                                 $data["lictype"])) : ''));
+      } // Each soft
 
-				$pdf->setColumnsSize(100);
-				$pdf->displayTitle('<b>'.$catname.'</b>');
-
-				$pdf->setColumnsSize(59,13,13,15);
-				$pdf->displayTitle(
-					'<b>'.$LANG["common"][16].'</b>',
-					'<b>'.$LANG['state'][0].'</b>',
-					'<b>'.$LANG['software'][5].'</b>',
-					'<b>'.$LANG['software'][30].'</b>');
-			}
-
-			$sw = new Software();
-			$sw->getFromDB($data['sID']);
-
-			$pdf->displayLine(
-				$data['softname'],
-				$data['state'],
-				$data['version'],
-				($data["FK_computers"]==$ID ? html_clean(CommonDropdown::getDropdownName("glpi_dropdown_licensetypes",$data["lictype"])) : ''));
-		} // Each soft
-	} else	{
-		$pdf->displayTitle('<b>'.$LANG['plugin_pdf']['software'][1].'</b>');
-	}
-	$pdf->displaySpace();
+   } else {
+      $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['software'][1].'</b>');
+   }
+   $pdf->displaySpace();
 }
+
 
 function plugin_pdf_computer_connection ($pdf,$comp){
    global $DB,$LANG;
@@ -1349,7 +1373,7 @@ function plugin_pdf_computer_connection ($pdf,$comp){
    $pdf->setColumnsSize(100);
    $pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
 
-   foreach ($items as $type=>$title) {
+   foreach ($items as $type => $title) {
       if (!class_exists($type)) {
          continue;
       }
@@ -1357,181 +1381,203 @@ function plugin_pdf_computer_connection ($pdf,$comp){
       if (!$item->canView()) {
          continue;
       }
-		$query = "SELECT * from glpi_connect_wire WHERE end2='$ID' AND type='".$type."'";
+      $query = "SELECT * 
+                FROM `glpi_computers_items`
+                WHERE `computers_id` = '$ID'
+                      AND `itemtype` = '$type'";
 
-		if ($result=$DB->query($query)) {
-			$resultnum = $DB->numrows($result);
-			if ($resultnum>0) {
+      if ($result = $DB->query($query)) {
+         $resultnum = $DB->numrows($result);
+         if ($resultnum > 0) {
+            for ($j=0 ; $j < $resultnum ; $j++) {
+               $tID = $DB->result($result, $j, "items_id");
+               $connID = $DB->result($result, $j, "id");
+               $item->getFromDB($tID);
+               $info->getFromDBforDevice($type,$tID) || $info->getEmpty();
 
-				for ($j=0; $j < $resultnum; $j++) {
-					$tID = $DB->result($result, $j, "end1");
-					$connID = $DB->result($result, $j, "ID");
-					$item->getFromDB($tID);
-					$info->getFromDBforDevice($type,$tID) || $info->getEmpty();
+               $line1 = $item->getTypeName()." - ";
+               if ($item->getField("serial") != null) {
+                  $line1 .= $LANG["common"][19] . " : " .$item->getField("serial")." - ";
+               }
+               $line1 .= html_clean(Dropdown::getDropdownName("glpi_states",
+                                                              $item->getField('states_id')));
 
+               $line2 = "";
+               if ($item->getField("otherserial") != null) {
+                  $line2 = $LANG["common"][20] . " : " . $item->getField("otherserial");
+               }
+               if ($info->fields["immo_number"]) {
+                  if ($line2) {
+                     $line2 .= " - ";
+                  }
+                  $line2 .= $LANG["financial"][20] . " : " . $info->fields["immo_number"];
+               }
+               if ($line2) {
+                  $pdf->displayText('<b>'.$item->getTypeName().'</b>', $line1 . "\n" . $line2, 2);
+               } else {
+                  $pdf->displayText('<b>'.$item->getTypeName().'</b>', $line1, 1);
+               }
+            }// each device	of current type
 
-					$line1 = $item->getName()." - ";
-					if ($item->getField("serial")!=null) {
-						$line1 .= $LANG["common"][19] . " : " .$item->getField("serial")." - ";
-					}
-					$line1 .= html_clean(CommonDropdown::getDropdownName("glpi_dropdown_state",$item->getField('state')));
+         } else { // No row
+            switch ($type) {
+               case 'Printer' :
+                  $pdf->displayLine($LANG["computers"][38]);
+                  break;
 
-					$line2 = "";
-					if($item->getField("otherserial")!=null) {
-						$line2 = $LANG["common"][20] . " : " . $item->getField("otherserial");
-					}
-					if ($info->fields["num_immo"]) {
-						if ($line2) $line2 .= " - ";
-						$line2 .= $LANG["financial"][20] . " : " . $info->fields["num_immo"];
-					}
-					if ($line2) {
-						$pdf->displayText('<b>'.$item->getTypeName().'</b>', $line1 . "\n" . $line2, 2);
-					} else {
-						$pdf->displayText('<b>'.$item->getTypeName().'</b>', $line1, 1);
-					}
-				}// each device	of current type
+               case 'Monitor' :
+                  $pdf->displayLine($LANG["computers"][37]);
+                  break;
 
-			} else { // No row
+               case 'Peripheral' :
+                  $pdf->displayLine($LANG["computers"][47]);
+                  break;
 
-				switch ($type){
-					case 'Printer':
-						$pdf->displayLine($LANG["computers"][38]);
-					break;
-					case 'Monitor':
-						$pdf->displayLine($LANG["computers"][37]);
-					break;
-					case 'Peripheral':
-						$pdf->displayLine($LANG["computers"][47]);
-					break;
-					case 'Phone':
-						$pdf->displayLine($LANG["computers"][54]);
-					break;
-					}
-			} // No row
-		} // Result
-
-	} // each type
-
-	$pdf->displaySpace();
+               case 'Phone' :
+                  $pdf->displayLine($LANG["computers"][54]);
+                  break;
+            }
+         } // No row
+      } // Result
+   } // each type
+   $pdf->displaySpace();
 }
 
-function plugin_pdf_device_connection($pdf,$comp){
 
-	global $DB,$LANG;
+function plugin_pdf_device_connection($pdf,$comp){
+   global $DB,$LANG;
 
    $ID = $item->getField('id');
    $type = get_class($comp);
 
-	$info=new InfoCom();
+   $info = new InfoCom();
 
-	$pdf->setColumnsSize(100);
-	$pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
 
-	$query = "SELECT * from glpi_connect_wire WHERE end1='$ID' AND type='".$type."'";
+   $query = "SELECT * 
+             FROM `glpi_computers_items`
+             WHERE `computers_id` = '$ID'
+                   AND `itemtype` = '$type'";
 
-	if ($result=$DB->query($query)) {
-		$resultnum = $DB->numrows($result);
-		if ($resultnum>0) {
+   if ($result = $DB->query($query)) {
+      $resultnum = $DB->numrows($result);
+      if ($resultnum > 0) {
+         for ($j=0 ; $j < $resultnum ; $j++) {
+            $tID = $DB->result($result, $j, "items_id");
+            $connID = $DB->result($result, $j, "id");
+            $comp->getFromDB($tID);
+            $info->getFromDBforDevice('Computer',$tID) || $info->getEmpty();
 
-			for ($j=0; $j < $resultnum; $j++) {
-				$tID = $DB->result($result, $j, "end2");
-				$connID = $DB->result($result, $j, "ID");
-				$comp->getFromDB($tID);
-				$info->getFromDBforDevice('Computer',$tID) || $info->getEmpty();
+            $line1 = ($comp->fields['name']?$comp->fields['name']:"(".$comp->fields['id'].")")." - ";
+            if ($comp->fields['serial']) {
+               $line1 .= $LANG["common"][19] . " : " .$comp->fields['serial']." - ";
+            }
+            $line1 .= html_clean(Dropdown::getDropdownName("glpi_states",$comp->fields['states_id']));
 
+            $line2 = "";
+            if ($comp->fields['otherserial']) {
+               $line2 .= $LANG["common"][20] . " : " .$comp->fields['otherserial']." - ";
+            }
+            if ($info->fields['immo_number']) {
+               if ($line2) {
+                  $line2 .= " - ";
+               }
+               $line2 .= $LANG["financial"][20] . " : " . $info->fields['immo_number'];
+            }
+            if ($line2) {
+               $pdf->displayText('<b>'.$LANG['help'][25].'</b>', $line1 . "\n" . $line2, 2);
+            } else {
+               $pdf->displayText('<b>'.$LANG['help'][25].'</b>', $line1, 1);
+            }
+         }// each device	of current type
 
-				$line1 = ($comp->fields['name']?$comp->fields['name']:"(".$comp->fields['ID'].")")." - ";
-				if ($comp->fields['serial']) {
-					$line1 .= $LANG["common"][19] . " : " .$comp->fields['serial']." - ";
-				}
-				$line1 .= html_clean(CommonDropdown::getDropdownName("glpi_dropdown_state",$comp->fields['state']));
-
-				$line2 = "";
-				if ($comp->fields['otherserial']) {
-					$line2 .= $LANG["common"][20] . " : " .$comp->fields['otherserial']." - ";
-				}
-				if ($info->fields["num_immo"]) {
-					if ($line2) $line2 .= " - ";
-					$line2 .= $LANG["financial"][20] . " : " . $info->fields["num_immo"];
-				}
-				if ($line2) {
-					$pdf->displayText('<b>'.$LANG['help'][25].'</b>', $line1 . "\n" . $line2, 2);
-				} else {
-					$pdf->displayText('<b>'.$LANG['help'][25].'</b>', $line1, 1);
-				}
-			}// each device	of current type
-
-		} else { // No row
-
-			$pdf->displayLine($LANG['connect'][1]);
-
-		} // No row
-	} // Result
-
-	$pdf->displaySpace();
+      } else { // No row
+         $pdf->displayLine($LANG['connect'][1]);
+      } // No row
+   } // Result
+   $pdf->displaySpace();
 }
 
-function plugin_pdf_port($pdf,$item){
 
-	global $DB,$LANG;
+function plugin_pdf_port($pdf,$item){
+   global $DB,$LANG;
 
    $ID = $item->getField('id');
    $type = get_class($item);
 
-	$query = "SELECT ID FROM glpi_networking_ports WHERE (on_device = ".$ID." AND device_type = ".$type.") ORDER BY name, logical_number";
+   $query = "SELECT `id`
+             FROM `glpi_networkports` 
+             WHERE `items_id` = '$ID'
+                   AND `itemtype` = '$type'
+             ORDER BY `name`, `logical_number`";
 
-	$pdf->setColumnsSize(100);
-	if ($result = $DB->query($query)) {
-		$nb_connect = $DB->numrows($result);
+   $pdf->setColumnsSize(100);
+   if ($result = $DB->query($query)) {
+      $nb_connect = $DB->numrows($result);
+      if (!$nb_connect) {
+         $pdf->displayTitle('<b>0 '.$LANG["networking"][37].'</b>');
+      } else {
+         $pdf->displayTitle('<b>'.$nb_connect.' '.$LANG["networking"][13].' :</b>');
 
-		if (!$nb_connect) {
-			$pdf->displayTitle('<b>0 '.$LANG["networking"][37].'</b>');
+         while ($devid=$DB->fetch_row($result)) {
+            $netport = new NetworkPort;
+            $netport->getfromDB(current($devid));
 
-		} else {
-			$pdf->displayTitle('<b>'.$nb_connect.' '.$LANG["networking"][13].' :</b>');
+            $pdf->displayLine('<b><i># </i></b> '.$netport->fields["logical_number"].'<b><i>'.
+                              $LANG["common"][16].' :</i></b> '.$netport->fields["name"]);
 
-			while ($devid=$DB->fetch_row($result)) {
+            $pdf->displayLine('<b><i>'.$LANG["networking"][51].' :</i></b> '.
+                              html_clean(Dropdown::getDropdownName("glpi_netpoints",
+                                                                   $netport->fields["netpoints_id"])));
 
-				$netport = new Netport;
-				$netport->getfromDB(current($devid));
+            $pdf->displayLine('<b><i>'.$LANG["networking"][14].' / '.
+                              $LANG["networking"][15].' :</i></b> '.$netport->fields["ip"].' / '.
+                              $netport->fields["mac"]);
 
-				$pdf->displayLine('<b><i>#</i></b> '.$netport->fields["logical_number"].' <b><i>          '.$LANG["common"][16].' :</i></b> '.$netport->fields["name"]);
-				$pdf->displayLine('<b><i>'.$LANG["networking"][51].' :</i></b> '.html_clean(CommonDropdown::getDropdownName("glpi_dropdown_netpoint",$netport->fields["netpoint"])));
-				$pdf->displayLine('<b><i>'.$LANG["networking"][14].' / '.$LANG["networking"][15].' :</i></b> '.$netport->fields["ifaddr"].' / '.$netport->fields["ifmac"]);
-				$pdf->displayLine('<b><i>'.$LANG["networking"][60].' / '.$LANG["networking"][61].' / '.$LANG["networking"][59].' :</i></b> '.$netport->fields["netmask"].' / '.$netport->fields["subnet"].' / '.$netport->fields["gateway"]);
+            $pdf->displayLine('<b><i>'.$LANG["networking"][60].' / '.$LANG["networking"][61].' / '.
+                              $LANG["networking"][59].' :</i></b> '.$netport->fields["netmask"].' / '.
+                              $netport->fields["subnet"].' / '.$netport->fields["gateway"]);
 
-				$query="SELECT * from glpi_networking_vlan WHERE FK_port='$ID'";
-				$result2=$DB->query($query);
-				if ($DB->numrows($result2)>0) {
-					$line = '<b><i>'.$LANG["networking"][56].' :</i></b>';
-					while ($line=$DB->fetch_array($result2)) {
-						$line .= ' ' . html_clean(CommonDropdown::getDropdownName("glpi_dropdown_vlan",$line["FK_vlan"]));
-					}
-					$pdf->displayLine($line);
-				}
-				$pdf->displayLine('<b><i>'.$LANG["common"][65].' :</i></b> '.html_clean(CommonDropdown::getDropdownName("glpi_dropdown_iface",$netport->fields["iface"])));
+            $query = "SELECT * 
+                      FROM `glpi_networkports_vlans`
+                      WHERE `networkports_id` = '$ID'";
 
+            $result2 = $DB->query($query);
+            if ($DB->numrows($result2) > 0) {
+               $line = '<b><i>'.$LANG["networking"][56].' :</i></b>';
+               
+               while ($line=$DB->fetch_array($result2)) {
+                  $line .= ' ' . html_clean(Dropdown::getDropdownName("glpi_networkports_vlans",
+                                                                      $line["vlans_id"]));
+               }
+               $pdf->displayLine($line);
+            }
 
-				$contact = new Netport;
-				$netport2 = new Netport;
+            $pdf->displayLine(
+               '<b><i>'.$LANG["common"][65].' :</i></b> '.
+                  html_clean(Dropdown::getDropdownName("glpi_networkinterfaces",
+                                                       $netport->fields["networkinterfaces_id"])));
 
-				$line = '<b><i>'.$LANG["networking"][17].' :</i></b> ';
-				if ($contact->getContact($netport->fields["ID"]))
-					{
-					$netport2->getfromDB($contact->contact_id);
-					$netport2->getDeviceData($netport2->fields["on_device"],$netport2->fields["device_type"]);
+            $contact = new NetworkPort;
+            $netport2 = new NetworkPort;
 
-					$line .= ($netport2->device_name ? $netport2->device_name : $LANG["connect"][1]);
-				} else {
-					$line .= $LANG["connect"][1];
-				}
-				$pdf->displayLine($line);
-			} // each port
-		} // Found
-	} // Query
+            $line = '<b><i>'.$LANG["networking"][17].' :</i></b> ';
+            if ($contact->getContact($netport->fields["id"])) {
+               $netport2->getfromDB($contact->contact_id);
+               $netport2->getDeviceData($netport2->fields['items_id'],$netport2->fields['itemtype']);
 
-	$pdf->displaySpace();
+               $line .= ($netport2->device_name ? $netport2->device_name : $LANG["connect"][1]);
+            } else {
+               $line .= $LANG["connect"][1];
+            }
+            $pdf->displayLine($line);
+         } // each port
+      } // Found
+   } // Query
+   $pdf->displaySpace();
 }
+
 
 function plugin_pdf_contract ($pdf,$item){
    global $DB,$CFG_GLPI,$LANG;
@@ -1542,6 +1588,7 @@ function plugin_pdf_contract ($pdf,$item){
 
    $type = get_class($item);
    $ID = $item->getField('id');
+   $con = new Contract();
 
    $query = "SELECT *
              FROM `glpi_contracts_items`
@@ -1570,8 +1617,8 @@ function plugin_pdf_contract ($pdf,$item){
             $pdf->displayLine(
                (empty($con->fields["name"]) ? "(".$con->fields["id"].")" : $con->fields["name"]),
                $con->fields["num"],
-               html_clean(CommonDropdown::getDropdownName("glpi_contracttypes",
-                                                           $con->fields["contracttypes_id"])),
+               html_clean(Dropdown::getDropdownName("glpi_contracttypes",
+                                                    $con->fields["contracttypes_id"])),
                str_replace("<br>", " ", $con->getSuppliersNames()),
                convDate($con->fields["begin_date"]),
                $con->fields["duration"]." ".$LANG["financial"][57]);
@@ -1586,95 +1633,95 @@ function plugin_pdf_contract ($pdf,$item){
 
 
 function plugin_pdf_document($pdf,$item){
-
-	global $DB,$LANG;
+   global $DB,$LANG;
 
    $ID = $item->getField('id');
    $type = get_class($item);
 
-	if (!haveRight("document","r"))	return false;
+   if (!haveRight("document","r")) {
+      return false;
+   }
 
-	$query = "SELECT glpi_doc_device.ID as assocID, glpi_docs.* FROM glpi_doc_device ";
-	$query .= "LEFT JOIN glpi_docs ON (glpi_doc_device.FK_doc=glpi_docs.ID)";
-	$query .= "WHERE glpi_doc_device.FK_device = ".$ID." AND glpi_doc_device.device_type = ".$type;
+   $query = "SELECT `glpi_documents_items`.`id` AS assocID, 
+                    `glpi_documents`.* 
+             FROM `glpi_documents_items`
+             LEFT JOIN `glpi_documents` 
+                  ON (`glpi_documents_items`.`documents_id` = `glpi_documents`.`id`)
+             WHERE `glpi_documents_items`.`items_id` = '$ID'
+                   AND `glpi_documents_items`.`itemtype` = '$type'";
 
-	$result = $DB->query($query);
-	$number = $DB->numrows($result);
+   $result = $DB->query($query);
+   $number = $DB->numrows($result);
 
-	$pdf->setColumnsSize(100);
-	if (!$number) {
-		$pdf->displayTitle('<b>'.$LANG['plugin_pdf']['document'][1].'</b>');
+   $pdf->setColumnsSize(100);
+   if (!$number) {
+      $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['document'][1].'</b>');
+   } else {
+      $pdf->displayTitle('<b>'.$LANG["document"][21].' :</b>');
 
-	} else {
-		$pdf->displayTitle(
-			'<b>'.$LANG["document"][21].' :</b>');
+      $pdf->setColumnsSize(32,15,21,19,13);
+      $pdf->displayTitle('<b>'.$LANG["common"][16].'</b>',
+                         '<b>'.$LANG["document"][2].'</b>',
+                         '<b>'.$LANG["document"][33].'</b>',
+                         '<b>'.$LANG["document"][3].'</b>',
+                         '<b>'.$LANG["document"][4].'</b>');
 
-		$pdf->setColumnsSize(32,15,21,19,13);
-		$pdf->displayTitle(
-			'<b>'.$LANG["common"][16].'</b>',
-			'<b>'.$LANG["document"][2].'</b>',
-			'<b>'.$LANG["document"][33].'</b>',
-			'<b>'.$LANG["document"][3].'</b>',
-			'<b>'.$LANG["document"][4].'</b>');
-
-		while ($data=$DB->fetch_assoc($result)) {
-
-			$pdf->displayLine(
-				$data["name"],
-				basename($data["filename"]),
-				$data["link"],
-				html_clean(CommonDropdown::getDropdownName("glpi_dropdown_rubdocs",$data["rubrique"])),
-				$data["mime"]);
-		}
-	}
-	$pdf->displaySpace();
+      while ($data = $DB->fetch_assoc($result)) {
+         $pdf->displayLine($data["name"], basename($data["filename"]), $data["link"],
+                           html_clean(Dropdown::getDropdownName("glpi_documentcategories",
+                                                                $data["documentcategories_id"])),
+                           $data["mime"]);
+      }
+   }
+   $pdf->displaySpace();
 }
 
-function plugin_pdf_registry($pdf,$item){
 
-	global $DB,$LANG;
+function plugin_pdf_registry($pdf,$item) {
+   global $DB,$LANG;
 
    $ID = $item->getField('id');
 
-	$REGISTRY_HIVE=array("HKEY_CLASSES_ROOT",
-	"HKEY_CURRENT_USER",
-	"HKEY_LOCAL_MACHINE",
-	"HKEY_USERS",
-	"HKEY_CURRENT_CONFIG",
-	"HKEY_DYN_DATA");
+   $REGISTRY_HIVE = array("HKEY_CLASSES_ROOT",
+                          "HKEY_CURRENT_USER",
+                          "HKEY_LOCAL_MACHINE",
+                          "HKEY_USERS",
+                          "HKEY_CURRENT_CONFIG",
+                          "HKEY_DYN_DATA");
 
-	$query = "SELECT ID FROM glpi_registry WHERE computer_id='".$ID."'";
+   $query = "SELECT `id`
+             FROM `glpi_registrykeys`
+             WHERE `computers_id` = '$ID'";
 
-	$pdf->setColumnsSize(100);
-	if ($result = $DB->query($query)) {
-		if ($DB->numrows($result)>0) {
-			$pdf->displayTitle('<b>'.$DB->numrows($result)." ".$LANG["registry"][4].'</b>');
+   $pdf->setColumnsSize(100);
+   if ($result = $DB->query($query)) {
+      if ($DB->numrows($result) > 0) {
+         $pdf->displayTitle('<b>'.$DB->numrows($result)." ".$LANG["registry"][4].'</b>');
 
-			$pdf->setColumnsSize(25,25,25,25);
-			$pdf->displayTitle(
-				'<b>'.$LANG["registry"][6].'</b>',
-				'<b>'.$LANG["registry"][1].'</b>',
-				'<b>'.$LANG["registry"][2].'</b>',
-				'<b>'.$LANG["registry"][3].'</b>');
+         $pdf->setColumnsSize(25,25,25,25);
+         $pdf->displayTitle('<b>'.$LANG["registry"][6].'</b>',
+                            '<b>'.$LANG["registry"][1].'</b>',
+                            '<b>'.$LANG["registry"][2].'</b>',
+                            '<b>'.$LANG["registry"][3].'</b>');
 
-			$reg = new Registry;
+         $reg = new RegistryKey;
 
-			while ($regid=$DB->fetch_row($result)) {
-				if ($reg->getfromDB(current($regid))) {
-					$pdf->displayLine(
-						$reg->fields["registry_ocs_name"],
-						$REGISTRY_HIVE[$reg->fields["registry_hive"]],
-						$reg->fields["registry_path"],
-						$reg->fields["registry_value"]);
-				}
-			}
-		} else {
-			$pdf->displayTitle('<b>'.$LANG["registry"][5].'</b>');
-		}
-	}
+         while ($regid = $DB->fetch_row($result)) {
+            if ($reg->getfromDB(current($regid))) {
+               $pdf->displayLine($reg->fields['ocs_name'],
+                                 $REGISTRY_HIVE[$reg->fields['hive']],
+                                 $reg->fields['path'],
+                                 $reg->fields['value']);
+            }
+         }
 
-	$pdf->displaySpace();
+      } else {
+         $pdf->displayTitle('<b>'.$LANG["registry"][5].'</b>');
+      }
+   }
+   $pdf->displaySpace();
 }
+
 
 function plugin_pdf_ticket($pdf,$item){
 

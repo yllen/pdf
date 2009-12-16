@@ -116,11 +116,11 @@ class PluginPdfProfile extends CommonDBTM {
        }
    }
 
-   static function canView() {
+   function canView() {
       return haveRight('profile','r');
    }
 
-   static function canCreate() {
+   function canCreate() {
       return haveRight('profile','w');
    }
 }

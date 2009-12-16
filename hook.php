@@ -243,18 +243,16 @@ function plugin_pdf_MassiveActionsProcess($data){
 }
 
 
-function plugin_pdf_pre_item_delete($input) {
+function plugin_pdf_pre_item_purge($item) {
 
-   if (isset($input["_item_type_"])) {
-      switch ($input["_item_type_"]) {
-         case 'Profile' :
-            // Manipulate data if needed
-            $PluginPdfProfile = new PluginPdfProfile;
-            $PluginPdfProfile->cleanProfiles($input["id"]);
-            break;
-      }
+   switch (get_class($item)) {
+      case 'Profile' :
+         // Manipulate data if needed
+         $PluginPdfProfile = new PluginPdfProfile;
+         $PluginPdfProfile->cleanProfiles($item->getField("id"));
+         break;
    }
-   return $input;
+   return $item;
 }
 
 
