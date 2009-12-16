@@ -562,7 +562,7 @@ function plugin_pdf_main_phone($pdf,$item) {
 
    $pdf->displayLine(
       '<b><i>'.$LANG['phones'][18].' :</i></b> '.$item->fields['brand'],
-      '<b><i>'.$LANG['phones'][36].' :</i></b> '.getYesNo($item->fields['phonepowersupplies_id']));
+      '<b><i>'.$LANG['phones'][36].' :</i></b> '.Dropdown::getYesNo($item->fields['phonepowersupplies_id']));
 
    $pdf->displayLine('<b><i>'.$LANG['setup'][71].' :</i></b> '.$item->fields['firmware'],
                      '<b><i>'.$LANG['phones'][40].' :</i></b> '.$item->fields['number_line']);
@@ -985,7 +985,7 @@ function plugin_pdf_device($pdf,$computer) {
       case DRIVE_DEVICE :
          if (!empty($device->fields["is_writer"])) {
             $col4 = '<b><i>'.$LANG["profiles"][11].' :</i></b> '.
-                    getYesNo($device->fields["is_writer"]);
+                    Dropdown::getYesNo($device->fields["is_writer"]);
          } else if (!empty($device->fields["speed"])) {
             $col4 = '<b><i>'.$LANG["device_drive"][1].' :</i></b> '.$device->fields["speed"];
          } else if (!empty($device->fields["frequence"])) {
@@ -1005,7 +1005,7 @@ function plugin_pdf_device($pdf,$computer) {
                   html_clean(Dropdown::getDropdownName("glpi_interfacetypes",
                                                        $device->fields["interfacetypes_id"])));
          $col5 = (empty($device->fields["is_raid"]) ? '' : '<b><i>'.
-                  $LANG["device_control"][0].' :</i></b> '.getYesNo($device->fields["is_raid"]));
+                  $LANG["device_control"][0].' :</i></b> '.Dropdown::getYesNo($device->fields["is_raid"]));
 
          $pdf->displayLine($val["quantity"].'x', $LANG["devices"][20],
                            $device->fields["designation"], $col4, $col5);
@@ -1022,7 +1022,7 @@ function plugin_pdf_device($pdf,$computer) {
          $col4 = (empty($device->fields["power"]) ? '' : '<b><i>'.
                   $LANG["device_power"][0].' :</i></b> '.$device->fields["power"]);
          $col5 = (empty($device->fields["is_atx"]) ? '' : '<b><i>'.
-                  $LANG["device_power"][1].' :</i></b> '.getYesNo($device->fields["is_atx"]));
+                  $LANG["device_power"][1].' :</i></b> '.Dropdown::getYesNo($device->fields["is_atx"]));
 
          $pdf->displayLine($val["quantity"].'x', $LANG["devices"][23],
                            $device->fields["designation"], $col4, $col5);
@@ -1226,9 +1226,9 @@ function plugin_pdf_installations($pdf,$item){
                      ON (`glpi_computers_softwareversions`.`softwareversions_id` = `glpi_softwareversions`.`id`)
                 INNER JOIN `glpi_computers`
                      ON (`glpi_computers_softwareversions`.`computers_id` = `glpi_computers`.`id`)
-                LEFT JOIN `glpi_entities` 
+                LEFT JOIN `glpi_entities`
                      ON (`glpi_computers`.`entities_id` = `glpi_entities`.`id`)
-                LEFT JOIN `glpi_locations` 
+                LEFT JOIN `glpi_locations`
                      ON (`glpi_computers`.`locations_id` = `glpi_locations`.`id`)
                 LEFT JOIN `glpi_softwarelicenses`
                      ON (`glpi_softwarelicenses`.`softwares_id` = `glpi_softwareversions`.`softwares_id`
@@ -1278,42 +1278,42 @@ function plugin_pdf_software($pdf,$comp){
    $ID = $comp->getField('id');
    $entities_id = $comp->fields["entities_id"];
 
-   $query = " `glpi_softwarecategories`.`name` AS category, 
+   $query = " `glpi_softwarecategories`.`name` AS category,
               `glpi_softwares`.`softwarecategories_id` AS category_id,
-              `glpi_softwares`.`name` AS softname, 
-              `glpi_computers_softwareversions`.`id` AS ID, 
-              `glpi_softwares`.`is_deleted`, 
+              `glpi_softwares`.`name` AS softname,
+              `glpi_computers_softwareversions`.`id` AS ID,
+              `glpi_softwares`.`is_deleted`,
               `glpi_states`.`name` AS state,
-              `glpi_softwareversions`.`softwares_id` AS sID, 
+              `glpi_softwareversions`.`softwares_id` AS sID,
               `glpi_softwareversions`.`name` AS version,
               `glpi_softwarelicenses`.`computers_id`,
               `glpi_softwarelicenses`.`softwarelicensetypes_id` AS lictype
              FROM `glpi_computers_softwareversions`
-             LEFT JOIN `glpi_softwareversions` 
+             LEFT JOIN `glpi_softwareversions`
                ON (`glpi_computers_softwareversions`.`softwareversions_id` = `glpi_softwareversions`.`id`)
-             LEFT JOIN `glpi_states` 
+             LEFT JOIN `glpi_states`
                ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
-             LEFT JOIN `glpi_softwarelicenses` 
+             LEFT JOIN `glpi_softwarelicenses`
                ON (`glpi_softwareversions`.`softwares_id` = `glpi_softwarelicenses`.`softwares_id`
                    AND `glpi_softwarelicenses`.`computers_id` = '$ID')
-             LEFT JOIN `glpi_softwares` 
+             LEFT JOIN `glpi_softwares`
                ON (`glpi_softwareversions`.`softwares_id` = `glpi_softwares`.`id`)
-             LEFT JOIN `glpi_softwarecategories` 
+             LEFT JOIN `glpi_softwarecategories`
                ON (`glpi_softwarecategories`.`id` = `glpi_softwares`.`softwarecategories_id`)
              WHERE `glpi_computers_softwareversions`.`computers_id` = '$ID'";
 
-   $query_cat = "SELECT 1 as TYPE, 
-                 $query 
+   $query_cat = "SELECT 1 as TYPE,
+                 $query
                   AND `glpi_softwares`.`softwarecategories_id` > '0' ";
 
-   $query_nocat = "SELECT 2 as TYPE, 
-                   $query 
+   $query_nocat = "SELECT 2 as TYPE,
+                   $query
                     AND (`glpi_softwares`.`softwarecategories_id` <= '0'
                          OR `glpi_softwares`.`softwarecategories_id` IS NULL )";
 
-   $sql = "( $query_cat ) 
-           UNION 
-           ($query_nocat) 
+   $sql = "( $query_cat )
+           UNION
+           ($query_nocat)
            ORDER BY TYPE, category, softname, version";
 
    $DB->query("SET SESSION group_concat_max_len = 9999999;");
@@ -1381,7 +1381,7 @@ function plugin_pdf_computer_connection ($pdf,$comp){
       if (!$item->canView()) {
          continue;
       }
-      $query = "SELECT * 
+      $query = "SELECT *
                 FROM `glpi_computers_items`
                 WHERE `computers_id` = '$ID'
                       AND `itemtype` = '$type'";
@@ -1455,7 +1455,7 @@ function plugin_pdf_device_connection($pdf,$comp){
    $pdf->setColumnsSize(100);
    $pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
 
-   $query = "SELECT * 
+   $query = "SELECT *
              FROM `glpi_computers_items`
              WHERE `computers_id` = '$ID'
                    AND `itemtype` = '$type'";
@@ -1507,7 +1507,7 @@ function plugin_pdf_port($pdf,$item){
    $type = get_class($item);
 
    $query = "SELECT `id`
-             FROM `glpi_networkports` 
+             FROM `glpi_networkports`
              WHERE `items_id` = '$ID'
                    AND `itemtype` = '$type'
              ORDER BY `name`, `logical_number`";
@@ -1539,14 +1539,14 @@ function plugin_pdf_port($pdf,$item){
                               $LANG["networking"][59].' :</i></b> '.$netport->fields["netmask"].' / '.
                               $netport->fields["subnet"].' / '.$netport->fields["gateway"]);
 
-            $query = "SELECT * 
+            $query = "SELECT *
                       FROM `glpi_networkports_vlans`
                       WHERE `networkports_id` = '$ID'";
 
             $result2 = $DB->query($query);
             if ($DB->numrows($result2) > 0) {
                $line = '<b><i>'.$LANG["networking"][56].' :</i></b>';
-               
+
                while ($line=$DB->fetch_array($result2)) {
                   $line .= ' ' . html_clean(Dropdown::getDropdownName("glpi_networkports_vlans",
                                                                       $line["vlans_id"]));
@@ -1642,10 +1642,10 @@ function plugin_pdf_document($pdf,$item){
       return false;
    }
 
-   $query = "SELECT `glpi_documents_items`.`id` AS assocID, 
-                    `glpi_documents`.* 
+   $query = "SELECT `glpi_documents_items`.`id` AS assocID,
+                    `glpi_documents`.*
              FROM `glpi_documents_items`
-             LEFT JOIN `glpi_documents` 
+             LEFT JOIN `glpi_documents`
                   ON (`glpi_documents_items`.`documents_id` = `glpi_documents`.`id`)
              WHERE `glpi_documents_items`.`items_id` = '$ID'
                    AND `glpi_documents_items`.`itemtype` = '$type'";
