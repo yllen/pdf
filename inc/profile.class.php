@@ -91,7 +91,7 @@ class PluginPdfProfile extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>".$LANG['plugin_pdf']['title'][1]."&nbsp;:</td><td>";
-      dropdownYesNo("use",(isset($this->fields["use"])?$this->fields["use"]:''));
+      Dropdown::showYesNo("use",(isset($this->fields["use"])?$this->fields["use"]:''));
       echo "</td></tr>\n";
 
       if ($canedit) {
