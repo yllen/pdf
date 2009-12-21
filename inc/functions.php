@@ -1857,17 +1857,17 @@ function plugin_pdf_link($pdf,$item){
 
 				if (strpos("[LOCATION]",$link)){
 					if ($tmp=$item->getField('location')){
-						$link=str_replace("[LOCATION]",html_clean(CommonDropdown::getDropdownName("glpi_dropdown_locations",$tmp)),$link);
+						$link=str_replace("[LOCATION]",html_clean(Dropdown::getDropdownName("glpi_dropdown_locations",$tmp)),$link);
 					}
 				}
 				if (strpos("[NETWORK]",$link)){
 					if ($tmp=$item->getField('network')){
-						$link=str_replace("[NETWORK]",html_clean(CommonDropdown::getDropdownName("glpi_dropdown_network",$tmp)),$link);
+						$link=str_replace("[NETWORK]",html_clean(Dropdown::getDropdownName("glpi_dropdown_network",$tmp)),$link);
 					}
 				}
 				if (strpos("[DOMAIN]",$link)){
 					if ($tmp=$item->getField('domain'))
-						$link=str_replace("[DOMAIN]",html_clean(CommonDropdown::getDropdownName("glpi_dropdown_domain",$tmp)),$link);
+						$link=str_replace("[DOMAIN]",html_clean(Dropdown::getDropdownName("glpi_dropdown_domain",$tmp)),$link);
 				}
 				$ipmac=array();
 				$j=0;
