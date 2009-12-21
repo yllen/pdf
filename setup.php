@@ -36,14 +36,10 @@ function plugin_init_pdf() {
 
    // Params : plugin name - string type - number - attributes
    Plugin::registerClass('PluginPdfProfile',
-                          array('classname'              => 'PluginPdfProfile',
-                                'tablename'              => 'glpi_plugin_pdf_profiles',
-                                'searchpage'             => 'front/profile.php'));
+                          array('classname'              => 'PluginPdfProfile'));
 
    Plugin::registerClass('PluginPdfPreference',
-                          array('classname'              => 'PluginPdfPreference',
-                                'tablename'              => 'glpi_plugin_pdf_prferences',
-                                'formpage'               => 'front/preference.form.php'));
+                          array('classname'              => 'PluginPdfPreference'));
 
    $PLUGIN_HOOKS['change_profile']['pdf'] = array('PluginPdfProfile','changeprofile');
 
