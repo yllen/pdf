@@ -176,18 +176,19 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
       "<b><i>".$LANG['financial'][26]."</i></b> : ".
             html_clean(Dropdown::getDropdownName("glpi_suppliers",
                                                  $job->fields["suppliers_id_assign"])),
-      "<b><i>".$LANG['job'][43]."</i></b> : ".trackingTotalCost($job->fields["realtime"],
+      "<b><i>".$LANG['job'][43]."</i></b> : ".Ticket ::trackingTotalCost($job->fields["realtime"],
                                                                 $job->fields["cost_time"],
                                                                 $job->fields["cost_fixed"],
                                                                 $job->fields["cost_material"]));
 
    $pdf->setColumnsSize(100);
-   $pdf->displayLine(
-      "<b><i>".$LANG['common'][1]."</i></b> : ".html_clean($item->getTypeName())." ".
-            html_clean($item->getNameID()).$serial_item . $location_item);
-
-   $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", $job->fields["content"], 7);
-
+   if ($job->fields["itemtype"] && class_exists($job->fields["itemtype"])) {
+      $pdf->displayLine(
+         "<b><i>".$LANG['common'][1]."</i></b> : ".html_clean($item->getTypeName())." ".
+               html_clean($item->getNameID()).$serial_item . $location_item);
+   } else {
+      $pdf->displayLine("<b><i>".$LANG['common'][1]."</i></b>");
+   }
    $pdf->displaySpace();
 
    //////////////followups///////////
@@ -1723,444 +1724,502 @@ function plugin_pdf_registry($pdf,$item) {
 }
 
 
-function plugin_pdf_ticket($pdf,$item){
-
-	global $DB,$CFG_GLPI, $LANG;
+function plugin_pdf_ticket($pdf,$item) {
+   global $DB,$CFG_GLPI, $LANG;
 
    $ID = $item->getField('id');
    $type = get_class($item);
 
-	if (!haveRight("show_all_ticket","1")) return;
+   if (!haveRight("show_all_ticket","1")) {
+      return;
+   }
 
-	$sort="glpi_tracking.date";
-	$order=getTrackingOrderPrefs($_SESSION["glpiID"]);
+   $query = "SELECT ".getCommonSelectForTrackingSearch()."
+             FROM glpi_tickets ".
+             getCommonLeftJoinForTrackingSearch()."
+             WHERE (`status` = 'new'
+                    OR `status` = 'assign'
+                    OR `status` = 'plan'
+                    OR `status` = 'waiting')
+                   AND (`items_id` = '$ID'
+                        AND `itemtype` = '$type')
+             ORDER BY `glpi_tickets`.`date`";
 
-	$where = "(status = 'new' OR status= 'assign' OR status='plan' OR status='waiting')";
+   $result = $DB->query($query);
+   $number = $DB->numrows($result);
 
-	$query = "SELECT ".getCommonSelectForTrackingSearch()." FROM glpi_tracking ".getCommonLeftJoinForTrackingSearch()." WHERE $where and (computer = '$ID' and device_type= ".$type.") ORDER BY $sort $order";
+   $pdf->setColumnsSize(100);
+   if (!$number) {
+      $pdf->displayTitle('<b>'.$LANG['joblist'][24] . " - " . $LANG["joblist"][8].'</b>');
+   } else {
+      $pdf->displayTitle('<b>'.$LANG['joblist'][24]." - $number ".$LANG["job"][8].'</b>');
 
-	$result = $DB->query($query);
-	$number = $DB->numrows($result);
+      while ($data = $DB->fetch_assoc($result)) {
+         $pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b> ID'.$data["id"].'     '.
+                           Ticket::getStatus($data["status"]));
 
-	$pdf->setColumnsSize(100);
-	if (!$number) {
-		$pdf->displayTitle('<b>'.$LANG['joblist'][24] . " - " . $LANG["joblist"][8].'</b>');
+         $pdf->displayLine('<b><i>'.$LANG["common"][27].' :</i></b>'.$LANG["joblist"][11].' : '.
+                           $data["date"]);
 
-	} else	{
-		$pdf->displayTitle('<b>'.$LANG['joblist'][24]." - $number ".$LANG["job"][8].'</b>');
+         $pdf->displayLine('<b><i>'.$LANG["joblist"][2].' :</i></b> '.
+                           Ticket::getPriorityName($data["priority"]));
 
-		while ($data=$DB->fetch_assoc($result))	{
-			$pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b>  ID'.$data["ID"].'     '.Ticket::getStatus($data["status"]));
-			$pdf->displayLine('<b><i>'.$LANG["common"][27].' :</i></b>       '.$LANG["joblist"][11].' : '.$data["date"]);
-			$pdf->displayLine('<b><i>'.$LANG["joblist"][2].' :</i></b> '.getPriorityName($data["priority"]));
-			$pdf->displayLine('<b><i>'.$LANG["job"][4].' :</i></b> '.getUserName($data["author"]));
-			$pdf->displayLine('<b><i>'.$LANG["job"][5].' :</i></b> '.getUserName($data["assign"]));
-			$pdf->displayLine('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]);
-			$pdf->displayLine('<b><i>'.$LANG["common"][57].' :</i></b> '.$data["name"]);
-		}
-	}
+         $pdf->displayLine('<b><i>'.$LANG["job"][4].' :</i></b> '.getUserName($data["users_id"]));
 
-	$pdf->displaySpace();
+         $pdf->displayLine('<b><i>'.$LANG["job"][5].' :</i></b> '.
+                           getUserName($data["users_id_assign"]));
+
+         $pdf->displayLine('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]);
+
+         $pdf->displayLine('<b><i>'.$LANG["common"][57].' :</i></b> '.$data["name"]);
+      }
+   }
+   $pdf->displaySpace();
 }
 
-function plugin_pdf_oldticket($pdf,$item){
 
-	global $DB,$CFG_GLPI, $LANG;
+function plugin_pdf_oldticket($pdf,$item) {
+   global $DB,$CFG_GLPI, $LANG;
 
    $ID = $item->getField('id');
    $type = get_class($item);
 
-	if (!haveRight("show_all_ticket","1")) return;
+   if (!haveRight("show_all_ticket","1")) {
+      return;
+   }
 
-	$sort="glpi_tracking.date";
-	$order=getTrackingOrderPrefs($_SESSION["glpiID"]);
-//solved or closed
-	$where = "(status = 'old_done' OR status = 'old_notdone')";
-	$query = "SELECT ".getCommonSelectForTrackingSearch()." FROM glpi_tracking ".getCommonLeftJoinForTrackingSearch()." WHERE $where and (device_type = ".$type." and computer = '$ID') ORDER BY $sort $order";
+   $query = "SELECT ".getCommonSelectForTrackingSearch()."
+             FROM glpi_tickets ".
+             getCommonLeftJoinForTrackingSearch()."
+             WHERE (`status` = 'solved'
+                    OR `status` = 'closed')
+                   AND (`itemtype` = '$type'
+                   AND `items_id` = '$ID')
+             ORDER BY `glpi_tickets`.`date`";
 
-	$result = $DB->query($query);
-	$number = $DB->numrows($result);
+   $result = $DB->query($query);
+   $number = $DB->numrows($result);
 
-	$pdf->setColumnsSize(100);
-	if (!$number) {
-		$pdf->displayTitle('<b>'.$LANG['joblist'][25] . " - " . $LANG["joblist"][8].'</b>');
+   $pdf->setColumnsSize(100);
+   if (!$number) {
+      $pdf->displayTitle('<b>'.$LANG['joblist'][25] . " - " . $LANG["joblist"][8].'</b>');
+   } else {
+      $pdf->displayTitle('<b>'.$LANG['joblist'][25]." - $number ".$LANG["job"][8].'</b>');
 
-	} else	{
-		$pdf->displayTitle('<b>'.$LANG['joblist'][25]." - $number ".$LANG["job"][8].'</b>');
+      while ($data = $DB->fetch_assoc($result)) {
+         $pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b> ID'.$data["ID"].'     '.
+                           Ticket::getStatus($data["status"]));
 
-		while ($data=$DB->fetch_assoc($result))	{
-			$pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b>  ID'.$data["ID"].'     '.Ticket::getStatus($data["status"]));
-			$pdf->displayLine('<b><i>'.$LANG["common"][27].' :</i></b>       '.$LANG["joblist"][11].' : '.$data["date"]);
-			$pdf->displayLine('<b><i>'.$LANG["joblist"][2].' :</i></b> '.getPriorityName($data["priority"]));
-			$pdf->displayLine('<b><i>'.$LANG["job"][4].' :</i></b> '.getUserName($data["author"]));
-			$pdf->displayLine('<b><i>'.$LANG["job"][5].' :</i></b> '.getUserName($data["assign"]));
-			$pdf->displayLine('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]);
-			$pdf->displayLine('<b><i>'.$LANG["common"][57].' :</i></b> '.$data["name"]);
-		}
-	}
+         $pdf->displayLine('<b><i>'.$LANG["common"][27].' :</i></b>'.$LANG["joblist"][11].' : '.
+                           $data["date"]);
 
-	$pdf->displaySpace();
+         $pdf->displayLine('<b><i>'.$LANG["joblist"][2].' :</i></b> '.
+                           Ticket::getPriorityName($data["priority"]));
+
+         $pdf->displayLine('<b><i>'.$LANG["job"][4].' :</i></b> '.getUserName($data["users_id"]));
+
+         $pdf->displayLine('<b><i>'.$LANG["job"][5].' :</i></b> '.
+                           getUserName($data["users_id_assign"]));
+
+         $pdf->displayLine('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]);
+
+         $pdf->displayLine('<b><i>'.$LANG["common"][57].' :</i></b> '.$data["name"]);
+      }
+   }
+   $pdf->displaySpace();
 }
 
-function plugin_pdf_link($pdf,$item){
 
-	global $DB,$LANG;
+function plugin_pdf_link($pdf,$item) {
+   global $DB,$LANG;
 
    $ID = $item->getField('id');
    $type = get_class($item);
 
-	if (!haveRight("link","r")) return false;
+   if (!haveRight("link","r")) {
+      return false;
+   }
 
-	$query="SELECT glpi_links.ID as ID, glpi_links.link as link, glpi_links.name as name , glpi_links.data as data from glpi_links INNER JOIN glpi_links_device ON glpi_links.ID= glpi_links_device.FK_links WHERE glpi_links_device.device_type=".$type." ORDER BY glpi_links.name";
+   $query = "SELECT `glpi_links`.`id` AS ID, `glpi_links`.`link`, `glpi_links`.`name`,
+                    `glpi_links`.`data`
+             FROM `glpi_links`
+             INNER JOIN `glpi_links_itemtypes`
+                  ON `glpi_links`.`id` = `glpi_links_itemtypes`.`links_id`
+             WHERE `glpi_links_itemtypes`.`itemtype` = '$type'
+             ORDER BY `glpi_links`.`name`";
 
-	$result=$DB->query($query);
+   $result=$DB->query($query);
 
-	$pdf->setColumnsSize(100);
-	if ($DB->numrows($result)>0){
+   $pdf->setColumnsSize(100);
+   if ($DB->numrows($result) > 0) {
+      $pdf->displayTitle('<b>'.$LANG["title"][33].'</b>');
 
-		$pdf->displayTitle('<b>'.$LANG["title"][33].'</b>');
+      while ($data = $DB->fetch_assoc($result)) {
+         $name = $data["name"];
+         if (empty($name)) {
+            $name = $data["link"];
+         }
+         $link = $data["link"];
+         $file = trim($data["data"]);
+         if (empty($file)) {
+            if (strpos("[NAME]",$link)) {
+               $link = str_replace("[NAME]",$item->getName(),$link);
+            }
+            if (strpos("[ID]",$link)) {
+               $link = str_replace("[ID]",$ID,$link);
+            }
 
-		//$pdf->setColumnsSize(25,75);
-		while ($data=$DB->fetch_assoc($result)){
+            if (strpos("[SERIAL]",$link)) {
+               if ($tmp = $item->getField('serial')){
+                  $link = str_replace("[SERIAL]",$tmp,$link);
+               }
+            }
 
-			$name=$data["name"];
-			if (empty($name))
-				$name=$data["link"];
+            if (strpos("[OTHERSERIAL]",$link)) {
+               if ($tmp = $item->getField('otherserial')) {
+                  $link = str_replace("[OTHERSERIAL]",$tmp,$link);
+               }
+            }
 
-			$link=$data["link"];
-			$file=trim($data["data"]);
-			if (empty($file)){
+            if (strpos("[LOCATIONID]",$link)) {
+               if ($tmp = $item->getField('locations_id')){
+                  $link = str_replace("[LOCATIONID]",$tmp,$link);
+               }
+            }
 
-				if (strpos("[NAME]",$link)){
-					$link=str_replace("[NAME]",$item->getName(),$link);
-				}
-				if (strpos("[ID]",$link)){
-					$link=str_replace("[ID]",$ID,$link);
-				}
+            if (strpos("[LOCATION]",$link)) {
+               if ($tmp = $item->getField('locations_id')){
+                  $link = str_replace("[LOCATION]",
+                                      html_clean(Dropdown::getDropdownName("glpi_locations",$tmp)),
+                                      $link);
+               }
+            }
 
-				if (strpos("[SERIAL]",$link)){
-					if ($tmp=$item->getField('serial')){
-						$link=str_replace("[SERIAL]",$tmp,$link);
-					}
-				}
-				if (strpos("[OTHERSERIAL]",$link)){
-					if ($tmp=$item->getField('otherserial')){
-						$link=str_replace("[OTHERSERIAL]",$tmp,$link);
-					}
-				}
+            if (strpos("[NETWORK]",$link)) {
+               if ($tmp = $item->getField('networks_id')){
+                  $link = str_replace("[NETWORK]",
+                                      html_clean(Dropdown::getDropdownName("glpi_networks",$tmp)),
+                                      $link);
+               }
+            }
 
-				if (strpos("[LOCATIONID]",$link)){
-					if ($tmp=$item->getField('location')){
-						$link=str_replace("[LOCATIONID]",$tmp,$link);
-					}
-				}
+            if (strpos("[DOMAIN]",$link)) {
+               if ($tmp = $item->getField('domains_id'))
+                  $link = str_replace("[DOMAIN]",
+                                      html_clean(Dropdown::getDropdownName("glpi_domains",$tmp)),
+                                      $link);
+            }
+            $ipmac = array();
+            $j = 0;
+            if (strstr($link,"[IP]") || strstr($link,"[MAC]")) {
+               $query2 = "SELECT `ip`, `mac`
+                          FROM `glpi_networkports`
+                          WHERE `items_id` = '".$item->fields['id']."'
+                                AND `itemtype` = '$type'
+                          ORDER BY logical_number";
 
-				if (strpos("[LOCATION]",$link)){
-					if ($tmp=$item->getField('location')){
-						$link=str_replace("[LOCATION]",html_clean(Dropdown::getDropdownName("glpi_dropdown_locations",$tmp)),$link);
-					}
-				}
-				if (strpos("[NETWORK]",$link)){
-					if ($tmp=$item->getField('network')){
-						$link=str_replace("[NETWORK]",html_clean(Dropdown::getDropdownName("glpi_dropdown_network",$tmp)),$link);
-					}
-				}
-				if (strpos("[DOMAIN]",$link)){
-					if ($tmp=$item->getField('domain'))
-						$link=str_replace("[DOMAIN]",html_clean(Dropdown::getDropdownName("glpi_dropdown_domain",$tmp)),$link);
-				}
-				$ipmac=array();
-				$j=0;
-				if (strstr($link,"[IP]")||strstr($link,"[MAC]")){
-					$query2 = "SELECT ifaddr,ifmac FROM glpi_networking_ports WHERE (on_device = $ID AND device_type = ".$type.") ORDER BY logical_number";
-					$result2=$DB->query($query2);
-					if ($DB->numrows($result2)>0)
-						while ($data2=$DB->fetch_array($result2)){
-							$ipmac[$j]['ifaddr']=$data2["ifaddr"];
-							$ipmac[$j]['ifmac']=$data2["ifmac"];
-							$j++;
-						}
-					if (count($ipmac)>0){ // One link per network address
-						foreach ($ipmac as $key => $val){
-							$tmplink=$link;
-							$tmplink=str_replace("[IP]",$val['ifaddr'],$tmplink);
-							$tmplink=str_replace("[MAC]",$val['ifmac'],$tmplink);
-							$pdf->displayLink("$name - $tmplink", $tmplink);
-						}
-					}
-				} else { // Single link (not network info)
-					$pdf->displayLink("$name - $link", $link);
-				}
-			} else { // Generated File
-				//$link=$data['name'];
-				$ci->getFromDB($type,$ID);
+               $result2 = $DB->query($query2);
+               if ($DB->numrows($result2) > 0) {
+                  while ($data2 = $DB->fetch_array($result2)) {
+                     $ipmac[$j]['ip'] = $data2["ip"];
+                     $ipmac[$j]['mac'] = $data2["mac"];
+                     $j++;
+                  }
+               }
+               if (count($ipmac) > 0) { // One link per network address
+                  foreach ($ipmac as $key => $val) {
+                     $tmplink = $link;
+                     $tmplink = str_replace("[IP]",$val['ip'],$tmplink);
+                     $tmplink = str_replace("[MAC]",$val['mac'],$tmplink);
+                     $pdf->displayLink("$name - $tmplink", $tmplink);
+                  }
+               }
 
-				// Manage Filename
-				if (strstr($link,"[NAME]")){
-					$link=str_replace("[NAME]",$ci->getName(),$link);
-				}
+            } else { // Single link (not network info)
+               $pdf->displayLink("$name - $link", $link);
+            }
+         } else { // Generated File
+            $ci->getFromDB($type,$ID);
 
-				if (strstr($link,"[LOGIN]")){
-					if (isset($_SESSION["glpiname"])){
-						$link=str_replace("[LOGIN]",$_SESSION["glpiname"],$link);
-					}
-				}
+            // Manage Filename
+            if (strstr($link,"[NAME]")){
+               $link = str_replace("[NAME]",$ci->getName(),$link);
+            }
 
-				if (strstr($link,"[ID]")){
-					$link=str_replace("[ID]",$_GET["ID"],$link);
-				}
-				$pdf->displayLine("$name - $link");
-			}
-		} // Each link
-	} else {
-		$pdf->displayTitle('<b>'.$LANG["links"][7].'</b>');
-	}
+            if (strstr($link,"[LOGIN]")) {
+               if (isset($_SESSION["glpiname"])){
+                  $link = str_replace("[LOGIN]",$_SESSION["glpiname"],$link);
+               }
+            }
 
-	$pdf->displaySpace();
+            if (strstr($link,"[ID]")) {
+               $link = str_replace("[ID]",$_GET["ID"],$link);
+            }
+            $pdf->displayLine("$name - $link");
+         }
+      } // Each link
+   } else {
+      $pdf->displayTitle('<b>'.$LANG["links"][7].'</b>');
+   }
+   $pdf->displaySpace();
 }
 
-function plugin_pdf_volume($pdf,$item){
 
-	global $DB, $LANG;
+function plugin_pdf_volume($pdf,$item) {
+   global $DB, $LANG;
 
    $ID = $item->getField('id');
    $type = get_class($item);
 
-	$query = "SELECT glpi_dropdown_filesystems.name as fsname, glpi_computerdisks.*
-		FROM glpi_computerdisks
-		LEFT JOIN glpi_dropdown_filesystems ON (glpi_computerdisks.FK_filesystems = glpi_dropdown_filesystems.ID)
-		WHERE (FK_computers = '$ID')";
+   $query = "SELECT `glpi_filesystems`.`name` AS fsname, `glpi_computerdisks`.*
+             FROM `glpi_computerdisks`
+             LEFT JOIN `glpi_filesystems`
+               ON (`glpi_computerdisks`.`filesystems_id` = `glpi_filesystems`.`id`)
+             WHERE (`computers_id` = '$ID')";
 
-	$result=$DB->query($query);
+   $result=$DB->query($query);
 
-	$pdf->setColumnsSize(100);
-	if ($DB->numrows($result)>0){
+   $pdf->setColumnsSize(100);
+   if ($DB->numrows($result) > 0) {
+      $pdf->displayTitle("<b>".$LANG['computers'][8]."</b>");
 
-		$pdf->displayTitle("<b>".$LANG['computers'][8]."</b>");
+      $pdf->setColumnsSize(22,23,22,11,11,11);
+      $pdf->displayTitle('<b>'.$LANG['common'][16].'</b>',
+                         '<b>'.$LANG['computers'][6].'</b>',
+                         '<b>'.$LANG['computers'][5].'</b>',
+                         '<b>'.$LANG['common'][17].'</b>',
+                         '<b>'.$LANG['computers'][3].'</b>',
+                         '<b>'.$LANG['computers'][2].'</b>');
 
-		$pdf->setColumnsSize(22,23,22,11,11,11);
-		$pdf->displayTitle(
-			'<b>'.$LANG['common'][16].'</b>',
-			'<b>'.$LANG['computers'][6].'</b>',
-			'<b>'.$LANG['computers'][5].'</b>',
-			'<b>'.$LANG['common'][17].'</b>',
-			'<b>'.$LANG['computers'][3].'</b>',
-			'<b>'.$LANG['computers'][2].'</b>'
-			);
+      $pdf->setColumnsAlign('left','left','left','center','right','right');
 
-		$pdf->setColumnsAlign('left','left','left','center','right','right');
-
-		while ($data=$DB->fetch_assoc($result)){
-
-		$pdf->displayLine(
-			'<b>'.utf8_decode(empty($data['name'])?$data['ID']:$data['name']).'</b>',
-			$data['device'],
-			$data['mountpoint'],
-			$data['fsname'],
-			formatNumber($data['totalsize'], false, 0)." ".$LANG['common'][82],
-			formatNumber($data['freesize'], false, 0)." ".$LANG['common'][82]
-			);
-		}
-	} else {
-		$pdf->displayTitle("<b>".$LANG['computers'][8] . " - " . $LANG['search'][15]."</b>");
-	}
-
-	$pdf->displaySpace();
+      while ($data = $DB->fetch_assoc($result)) {
+         $pdf->displayLine('<b>'.utf8_decode(empty($data['name'])?$data['ID']:$data['name']).'</b>',
+                           $data['device'],
+                           $data['mountpoint'],
+                           Dropdown::getDropdownName('glpi_filesystems',$data["filesystems_id"]),
+                           formatNumber($data['totalsize'], false, 0)." ".$LANG['common'][82],
+                           formatNumber($data['freesize'], false, 0)." ".$LANG['common'][82]);
+      }
+   } else {
+      $pdf->displayTitle("<b>".$LANG['computers'][8] . " - " . $LANG['search'][15]."</b>");
+   }
+   $pdf->displaySpace();
 }
 
-function plugin_pdf_note($pdf,$item){
 
-	global $LANG;
+function plugin_pdf_note($pdf,$item) {
+   global $LANG;
 
    $ID = $item->getField('id');
    $type = get_class($item);
 
-	$note = trim($item->getField('notes'));
+   $note = trim($item->getField('notepad'));
 
-	$pdf->setColumnsSize(100);
-	if(utf8_strlen($note)>0)
-		{
-		$pdf->displayTitle('<b>'.$LANG["title"][37].'</b>');
-		$pdf->displayText('', $note, 5);
-	} else {
-		$pdf->displayTitle('<b>'.$LANG['plugin_pdf']['note'][1].'</b>');
-	}
-
-	$pdf->displaySpace();
+   $pdf->setColumnsSize(100);
+   if (utf8_strlen($note) > 0) {
+      $pdf->displayTitle('<b>'.$LANG["title"][37].'</b>');
+      $pdf->displayText('', $note, 5);
+   } else {
+      $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['note'][1].'</b>');
+   }
+   $pdf->displaySpace();
 }
 
-function plugin_pdf_reservation($pdf,$item){
 
-	global $DB,$LANG,$CFG_GLPI;
+function plugin_pdf_reservation($pdf,$item) {
+   global $DB,$LANG,$CFG_GLPI;
 
    $ID = $item->getField('id');
    $type = get_class($item);
 
-	if (!haveRight("reservation_central","r")) return;
+   if (!haveRight("reservation_central","r")) {
+      return;
+   }
 
-	$resaID=0;
-	$user = new User();
+   $user = new User();
+   $ri = new ReservationItem;
+   $pdf->setColumnsSize(100);
+   if ($ri->getFromDBbyItem($type,$ID)) {
+      $now = $_SESSION["glpi_currenttime"];
+      $query = "SELECT *
+                FROM `glpi_reservationitems`
+                INNER JOIN `glpi_reservations`
+                     ON (`glpi_reservations`.`reservationitems_id` = `glpi_reservationitems`.`id`)
+                WHERE `end` > '".$now."'
+                      AND `glpi_reservationitems`.`items_id` = '$ID'
+                ORDER BY `begin`";
 
-	$pdf->setColumnsSize(100);
-	if ($resaID=isReservable($type,$ID)) {
+      $result = $DB->query($query);
 
-		$now=$_SESSION["glpi_currenttime"];
-		$query = "SELECT * FROM glpi_reservation_resa WHERE end > '".$now."' AND id_item='$resaID' ORDER BY begin";
-		$result=$DB->query($query);
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle("<b>".$LANG["reservation"][35]."</b>");
 
-		$pdf->setColumnsSize(100);
-		$pdf->displayTitle("<b>".$LANG["reservation"][35]."</b>");
+      if (!$DB->numrows($result)) {
+         $pdf->displayLine("<b>".$LANG["reservation"][37]."</b>");
+      } else {
+         $pdf->setColumnsSize(14,14,26,46);
+         $pdf->displayTitle('<i>'.$LANG["search"][8].'</i>',
+                            '<i>'.$LANG["search"][9].'</i>',
+                            '<i>'.$LANG["reservation"][31].'</i>',
+                            '<i>'.$LANG["common"][25].'</i>');
 
-		if (!$DB->numrows($result)) {
-			$pdf->displayLine("<b>".$LANG["reservation"][37]."</b>");
+         while ($data = $DB->fetch_assoc($result)) {
+            if ($user->getFromDB($data["users_id"])) {
+               $name = formatUserName($user->fields["id"], $user->fields["name"],
+                                      $user->fields["realname"], $user->fields["firstname"]);
+            } else {
+               $name = "(".$data["users_id"].")";
+            }
+            $pdf->displayLine(convDateTime($data["begin"]), convDateTime($data["end"]),
+                              $name, str_replace(array("\r","\n")," ",$data["comment"]));
+         }
+      }
 
-		} else {
-			$pdf->setColumnsSize(14,14,26,46);
-			$pdf->displayTitle(
-				'<i>'.$LANG["search"][8].'</i>',
-				'<i>'.$LANG["search"][9].'</i>',
-				'<i>'.$LANG["reservation"][31].'</i>',
-				'<i>'.$LANG["common"][25].'</i>');
+      $query = "SELECT *
+                FROM `glpi_reservationitems`
+                INNER JOIN `glpi_reservations`
+                     ON (`glpi_reservations`.`reservationitems_id` = `glpi_reservationitems`.`id`)
+                WHERE `end` <= '".$now."'
+                      AND `glpi_reservationitems`.`items_id` = '$ID'
+                ORDER BY `begin`
+                DESC";
 
-			while ($data=$DB->fetch_assoc($result))	{
-				if ($user->getFromDB($data["id_user"])) {
-					$name = formatUserName($user->fields["ID"],$user->fields["name"],$user->fields["realname"],$user->fields["firstname"]);
-				} else {
-					$name = "(".$data["id_user"].")";
-				}
-				$pdf->displayLine(convDateTime($data["begin"]),	convDateTime($data["end"]),
-					$name, str_replace(array("\r","\n")," ",$data["comment"]));
-			}
-		}
+      $result = $DB->query($query);
 
-		$query = "SELECT * FROM glpi_reservation_resa WHERE end <= '".$now."' AND id_item='$resaID' ORDER BY begin DESC";
-		$result=$DB->query($query);
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle("<b>".$LANG["reservation"][36]."</b>");
 
-		$pdf->setColumnsSize(100);
-		$pdf->displayTitle("<b>".$LANG["reservation"][36]."</b>");
+      if (!$DB->numrows($result)) {
+         $pdf->displayLine("<b>".$LANG["reservation"][37]."</b>");
+      } else {
+         $pdf->setColumnsSize(14,14,26,46);
+         $pdf->displayTitle('<i>'.$LANG["search"][8].'</i>',
+                            '<i>'.$LANG["search"][9].'</i>',
+                            '<i>'.$LANG["reservation"][31].'</i>',
+                            '<i>'.$LANG["common"][25].'</i>');
 
-		if (!$DB->numrows($result))	{
-			$pdf->displayLine("<b>".$LANG["reservation"][37]."</b>");
-		} else	{
-			$pdf->setColumnsSize(14,14,26,46);
-			$pdf->displayTitle(
-				'<i>'.$LANG["search"][8].'</i>',
-				'<i>'.$LANG["search"][9].'</i>',
-				'<i>'.$LANG["reservation"][31].'</i>',
-				'<i>'.$LANG["common"][25].'</i>');
+         while ($data = $DB->fetch_assoc($result)) {
+            if ($user->getFromDB($data["users_id"])) {
+               $name = formatUserName($user->fields["id"], $user->fields["name"],
+                                      $user->fields["realname"], $user->fields["firstname"]);
+            } else {
+               $name = "(".$data["users_id"].")";
+            }
+            $pdf->displayLine(convDateTime($data["begin"]), convDateTime($data["end"]),$name,
+                                           str_replace(array("\r","\n")," ",$data["comment"]));
+         }
+      }
 
-			while ($data=$DB->fetch_assoc($result))	{
-				if ($user->getFromDB($data["id_user"])) {
-					$name = formatUserName($user->fields["ID"],$user->fields["name"],$user->fields["realname"],$user->fields["firstname"]);
-				} else {
-					$name = "(".$data["id_user"].")";
-				}
-				$pdf->displayLine(convDateTime($data["begin"]),	convDateTime($data["end"]),
-					$name, str_replace(array("\r","\n")," ",$data["comment"]));
-			}
-		}
-
-	} else { // Not isReservable
-		$pdf->displayTitle("<b>".$LANG["reservation"][34]."</b>");
-	}
-
-	$pdf->displaySpace();
+   } else { // Not isReservable
+      $pdf->displayTitle("<b>".$LANG["reservation"][34]."</b>");
+   }
+   $pdf->displaySpace();
 }
 
-function plugin_pdf_history($pdf,$item){
 
-	global $DB,$LANG;
+function plugin_pdf_history($pdf,$item) {
+   global $DB,$LANG;
 
    $ID = $item->getField('id');
    $type = get_class($item);
 
-	$SEARCH_OPTION=getSearchOptions();
+   $query="SELECT *
+           FROM `glpi_logs`
+           WHERE `items_id`= '$ID'
+                 AND `itemtype` = '$type'
+           ORDER BY `id` DESC";
 
-	$query="SELECT * FROM glpi_history WHERE FK_glpi_device='".$ID."' AND device_type='".$type."' ORDER BY  ID DESC;";
+   $result = $DB->query($query);
+   $number = $DB->numrows($result);
 
-	$result = $DB->query($query);
-	$number = $DB->numrows($result);
+   $pdf->setColumnsSize(100);
+   if ($number > 0) {
+      $pdf->displayTitle("<b>".$LANG["title"][38]."</b>");
 
-	$pdf->setColumnsSize(100);
+      $pdf->setColumnsSize(14,15,20,51);
+      $pdf->displayTitle('<b><i>'.$LANG["common"][27].'</i></b>',
+                         '<b><i>'.$LANG["common"][34].'</i></b>',
+                         '<b><i>'.$LANG["event"][18].'</i></b>',
+                         '<b><i>'.$LANG["event"][19].'</i></b>');
 
-	if ($number>0) {
+      while ($data = $DB->fetch_array($result)) {
+         $field = "";
+         if ($data["linked_action"]) {
+            switch ($data["linked_action"]) {
+               case HISTORY_DELETE_ITEM :
+                  $change = $LANG['log'][22];
+                  break;
 
-		$pdf->displayTitle("<b>".$LANG["title"][38]."</b>");
+               case HISTORY_RESTORE_ITEM :
+                  $change = $LANG['log'][23];
+                  break;
 
-		//$pdf->setColumnsSize(9,14,15,15,47);
-		$pdf->setColumnsSize(14,15,20,51);
-		$pdf->displayTitle(
-			//'<b><i>'.$LANG["common"][2].'</i></b>',
-			'<b><i>'.$LANG["common"][27].'</i></b>',
-			'<b><i>'.$LANG["common"][34].'</i></b>',
-			'<b><i>'.$LANG["event"][18].'</i></b>',
-			'<b><i>'.$LANG["event"][19].'</i></b>');
+               case HISTORY_ADD_DEVICE :
+                  $field = getDictDeviceLabel($data["itemtype_link"]);
+                  $change = $LANG["devices"][25]." ".$data[ "new_value"];
+                  break;
 
-		while ($data =$DB->fetch_array($result)){
-			$field="";
-			if($data["linked_action"]){
-				switch ($data["linked_action"]){
+               case HISTORY_UPDATE_DEVICE :
+                  $field = getDictDeviceLabel($data["itemtype_link"]);
+                  $change = getDeviceSpecifityLabel($data["itemtype_link"]).$data[ "old_value"].
+                                                    " --> ".$data[ "new_value"];
+                  break;
 
-					case HISTORY_ADD_DEVICE :
-						$field = getDictDeviceLabel($data["device_internal_type"]);
-						$change = $LANG["devices"][25]." ".$data[ "new_value"];
-						break;
+               case HISTORY_DELETE_DEVICE :
+                  $field = getDictDeviceLabel($data["itemtype_link"]);
+                  $change = $LANG["devices"][26]." ".$data["old_value"];
+                  break;
 
-					case HISTORY_UPDATE_DEVICE :
-						$field = getDictDeviceLabel($data["device_internal_type"]);
-						$change = getDeviceSpecifityLabel($data["device_internal_type"]).$data[ "old_value"].$data[ "new_value"];
-						break;
+               case HISTORY_INSTALL_SOFTWARE :
+                  $field = $LANG["help"][31];
+                  $change = $LANG["software"][44]." ".$data["new_value"];
+                  break;
 
-					case HISTORY_DELETE_DEVICE :
-						$field = getDictDeviceLabel($data["device_internal_type"]);
-						$change = $LANG["devices"][26]." ".$data["old_value"];
-						break;
-					case HISTORY_INSTALL_SOFTWARE :
-						$field = $LANG["help"][31];
-						$change = $LANG["software"][44]." ".$data["new_value"];
-						break;
-					case HISTORY_UNINSTALL_SOFTWARE :
-						$field = $LANG["help"][31];
-						$change = $LANG["software"][45]." ".$data["old_value"];
-						break;
-					case HISTORY_DISCONNECT_DEVICE:
-                  $field=NOT_AVAILABLE;
-                  if (class_exists($data["devicetype"])) {
-                     $item = new $data["devicetype"]();
+               case HISTORY_UNINSTALL_SOFTWARE :
+                  $field = $LANG["help"][31];
+                  $change = $LANG["software"][45]." ".$data["old_value"];
+                  break;
+
+               case HISTORY_DISCONNECT_DEVICE :
+                  $field = NOT_AVAILABLE;
+                  if (class_exists($data["itemtype_link"])) {
+                     $item = new $data["itemtype_link"]();
                      $field = $item->getTypeName();
                   }
-						$change = $LANG['log'][26]." ".$data["old_value"];
-						break;
-               case HISTORY_CONNECT_DEVICE:
-                  $field=NOT_AVAILABLE;
-                  if (class_exists($data["devicetype"])) {
-                     $item = new $data["devicetype"]();
+                  $change = $LANG['log'][26]." ".$data["old_value"];
+                  break;
+
+               case HISTORY_CONNECT_DEVICE :
+                  $field = NOT_AVAILABLE;
+                  if (class_exists($data["itemtype_link"])) {
+                     $item = new $data["itemtype_link"]();
                      $field = $item->getTypeName();
                   }
                   $change = $LANG["log"][27]." ".$data["new_value"];
 
-               case HISTORY_OCS_DELETE:
+               case HISTORY_OCS_IMPORT :
                   if (haveRight("view_ocsng","r")) {
-                     $field="";
                      $change = $LANG["ocsng"][7]." ".$LANG["ocsng"][45]." : ".$data["new_value"];
                   } else {
                      $display_history = false;
                   }
                   break;
-               case HISTORY_OCS_DELETE:
+
+               case HISTORY_OCS_DELETE :
                   if (haveRight("view_ocsng","r")) {
-                     $field="";
                      $change = $LANG["ocsng"][46]." ".$LANG["ocsng"][45]." : ".$data["old_value"];
                      $change.= "&nbsp;"."\"".$data["old_value"]."\"";
                   } else {
                      $display_history = false;
                   }
                   break;
+
                case HISTORY_OCS_LINK:
                   if (haveRight("view_ocsng","r")) {
-                     $field=NOT_AVAILABLE;
-                     if (class_exists($data["devicetype"])) {
-                        $item = new $data["devicetype"]();
+                     $field = NOT_AVAILABLE;
+                     if (class_exists($data["itemtype_link"])) {
+                        $item = new $data["itemtype_link"]();
                         $field = $item->getTypeName();
                      }
                      $change = $LANG["ocsng"][47]." ".$LANG["ocsng"][45]." : ".$data["new_value"];
@@ -2168,43 +2227,71 @@ function plugin_pdf_history($pdf,$item){
                      $display_history = false;
                   }
                   break;
-					case HISTORY_OCS_IDCHANGED:
+
+               case HISTORY_OCS_IDCHANGED:
                   if (haveRight("view_ocsng","r")) {
-                     $field="";
                      $change = $LANG["ocsng"][48].' : "'.$data["old_value"].
                                '" --> "'.$data["new_value"].'"';
                   } else {
                      $display_history = false;
                   }
-						break;
-				}
-			} else { // Not a linked_action
-				$fieldname="";
-				foreach($SEARCH_OPTION[$type] as $key2 => $val2)
-					if($key2==$data["id_search_option"]){
-						$field = $val2["name"];
-						$fieldname = $val2["field"];
-					}
+                  break;
 
-				if ($fieldname=="comments")
-					$change = $LANG["log"][64];
-				else
-					$change = str_replace("&nbsp;"," ",$data["old_value"])." > ".str_replace("&nbsp;"," ",$data["new_value"]);
-			}
+               case HISTORY_LOG_SIMPLE_MESSAGE :
+                  $change = $data["new_value"];
+                  break;
 
-			$pdf->displayLine(
-				//$data["ID"],
-				convDateTime($data["date_mod"]),
-				$data["user_name"],
-				$field,
-				$change);
-		} // Each log
-	} else {
-		$pdf->displayTitle("<b>".$LANG["event"][20]."</b>");
-	}
+               case HISTORY_ADD_RELATION :
+                  $field = NOT_AVAILABLE;
+                  if (class_exists($data["itemtype_link"])) {
+                     $item = new $data["itemtype_link"]();
+                     $field = $item->getTypeName();
+                  }
+                  $change = $LANG['log'][32]."&nbsp;<strong>:</strong>&nbsp;"."\"".
+                            $data["new_value"]."\"";
+                  break;
 
-	$pdf->displaySpace();
+               case HISTORY_DEL_RELATION :
+                  $field = NOT_AVAILABLE;
+                  if (class_exists($data["itemtype_link"])) {
+                     $item = new $data["itemtype_link"]();
+                     $field = $item->getTypeName();
+                  }
+                  $change = $LANG['log'][33]."&nbsp;<strong>:</strong>&nbsp;"."\"".
+                            $data["old_value"]."\"";
+                  break;
+            }
+
+         } else { // Not a linked_action
+            $fieldname = "";
+            foreach(Search::getOptions($type) as $key2 => $val2) {
+               if ($key2 == $data["id_search_option"]) {
+                  $field = $val2["name"];
+                  $fieldname = $val2["field"];
+               }
+            }
+            switch ($fieldname) {
+               case "comment" :
+                  $change = $LANG["log"][64];
+                  break;
+
+               case "notepad" :
+                  $change =$LANG['log'][67];
+                  break;
+
+               default :
+                  $change = str_replace("&nbsp;"," ",$data["old_value"])." --> ".
+                            str_replace("&nbsp;"," ",$data["new_value"]);
+            }
+            $pdf->displayLine(convDateTime($data["date_mod"]), $data["user_name"], $field, $change);
+         }
+      } // Each log
+   } else {
+      $pdf->displayTitle("<b>".$LANG["event"][20]."</b>");
+   }
+   $pdf->displaySpace();
 }
+
 
 function plugin_pdf_pluginhook($onglet,$pdf,$item) {
 	global $PLUGIN_HOOKS;
