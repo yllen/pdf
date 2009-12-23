@@ -34,7 +34,8 @@
 
 define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT."/inc/includes.php");
-usePlugin('pdf', true);
+
+Plugin::load('pdf', true);
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
 $type = $_SESSION["plugin_pdf"]["type"];
