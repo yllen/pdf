@@ -113,7 +113,7 @@ class PluginPdfPreference extends CommonDBTM {
        $values = array();
        $sql = "SELECT `tabref`
                FROM `glpi_plugin_pdf_preferences`
-               WHERE `users_ID` = " . $_SESSION['glpiID'] . "
+               WHERE `users_ID` = '" . $_SESSION['glpiID'] . "'
                      AND `itemtype` = '$type'";
 
        foreach ($DB->request($sql) AS $data) {

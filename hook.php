@@ -152,9 +152,10 @@ function plugin_pdf_headings($item,$withtemplate=0) {
       case 'Profile' :
          $prof =  new PluginPdfProfile();
          $ID = $item->getField('id');
-         if ($prof->GetfromDB($ID) || $prof->createProfile($item)) {
-            $prof->showForm($CFG_GLPI["root_doc"]."/plugins/pdf/front/profile.php",$ID);
+         if (!$prof->GetfromDB($ID)) {
+            $prof->createProfile($item);
          }
+         $prof->showForm($CFG_GLPI["root_doc"]."/plugins/pdf/front/profile.php",$ID);
          break;
 
       case 'Preference' :
