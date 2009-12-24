@@ -2306,10 +2306,8 @@ function plugin_pdf_pluginhook($onglet,$pdf,$item) {
          }
 
          $function = $PLUGIN_HOOKS["headings_actionpdf"][$plug];
-         logInFile('php-errors',"plugin_pdf_pluginhook($onglet)=>$function\n");
          if (is_callable($function)) {
             $actions = call_user_func($function, $item);
-            logInFile('php-errors',"plugin_pdf_pluginhook($onglet)=>".$actions[$ID_onglet]."\n");
 
             if (isset($actions[$ID_onglet]) && is_callable($actions[$ID_onglet])) {
                call_user_func($actions[$ID_onglet], $pdf, $item);
