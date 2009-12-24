@@ -2294,34 +2294,32 @@ function plugin_pdf_history($pdf,$item) {
 
 
 function plugin_pdf_pluginhook($onglet,$pdf,$item) {
-	global $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS;
 
-	if (preg_match("/^(.*)_([0-9]*)$/",$onglet,$split)) {
-		$plug = $split[1];
-		$ID_onglet = $split[2];
+   if (preg_match("/^(.*)_([0-9]*)$/",$onglet,$split)) {
+      $plug = $split[1];
+      $ID_onglet = $split[2];
 
-		if (isset($PLUGIN_HOOKS["headings_actionpdf"][$plug])){
-			if (file_exists(GLPI_ROOT . "/plugins/$plug/hook.php")) {
-				include_once(GLPI_ROOT . "/plugins/$plug/hook.php");
-			}
+      if (isset($PLUGIN_HOOKS["headings_actionpdf"][$plug])) {
+         if (file_exists(GLPI_ROOT . "/plugins/$plug/hook.php")) {
+            include_once(GLPI_ROOT . "/plugins/$plug/hook.php");
+         }
 
-			$function=$PLUGIN_HOOKS["headings_actionpdf"][$plug];
+         $function = $PLUGIN_HOOKS["headings_actionpdf"][$plug];
          logInFile('php-errors',"plugin_pdf_pluginhook($onglet)=>$function\n");
-         if (is_callable($function)){
-            $actions=call_user_func($function, $item);
+         if (is_callable($function)) {
+            $actions = call_user_func($function, $item);
             logInFile('php-errors',"plugin_pdf_pluginhook($onglet)=>".$actions[$ID_onglet]."\n");
 
-
-				if (isset($actions[$ID_onglet]) && is_callable($actions[$ID_onglet])){
+            if (isset($actions[$ID_onglet]) && is_callable($actions[$ID_onglet])) {
                call_user_func($actions[$ID_onglet], $pdf, $item);
-					return true;
-				}
-			}
-		}
-
-	}
-
+               return true;
+            }
+         }
+      }
+   }
 }
+
 
 function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
@@ -2329,7 +2327,7 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
    $nb_id = count($tab_id);
 
-   foreach($tab_id as $key => $id) {
+   foreach ($tab_id as $key => $id) {
       if (plugin_pdf_add_header($pdf,$id,$item)) {
          $pdf->newPage();
       } else {
@@ -2337,10 +2335,10 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
          continue;
       }
 
-      switch(get_class($item)) {
+      switch (get_class($item)) {
          case 'Computer' :
             plugin_pdf_main_computer($pdf,$item);
-            foreach($tab as $i) {
+            foreach ($tab as $i) {
                switch($i) { // See Computer::defineTabs();
                   case 4 :
                      plugin_pdf_financial($pdf,$item);
@@ -2401,8 +2399,8 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
          case 'Printer' :
             plugin_pdf_main_printer($pdf,$item);
-            foreach($tab as $i) {
-               switch($i) {  // See Printer::defineTabs();
+            foreach ($tab as $i) {
+               switch ($i) {  // See Printer::defineTabs();
                   case 1 :
                      plugin_pdf_cartridges($pdf,$item,false);
                      plugin_pdf_cartridges($pdf,$item,true);
@@ -2451,8 +2449,8 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
          case 'Monitor' :
             plugin_pdf_main_monitor($pdf,$item);
-            foreach($tab as $i) {
-               switch($i) { // See Monitor::defineTabs();
+            foreach ($tab as $i) {
+               switch ($i) { // See Monitor::defineTabs();
                   case 1 :
                      plugin_pdf_device_connection($pdf,$item);
                      break;
@@ -2495,8 +2493,8 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
          case 'Peripheral' :
             plugin_pdf_main_peripheral($pdf,$item);
-            foreach($tab as $i) {
-               switch($i) { // See Peripheral::defineTabs();
+            foreach ($tab as $i) {
+               switch ($i) { // See Peripheral::defineTabs();
                   case 1 :
                      plugin_pdf_device_connection($pdf,$item);
                      break;
@@ -2539,8 +2537,8 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
          case 'Phone' :
             plugin_pdf_main_phone($pdf,$item);
-            foreach($tab as $i) {
-               switch($i) { // See Phone::defineTabs();
+            foreach ($tab as $i) {
+               switch ($i) { // See Phone::defineTabs();
                   case 1 :
                      plugin_pdf_device_connection($pdf,$item);
                      break;
@@ -2583,8 +2581,8 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
          case 'SoftwareLicense' :
             plugin_pdf_main_license($pdf,$item);
-            foreach($tab as $i) {
-               switch($i) { // See SoftwareLicense::defineTabs();
+            foreach ($tab as $i) {
+               switch ($i) { // See SoftwareLicense::defineTabs();
                   case 4 :
                      plugin_pdf_financial($pdf,$item);
                      plugin_pdf_contract($pdf,$item);
@@ -2606,8 +2604,8 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
          case 'SoftwareVersion' :
             plugin_pdf_main_version($pdf,$item);
-            foreach($tab as $i) {
-               switch($i) { // See SoftwareVersion::defineTabs();
+            foreach ($tab as $i) {
+               switch ($i) { // See SoftwareVersion::defineTabs();
                   case 2 :
                      plugin_pdf_installations($pdf,$item);
                      break;
@@ -2624,8 +2622,8 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
          case 'Software' :
             plugin_pdf_main_software($pdf,$item);
-            foreach($tab as $i) {
-               switch($i) { // See Software::defineTabs();
+            foreach ($tab as $i) {
+               switch ($i) { // See Software::defineTabs();
                   case 1 :
                      plugin_pdf_versions($pdf,$item);
                      plugin_pdf_licenses($pdf,$item,in_array(2,$tab));
@@ -2673,8 +2671,8 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
          case 'Ticket' :
             plugin_pdf_main_ticket($pdf,$item,in_array('private',$tab));
-            foreach($tab as $i) {
-               switch($i) { // Value not from Job::defineTabs but from plugin_pdf_prefPDF
+            foreach ($tab as $i) {
+               switch ($i) { // Value not from Job::defineTabs but from plugin_pdf_prefPDF
                   case 5 :
                      plugin_pdf_document($pdf,$item);
                      break;
