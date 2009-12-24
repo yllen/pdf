@@ -2247,8 +2247,7 @@ function plugin_pdf_history($pdf,$item) {
                      $item = new $data["itemtype_link"]();
                      $field = $item->getTypeName();
                   }
-                  $change = $LANG['log'][32]."&nbsp;<strong>:</strong>&nbsp;"."\"".
-                            $data["new_value"]."\"";
+                  $change = $LANG['log'][32]." : ".$data["new_value"]."\"";
                   break;
 
                case HISTORY_DEL_RELATION :
@@ -2257,8 +2256,7 @@ function plugin_pdf_history($pdf,$item) {
                      $item = new $data["itemtype_link"]();
                      $field = $item->getTypeName();
                   }
-                  $change = $LANG['log'][33]."&nbsp;<strong>:</strong>&nbsp;"."\"".
-                            $data["old_value"]."\"";
+                  $change = $LANG['log'][33]." : ".$data["old_value"]."\"";
                   break;
             }
 
@@ -2283,8 +2281,8 @@ function plugin_pdf_history($pdf,$item) {
                   $change = str_replace("&nbsp;"," ",$data["old_value"])." --> ".
                             str_replace("&nbsp;"," ",$data["new_value"]);
             }
-            $pdf->displayLine(convDateTime($data["date_mod"]), $data["user_name"], $field, $change);
          }
+         $pdf->displayLine(convDateTime($data["date_mod"]), $data["user_name"], $field, $change);
       } // Each log
    } else {
       $pdf->displayTitle("<b>".$LANG["event"][20]."</b>");
