@@ -1807,7 +1807,7 @@ function plugin_pdf_oldticket($pdf,$item) {
       $pdf->displayTitle('<b>'.$LANG['joblist'][25]." - $number ".$LANG["job"][8].'</b>');
 
       while ($data = $DB->fetch_assoc($result)) {
-         $pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b> ID'.$data["ID"].'     '.
+         $pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b> ID'.$data["id"].'     '.
                            Ticket::getStatus($data["status"]));
 
          $pdf->displayLine('<b><i>'.$LANG["common"][27].' :</i></b>'.$LANG["joblist"][11].' : '.
