@@ -313,8 +313,9 @@ function plugin_pdf_install() {
    // Give right to current Profile
    include_once (GLPI_ROOT . '/plugins/pdf/inc/profile.class.php');
    $prof =  new PluginPdfProfile();
-   $prof->add(array('id'   => $_SESSION['glpiactiveprofile']['id'],
-                    'use'  => 1));
+   $prof->add(array('id'      => $_SESSION['glpiactiveprofile']['id'],
+                    'profile' => $_SESSION['glpiactiveprofile']['name'],
+                    'use'     => 1));
    return true;
 }
 

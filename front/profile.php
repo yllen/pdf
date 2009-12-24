@@ -40,7 +40,7 @@ include_once (GLPI_ROOT . "/inc/includes.php");
 checkRight("profile","r");
 
 // Mainly usefull if not actived
-usePLugin('pdf',true);
+Plugin::load('pdf',true);
 
 $prof = new PluginPdfProfile();
 
