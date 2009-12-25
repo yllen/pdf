@@ -897,150 +897,44 @@ function plugin_pdf_main_software($pdf,$software) {
 }
 
 
-function plugin_pdf_device($pdf,$computer) {
-   global $LANG;
+function plugin_pdf_device($pdf, $computer) {
+   global $DB, $LANG;
 
-   $computer->getFromDBwithDevices($computer->getField('id'));
+   $ID = $computer->getField('id');
+   if (!$computer->can($ID, 'r')) {
+      return false;
+   }
+
+   $query = "SELECT count(*) AS NB, `id`, `itemtype`, `items_id`, `specificity`
+             FROM `glpi_computers_devices`
+             WHERE `computers_id` = '$ID'
+                GROUP BY `itemtype`, `items_id`, `specificity`";
 
    $pdf->setColumnsSize(100);
    $pdf->displayTitle('<b>'.$LANG["title"][30].'</b>');
 
-   $pdf->setColumnsSize(3,14,44,19,20);
+   $pdf->setColumnsSize(3,14,42,41);
 
-   foreach ($computer->devices as $key => $val) {
-      $device = new Device($val["devType"]);
-      $device->getFromDB($val["devID"]);
+   foreach($DB->request($query) as $data) {
 
-      switch ($device->devtype) {
-      case HDD_DEVICE :
-         if (!empty($device->fields["rpm"])) {
-            $col5 = '<b><i>'.$LANG["device_hdd"][0].' :</i></b> '.$device->fields["rpm"];
-         } else if (!empty($device->fields["interfacetypes_id"])) {
-            $col5 = '<b><i>'.$LANG["common"][65].' :</i></b> '.
-                     html_clean(Dropdown::getDropdownName("glpi_interfacetypes",
-                                                          $device->fields["interfacetypes_id"]));
-         } else if (!empty($device->fields["cache"])) {
-            $col5 = '<b><i>'.$LANG["device_hdd"][1].' :</i></b> '.$device->fields["cache"];
-         } else {
-            $col5 = '';
+      $device = new $data['itemtype'];
+      if ($device->getFromDB($data['items_id'])) {
+
+         $spec = $device->getFormData();
+         $col4 = $col5 = '';
+         if (isset($spec['label']) && count($spec['label'])) {
+            $colspan = (60/count($spec['label']));
+            foreach ($spec['label'] as $i => $label) {
+               if (isset($spec['value'][$i])) {
+                  $col4 .= '<b><i>'.$spec['label'][$i].' :</i></b> '.$spec['value'][$i]." ";
+               } else {
+                  $col4 .= '<b><i>'.$spec['label'][$i].' :</i></b> '.$data['specificity']." ";
+               }
+            }
          }
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][1], $device->fields["designation"],
-                           '<b><i>'.$LANG["device_hdd"][4].' :</i></b> '.$val["specificity"], $col5);
-         break;
-
-      case GFX_DEVICE :
-         $col4 = (empty($device->fields["interfacetype_id"]) ? '' : '<b><i>'.
-                  $LANG["device_gfxcard"][0].' :</i></b> '.$device->fields["interfacetype_id"]);
-         $col5 = (empty($device->fields["specif_default"]) ? '' :  '<b><i>'.
-                  $LANG["common"][65].' :</i></b> '.$device->fields["specif_default"]);
-
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][2], $device->fields["designation"],
-                           $col4, $col5);
-         break;
-
-      case NETWORK_DEVICE :
-         $col4 = (empty($device->fields["bandwidth"]) ? '' : '<b><i>'.
-                  $LANG["device_iface"][0].' :</i></b> '.$device->fields["bandwidth"]);
-
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][3], $device->fields["designation"],
-                           $col4,'<b><i>'.$LANG["networking"][15].' :</i></b> '.$val["specificity"]
-                           );
-         break;
-
-      case MOBOARD_DEVICE :
-         $col4 = (empty($device->fields["chipset"]) ? '' : '<b><i>'.
-                  $LANG["device_moboard"][0].' :</i></b> '.$device->fields["chipset"]);
-         $col5 = '';
-
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][5], $device->fields["designation"],
-                           $col4, $col5);
-         break;
-
-      case PROCESSOR_DEVICE :
-         $col5 = '';
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][4], $device->fields["designation"],
-                           '<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$val["specificity"], $col5);
-         break;
-
-      case RAM_DEVICE :
-         $col4 = (empty($device->fields["type"]) ? '' : '<b><i>'.
-                  $LANG["common"][17].' :</i></b> '.
-                  html_clean(Dropdown::getDropdownName("glpi_devicememories",
-                                                       $device->fields["type"]))) .
-                                 (empty($device->fields["frequence"]) ? '' : '<b><i>'.
-                                  $LANG['device_ram'][1].' :</i></b> '.$device->fields["frequence"]);
-
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][6], $device->fields["designation"],
-                           $col4, '<b><i>'.$LANG["monitors"][21].' :</i></b> '.$val["specificity"]);
-         break;
-
-      case SND_DEVICE :
-         $col4 = (empty($device->fields["type"]) ? '' : '<b><i>'.$LANG["common"][17].' :</i></b> '.
-                  $device->fields["type"]);
-         $col5 = '';
-
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][7], $device->fields["designation"],
-                           $col4, $col5);
-         break;
-
-      case DRIVE_DEVICE :
-         if (!empty($device->fields["is_writer"])) {
-            $col4 = '<b><i>'.$LANG["profiles"][11].' :</i></b> '.
-                    Dropdown::getYesNo($device->fields["is_writer"]);
-         } else if (!empty($device->fields["speed"])) {
-            $col4 = '<b><i>'.$LANG["device_drive"][1].' :</i></b> '.$device->fields["speed"];
-         } else if (!empty($device->fields["frequence"])) {
-            $col4 = '<b><i>'.$LANG["device_ram"][1].' :</i></b> '.$device->fields["specif_default"];
-         } else {
-            $col4 = '';
-         }
-         $col5 = '';
-
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][19],
-                           $device->fields["designation"], $col4, $col5);
-         break;
-
-      case CONTROL_DEVICE :
-         $col4 = (empty($device->fields["interfacetypes_id"]) ? '' : '<b><i>'.
-                  $LANG["common"][65].' :</i></b> '.
-                  html_clean(Dropdown::getDropdownName("glpi_interfacetypes",
-                                                       $device->fields["interfacetypes_id"])));
-         $col5 = (empty($device->fields["is_raid"]) ? '' : '<b><i>'.
-                  $LANG["device_control"][0].' :</i></b> '.Dropdown::getYesNo($device->fields["is_raid"]));
-
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][20],
-                           $device->fields["designation"], $col4, $col5);
-         break;
-
-      case PCI_DEVICE :
-         $col4 = '';
-         $col5 = '';
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][21],
-                           $device->fields["designation"], $col4, $col5);
-         break;
-
-      case POWER_DEVICE :
-         $col4 = (empty($device->fields["power"]) ? '' : '<b><i>'.
-                  $LANG["device_power"][0].' :</i></b> '.$device->fields["power"]);
-         $col5 = (empty($device->fields["is_atx"]) ? '' : '<b><i>'.
-                  $LANG["device_power"][1].' :</i></b> '.Dropdown::getYesNo($device->fields["is_atx"]));
-
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][23],
-                           $device->fields["designation"], $col4, $col5);
-         break;
-
-      case CASE_DEVICE :
-         $col4 = (empty($device->fields["type"]) ? '' : '<b><i>'.
-                  $LANG["common"][17].' :</i></b> '.
-                  html_clean(Dropdown::getDropdownName("glpi_devicecasetypes",
-                                                       $device->fields["type"])));
-         $col5 = '';
-
-         $pdf->displayLine($val["quantity"].'x', $LANG["devices"][22],
-                           $device->fields["designation"], $col4, $col5);
-         break;
+         $pdf->displayLine($data['NB'], $device->getTypeName(), $device->getName(), $col4);
       }
-   } // each device
+   }
 
    $pdf->displaySpace();
 }
