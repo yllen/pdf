@@ -2050,18 +2050,31 @@ function plugin_pdf_history($pdf,$item) {
                   break;
 
                case HISTORY_ADD_DEVICE :
-                  $field = getDictDeviceLabel($data["itemtype_link"]);
+                  $field = NOT_AVAILABLE;
+                  if (class_exists($data["itemtype_link"])) {
+                     $item = new $data["itemtype_link"]();
+                     $field = $item->getTypeName();
+                  }
                   $change = $LANG["devices"][25]." ".$data[ "new_value"];
                   break;
 
                case HISTORY_UPDATE_DEVICE :
-                  $field = getDictDeviceLabel($data["itemtype_link"]);
-                  $change = getDeviceSpecifityLabel($data["itemtype_link"]).$data[ "old_value"].
-                                                    " --> ".$data[ "new_value"];
+                  $field = NOT_AVAILABLE;
+                  $change = '';
+                  if (class_exists($data["itemtype_link"])) {
+                     $item = new $data["itemtype_link"]();
+                     $field = $item->getTypeName();
+                     $change = $item->getSpecifityLabel()." : ";
+                  }
+                  $change .= $data["old_value"]." --> ".$data["new_value"];
                   break;
 
                case HISTORY_DELETE_DEVICE :
-                  $field = getDictDeviceLabel($data["itemtype_link"]);
+                  $field = NOT_AVAILABLE;
+                  if (class_exists($data["itemtype_link"])) {
+                     $item = new $data["itemtype_link"]();
+                     $field = $item->getTypeName();
+                  }
                   $change = $LANG["devices"][26]." ".$data["old_value"];
                   break;
 
@@ -2141,7 +2154,7 @@ function plugin_pdf_history($pdf,$item) {
                      $item = new $data["itemtype_link"]();
                      $field = $item->getTypeName();
                   }
-                  $change = $LANG['log'][32]." : ".$data["new_value"]."\"";
+                  $change = $LANG['log'][32].' : "'.$data["new_value"].'"';
                   break;
 
                case HISTORY_DEL_RELATION :
@@ -2150,7 +2163,7 @@ function plugin_pdf_history($pdf,$item) {
                      $item = new $data["itemtype_link"]();
                      $field = $item->getTypeName();
                   }
-                  $change = $LANG['log'][33]." : ".$data["old_value"]."\"";
+                  $change = $LANG['log'][33].' : "'.$data["old_value"].'"';
                   break;
             }
 
