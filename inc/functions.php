@@ -1458,8 +1458,8 @@ function plugin_pdf_port($pdf,$item){
             $netport2 = new NetworkPort;
 
             $line = '<b><i>'.$LANG["networking"][17].' :</i></b> ';
-            if ($contact->getContact($netport->fields["id"])) {
-               $netport2->getfromDB($contact->contact_id);
+            if ($cid = $contact->getContact($netport->fields["id"])) {
+               $netport2->getfromDB($cid);
                $netport2->getDeviceData($netport2->fields['items_id'],$netport2->fields['itemtype']);
 
                $line .= ($netport2->device_name ? $netport2->device_name : $LANG["connect"][1]);

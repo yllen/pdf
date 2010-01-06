@@ -34,12 +34,9 @@
 
 class PluginPdfPreference extends CommonDBTM {
 
-   public $table = 'glpi_plugin_pdf_preferences';
-   public $type  = 'PluginPdfPreference';
-
 
    function showForm($target) {
-      global  $LANG, $DB, $CFG_GLPI, $PLUGIN_HOOKS;
+      global $LANG, $DB, $CFG_GLPI, $PLUGIN_HOOKS;
 
       echo "<div class='center' id='pdf_type'>";
       foreach ($PLUGIN_HOOKS['plugin_pdf'] as $type => $plug) {
@@ -112,7 +109,7 @@ class PluginPdfPreference extends CommonDBTM {
        $landscape = false;
        $values = array();
        $sql = "SELECT `tabref`
-               FROM `glpi_plugin_pdf_preferences`
+               FROM `".$this->getTable()."`
                WHERE `users_ID` = '" . $_SESSION['glpiID'] . "'
                      AND `itemtype` = '$type'";
 

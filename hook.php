@@ -197,7 +197,7 @@ function plugin_pdf_MassiveActionsDisplay($type,$action) {
       case 'Profile' :
          switch ($action) {
             case "plugin_pdf_allow":
-               dropdownYesNo('use');
+               Dropdown::showYesNo('use');
                echo "<input type='submit' name='massiveaction' class='submit' value='".
                      $LANG['buttons'][2]."'>";
                break;
@@ -328,14 +328,14 @@ function plugin_pdf_install() {
 function plugin_pdf_uninstall() {
    global $DB;
 
-   $query = "DROP TABLE IF EXISTS `glpi_plugin_pdf_preference`";
-   $DB->query($query) or die($DB->error());
+   $tables = array ("glpi_plugin_pdf_preference",
+                    "glpi_plugin_pdf_preferences",
+                    "glpi_plugin_pdf_profiles");
 
-   $query = "DROP TABLE IF EXISTS `glpi_plugin_pdf_preferences`";
-   $DB->query($query) or die($DB->error());
-
-   $query = "DROP TABLE IF EXISTS `glpi_plugin_pdf_profiles`";
-   $DB->query($query) or die($DB->error());
+   foreach ($tables as $table) {
+      $query = "DROP TABLE IF EXISTS `$table`;";
+      $DB->query($query) or die($DB->error());
+   }
 
    return true;
 }

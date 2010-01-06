@@ -34,9 +34,6 @@
 
 class PluginPdfProfile extends CommonDBTM {
 
-   public $table = 'glpi_plugin_pdf_profiles';
-   public $type  = 'PluginPdfProfile';
-
 
    function getSearchOptions() {
       global $LANG;
@@ -45,7 +42,7 @@ class PluginPdfProfile extends CommonDBTM {
 
       $tab['common'] = $LANG['pulse2'][1];
 
-      $tab['table']     = 'glpi_plugin_pdf_profiles';
+      $tab['table']     = $this->getTable();
       $tab['field']     = 'use';
       $tab['linkfield'] = 'id';$LANG['plugin_pdf']['title'][1];
       $tab['datatype']  = 'bool';
@@ -66,7 +63,7 @@ class PluginPdfProfile extends CommonDBTM {
       global $DB;
 
       $query = "DELETE
-                FROM `glpi_plugin_pdf_profiles`
+                FROM `".$this->getTable()."`
                 WHERE `id` = '$ID' ";
       $DB->query($query);
    }
