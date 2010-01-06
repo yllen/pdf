@@ -129,6 +129,10 @@ function plugin_pdf_headings_actions($item) {
    $type = get_class($item);
    switch ($type) {
       case 'Profile' :
+         if ($item->getField('interface')!='helpdesk') {
+            return array(1 => "plugin_pdf_headings");
+         }
+         break;
       case 'Preference' :
          return array(1 => "plugin_pdf_headings");
 
