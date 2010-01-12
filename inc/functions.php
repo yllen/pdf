@@ -216,12 +216,12 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
       $pdf->displayLine($LANG['job'][12]);
    } else {
       while ($data=$DB->fetch_array($result)) {
+/*
          $pdf->setColumnsSize(15,15,15,55);
          $pdf->displayTitle("<b><i>".$LANG['common'][27]."</i></b>", // Date
                             "<b><i>".$LANG['common'][37]."</i></b>", // Author
                             "<b><i>".$LANG['job'][31]."</i></b>",    // Durée
                             "<b><i>".$LANG['job'][35]."</i></b>");   // Plan
-
          $realtime = '';
          $hour = floor($data["realtime"]);
          $minute = round(($data["realtime"]-$hour)*60,0);
@@ -244,12 +244,20 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
             $planification = Planning::getState($data2["state"])." - ".convDateTime($data2["begin"]).
                              " -> ".convDateTime($data2["end"])." - ".getUserName($data2["users_id"]);
          }
-
          $pdf->setColumnsSize(15,15,15,55);
          $pdf->displayLine(
          convDateTime($data["date"]),
          html_clean(getUserName($data["users_id"])),$realtime,$planification);
          $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b>&nbsp;: ", $data["content"]);
+
+         *         */
+         $pdf->setColumnsSize(20,80);
+         $pdf->displayTitle("<b><i>".$LANG['common'][27]."</i></b>", // Date
+                            "<b><i>".$LANG['common'][37]."</i></b>"); // Author
+
+         $pdf->displayLine(convDateTime($data["date"]),
+                           html_clean(getUserName($data["users_id"])));
+         $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", $data["content"]);
       }
    }
    $pdf->displaySpace();
