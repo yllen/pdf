@@ -145,7 +145,7 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
       "<b><i>".$LANG['job'][44]."</i></b> : ".
             html_clean(Dropdown::getDropdownName('glpi_requesttypes',
                                                  $job->fields['requesttypes_id'])),
-      "<b><i>".$LANG['job'][20]."</i></b> : ".getRealtime($job->fields["realtime"]));
+      "<b><i>".$LANG['job'][20]."</i></b> : ".Ticket::getRealtime($job->fields["realtime"]));
 
    //row3 (author / attribute / cost_time)
    $pdf->displayLine(
