@@ -908,39 +908,54 @@ function plugin_pdf_main_software($pdf,$software) {
 function plugin_pdf_device($pdf, $computer) {
    global $DB, $LANG;
 
+   $devtypes = Computer_Device::getDeviceTypes();
+
    $ID = $computer->getField('id');
    if (!$computer->can($ID, 'r')) {
       return false;
    }
-
-   $query = "SELECT count(*) AS NB, `id`, `itemtype`, `items_id`, `specificity`
-             FROM `glpi_computers_devices`
-             WHERE `computers_id` = '$ID'
-                GROUP BY `itemtype`, `items_id`, `specificity`";
 
    $pdf->setColumnsSize(100);
    $pdf->displayTitle('<b>'.$LANG["title"][30].'</b>');
 
    $pdf->setColumnsSize(3,14,42,41);
 
-   foreach($DB->request($query) as $data) {
+   foreach ($devtypes as $itemtype) {
+      $device = new $itemtype;
 
-      $device = new $data['itemtype'];
-      if ($device->getFromDB($data['items_id'])) {
+      $specificities = $device->getSpecifityLabel();
+      $specif_fields = array_keys($specificities);
+      $specif_text = implode(',',$specif_fields);
+      if (!empty($specif_text)) {
+         $specif_text=" ,".$specif_text." ";
+      }
 
-         $spec = $device->getFormData();
-         $col4 = $col5 = '';
-         if (isset($spec['label']) && count($spec['label'])) {
-            $colspan = (60/count($spec['label']));
-            foreach ($spec['label'] as $i => $label) {
-               if (isset($spec['value'][$i])) {
-                  $col4 .= '<b><i>'.$spec['label'][$i].' :</i></b> '.$spec['value'][$i]." ";
-               } else {
-                  $col4 .= '<b><i>'.$spec['label'][$i].' :</i></b> '.$data['specificity']." ";
+      $linktable = getTableForItemType('Computer_'.$itemtype);
+      $fk = getForeignKeyFieldForTable(getTableForItemType($itemtype));
+
+      $query = "SELECT count(*) AS NB, `id`, `$fk` $specif_text
+               FROM `$linktable`
+               WHERE `computers_id` = '$ID'
+               GROUP BY `$fk` $specif_text";
+
+      foreach($DB->request($query) as $data) {
+
+         if ($device->getFromDB($data[$fk])) {
+
+            $spec = $device->getFormData();
+            $col4 = '';
+            if (isset($spec['label']) && count($spec['label'])) {
+               $colspan = (60/count($spec['label']));
+               foreach ($spec['label'] as $i => $label) {
+                  if (isset($spec['value'][$i])) {
+                     $col4 .= '<b><i>'.$spec['label'][$i].' :</i></b> '.$spec['value'][$i]." ";
+                  } else {
+                     $col4 .= '<b><i>'.$spec['label'][$i].' :</i></b> '.$data['specificity']." ";
+                  }
                }
             }
+            $pdf->displayLine($data['NB'], $device->getTypeName(), $device->getName(), $col4);
          }
-         $pdf->displayLine($data['NB'], $device->getTypeName(), $device->getName(), $col4);
       }
    }
 
