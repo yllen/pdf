@@ -1636,9 +1636,9 @@ function plugin_pdf_ticket($pdf,$item) {
       return;
    }
 
-   $query = "SELECT ".getCommonSelectForTrackingSearch()."
+   $query = "SELECT ".Ticket::getCommonSelect()."
              FROM glpi_tickets ".
-             getCommonLeftJoinForTrackingSearch()."
+             Ticket::getCommonLeftJoin()."
              WHERE (`status` = 'new'
                     OR `status` = 'assign'
                     OR `status` = 'plan'
@@ -1690,9 +1690,9 @@ function plugin_pdf_oldticket($pdf,$item) {
       return;
    }
 
-   $query = "SELECT ".getCommonSelectForTrackingSearch()."
+   $query = "SELECT ".Ticket::getCommonSelect()."
              FROM glpi_tickets ".
-             getCommonLeftJoinForTrackingSearch()."
+             Ticket::getCommonLeftJoin()."
              WHERE (`status` = 'solved'
                     OR `status` = 'closed')
                    AND (`itemtype` = '$type'

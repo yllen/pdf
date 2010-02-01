@@ -69,8 +69,13 @@ class PluginPdfProfile extends CommonDBTM {
    }
 
 
-   function showForm($target,$ID) {
+   function showForm($ID, $options=array()) {
       global $LANG,$DB;
+
+      $target = $this->getFormURL();
+      if (isset($options['target'])) {
+        $target = $options['target'];
+      }
 
       if ($ID > 0) {
          $this->check($ID,'r');
@@ -81,7 +86,7 @@ class PluginPdfProfile extends CommonDBTM {
 
       $canedit = $this->can($ID,'w');
 
-      echo "<form action='$target' method='post'>";
+      echo "<form action='".$target."' method='post'>";
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr><th colspan='2' class='center b'>".
             $LANG['plugin_pdf']['title'][1]. " - " .$this->fields["profile"]."</th></tr>";

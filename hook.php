@@ -47,7 +47,8 @@ function plugin_pdf_prefPDF($item) {
    $tabs = array();
    switch (get_class($item)) {
       case 'Computer' :
-         $tabs = $item->defineTabs(1,'');
+         $item->fields['id'] = 1;
+         $tabs = $item->defineTabs();
          if (isset($tabs[13])) {
             unset($tabs[13]); // OCSNG
          }
@@ -57,25 +58,29 @@ function plugin_pdf_prefPDF($item) {
       case 'Monitor' :
       case 'Phone' :
       case 'Peripheral' :
-         $tabs = $item->defineTabs(1,'');
+         $item->fields['id'] = 1;
+         $tabs = $item->defineTabs();
          break;
 
       case 'Software' :
-         $tabs = $item->defineTabs(1,'');
+         $item->fields['id'] = 1;
+         $tabs = $item->defineTabs();
          if (isset($tabs[21])) {
             unset($tabs[21]); // Merge
          }
          break;
 
       case 'SoftwareLicense' :
-         $tabs = $item->defineTabs(1,'');
+         $item->fields['id'] = 1;
+         $tabs = $item->defineTabs();
          if (isset($tabs[1])) {
             unset($tabs[1]); // Main : TODO
          }
          break;
 
       case 'SoftwareVersion' :
-         $tabs = $item->defineTabs(1,'');
+         $item->fields['id'] = 1;
+         $tabs = $item->defineTabs();
          if (isset($tabs[1])) {
             unset($tabs[1]); // Main : TODO
          }
@@ -159,11 +164,12 @@ function plugin_pdf_headings($item,$withtemplate=0) {
          if (!$prof->GetfromDB($ID)) {
             $prof->createProfile($item);
          }
-         $prof->showForm($CFG_GLPI["root_doc"]."/plugins/pdf/front/profile.php",$ID);
+         $prof->showForm($ID,
+                         array('target' => $CFG_GLPI["root_doc"]."/plugins/pdf/front/profile.php"));
          break;
 
       case 'Preference' :
-         $pref->showForm($CFG_GLPI['root_doc']."/plugins/pdf/front/preference.form.php");
+         $pref->showPreferences($CFG_GLPI['root_doc']."/plugins/pdf/front/preference.form.php");
          break;
 
       default :

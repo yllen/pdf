@@ -35,7 +35,7 @@
 class PluginPdfPreference extends CommonDBTM {
 
 
-   function showForm($target) {
+   function showPreferences($target) {
       global $LANG, $DB, $CFG_GLPI, $PLUGIN_HOOKS;
 
       echo "<div class='center' id='pdf_type'>";
