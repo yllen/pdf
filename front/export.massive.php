@@ -57,7 +57,12 @@ while ($data = $DB->fetch_array($result)) {
 }
 
 if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-   doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$item, $tab_id, $tab);
+   $options = array('item'   => $item,
+                    'tab_id' => $tab_id,
+                    'tab'    => $tab,
+                    'page'   => 0);
+
+   doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$options);
 } else {
    die("Missing hook");
 }

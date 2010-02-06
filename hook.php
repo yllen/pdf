@@ -97,13 +97,14 @@ function plugin_pdf_prefPDF($item) {
 /**
  * Hook to generate a PDF for a type
  *
- * @param $type of item
- * @param $tab_id array of ID
- * @param $tab of option to be printed
- * @param $page boolean true for landscape
+ * @param $options array of PDF options
+ * - item object
+ * - tab_id array of ID
+ * - tab array of options to be printed
+ * - page boolean true for landscape
  */
-function plugin_pdf_generatePDF($item, $tab_id, $tab, $page=0) {
-   plugin_pdf_general($item, $tab_id, $tab, $page);
+function plugin_pdf_generatePDF($options) {
+   plugin_pdf_general($options['item'], $options['tab_id'], $options['tab'], $options['page']);
 }
 
 
@@ -196,12 +197,12 @@ function plugin_pdf_MassiveActions($type) {
 }
 
 
-function plugin_pdf_MassiveActionsDisplay($type,$action) {
+function plugin_pdf_MassiveActionsDisplay($options=array()) {
    global $LANG,$PLUGIN_HOOKS;
 
-   switch ($type) {
+   switch ($options['itemtype']) {
       case 'Profile' :
-         switch ($action) {
+         switch ($options['action']) {
             case "plugin_pdf_allow":
                Dropdown::showYesNo('use');
                echo "<input type='submit' name='massiveaction' class='submit' value='".
@@ -211,7 +212,7 @@ function plugin_pdf_MassiveActionsDisplay($type,$action) {
          break;
 
       default :
-         if (isset($PLUGIN_HOOKS['plugin_pdf'][$type]) && $action=='plugin_pdf_DoIt') {
+         if (isset($PLUGIN_HOOKS['plugin_pdf'][$options['itemtype']]) && $options['action']=='plugin_pdf_DoIt') {
             echo "<input type='submit' name='massiveaction' class='submit' value='".
                   $LANG['buttons'][2]."'>";
          }

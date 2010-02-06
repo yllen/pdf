@@ -56,11 +56,13 @@ if (isset($_POST["plugin_pdf_inventory_type"])
       }
    }
 
-   $tab_id[0] = $_POST["itemID"];
-
    if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-      doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$item, $tab_id, $tab,
-                (isset($_POST["page"]) ? $_POST["page"] : 0));
+      $options = array('item'   => $item,
+                       'tab_id' => array($_POST["itemID"]),
+                       'tab'    => $tab,
+                       'page'   => (isset($_POST["page"]) ? $_POST["page"] : 0));
+
+      doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$options);
    } else {
       die("Missing hook");
    }
