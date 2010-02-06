@@ -2036,22 +2036,13 @@ function plugin_pdf_reservation($pdf,$item) {
 
 
 function plugin_pdf_history($pdf,$item) {
-   global $DB,$LANG;
+   global $LANG;
 
-   $ID = $item->getField('id');
-   $type = get_class($item);
-
-   $query="SELECT *
-           FROM `glpi_logs`
-           WHERE `items_id`= '$ID'
-                 AND `itemtype` = '$type'
-           ORDER BY `id` DESC";
-
-   $result = $DB->query($query);
-   $number = $DB->numrows($result);
+   // Get the Full history for the item (really a good idea ?, should we limit this)
+   $changes = Log::getHistoryData($item);
 
    $pdf->setColumnsSize(100);
-   if ($number > 0) {
+   if (count($changes) > 0) {
       $pdf->displayTitle("<b>".$LANG["title"][38]."</b>");
 
       $pdf->setColumnsSize(14,15,20,51);
@@ -2060,159 +2051,10 @@ function plugin_pdf_history($pdf,$item) {
                          '<b><i>'.$LANG["event"][18].'</i></b>',
                          '<b><i>'.$LANG["event"][19].'</i></b>');
 
-      while ($data = $DB->fetch_array($result)) {
-         $field = "";
-         if ($data["linked_action"]) {
-            switch ($data["linked_action"]) {
-               case HISTORY_DELETE_ITEM :
-                  $change = $LANG['log'][22];
-                  break;
-
-               case HISTORY_RESTORE_ITEM :
-                  $change = $LANG['log'][23];
-                  break;
-
-               case HISTORY_ADD_DEVICE :
-                  $field = NOT_AVAILABLE;
-                  if (class_exists($data["itemtype_link"])) {
-                     $item = new $data["itemtype_link"]();
-                     $field = $item->getTypeName();
-                  }
-                  $change = $LANG["devices"][25]." ".$data[ "new_value"];
-                  break;
-
-               case HISTORY_UPDATE_DEVICE :
-                  $field = NOT_AVAILABLE;
-                  $change = '';
-                  if (class_exists($data["itemtype_link"])) {
-                     $item = new $data["itemtype_link"]();
-                     $field = $item->getTypeName();
-                     $change = $item->getSpecifityLabel()." : ";
-                  }
-                  $change .= $data["old_value"]." --> ".$data["new_value"];
-                  break;
-
-               case HISTORY_DELETE_DEVICE :
-                  $field = NOT_AVAILABLE;
-                  if (class_exists($data["itemtype_link"])) {
-                     $item = new $data["itemtype_link"]();
-                     $field = $item->getTypeName();
-                  }
-                  $change = $LANG["devices"][26]." ".$data["old_value"];
-                  break;
-
-               case HISTORY_INSTALL_SOFTWARE :
-                  $field = $LANG["help"][31];
-                  $change = $LANG["software"][44]." ".$data["new_value"];
-                  break;
-
-               case HISTORY_UNINSTALL_SOFTWARE :
-                  $field = $LANG["help"][31];
-                  $change = $LANG["software"][45]." ".$data["old_value"];
-                  break;
-
-               case HISTORY_DISCONNECT_DEVICE :
-                  $field = NOT_AVAILABLE;
-                  if (class_exists($data["itemtype_link"])) {
-                     $item = new $data["itemtype_link"]();
-                     $field = $item->getTypeName();
-                  }
-                  $change = $LANG['log'][26]." ".$data["old_value"];
-                  break;
-
-               case HISTORY_CONNECT_DEVICE :
-                  $field = NOT_AVAILABLE;
-                  if (class_exists($data["itemtype_link"])) {
-                     $item = new $data["itemtype_link"]();
-                     $field = $item->getTypeName();
-                  }
-                  $change = $LANG["log"][27]." ".$data["new_value"];
-
-               case HISTORY_OCS_IMPORT :
-                  if (haveRight("view_ocsng","r")) {
-                     $change = $LANG["ocsng"][7]." ".$LANG["ocsng"][45]." : ".$data["new_value"];
-                  } else {
-                     $display_history = false;
-                  }
-                  break;
-
-               case HISTORY_OCS_DELETE :
-                  if (haveRight("view_ocsng","r")) {
-                     $change = $LANG["ocsng"][46]." ".$LANG["ocsng"][45]." : ".$data["old_value"];
-                     $change.= "&nbsp;"."\"".$data["old_value"]."\"";
-                  } else {
-                     $display_history = false;
-                  }
-                  break;
-
-               case HISTORY_OCS_LINK:
-                  if (haveRight("view_ocsng","r")) {
-                     $field = NOT_AVAILABLE;
-                     if (class_exists($data["itemtype_link"])) {
-                        $item = new $data["itemtype_link"]();
-                        $field = $item->getTypeName();
-                     }
-                     $change = $LANG["ocsng"][47]." ".$LANG["ocsng"][45]." : ".$data["new_value"];
-                  } else {
-                     $display_history = false;
-                  }
-                  break;
-
-               case HISTORY_OCS_IDCHANGED:
-                  if (haveRight("view_ocsng","r")) {
-                     $change = $LANG["ocsng"][48].' : "'.$data["old_value"].
-                               '" --> "'.$data["new_value"].'"';
-                  } else {
-                     $display_history = false;
-                  }
-                  break;
-
-               case HISTORY_LOG_SIMPLE_MESSAGE :
-                  $change = $data["new_value"];
-                  break;
-
-               case HISTORY_ADD_RELATION :
-                  $field = NOT_AVAILABLE;
-                  if (class_exists($data["itemtype_link"])) {
-                     $item = new $data["itemtype_link"]();
-                     $field = $item->getTypeName();
-                  }
-                  $change = $LANG['log'][32].' : "'.$data["new_value"].'"';
-                  break;
-
-               case HISTORY_DEL_RELATION :
-                  $field = NOT_AVAILABLE;
-                  if (class_exists($data["itemtype_link"])) {
-                     $item = new $data["itemtype_link"]();
-                     $field = $item->getTypeName();
-                  }
-                  $change = $LANG['log'][33].' : "'.$data["old_value"].'"';
-                  break;
-            }
-
-         } else { // Not a linked_action
-            $fieldname = "";
-            foreach(Search::getOptions($type) as $key2 => $val2) {
-               if ($key2 == $data["id_search_option"]) {
-                  $field = $val2["name"];
-                  $fieldname = $val2["field"];
-               }
-            }
-            switch ($fieldname) {
-               case "comment" :
-                  $change = $LANG["log"][64];
-                  break;
-
-               case "notepad" :
-                  $change =$LANG['log'][67];
-                  break;
-
-               default :
-                  $change = str_replace("&nbsp;"," ",$data["old_value"])." --> ".
-                            str_replace("&nbsp;"," ",$data["new_value"]);
-            }
+      foreach ($changes as $data) {
+         if ($data['display_history']) {
+            $pdf->displayLine($data['date_mod'], $data['user_name'], $data['field'], $data['change']);
          }
-         $pdf->displayLine(convDateTime($data["date_mod"]), $data["user_name"], $field, $change);
       } // Each log
    } else {
       $pdf->displayTitle("<b>".$LANG["event"][20]."</b>");
