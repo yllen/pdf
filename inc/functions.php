@@ -2053,7 +2053,7 @@ function plugin_pdf_history($pdf,$item) {
 
       foreach ($changes as $data) {
          if ($data['display_history']) {
-            $pdf->displayLine($data['date_mod'], $data['user_name'], $data['field'], $data['change']);
+            $pdf->displayLine($data['date_mod'], $data['user_name'], $data['field'], html_clean($data['change']));
          }
       } // Each log
    } else {
