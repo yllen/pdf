@@ -47,7 +47,8 @@ function plugin_init_pdf() {
       $PLUGIN_HOOKS['use_massive_action']['pdf']   = 1;
       $PLUGIN_HOOKS['headings']['pdf']             = 'plugin_pdf_get_headings';
       $PLUGIN_HOOKS['headings_action']['pdf']      = 'plugin_pdf_headings_actions';
-      $PLUGIN_HOOKS['pre_item_purge']['pdf']      = 'plugin_pdf_pre_item_purge';
+
+      $PLUGIN_HOOKS['pre_item_purge']['pdf'] = array('Profile' => array('PluginPdfProfile','cleanProfiles'));
    }
 
    // Define the type for which we know how to generate PDF, need :

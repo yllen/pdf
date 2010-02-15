@@ -59,13 +59,9 @@ class PluginPdfProfile extends CommonDBTM {
 
 
    //if profile deleted
-   function cleanProfiles($ID) {
-      global $DB;
-
-      $query = "DELETE
-                FROM `".$this->getTable()."`
-                WHERE `id` = '$ID' ";
-      $DB->query($query);
+   static function cleanProfiles(Profile $prof) {
+      $plugprof = new self();
+      $plugprof->delete(array('id'=>$prof->getField("id")));
    }
 
 
