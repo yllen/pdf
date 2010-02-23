@@ -73,17 +73,17 @@ function plugin_version_pdf() {
                 'version'        => '0.7.0',
                 'author'         => 'Dévi Balpe, Remi Collet, Nelly Lasson, Walid Nouh',
                 'homepage'       => 'https://forge.indepnet.net/wiki/pdf/',
-                'minGlpiVersion' => '0.80');
+                'minGlpiVersion' => '0.78');
 }
 
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_pdf_check_prerequisites(){
 
-   if (GLPI_VERSION >= 0.80){
+   if (GLPI_VERSION >= 0.78){
       return true;
    }
-   echo "This plugin requires GLPI 0.80 or later";
+   echo "This plugin requires GLPI 0.78 or later";
 }
 
 
