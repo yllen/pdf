@@ -102,8 +102,8 @@ class PluginPdfSimplePDF {
 
       $this->start_tab = $this->height-45;
       if (!empty($this->header)) {
-         $this->pdf->addTextWrap(85,$this->start_tab,$this->width-110,14,utf8_decode($this->header),
-                                 'center');
+         $this->pdf->addTextWrap(85,$this->start_tab,$this->width-110,14,
+                                 decodeFromUtf8($this->header,"windows-1252"),'center');
          $this->start_tab -= 30;
       }
    }
@@ -162,7 +162,7 @@ class PluginPdfSimplePDF {
       foreach ($msgs as $msg) {
          if ($i<count($this->cols)) {
             $this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,
-                                    utf8_decode($msg),
+                                    decodeFromUtf8($msg,"windows-1252"),
                                     (isset($this->align[$i]) ? $this->align[$i] : 'center'));
             $i++;
          } else {
@@ -188,7 +188,7 @@ class PluginPdfSimplePDF {
       foreach ($msgs as $msg) {
          if ($i<count($this->cols)) {
             $this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,
-                                    utf8_decode($msg),
+                                    decodeFromUtf8($msg,"windows-1252"),
                                     (isset($this->align[$i]) ? $this->align[$i] : 'left'));
             $i++;
          } else {
@@ -209,7 +209,7 @@ class PluginPdfSimplePDF {
       $this->displayBox(0.95);
       $i = 0;
 
-      $name = utf8_decode($name);
+      $name = decodeFromUtf8($name,"windows-1252");
       $w = $this->pdf->getTextWidth(9,$name);
       $this->pdf->addLink($URL,$this->colsx[$i]+2,$this->start_tab,$this->colsx[$i]+$w+2,
                           $this->start_tab+10);
@@ -248,12 +248,12 @@ class PluginPdfSimplePDF {
       $this->pdf->restoreState();
 
       // Title
-      $name = utf8_decode($name);
+      $name = decodeFromUtf8($name,"windows-1252");
       $x = 30 + $this->pdf->getTextWidth(9, $name);
       $this->pdf->addText(27,$this->start_tab,9,$name);
 
       $temp = str_replace("\r\n","\n",$content);
-      $lines = explode("\n", utf8_decode($temp));
+      $lines = explode("\n", decodeFromUtf8($temp,"windows-1252"));
       $line = current($lines);
 
       // Content

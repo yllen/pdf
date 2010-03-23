@@ -1911,7 +1911,7 @@ function plugin_pdf_volume($pdf,$item) {
       $pdf->setColumnsAlign('left','left','left','center','right','right');
 
       while ($data = $DB->fetch_assoc($result)) {
-         $pdf->displayLine('<b>'.utf8_decode(empty($data['name'])?$data['ID']:$data['name']).'</b>',
+         $pdf->displayLine('<b>'.decodeFromUtf8((empty($data['name'])?$data['ID']:$data['name']),"windows-1252").'</b>',
                            $data['device'],
                            $data['mountpoint'],
                            Dropdown::getDropdownName('glpi_filesystems',$data["filesystems_id"]),
