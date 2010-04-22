@@ -46,4 +46,6 @@ $LANG['plugin_pdf']['financial'][2] = "İlgili sözleşme bulunamadı";
 
 $LANG['plugin_pdf']['software'][1]  = "Kurulu yazılım bulunamadı";
 
+$LANG['plugin_pdf']['ticket'][1]  = "Followups";
+$LANG['plugin_pdf']['ticket'][2]  = "Tasks";
 ?>

@@ -87,8 +87,9 @@ function plugin_pdf_prefPDF($item) {
          break;
 
       case 'Ticket' :
-         return array('private' => $LANG['common'][77], // Privé
-                      5         => $LANG['Menu'][27]);  // Documents
+         $item->fields['id'] = 1;
+         $tabs = $item->defineTabs();
+         $tabs['private'] = $LANG['common'][77];
    }
    return $tabs;
 }

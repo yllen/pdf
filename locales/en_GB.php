@@ -46,4 +46,7 @@ $LANG['plugin_pdf']['financial'][2] = "No associated contract";
 
 $LANG['plugin_pdf']['software'][1]  = "No installed software";
 
+
+$LANG['plugin_pdf']['ticket'][1]  = "Followups";
+$LANG['plugin_pdf']['ticket'][2]  = "Tasks";
 ?>

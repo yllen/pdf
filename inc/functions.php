@@ -63,8 +63,8 @@ function plugin_pdf_add_header($pdf,$ID,$item) {
 }
 
 
-function plugin_pdf_main_ticket($pdf,$job,$private) {
-   global $LANG,$CFG_GLPI, $PDF,$DB;
+function plugin_pdf_main_ticket($pdf,$job) {
+   global $LANG, $CFG_GLPI, $DB;
 
    $ID = $job->getField('id');
    if (!haveRight("show_all_ticket","1")
@@ -187,22 +187,66 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
          "<b><i>".$LANG['common'][1]."</i></b> : ".html_clean($item->getTypeName())." ".
                html_clean($item->getNameID()).$serial_item . $location_item);
    } else {
-      $pdf->displayLine("<b><i>".$LANG['common'][1]."</i></b>");
+      $pdf->displayLine("<b><i>".$LANG['common'][1]."</i></b> : ".$LANG['help'][30]);
    }
+   $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", $job->fields['content']);
    $pdf->displaySpace();
+}
+
+function plugin_pdf_cost($pdf,$job) {
+   global $LANG, $CFG_GLPI, $DB;
+
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle("<b>".$LANG['job'][47]."</b>");
+
+   $pdf->setColumnsSize(25,25,25,25);
+   $pdf->displayTitle($LANG['job'][40], $LANG['job'][41], $LANG['job'][42], $LANG['job'][43]);
+   $pdf->displayLine(formatNumber($job->fields["cost_time"]),
+                     formatNumber($job->fields["cost_fixed"]),
+                     formatNumber($job->fields["cost_material"]),
+                     Ticket ::trackingTotalCost($job->fields["realtime"], $job->fields["cost_time"],
+                                                $job->fields["cost_fixed"], $job->fields["cost_material"]));
+   $pdf->displaySpace();
+}
+
+function plugin_pdf_solution($pdf,$job) {
+   global $LANG, $CFG_GLPI, $DB;
+
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle("<b>".$LANG['jobresolution'][1]."</b>");
+
+   if ($job->fields['ticketsolutiontypes_id'] || !empty($job->fields['solution'])) {
+      if ($job->fields['ticketsolutiontypes_id']) {
+         $title = html_clean(Dropdown::getDropdownName('glpi_ticketsolutiontypes',
+                                        $job->getField('ticketsolutiontypes_id')));
+      } else {
+         $title = $LANG['jobresolution'][1];
+      }
+      $pdf->displayText("<b><i>$title</i></b> : ", $job->fields['solution']);
+   } else {
+      $pdf->displayLine($LANG['job'][32]);
+   }
+
+   $pdf->displaySpace();
+}
+
+function plugin_pdf_followups($pdf,$job, $private) {
+   global $LANG, $CFG_GLPI, $DB;
+
+   $ID = $job->getField('id');
 
    //////////////followups///////////
-   $pdf->displayTitle("<b>".$LANG['job'][37]."</b>");
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle("<b>".$LANG['plugin_pdf']['ticket'][1]."</b>");
 
    $RESTRICT = "";
    if (!$private) {
       // Don't show private'
       $RESTRICT=" AND `is_private` = '0' ";
-   }
-   if (!haveRight("show_full_ticket","1")) {
+   } else if (!haveRight("show_full_ticket","1")) {
       // No right, only show connected user private one
       $RESTRICT=" AND (`is_private` = '0'
-                       OR `users_id` ='".$_SESSION["glpiID"]."' ) ";
+                       OR `users_id` ='".getLoginUserID()."' ) ";
    }
 
    $query = "SELECT *
@@ -216,12 +260,60 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
       $pdf->displayLine($LANG['job'][12]);
    } else {
       while ($data=$DB->fetch_array($result)) {
-/*
-         $pdf->setColumnsSize(15,15,15,55);
-         $pdf->displayTitle("<b><i>".$LANG['common'][27]."</i></b>", // Date
-                            "<b><i>".$LANG['common'][37]."</i></b>", // Author
-                            "<b><i>".$LANG['job'][31]."</i></b>",    // Durée
-                            "<b><i>".$LANG['job'][35]."</i></b>");   // Plan
+         $pdf->setColumnsSize(44,14,42);
+         $pdf->displayTitle("<b><i>".$LANG['job'][45]."</i></b>", // Source
+                            "<b><i>".$LANG['common'][27]."</i></b>", // Date
+                            "<b><i>".$LANG['common'][37]."</i></b>"); // Author
+
+         if ($data['requesttypes_id']) {
+            $lib = Dropdown::getDropdownName('glpi_requesttypes', $data['requesttypes_id']);
+         } else {
+            $lib = '';
+         }
+         if ($data['is_private']) {
+            $lib .= ' ('.$LANG['common'][77].')';
+         }
+         $pdf->displayLine(html_clean($lib),
+                           convDateTime($data["date"]),
+                           html_clean(getUserName($data["users_id"])));
+         $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", $data["content"]);
+      }
+   }
+   $pdf->displaySpace();
+}
+
+
+function plugin_pdf_tasks($pdf,$job, $private) {
+   global $LANG, $CFG_GLPI, $DB;
+
+   $ID = $job->getField('id');
+
+   //////////////Tasks///////////
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle("<b>".$LANG['plugin_pdf']['ticket'][2]."</b>");
+
+   $RESTRICT = "";
+   if (!$private) {
+      // Don't show private'
+      $RESTRICT=" AND `is_private` = '0' ";
+   } else if (!haveRight("show_full_ticket","1")) {
+      // No right, only show connected user private one
+      $RESTRICT=" AND (`is_private` = '0'
+                       OR `users_id` ='".getLoginUserID()."' ) ";
+   }
+
+   $query = "SELECT *
+             FROM `glpi_tickettasks`
+             WHERE `tickets_id` = '$ID'
+             $RESTRICT
+             ORDER BY `date` DESC";
+   $result=$DB->query($query);
+
+   if (!$DB->numrows($result)) {
+      $pdf->displayLine($LANG['job'][50]);
+   } else {
+      while ($data=$DB->fetch_array($result)) {
+
          $realtime = '';
          $hour = floor($data["realtime"]);
          $minute = round(($data["realtime"]-$hour)*60,0);
@@ -234,7 +326,7 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
 
          $query2 = "SELECT *
                     FROM `glpi_ticketplannings`
-                    WHERE `ticketfollowups_id` = '".$data['id']."'";
+                    WHERE `tickettasks_id` = '".$data['id']."'";
          $result2=$DB->query($query2);
 
          if ($DB->numrows($result2)==0) {
@@ -244,20 +336,27 @@ function plugin_pdf_main_ticket($pdf,$job,$private) {
             $planification = Planning::getState($data2["state"])." - ".convDateTime($data2["begin"]).
                              " -> ".convDateTime($data2["end"])." - ".getUserName($data2["users_id"]);
          }
-         $pdf->setColumnsSize(15,15,15,55);
-         $pdf->displayLine(
-         convDateTime($data["date"]),
-         html_clean(getUserName($data["users_id"])),$realtime,$planification);
-         $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b>&nbsp;: ", $data["content"]);
 
-         *         */
-         $pdf->setColumnsSize(20,80);
-         $pdf->displayTitle("<b><i>".$LANG['common'][27]."</i></b>", // Date
-                            "<b><i>".$LANG['common'][37]."</i></b>"); // Author
+         $pdf->setColumnsSize(40,14,30,16);
+         $pdf->displayTitle("<b><i>".$LANG['common'][17]."</i></b>", // Source
+                            "<b><i>".$LANG['common'][27]."</i></b>", // Date
+                            "<b><i>".$LANG['common'][37]."</i></b>", // Author
+                            "<b><i>".$LANG['job'][31]."</i></b>"); // Durée
 
-         $pdf->displayLine(convDateTime($data["date"]),
-                           html_clean(getUserName($data["users_id"])));
-         $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", $data["content"]);
+         if ($data['taskcategories_id']) {
+            $lib = Dropdown::getDropdownName('glpi_taskcategories', $data['taskcategories_id']);
+         } else {
+            $lib = '';
+         }
+         if ($data['is_private']) {
+            $lib .= ' ('.$LANG['common'][77].')';
+         }
+         $pdf->displayLine(html_clean($lib),
+                           convDateTime($data["date"]),
+                           html_clean(getUserName($data["users_id"])),
+                           html_clean($realtime));
+         $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", html_clean($data["content"]),1);
+         $pdf->displayText("<b><i>".$LANG['job'][35]."</i></b> : ", html_clean($planification),1);
       }
    }
    $pdf->displaySpace();
@@ -2438,11 +2537,34 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
             break;
 
          case 'Ticket' :
-            plugin_pdf_main_ticket($pdf,$item,in_array('private',$tab));
+            plugin_pdf_main_ticket($pdf,$item);
             foreach ($tab as $i) {
                switch ($i) { // Value not from Job::defineTabs but from plugin_pdf_prefPDF
+                  case 'private':
+                     break;
+
+                  case 1:
+                     plugin_pdf_followups($pdf,$item,in_array('private',$tab));
+                     break;
+
+                  case 2:
+                     plugin_pdf_tasks($pdf,$item,in_array('private',$tab));
+                     break;
+
+                  case 4:
+                     plugin_pdf_solution($pdf,$item);
+                     break;
+
+                  case 3:
+                     plugin_pdf_cost($pdf,$item);
+                     break;
+
                   case 5 :
                      plugin_pdf_document($pdf,$item);
+                     break;
+
+                  case 6 :
+                     plugin_pdf_history($pdf,$item);
                      break;
 
                   default :
