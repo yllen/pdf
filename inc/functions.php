@@ -127,60 +127,66 @@ function plugin_pdf_main_ticket($pdf,$job) {
       $entity = '';
    }
    //closedate
-   if (!strstr($job->fields["status"],"old_")) {
-      $closedate = "";
-   } else {
+   if ($job->fields["status"]=="closed") {
       $closedate = $LANG['joblist'][12]." : ".convDateTime($job->fields["closedate"]);
+   } else {
+      $closedate = $LANG['common'][26]." : ".convDateTime($job->fields["date_mod"]);
    }
 
    $pdf->setColumnsSize(50,50);
    $pdf->displayLine("<b><i>".$LANG['joblist'][11]."</i></b> : ".convDateTime($job->fields["date"]).
                     " ".$LANG['job'][2]." ".$recipient_name,$closedate);
 
-   $pdf->setColumnsSize(33,34,33);
-   //row status / RequestType / realtime
+   // status, requester
    $pdf->displayLine(
       "<b><i>".$LANG['joblist'][0]."</i></b> : ".
             html_clean($job->getStatus($job->fields["status"])),
-      "<b><i>".$LANG['job'][44]."</i></b> : ".
-            html_clean(Dropdown::getDropdownName('glpi_requesttypes',
-                                                 $job->fields['requesttypes_id'])),
-      "<b><i>".$LANG['job'][20]."</i></b> : ".Ticket::getRealtime($job->fields["realtime"]));
+      "<b><i>".$LANG['job'][4]."</i></b> : ".html_clean($author_name));
 
-   //row3 (author / attribute / cost_time)
+   // Urgence / groups
    $pdf->displayLine(
-      "<b><i>".$LANG['job'][4]."</i></b> : ".html_clean($author_name),
-      "<b><i>".$LANG['job'][5]."</i></b> :",
-      "<b><i>".$LANG['job'][40]."</i></b> : ".formatNumber($job->fields["cost_time"]));
-
-   //row4 (group / assign / cost_fixed)
-   $pdf->displayLine(
+      "<b><i>".$LANG['joblist'][29]."</i></b> : ".
+            html_clean($job->getUrgencyName($job->fields["urgency"])),
       "<b><i>".$LANG['common'][35]."</i></b> : ".
-            html_clean(Dropdown::getDropdownName("glpi_groups", $job->fields["groups_id"])),
-      "<b><i>".$LANG['job'][6]."</i></b> : ".html_clean($assign_name),
-      "<b><i>".$LANG['job'][41]."</i></b> : ".formatNumber($job->fields["cost_fixed"]));
+            html_clean(Dropdown::getDropdownName("glpi_groups", $job->fields["groups_id"])));
 
-   //row5 (priority / assign_ent / cost_material)
+   // Impact / Tech
+   $pdf->displayLine(
+      "<b><i>".$LANG['joblist'][30]."</i></b> : ".
+            html_clean($job->getImpactName($job->fields["impact"])),
+      "<b><i>".$LANG['job'][6]."</i></b> : ".html_clean($assign_name));
+
+   // Priority / Tech Groups
    $pdf->displayLine(
       "<b><i>".$LANG['joblist'][2]."</i></b> : ".
-            html_clean(Ticket::getPriorityName($job->fields["priority"])),
+            html_clean($job->getPriorityName($job->fields["priority"])),
       "<b><i>".$LANG['common'][35]."</i></b> : ".
-            html_clean(Dropdown::getDropdownName("glpi_groups", $job->fields["groups_id_assign"])),
-      "<b><i>".$LANG['job'][42]."</i></b> : ".formatNumber($job->fields["cost_material"]));
+            html_clean(Dropdown::getDropdownName("glpi_groups", $job->fields["groups_id_assign"])));
 
-   //row6 (category / assign_ent / TotalCost)
+   // Category / Supplier
    $pdf->displayLine(
       "<b><i>".$LANG['common'][36]."</i></b> : ".
             html_clean(Dropdown::getDropdownName("glpi_ticketcategories",
                                                  $job->fields["ticketcategories_id"])),
       "<b><i>".$LANG['financial'][26]."</i></b> : ".
             html_clean(Dropdown::getDropdownName("glpi_suppliers",
-                                                 $job->fields["suppliers_id_assign"])),
-      "<b><i>".$LANG['job'][43]."</i></b> : ".Ticket ::trackingTotalCost($job->fields["realtime"],
-                                                                $job->fields["cost_time"],
-                                                                $job->fields["cost_fixed"],
-                                                                $job->fields["cost_material"]));
+                                                 $job->fields["suppliers_id_assign"])));
 
+   // Source / email
+   $pdf->displayLine(
+      "<b><i>".$LANG['job'][44]."</i></b> : ".
+            html_clean(Dropdown::getDropdownName('glpi_requesttypes',
+                                                 $job->fields['requesttypes_id'])),
+      "<b><i>".$LANG['job'][19]."</i></b> : ".
+         Dropdown::getYesNo($job->fields["use_email_notification"]));
+
+   // Source / email
+   $pdf->displayLine(
+      "<b><i>".$LANG['validation'][0]."</i></b> : ".
+            html_clean(TicketValidation::getStatus($job->fields['global_validation'])),
+      "<b><i>".$LANG['joblist'][27]."</i></b> : ". $job->fields["user_email"]);
+
+   // Equipment
    $pdf->setColumnsSize(100);
    if ($job->fields["itemtype"] && class_exists($job->fields["itemtype"])) {
       $pdf->displayLine(
@@ -189,6 +195,8 @@ function plugin_pdf_main_ticket($pdf,$job) {
    } else {
       $pdf->displayLine("<b><i>".$LANG['common'][1]."</i></b> : ".$LANG['help'][30]);
    }
+
+   // Description
    $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", $job->fields['content']);
    $pdf->displaySpace();
 }
@@ -199,9 +207,11 @@ function plugin_pdf_cost($pdf,$job) {
    $pdf->setColumnsSize(100);
    $pdf->displayTitle("<b>".$LANG['job'][47]."</b>");
 
-   $pdf->setColumnsSize(25,25,25,25);
-   $pdf->displayTitle($LANG['job'][40], $LANG['job'][41], $LANG['job'][42], $LANG['job'][43]);
-   $pdf->displayLine(formatNumber($job->fields["cost_time"]),
+   $pdf->setColumnsSize(20,20,20,20,20);
+   $pdf->displayTitle($LANG['job'][20],$LANG['job'][40], $LANG['job'][41],
+                      $LANG['job'][42], $LANG['job'][43]);
+   $pdf->displayLine(Ticket::getRealtime($job->fields["realtime"]),
+                     formatNumber($job->fields["cost_time"]),
                      formatNumber($job->fields["cost_fixed"]),
                      formatNumber($job->fields["cost_material"]),
                      Ticket ::trackingTotalCost($job->fields["realtime"], $job->fields["cost_time"],
