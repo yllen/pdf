@@ -63,7 +63,7 @@ function plugin_pdf_add_header($pdf,$ID,$item) {
 }
 
 
-function plugin_pdf_main_ticket($pdf,$job) {
+function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
    global $LANG, $CFG_GLPI, $DB;
 
    $ID = $job->getField('id');
@@ -201,7 +201,7 @@ function plugin_pdf_main_ticket($pdf,$job) {
    $pdf->displaySpace();
 }
 
-function plugin_pdf_cost($pdf,$job) {
+function plugin_pdf_cost(PluginPdfSimplePDF $pdf, Ticket $job) {
    global $LANG, $CFG_GLPI, $DB;
 
    $pdf->setColumnsSize(100);
@@ -219,7 +219,7 @@ function plugin_pdf_cost($pdf,$job) {
    $pdf->displaySpace();
 }
 
-function plugin_pdf_solution($pdf,$job) {
+function plugin_pdf_solution(PluginPdfSimplePDF $pdf, Ticket $job) {
    global $LANG, $CFG_GLPI, $DB;
 
    $pdf->setColumnsSize(100);
@@ -240,7 +240,56 @@ function plugin_pdf_solution($pdf,$job) {
    $pdf->displaySpace();
 }
 
-function plugin_pdf_followups($pdf,$job, $private) {
+function plugin_pdf_validation(PluginPdfSimplePDF $pdf, Ticket $ticket) {
+   global $LANG, $CFG_GLPI, $DB;
+
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle("<b>".$LANG['validation'][7]."</b>");
+
+   if (!haveRight('validate_ticket',1) && !haveRight('create_validation ',1)) {
+      return false;
+   }
+   $ID = $ticket->getField('id');
+
+   $query = "SELECT *
+             FROM `glpi_ticketvalidations`
+             WHERE `tickets_id` = '".$ticket->getField('id')."'
+             ORDER BY submission_date DESC";
+   $result = $DB->query($query);
+   $number = $DB->numrows($result);
+
+   if ($number) {
+      $pdf->setColumnsSize(20,19,21,19,21);
+      $pdf->displayTitle($LANG['validation'][2],
+                         $LANG['validation'][3],
+                         $LANG['validation'][18],
+                         $LANG['validation'][4],
+                         $LANG['validation'][21]);
+
+      while ($row = $DB->fetch_assoc($result)) {
+         $pdf->setColumnsSize(20,19,21,19,21);
+         $pdf->displayLine(TicketValidation::getStatus($row['status']),
+                           convDateTime($row["submission_date"]),
+                           getUserName($row["users_id"]),
+                           convDateTime($row["validation_date"]),
+                           getUserName($row["users_id_validate"]));
+         $tmp = trim($row["comment_submission"]);
+         $pdf->displayText("<b><i>".$LANG['validation'][5]."</i></b> : ",
+            (empty($tmp) ? $LANG['common'][49] : $tmp), 1);
+
+         if ($row["validation_date"]) {
+            $tmp = trim($row["comment_validation"]);
+            $pdf->displayText("<b><i>".$LANG['validation'][6]."</i></b> : ",
+               (empty($tmp) ? $LANG['common'][49] : $tmp), 1);
+         }
+      }
+   } else {
+      $pdf->displayLine($LANG['search'][15]);
+   }
+   $pdf->displaySpace();
+}
+
+function plugin_pdf_followups(PluginPdfSimplePDF $pdf, Ticket $job, $private) {
    global $LANG, $CFG_GLPI, $DB;
 
    $ID = $job->getField('id');
@@ -293,7 +342,7 @@ function plugin_pdf_followups($pdf,$job, $private) {
 }
 
 
-function plugin_pdf_tasks($pdf,$job, $private) {
+function plugin_pdf_tasks(PluginPdfSimplePDF $pdf, Ticket $job, $private) {
    global $LANG, $CFG_GLPI, $DB;
 
    $ID = $job->getField('id');
@@ -2575,6 +2624,10 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
 
                   case 6 :
                      plugin_pdf_history($pdf,$item);
+                     break;
+
+                  case 7 :
+                     plugin_pdf_validation($pdf,$item);
                      break;
 
                   default :
