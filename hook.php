@@ -288,28 +288,32 @@ function plugin_pdf_install() {
       $DB->query($query) or die($DB->error());
    } else {
       $DB->query("RENAME TABLE `glpi_plugin_pdf_preference` TO `glpi_plugin_pdf_preferences`");
-      $query = "ALTER TABLE `glpi_plugin_pdf_preferences` ";
+
+      $changes = array();
       // 0.6.0
       if (FieldExists('glpi_plugin_pdf_preferences','user_id')) {
-         $query .= " CHANGE `user_id` `users_id` INT(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',";
+         $changes[] = "CHANGE `user_id` `users_id` INT(11) NOT NULL COMMENT 'RELATION to glpi_users (id)'";
       }
       // 0.6.1
       if (FieldExists('glpi_plugin_pdf_preferences','FK_users')) {
-         $query .= " CHANGE `FK_users` `users_id` INT(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',";
+         $changes[] = "CHANGE `FK_users` `users_id` INT(11) NOT NULL COMMENT 'RELATION to glpi_users (id)'";
       }
       // 0.6.0
       if (FieldExists('glpi_plugin_pdf_preferences','cat')) {
-         $query .= " CHANGE `cat` `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',";
+         $changes[] = "CHANGE `cat` `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant'";
       }
       // 0.6.1
       if (FieldExists('glpi_plugin_pdf_preferences','device_type')) {
-         $query .= " CHANGE `device_type` `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',";
+         $changes[] = "CHANGE `device_type` `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant'";
       }
       // 0.6.0
       if (FieldExists('glpi_plugin_pdf_preferences','table_num')) {
-         $query .= " CHANGE `table_num` `tabref` VARCHAR(255) NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name'";
+         $changes[] = "CHANGE `table_num` `tabref` VARCHAR(255) NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name'";
       }
-      $DB->query($query) or die($DB->error());
+      if (count($changes)) {
+         $query = "ALTER TABLE `glpi_plugin_pdf_preferences` ".implode(', ',$changes);
+         $DB->query($query) or die($DB->error());
+      }
    }
 
    // Give right to current Profile
