@@ -43,8 +43,8 @@ if (isset($_POST['plugin_pdf_user_preferences_save'])
 
    $DB->query("DELETE
                FROM `glpi_plugin_pdf_preferences`
-               WHERE `users_id` =" . $_SESSION["glpiID"] . "
-                     AND `itemtype` = '" . $_POST["plugin_pdf_inventory_type"])."'";
+               WHERE `users_id` ='" . $_SESSION["glpiID"] . "'
+                     AND `itemtype`='" . $_POST["plugin_pdf_inventory_type"]."'");
 
    if (isset($_POST['item'])) {
       foreach ($_POST['item'] as $key => $val) {
