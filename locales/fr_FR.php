@@ -48,4 +48,6 @@ $LANG['plugin_pdf']['software'][1]  = "Pas de logiciel installé";
 
 $LANG['plugin_pdf']['ticket'][1]  = "Suivis";
 $LANG['plugin_pdf']['ticket'][2]  = "Tâches";
+$LANG['plugin_pdf']['ticket'][3]  = "ancien(s) ticket(s)";
+$LANG['plugin_pdf']['ticket'][4]  = "Pas d'ancien ticket";
 ?>

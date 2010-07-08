@@ -700,7 +700,7 @@ function plugin_pdf_main_phone($pdf,$item) {
       '<b><i>'.$LANG['common'][15].' :</i></b> '.
             html_clean(Dropdown::getDropdownName('glpi_locations', $item->fields['locations_id'])),
       '<b><i>'.$LANG['common'][17].' :</i></b> '.
-            html_clean(Dropdown::getDropdownName('glpi_pĥonetypes', $item->fields['phonetypes_id'])));
+            html_clean(Dropdown::getDropdownName('glpi_phonetypes', $item->fields['phonetypes_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($item->fields['users_id_tech']),
@@ -1471,7 +1471,7 @@ function plugin_pdf_computer_connection ($pdf,$comp){
                $item->getFromDB($tID);
                $info->getFromDBforDevice($type,$tID) || $info->getEmpty();
 
-               $line1 = $item->getTypeName()." - ";
+               $line1 = $item->getName()." - ";
                if ($item->getField("serial") != null) {
                   $line1 .= $LANG["common"][19] . " : " .$item->getField("serial")." - ";
                }
@@ -1489,9 +1489,9 @@ function plugin_pdf_computer_connection ($pdf,$comp){
                   $line2 .= $LANG["financial"][20] . " : " . $info->fields["immo_number"];
                }
                if ($line2) {
-                  $pdf->displayText('<b>'.$item->getTypeName().'</b>', $line1 . "\n" . $line2, 2);
+                  $pdf->displayText('<b>'.$item->getTypeName().' : </b>', $line1 . "\n" . $line2, 2);
                } else {
-                  $pdf->displayText('<b>'.$item->getTypeName().'</b>', $line1, 1);
+                  $pdf->displayText('<b>'.$item->getTypeName().' : </b>', $line1, 1);
                }
             }// each device	of current type
 
@@ -1520,27 +1520,28 @@ function plugin_pdf_computer_connection ($pdf,$comp){
 }
 
 
-function plugin_pdf_device_connection($pdf,$comp){
+function plugin_pdf_device_connection($pdf,$item){
    global $DB,$LANG;
 
    $ID = $item->getField('id');
-   $type = get_class($comp);
+   $type = get_class($item);
 
    $info = new InfoCom();
+   $comp = new Computer();
 
    $pdf->setColumnsSize(100);
    $pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
 
    $query = "SELECT *
              FROM `glpi_computers_items`
-             WHERE `computers_id` = '$ID'
+             WHERE `items_id` = '$ID'
                    AND `itemtype` = '$type'";
 
    if ($result = $DB->query($query)) {
       $resultnum = $DB->numrows($result);
       if ($resultnum > 0) {
          for ($j=0 ; $j < $resultnum ; $j++) {
-            $tID = $DB->result($result, $j, "items_id");
+            $tID = $DB->result($result, $j, "computers_id");
             $connID = $DB->result($result, $j, "id");
             $comp->getFromDB($tID);
             $info->getFromDBforDevice('Computer',$tID) || $info->getEmpty();
@@ -1562,9 +1563,9 @@ function plugin_pdf_device_connection($pdf,$comp){
                $line2 .= $LANG["financial"][20] . " : " . $info->fields['immo_number'];
             }
             if ($line2) {
-               $pdf->displayText('<b>'.$LANG['help'][25].'</b>', $line1 . "\n" . $line2, 2);
+               $pdf->displayText('<b>'.$LANG['help'][25].' : </b>', $line1 . "\n" . $line2, 2);
             } else {
-               $pdf->displayText('<b>'.$LANG['help'][25].'</b>', $line1, 1);
+               $pdf->displayText('<b>'.$LANG['help'][25].' : </b>', $line1, 1);
             }
          }// each device	of current type
 
@@ -1600,7 +1601,7 @@ function plugin_pdf_port($pdf,$item){
             $netport = new NetworkPort;
             $netport->getfromDB(current($devid));
 
-            $pdf->displayLine('<b><i># </i></b> '.$netport->fields["logical_number"].'<b><i>'.
+            $pdf->displayLine('<b><i># </i></b> '.$netport->fields["logical_number"].'  <b><i>'.
                               $LANG["common"][16].' :</i></b> '.$netport->fields["name"]);
 
             $pdf->displayLine('<b><i>'.$LANG["networking"][51].' :</i></b> '.
@@ -1825,9 +1826,9 @@ function plugin_pdf_ticket($pdf,$item) {
 
    $pdf->setColumnsSize(100);
    if (!$number) {
-      $pdf->displayTitle('<b>'.$LANG['joblist'][24] . " - " . $LANG["joblist"][8].'</b>');
+      $pdf->displayTitle('<b>'.$LANG['joblist'][16].'</b>');
    } else {
-      $pdf->displayTitle('<b>'.$LANG['joblist'][24]." - $number ".$LANG["job"][8].'</b>');
+      $pdf->displayTitle("<b>$number ".$LANG["job"][8].'</b>');
 
       while ($data = $DB->fetch_assoc($result)) {
          $pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b> ID'.$data["id"].'     '.
@@ -1877,9 +1878,9 @@ function plugin_pdf_oldticket($pdf,$item) {
 
    $pdf->setColumnsSize(100);
    if (!$number) {
-      $pdf->displayTitle('<b>'.$LANG['joblist'][25] . " - " . $LANG["joblist"][8].'</b>');
+      $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['ticket'][4].'</b>');
    } else {
-      $pdf->displayTitle('<b>'.$LANG['joblist'][25]." - $number ".$LANG["job"][8].'</b>');
+      $pdf->displayTitle("<b>$number ".$LANG['plugin_pdf']['ticket'][3].'</b>');
 
       while ($data = $DB->fetch_assoc($result)) {
          $pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b> ID'.$data["id"].'     '.
@@ -2187,7 +2188,7 @@ function plugin_pdf_reservation($pdf,$item) {
       }
 
    } else { // Not isReservable
-      $pdf->displayTitle("<b>".$LANG["reservation"][34]."</b>");
+      //$pdf->displayTitle("<b>".$LANG["reservation"][37]."</b>");
    }
    $pdf->displaySpace();
 }
@@ -2423,6 +2424,7 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
                switch ($i) { // See Peripheral::defineTabs();
                   case 1 :
                      plugin_pdf_device_connection($pdf,$item);
+                     plugin_pdf_port($pdf,$item);
                      break;
 
                   case 4 :
@@ -2467,6 +2469,7 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
                switch ($i) { // See Phone::defineTabs();
                   case 1 :
                      plugin_pdf_device_connection($pdf,$item);
+                     plugin_pdf_port($pdf,$item);
                      break;
 
                   case 4 :

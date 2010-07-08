@@ -48,4 +48,6 @@ $LANG['plugin_pdf']['software'][1]  = "Ningún programa instalado";
 
 $LANG['plugin_pdf']['ticket'][1]  = "Followups";
 $LANG['plugin_pdf']['ticket'][2]  = "Tasks";
+$LANG['plugin_pdf']['ticket'][3]  = "old ticket(s)";
+$LANG['plugin_pdf']['ticket'][4]  = "No old ticket";
 ?>
