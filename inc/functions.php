@@ -1640,14 +1640,19 @@ function plugin_pdf_port($pdf,$item){
             $netport2 = new NetworkPort;
 
             $line = '<b><i>'.$LANG["networking"][17].' :</i></b> ';
-            if ($cid = $contact->getContact($netport->fields["id"])) {
-               $netport2->getfromDB($cid);
-               $netport2->getDeviceData($netport2->fields['items_id'],$netport2->fields['itemtype']);
 
-               $line .= ($netport2->device_name ? $netport2->device_name : $LANG["connect"][1]);
-            } else {
-               $line .= $LANG["connect"][1];
+            $add = $LANG["connect"][1];
+            if ($cid = $contact->getContact($netport->fields["id"])) {
+               if ($netport2->getfromDB($cid)
+                   && class_exists($netport2->fields["itemtype"])) {
+                  $device2 = new $netport2->fields["itemtype"]();
+                  if ($device2->getFromDB($netport2->fields["items_id"])) {
+                     $add = $netport2->getName().' '.$LANG['networking'][25].' '.
+                            $device2->getName().' ('.$device2->getTypeName().')';
+                  }
+               }
             }
+            $line .= $add;
             $pdf->displayLine($line);
          } // each port
       } // Found
