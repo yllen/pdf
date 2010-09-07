@@ -37,6 +37,9 @@ $LANG['plugin_pdf']['title'][2]  = "Escolha os campos para imprimir";
 $LANG['plugin_pdf']['button'][1] = "Imprimir";
 $LANG['plugin_pdf']['button'][2] = "Salvar";
 
+$LANG['plugin_pdf']['knowbase'][1]   = "No question found";
+$LANG['plugin_pdf']['knowbase'][2]   = "No answer found";
+
 $LANG['plugin_pdf']['note'][1]   = "Nenhuma Nota Encontrada";
 
 $LANG['plugin_pdf']['document'][1]  = "Nenhum Documento Associado";

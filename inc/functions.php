@@ -46,7 +46,7 @@ function plugin_pdf_add_header($pdf,$ID,$item) {
 
    $entity = '';
    if ($item->getFromDB($ID) && $item->can($ID,'r')) {
-      if (get_class($item)!='Ticket' && $item->fields['name']) {
+      if (get_class($item)!='Ticket' && get_class($item)!='KnowbaseItem' && $item->fields['name']) {
          $name = $item->fields['name'];
       } else {
          $name = $LANG["common"][2].' '.$ID;
@@ -2226,6 +2226,51 @@ function plugin_pdf_history($pdf,$item) {
    $pdf->displaySpace();
 }
 
+function plugin_pdf_main_knowbaseitem($pdf,$item){
+   global $DB,$LANG;
+
+   $ID = $item->getField('id');
+   $type = get_class($item);
+
+   if (!haveRight('knowbase', 'r') || !haveRight('faq', 'r')) {
+      return false;
+   }
+   
+   $knowbaseitemcategories_id = $item->getField('knowbaseitemcategories_id');
+   $fullcategoryname = getTreeValueCompleteName("glpi_knowbaseitemcategories",
+                                                $knowbaseitemcategories_id);
+                                                   
+   $question = html_clean(unclean_cross_side_scripting_deep(
+               html_entity_decode($item->getField('question'),
+                                       ENT_QUOTES, "UTF-8")));
+
+   $answer = html_clean(unclean_cross_side_scripting_deep(
+               html_entity_decode($item->getField('answer'),
+                                       ENT_QUOTES, "UTF-8")));
+                                       
+                                       
+   $pdf->setColumnsSize(100);
+   
+   if (utf8_strlen($fullcategoryname) > 0) {
+      $pdf->displayTitle('<b>'.$LANG['common'][36].'</b>');
+      $pdf->displayText('', $fullcategoryname,1);
+   } 
+   if (utf8_strlen($question) > 0) {
+      $pdf->displayTitle('<b>'.$LANG['knowbase'][14].'</b>');
+      $pdf->displayText('', $question, 5);
+   } else {
+      $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['knowbase'][1].'</b>');
+   }
+   
+   if (utf8_strlen($answer) > 0) {
+      $pdf->displayTitle('<b>'.$LANG['knowbase'][15].'</b>');
+      $pdf->displayText('', $answer, 5);
+   } else {
+      $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['knowbase'][2].'</b>');
+   }
+   
+   $pdf->displaySpace();
+}
 
 function plugin_pdf_pluginhook($onglet,$pdf,$item) {
    global $PLUGIN_HOOKS;
@@ -2637,6 +2682,16 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
                   case 7 :
                      plugin_pdf_validation($pdf,$item);
                      break;
+
+                  default :
+                     plugin_pdf_pluginhook($i,$pdf,$item);
+               }
+            }
+            break;
+         case 'KnowbaseItem' :
+            plugin_pdf_main_knowbaseitem($pdf,$item);
+            foreach ($tab as $i) {
+               switch ($i) { // Value not from Job::defineTabs but from plugin_pdf_prefPDF
 
                   default :
                      plugin_pdf_pluginhook($i,$pdf,$item);

@@ -35,6 +35,9 @@ $LANG['plugin_pdf']['title'][2]  = "Scelta tabelle da stampare";
 $LANG['plugin_pdf']['button'][1] = "Stampa";
 $LANG['plugin_pdf']['button'][2] = "Salva";
 
+$LANG['plugin_pdf']['knowbase'][1]   = "No question found";
+$LANG['plugin_pdf']['knowbase'][2]   = "No answer found";
+
 $LANG['plugin_pdf']['note'][1]   = "Nessuna nota";
 
 $LANG['plugin_pdf']['document'][1]  = "Nessun documento associato";

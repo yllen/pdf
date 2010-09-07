@@ -63,6 +63,7 @@ function plugin_init_pdf() {
    $PLUGIN_HOOKS['plugin_pdf']['Phone']           = 'pdf';
    $PLUGIN_HOOKS['plugin_pdf']['Peripheral']      = 'pdf';
    $PLUGIN_HOOKS['plugin_pdf']['Ticket']          = 'pdf';
+   $PLUGIN_HOOKS['plugin_pdf']['KnowbaseItem']    = 'pdf';
 }
 
 

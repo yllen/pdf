@@ -58,6 +58,7 @@ function plugin_pdf_prefPDF($item) {
       case 'Monitor' :
       case 'Phone' :
       case 'Peripheral' :
+      case 'KnowbaseItem' :
          $item->fields['id'] = 1;
          $tabs = $item->defineTabs();
          break;
