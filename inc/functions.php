@@ -2226,7 +2226,7 @@ function plugin_pdf_history($pdf,$item) {
    $pdf->displaySpace();
 }
 
-function plugin_pdf_main_knowbaseitem($pdf,$item){
+function plugin_pdf_main_knowbaseitem($pdf, KnowbaseItem $item){
    global $DB,$LANG;
 
    $ID = $item->getField('id');
@@ -2253,7 +2253,12 @@ function plugin_pdf_main_knowbaseitem($pdf,$item){
 
    if (utf8_strlen($fullcategoryname) > 0) {
       $pdf->displayTitle('<b>'.$LANG['common'][36].'</b>');
-      $pdf->displayText('', $fullcategoryname,1);
+      $pdf->displayLine($fullcategoryname);
+   }
+   if ($item->fields["is_faq"]) {
+      $pdf->displayLine($LANG['knowbase'][10]);
+   } else {
+      $pdf->displayLine($LANG['knowbase'][11]);
    }
    if (utf8_strlen($question) > 0) {
       $pdf->displayTitle('<b>'.$LANG['knowbase'][14].'</b>');
