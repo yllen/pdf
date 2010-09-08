@@ -2255,11 +2255,7 @@ function plugin_pdf_main_knowbaseitem($pdf, KnowbaseItem $item){
       $pdf->displayTitle('<b>'.$LANG['common'][36].'</b>');
       $pdf->displayLine($fullcategoryname);
    }
-   if ($item->fields["is_faq"]) {
-      $pdf->displayLine($LANG['knowbase'][10]);
-   } else {
-      $pdf->displayLine($LANG['knowbase'][11]);
-   }
+
    if (utf8_strlen($question) > 0) {
       $pdf->displayTitle('<b>'.$LANG['knowbase'][14].'</b>');
       $pdf->displayText('', $question, 5);
@@ -2273,6 +2269,18 @@ function plugin_pdf_main_knowbaseitem($pdf, KnowbaseItem $item){
    } else {
       $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['knowbase'][2].'</b>');
    }
+
+   $pdf->setColumnsSize(50,15,15,10,10);
+   $pdf->displayTitle($LANG['common'][37],   // Author
+                      $LANG['common'][27],   // Created
+                      $LANG['common'][26],   // Updated TODO : find a shorter locale
+                      $LANG['Menu'][20],     // FAQ
+                      $LANG['knowbase'][26]);   // # of Views
+   $pdf->displayLine(getUserName($item->fields["users_id"]),
+                     convDateTime($item->fields["date"]),
+                     convDateTime($item->fields["date_mod"]),
+                     Dropdown::getYesNo($item->fields["is_faq"]),
+                     $item->fields["view"]);
 
    $pdf->displaySpace();
 }
