@@ -92,6 +92,9 @@ class PluginPdfSimplePDF {
       $this->pdf->ezStream();
    }
 
+   public function output () {
+      return $this->pdf->output();
+   }
 
    public function newPage () {
 

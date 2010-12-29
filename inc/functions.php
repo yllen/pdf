@@ -214,7 +214,7 @@ function plugin_pdf_cost(PluginPdfSimplePDF $pdf, Ticket $job) {
                      formatNumber($job->fields["cost_time"]),
                      formatNumber($job->fields["cost_fixed"]),
                      formatNumber($job->fields["cost_material"]),
-                     Ticket ::trackingTotalCost($job->fields["realtime"], $job->fields["cost_time"],
+                     Ticket::trackingTotalCost($job->fields["realtime"], $job->fields["cost_time"],
                                                 $job->fields["cost_fixed"], $job->fields["cost_material"]));
    $pdf->displaySpace();
 }
@@ -1352,59 +1352,62 @@ function plugin_pdf_software($pdf,$comp){
    global $DB,$LANG;
 
    $ID = $comp->getField('id');
-   $entities_id = $comp->fields["entities_id"];
 
-   $query = " `glpi_softwarecategories`.`name` AS category,
-              `glpi_softwares`.`softwarecategories_id` AS category_id,
-              `glpi_softwares`.`name` AS softname,
-              `glpi_computers_softwareversions`.`id` AS ID,
-              `glpi_softwares`.`is_deleted`,
-              `glpi_states`.`name` AS state,
-              `glpi_softwareversions`.`softwares_id` AS sID,
-              `glpi_softwareversions`.`name` AS version,
-              `glpi_softwarelicenses`.`computers_id`,
-              `glpi_softwarelicenses`.`softwarelicensetypes_id` AS lictype
-             FROM `glpi_computers_softwareversions`
-             LEFT JOIN `glpi_softwareversions`
-               ON (`glpi_computers_softwareversions`.`softwareversions_id` = `glpi_softwareversions`.`id`)
-             LEFT JOIN `glpi_states`
-               ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
-             LEFT JOIN `glpi_softwarelicenses`
-               ON (`glpi_softwareversions`.`softwares_id` = `glpi_softwarelicenses`.`softwares_id`
-                   AND `glpi_softwarelicenses`.`computers_id` = '$ID')
-             LEFT JOIN `glpi_softwares`
-               ON (`glpi_softwareversions`.`softwares_id` = `glpi_softwares`.`id`)
-             LEFT JOIN `glpi_softwarecategories`
-               ON (`glpi_softwarecategories`.`id` = `glpi_softwares`.`softwarecategories_id`)
-             WHERE `glpi_computers_softwareversions`.`computers_id` = '$ID'";
+   $query = "SELECT  `glpi_softwareversions`.*, 
+                     `glpi_computers_softwarelicenses`.`softwarelicenses_id`
+             FROM `glpi_computers_softwareversions`, `glpi_softwareversions`, 
+                  `glpi_computers_softwarelicenses`
+             WHERE `glpi_computers_softwareversions`.`computers_id` = '".$ID."'
+                  AND `glpi_computers_softwareversions`.`softwareversions_id`
+                        = `glpi_softwareversions`.`id`
+                  AND `glpi_computers_softwarelicenses`.`computers_id` = '".$ID."'
+             ORDER BY `glpi_softwareversions`.`softwares_id` ASC";
 
-   $query_cat = "SELECT 1 as TYPE,
-                 $query
-                  AND `glpi_softwares`.`softwarecategories_id` > '0' ";
+   $output = array();
+   
+   $software               = new Software;
+   $software_category      = new SoftwareCategory;
+   $software_licence       = new SoftwareLicense;
+   $software_version       = new SoftwareVersion;
 
-   $query_nocat = "SELECT 2 as TYPE,
-                   $query
-                    AND (`glpi_softwares`.`softwarecategories_id` <= '0'
-                         OR `glpi_softwares`.`softwarecategories_id` IS NULL )";
+   foreach ($DB->request($query) as $softwareversion) {
+      
+      $software->getFromDB($softwareversion['softwares_id']);
+      
+      if( $software->fields['softwarecategories_id'] != 0 ) {
+         $software_category->getFromDB($software->fields['softwarecategories_id']);
+      }
+      
+      if( $softwareversion['softwarelicenses_id'] != 0 ) {
+         $software_licence->getFromDB($softwareversion['softwarelicenses_id']);
+         
+         if( $software_licence->fields['softwarelicensetypes_id'] != 0 ) {
+            $lictype = $software_licence->fields['softwarelicensetypes_id'];
+         } else {
+            $lictype = 0;
+         }
+      }
 
-   $sql = "( $query_cat )
-           UNION
-           ($query_nocat)
-           ORDER BY TYPE, category, softname, version";
-
-   $DB->query("SET SESSION group_concat_max_len = 9999999;");
-   $result = $DB->query($sql);
+      $output[$softwareversion['id']]['category_id'] = $software->fields['softwarecategories_id'];
+      $output[$softwareversion['id']]['category'] = $software_category->getName();
+      $output[$softwareversion['id']]['softname'] = $software->getName();
+      $output[$softwareversion['id']]['state'] = 
+            Dropdown::getDropdownName('glpi_states',$softwareversion['states_id']);
+      $output[$softwareversion['id']]['version'] = $softwareversion['name'];
+      $output[$softwareversion['id']]['computers_id'] = $ID;
+      $output[$softwareversion['id']]['lictype'] = $lictype;
+   }
 
    $pdf->setColumnsSize(100);
 
-   if ($DB->numrows($result)) {
+   if (count($output)) {
       $pdf->displayTitle('<b>'.$LANG["software"][17].'</b>');
 
       $cat = -1;
-      while ($data=$DB->fetch_array($result)) {
-         if ($data["category_id"] != $cat) {
-            $cat = $data["category_id"];
-            $catname = ($cat ? $data["category"] : $LANG["softwarecategories"][3]);
+      foreach ($output as $soft) {
+         if ($soft["category_id"] != $cat) {
+            $cat = $soft["category_id"];
+            $catname = ($cat ? $soft["category"] : $LANG["softwarecategories"][2]);
 
             $pdf->setColumnsSize(100);
             $pdf->displayTitle('<b>'.$catname.'</b>');
@@ -1416,16 +1419,14 @@ function plugin_pdf_software($pdf,$comp){
                                '<b>'.$LANG['software'][30].'</b>');
          }
 
-         $sw = new Software();
-         $sw->getFromDB($data['sID']);
-
          $pdf->displayLine(
-            $data['softname'],
-            $data['state'],
-            $data['version'],
-            ($data['computers_id'] == $ID ? html_clean(Dropdown::getDropdownName("glpi_softwarelicensetypes",
-                                                                                 $data["lictype"])) : ''));
-      } // Each soft
+            $soft['softname'],
+            $soft['state'],
+            $soft['version'],
+            ($soft['computers_id'] == $ID ? html_clean(
+                                            Dropdown::getDropdownName("glpi_softwarelicensetypes", 
+                                            $soft["lictype"])) : ''));
+      } // Each version
 
    } else {
       $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['software'][1].'</b>');
@@ -1439,10 +1440,10 @@ function plugin_pdf_computer_connection ($pdf,$comp){
 
    $ID = $comp->getField('id');
 
-   $items = array('Printer'    => $LANG["computers"][39],
-                  'Monitor'    => $LANG["computers"][40],
-                  'Peripheral' => $LANG["computers"][46],
-                  'Phone'      => $LANG["computers"][55]);
+   $items = array('Printer'    => $LANG['Menu'][2],
+                  'Monitor'    => $LANG['Menu'][3],
+                  'Peripheral' => $LANG['Menu'][16],
+                  'Phone'      => $LANG['Menu'][34]);
 
    $info = new InfoCom();
 
@@ -1593,7 +1594,7 @@ function plugin_pdf_port($pdf,$item){
    if ($result = $DB->query($query)) {
       $nb_connect = $DB->numrows($result);
       if (!$nb_connect) {
-         $pdf->displayTitle('<b>0 '.$LANG["networking"][37].'</b>');
+         $pdf->displayTitle('<b>0 '.$LANG["networking"][11].'</b>');
       } else {
          $pdf->displayTitle('<b>'.$nb_connect.' '.$LANG["networking"][13].' :</b>');
 
@@ -2310,8 +2311,7 @@ function plugin_pdf_pluginhook($onglet,$pdf,$item) {
    }
 }
 
-
-function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
+function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
 
    $pdf = new PluginPdfSimplePDF('a4', ($page ? 'landscape' : 'portrait'));
 
@@ -2716,7 +2716,12 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0) {
             break;
       } // Switch type
    } // Each ID
-   $pdf->render();
+   
+   if($render) {
+      $pdf->render();
+   } else {
+      return $pdf->output();  
+   }
 }
 
 ?>
