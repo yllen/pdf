@@ -1684,7 +1684,7 @@ function plugin_pdf_contract ($pdf,$item){
 
    $pdf->setColumnsSize(100);
    if ($number > 0) {
-      $pdf->displayTitle($LANG["financial"][66]);
+      $pdf->displayTitle('<b>'.$LANG["financial"][66].'</b>');
 
       $pdf->setColumnsSize(19,19,19,16,11,16);
       $pdf->displayTitle($LANG["common"][16], $LANG["financial"][4], $LANG["financial"][6],
