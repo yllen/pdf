@@ -292,6 +292,30 @@ class PluginPdfSimplePDF {
    public function displaySpace ($nb=1) {
       $this->start_tab -= ($nb * 20);
    }
+   
+   public function addPngFromFile ($image,$dst_w,$dst_h) {
+      
+      $size = GetImageSize($image);
+      $src_w = $size[0];
+      $src_h = $size[1];
+      // Teste les dimensions tenant dans la zone
+      $test_h = round(($dst_w / $src_w) * $src_h);
+      $test_w = round(($dst_h / $src_h) * $src_w);
+
+      // Teste quel redimensionnement tient dans la zone
+      if ($test_h > $dst_h) {
+         $pos_w = 25 + ($dst_w - $test_w) /2;
+         $dst_w = $test_w;
+      }
+      else {
+         $pos_w = 25;
+         $dst_h = $test_h;
+      }
+      $this->start_tab -= $dst_h;
+      $pos_h = $this->start_tab;
+      $this->pdf->addPngFromFile($image,$pos_w,$pos_h,$dst_w,$dst_h);
+
+   }
 
 }
 
