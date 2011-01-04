@@ -52,17 +52,22 @@ $query = "SELECT `tabref`
 $result = $DB->query($query);
 
 $tab = array();
+$pag = 0;
 while ($data = $DB->fetch_array($result)) {
-   $tab[]=$data["tabref"];
+   if ($data["tabref"] == 'landscape') {
+      $pag = 1;
+   } else {
+      $tab[]=$data["tabref"];
+   }
 }
 
 if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
    $options = array('item'   => $item,
                     'tab_id' => $tab_id,
                     'tab'    => $tab,
-                    'page'   => 0);
+                    'page'   => $pag);
 
-   doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$options);
+   doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF", $options);
 } else {
    die("Missing hook");
 }
