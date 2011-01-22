@@ -37,7 +37,7 @@ Author :BALPE Dévi
 1 - Presentation
 This plugin enables you to print with format pdf all the mitres of a card computer 
 or a software of the inventory. 
-Compatibility : Glpi 0.80
+Compatibility : Glpi 0.78
 
 2 - Installation
 

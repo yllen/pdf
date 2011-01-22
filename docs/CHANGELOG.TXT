@@ -31,30 +31,33 @@
 // Original Author of file: BALPE Dévi
 // Purpose of file:
 // ----------------------------------------------------------------------
-
+Version 0.7.1
+   #2554 User preferences not taken in account during massive actions
+   #2604 Render/Ouput option on PDF export
+   
 version 0.7.0
-   glpi version 0.80
+   glpi version 0.78
    
 version 0.6.2
-   283   Add es-ES translation
+   #283   Add es-ES translation
    https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.2
 
 Version 0.6.1 
-   251   Don't print private followup
-   259   add Turkish translation
-   253   Add italian translation
+   #251   Don't print private followup
+   #259   add Turkish translation
+   #253   Add italian translation
    https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.1
 
 Version 0.6.0 
 
-   120   Software correction with 0.72 modification
-   240   GLPI 0.72 migration
-   242   Provides HOOK for other plugins
-   243   Generate PDF for printer
-   244   Generate PDF for Monitor
-   245   Generate PDF for Phones
-   246   Generate PDF for Peripherals
-   241   Clean up code for maintenability
+   #120   Software correction with 0.72 modification
+   #240   GLPI 0.72 migration
+   #242   Provides HOOK for other plugins
+   #243   Generate PDF for printer
+   #244   Generate PDF for Monitor
+   #245   Generate PDF for Phones
+   #246   Generate PDF for Peripherals
+   #241   Clean up code for maintenability
    https://dev.indepnet.net/plugins/query?milestone=pdf+0.6.0
 
 Version 0.4

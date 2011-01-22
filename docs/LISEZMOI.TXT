@@ -38,7 +38,7 @@ Author : BALPE Dévi
 
 Ce plugin vous permet d'imprimer au format PDF tous les onglets d'une fiche ordinateur 
 ou d'un logiciel de l'inventaire.
-Compatibilité : Glpi 0.80
+Compatibilité : Glpi 0.78
 
 2 - Installation
 
