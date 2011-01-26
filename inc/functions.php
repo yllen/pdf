@@ -210,12 +210,13 @@ function plugin_pdf_cost(PluginPdfSimplePDF $pdf, Ticket $job) {
    $pdf->setColumnsSize(20,20,20,20,20);
    $pdf->displayTitle($LANG['job'][20],$LANG['job'][40], $LANG['job'][41],
                       $LANG['job'][42], $LANG['job'][43]);
+   $pdf->setColumnsAlign('center','right','right','right','right');
    $pdf->displayLine(Ticket::getRealtime($job->fields["realtime"]),
-                     formatNumber($job->fields["cost_time"]),
-                     formatNumber($job->fields["cost_fixed"]),
-                     formatNumber($job->fields["cost_material"]),
+                     html_clean(formatNumber($job->fields["cost_time"])),
+                     html_clean(formatNumber($job->fields["cost_fixed"])),
+                     html_clean(formatNumber($job->fields["cost_material"])),
                      Ticket::trackingTotalCost($job->fields["realtime"], $job->fields["cost_time"],
-                                                $job->fields["cost_fixed"], $job->fields["cost_material"]));
+                                               $job->fields["cost_fixed"], $job->fields["cost_material"]));
    $pdf->displaySpace();
 }
 
@@ -955,11 +956,11 @@ function plugin_pdf_financial($pdf,$item) {
                html_clean(Dropdown::getDropdownName("glpi_budgets", $ic->fields["budgets_id"])));
 
       $pdf->displayLine(
-         "<b><i>".$LANG["financial"][78]." :</i></b> ".formatNumber($ic->fields["warranty_value"]),
+         "<b><i>".$LANG["financial"][78]." :</i></b> ".html_clean(formatNumber($ic->fields["warranty_value"])),
          "<b><i>".$LANG["financial"][16]." :</i></b> ".$ic->fields["warranty_info"]);
 
       $pdf->displayLine(
-         "<b><i>".$LANG["rulesengine"][13]." :</i></b> ".formatNumber($ic->fields["value"]),
+         "<b><i>".$LANG["rulesengine"][13]." :</i></b> ".html_clean(formatNumber($ic->fields["value"])),
          "<b><i>".$LANG["financial"][81]." :</i></b> ".Infocom::Amort($ic->fields["sink_type"],
                                                                       $ic->fields["value"],
                                                                       $ic->fields["sink_time"],
@@ -978,9 +979,9 @@ function plugin_pdf_financial($pdf,$item) {
                         "<b><i>".$LANG["financial"][77]." :</i></b> ".$ic->fields["sink_coeff"]);
 
       $pdf->displayLine(
-         "<b><i>".$LANG["financial"][89]." :</i></b> ".Infocom::showTco($item->getField('ticket_tco'),
+         "<b><i>".$LANG["financial"][89]." :</i></b> ".html_clean(Infocom::showTco($item->getField('ticket_tco')),
                                                                         $ic->fields["value"]),
-         "<b><i>".$LANG["financial"][90]." :</i></b> ".Infocom::showTco($item->getField('ticket_tco'),
+         "<b><i>".$LANG["financial"][90]." :</i></b> ".html_clean(Infocom::showTco($item->getField('ticket_tco')),
                                                                         $ic->fields["value"],
                                                                         $ic->fields["buy_date"]));
 
@@ -1353,9 +1354,9 @@ function plugin_pdf_software($pdf,$comp){
 
    $ID = $comp->getField('id');
 
-   $query = "SELECT  `glpi_softwareversions`.*, 
+   $query = "SELECT  `glpi_softwareversions`.*,
                      `glpi_computers_softwarelicenses`.`softwarelicenses_id`
-             FROM `glpi_computers_softwareversions`, `glpi_softwareversions`, 
+             FROM `glpi_computers_softwareversions`, `glpi_softwareversions`,
                   `glpi_computers_softwarelicenses`
              WHERE `glpi_computers_softwareversions`.`computers_id` = '".$ID."'
                   AND `glpi_computers_softwareversions`.`softwareversions_id`
@@ -1364,23 +1365,23 @@ function plugin_pdf_software($pdf,$comp){
              ORDER BY `glpi_softwareversions`.`softwares_id` ASC";
 
    $output = array();
-   
+
    $software               = new Software;
    $software_category      = new SoftwareCategory;
    $software_licence       = new SoftwareLicense;
    $software_version       = new SoftwareVersion;
 
    foreach ($DB->request($query) as $softwareversion) {
-      
+
       $software->getFromDB($softwareversion['softwares_id']);
-      
+
       if( $software->fields['softwarecategories_id'] != 0 ) {
          $software_category->getFromDB($software->fields['softwarecategories_id']);
       }
-      
+
       if( $softwareversion['softwarelicenses_id'] != 0 ) {
          $software_licence->getFromDB($softwareversion['softwarelicenses_id']);
-         
+
          if( $software_licence->fields['softwarelicensetypes_id'] != 0 ) {
             $lictype = $software_licence->fields['softwarelicensetypes_id'];
          } else {
@@ -1391,7 +1392,7 @@ function plugin_pdf_software($pdf,$comp){
       $output[$softwareversion['id']]['category_id'] = $software->fields['softwarecategories_id'];
       $output[$softwareversion['id']]['category'] = $software_category->getName();
       $output[$softwareversion['id']]['softname'] = $software->getName();
-      $output[$softwareversion['id']]['state'] = 
+      $output[$softwareversion['id']]['state'] =
             Dropdown::getDropdownName('glpi_states',$softwareversion['states_id']);
       $output[$softwareversion['id']]['version'] = $softwareversion['name'];
       $output[$softwareversion['id']]['computers_id'] = $ID;
@@ -1424,7 +1425,7 @@ function plugin_pdf_software($pdf,$comp){
             $soft['state'],
             $soft['version'],
             ($soft['computers_id'] == $ID ? html_clean(
-                                            Dropdown::getDropdownName("glpi_softwarelicensetypes", 
+                                            Dropdown::getDropdownName("glpi_softwarelicensetypes",
                                             $soft["lictype"])) : ''));
       } // Each version
 
@@ -2080,8 +2081,8 @@ function plugin_pdf_volume($pdf,$item) {
                            $data['device'],
                            $data['mountpoint'],
                            Dropdown::getDropdownName('glpi_filesystems',$data["filesystems_id"]),
-                           formatNumber($data['totalsize'], false, 0)." ".$LANG['common'][82],
-                           formatNumber($data['freesize'], false, 0)." ".$LANG['common'][82]);
+                           html_clean(formatNumber($data['totalsize'], false, 0))." ".$LANG['common'][82],
+                           html_clean(formatNumber($data['freesize'], false, 0))." ".$LANG['common'][82]);
       }
    } else {
       $pdf->displayTitle("<b>".$LANG['computers'][8] . " - " . $LANG['search'][15]."</b>");
@@ -2716,11 +2717,11 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
             break;
       } // Switch type
    } // Each ID
-   
+
    if($render) {
       $pdf->render();
    } else {
-      return $pdf->output();  
+      return $pdf->output();
    }
 }
 

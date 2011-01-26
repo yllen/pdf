@@ -31,6 +31,10 @@
 // Original Author of file: BALPE Dévi
 // Purpose of file:
 // ----------------------------------------------------------------------
+
+Version 0.7.2
+   #2612 Html char in volume size
+   
 Version 0.7.1
    #2554 User preferences not taken in account during massive actions
    #2604 Render/Ouput option on PDF export
