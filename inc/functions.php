@@ -197,7 +197,7 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
    $pdf->setColumnsSize(100);
    if ($job->fields["itemtype"] && class_exists($job->fields["itemtype"])) {
       $pdf->displayText(
-         "<b><i>".$LANG['common'][1]."</i></b> : ".html_clean($item->getTypeName())." ".
+         "<b><i>".$LANG['common'][1]."</i></b> : ", html_clean($item->getTypeName())." ".
                html_clean($item->getNameID()). $serial_item . $location_item . $otherserial_item);
    } else {
       $pdf->displayLine("<b><i>".$LANG['common'][1]."</i></b> : ".$LANG['help'][30]);
