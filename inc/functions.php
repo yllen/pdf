@@ -104,17 +104,24 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
 
    $serial_item = '';
    $location_item = '';
+   $otherserial_item = '';
+
    if ($job->fields["itemtype"] && class_exists($job->fields["itemtype"])) {
       $item = new $job->fields["itemtype"]();
       if ($item->getFromDB($job->fields["items_id"])) {
          if (isset($item->fields["serial"])) {
             $serial_item =
-               " <b><i>".$LANG['common'][19]."</i></b> : ".
+               ", <b><i>".$LANG['common'][19]."</i></b> : ".
                               html_clean($item->fields["serial"]);
+         }
+         if (isset($item->fields["otherserial"])) {
+            $otherserial_item =
+               ", <b><i>".$LANG['common'][20]."</i></b> : ".
+                              html_clean($item->fields["otherserial"]);
          }
          if (isset($item->fields["locations_id"])) {
             $location_item =
-               " <b><i>".$LANG['common'][15]."</i></b> : ".
+               ", <b><i>".$LANG['common'][15]."</i></b> : ".
                   html_clean(Dropdown::getDropdownName("glpi_locations",
                                                        $item->fields["locations_id"]));
          }
@@ -189,9 +196,9 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
    // Equipment
    $pdf->setColumnsSize(100);
    if ($job->fields["itemtype"] && class_exists($job->fields["itemtype"])) {
-      $pdf->displayLine(
+      $pdf->displayText(
          "<b><i>".$LANG['common'][1]."</i></b> : ".html_clean($item->getTypeName())." ".
-               html_clean($item->getNameID()).$serial_item . $location_item);
+               html_clean($item->getNameID()). $serial_item . $location_item . $otherserial_item);
    } else {
       $pdf->displayLine("<b><i>".$LANG['common'][1]."</i></b> : ".$LANG['help'][30]);
    }
