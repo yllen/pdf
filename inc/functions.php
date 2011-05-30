@@ -513,6 +513,10 @@ function plugin_pdf_main_computer($pdf,$computer) {
                                            $computer->fields['autoupdatesystems_id'])));
 
    $pdf->setColumnsSize(100);
+   $pdf->displayLine(
+      '<b><i>'.$LANG['computers'][58].' :</i></b> '.$computer->fields['uuid']);
+
+
    $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $computer->fields['comment']);
 
    $pdf->displaySpace();
@@ -2087,7 +2091,7 @@ function plugin_pdf_volume($pdf,$item) {
          $pdf->displayLine('<b>'.decodeFromUtf8((empty($data['name'])?$data['ID']:$data['name']),"windows-1252").'</b>',
                            $data['device'],
                            $data['mountpoint'],
-                           Dropdown::getDropdownName('glpi_filesystems',$data["filesystems_id"]),
+                           html_clean(Dropdown::getDropdownName('glpi_filesystems',$data["filesystems_id"])),
                            html_clean(formatNumber($data['totalsize'], false, 0))." ".$LANG['common'][82],
                            html_clean(formatNumber($data['freesize'], false, 0))." ".$LANG['common'][82]);
       }
