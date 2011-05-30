@@ -1606,9 +1606,9 @@ function plugin_pdf_port($pdf,$item){
    if ($result = $DB->query($query)) {
       $nb_connect = $DB->numrows($result);
       if (!$nb_connect) {
-         $pdf->displayTitle('<b>0 '.$LANG["networking"][11].'</b>');
+         $pdf->displayTitle('<b>0 '.$LANG["networking"][10].'</b>');
       } else {
-         $pdf->displayTitle('<b>'.$nb_connect.' '.$LANG["networking"][13].' :</b>');
+         $pdf->displayTitle('<b>'.$LANG["networking"][$nb_connect>1 ? 11 : 12]." : $nb_connect</b>");
 
          while ($devid=$DB->fetch_row($result)) {
             $netport = new NetworkPort;
