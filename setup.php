@@ -81,10 +81,10 @@ function plugin_version_pdf() {
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_pdf_check_prerequisites(){
 
-   if (GLPI_VERSION >= 0.80){
-      return true;
+   if (version_compare(GLPI_VERSION,'0.80','lt') || version_compare(GLPI_VERSION,'0.81','ge')) {
+      echo "This plugin requires GLPI 0.80";
    }
-   echo "This plugin requires GLPI 0.80 or later";
+   return true;
 }
 
 
