@@ -1818,106 +1818,125 @@ function plugin_pdf_registry($pdf,$item) {
 }
 
 
-function plugin_pdf_ticket($pdf,$item) {
+function plugin_pdf_ticket($pdf, $item) {
    global $DB,$CFG_GLPI, $LANG;
 
    $ID = $item->getField('id');
-   $type = get_class($item);
+   $type = $item->getType();
 
    if (!haveRight("show_all_ticket","1")) {
       return;
    }
 
+   if ($type == 'Sla') {
+      $restrict                 = "(`slas_id` = '$ID')";
+      $order                    = '`glpi_tickets`.`due_date` DESC';
+   } else {
+      $restrict                 = "(`items_id` = '$ID' AND `itemtype` = '$type')";
+      $order                    = '`glpi_tickets`.`date_mod` DESC';
+   }
+
    $query = "SELECT ".Ticket::getCommonSelect()."
              FROM glpi_tickets ".
              Ticket::getCommonLeftJoin()."
-             WHERE (`status` = 'new'
-                    OR `status` = 'assign'
-                    OR `status` = 'plan'
-                    OR `status` = 'waiting')
-                   AND (`items_id` = '$ID'
-                        AND `itemtype` = '$type')
-             ORDER BY `glpi_tickets`.`date`";
+             WHERE $restrict ".
+               getEntitiesRestrictRequest("AND","glpi_tickets")."
+             ORDER BY $order
+             LIMIT ".intval($_SESSION['glpilist_limit']);
 
    $result = $DB->query($query);
    $number = $DB->numrows($result);
 
    $pdf->setColumnsSize(100);
    if (!$number) {
-      $pdf->displayTitle('<b>'.$LANG['joblist'][16].'</b>');
+      $pdf->displayTitle('<b>'.$LANG['joblist'][8].'</b>');
    } else {
-      $pdf->displayTitle("<b>$number ".$LANG["job"][8].'</b>');
+      $pdf->displayTitle("<b>".$LANG["job"][$number==1 ? 10 : 8]." : $number</b>");
 
+      $job = new Ticket();
       while ($data = $DB->fetch_assoc($result)) {
-         $pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b> ID'.$data["id"].'     '.
-                           Ticket::getStatus($data["status"]));
+         if (!$job->getFromDB($data["id"])) {
+            continue;
+         }
+         $pdf->setColumnsAlign('center');
+         $col = '<b><i>ID '.$job->fields["id"].'</i></b>,   '.$LANG["state"][0].' : '.
+                           Ticket::getStatus($job->fields["status"]);
 
-         $pdf->displayLine('<b><i>'.$LANG["common"][27].' :</i></b>'.$LANG["joblist"][11].' : '.
-                           $data["date"]);
+         if (count($_SESSION["glpiactiveentities"]) > 1) {
+            if ($job->fields['entities_id'] == 0) {
+               $col .= "   (".$LANG['entity'][2].")";
+            } else {
+               $col .= "   (".Dropdown::getDropdownName("glpi_entities", $job->fields['entities_id']).")";
+            }
+         }
+         $pdf->displayLine($col);
 
-         $pdf->displayLine('<b><i>'.$LANG["joblist"][2].' :</i></b> '.
-                           Ticket::getPriorityName($data["priority"]));
+         $pdf->setColumnsAlign('left');
 
-         $pdf->displayLine('<b><i>'.$LANG["job"][4].' :</i></b> '.getUserName($data["users_id"]));
+         $col = '<b><i>'.$LANG['joblist'][11].' : </i></b>'.convDateTime($job->fields['date']);
+         if ($job->fields['begin_waiting_date']) {
+            // TODO 0.83, $LANG['joblist'][15]
+            $col .= ', '.$LANG['joblist'][26]." : ".convDateTime($job->fields['begin_waiting_date']);
+         }
+         if ($job->fields['status']=='solved' || $job->fields['status']=='closed') {
+            $col .= ', '.$LANG['joblist'][14]." : ".convDateTime($job->fields['solvedate']);
+         }
+         if ($job->fields['status']=='closed') {
+            $col .= ', '.$LANG['joblist'][12]." : ".convDateTime($job->fields['closedate']);
+         }
+         if ($job->fields['due_date']) {
+            $col .= ', '.$LANG['sla'][5]." : ".convDateTime($job->fields['due_date']);
+         }
+         $pdf->displayLine($col);
 
-         $pdf->displayLine('<b><i>'.$LANG["job"][5].' :</i></b> '.
-                           getUserName($data["users_id_assign"]));
+         $col = '<b><i>'.$LANG["joblist"][2].' :</i></b> '.Ticket::getPriorityName($job->fields["priority"]);
+         if ($job->fields["ticketcategories_id"]) {
+            $col .= '  -  <b><i>'.$LANG["common"][36].' : </i></b>';
+            $col .= Dropdown::getDropdownName('glpi_ticketcategories', $job->fields["ticketcategories_id"]);
+         }
+         $pdf->displayLine($col);
 
-         $pdf->displayLine('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]);
+         $col = '';
+         $users = $job->getUsers(Ticket::REQUESTER);
+         if (count($users)) {
+            foreach ($users as $k => $d) {
+               $col .= (empty($col)?'':', ').getUserName($k);
+            }
+         }
+         $grps = $job->getGroups(Ticket::REQUESTER);
+         if (count($grps)) {
+            $col .= (empty($col)?'':' - ').'<b><i>'.$LANG['Menu'][36].' : </i></b>';
+            $first = true;
+            foreach ($grps as $k => $d) {
+               $col .= ($first?'':', ').Dropdown::getDropdownName("glpi_groups", $k);
+               $first = false;
+            }
+         }
+         if ($col) {
+            $pdf->displayText('<b><i>'.$LANG["job"][4].' : </i></b>', $col, 1);
+         }
 
-         $pdf->displayLine('<b><i>'.$LANG["common"][57].' :</i></b> '.$data["name"]);
-      }
-   }
-   $pdf->displaySpace();
-}
+         $col = '';
+         $users = $job->getUsers(Ticket::ASSIGN);
+         if (count($users)) {
+            foreach ($users as $k => $d) {
+               $col .= (empty($col)?'':', ').getUserName($k);
+            }
+         }
+         $grps = $job->getGroups(Ticket::ASSIGN);
+         if (count($grps)) {
+            $col .= (empty($col)?'':' - ').'<b><i>'.$LANG['Menu'][36].' : </i></b>';
+            $first = true;
+            foreach ($grps as $k => $d) {
+               $col .= ($first?'':', ').Dropdown::getDropdownName("glpi_groups", $k);
+               $first = false;
+            }
+         }
+         if ($col) {
+            $pdf->displayText('<b><i>'.$LANG["job"][5].' : </i></b>', $col, 1);
+         }
 
-
-function plugin_pdf_oldticket($pdf,$item) {
-   global $DB,$CFG_GLPI, $LANG;
-
-   $ID = $item->getField('id');
-   $type = get_class($item);
-
-   if (!haveRight("show_all_ticket","1")) {
-      return;
-   }
-
-   $query = "SELECT ".Ticket::getCommonSelect()."
-             FROM glpi_tickets ".
-             Ticket::getCommonLeftJoin()."
-             WHERE (`status` = 'solved'
-                    OR `status` = 'closed')
-                   AND (`itemtype` = '$type'
-                   AND `items_id` = '$ID')
-             ORDER BY `glpi_tickets`.`date`";
-
-   $result = $DB->query($query);
-   $number = $DB->numrows($result);
-
-   $pdf->setColumnsSize(100);
-   if (!$number) {
-      $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['ticket'][4].'</b>');
-   } else {
-      $pdf->displayTitle("<b>$number ".$LANG['plugin_pdf']['ticket'][3].'</b>');
-
-      while ($data = $DB->fetch_assoc($result)) {
-         $pdf->displayLine('<b><i>'.$LANG["state"][0].' :</i></b> ID'.$data["id"].'     '.
-                           Ticket::getStatus($data["status"]));
-
-         $pdf->displayLine('<b><i>'.$LANG["common"][27].' :</i></b>'.$LANG["joblist"][11].' : '.
-                           $data["date"]);
-
-         $pdf->displayLine('<b><i>'.$LANG["joblist"][2].' :</i></b> '.
-                           Ticket::getPriorityName($data["priority"]));
-
-         $pdf->displayLine('<b><i>'.$LANG["job"][4].' :</i></b> '.getUserName($data["users_id"]));
-
-         $pdf->displayLine('<b><i>'.$LANG["job"][5].' :</i></b> '.
-                           getUserName($data["users_id_assign"]));
-
-         $pdf->displayLine('<b><i>'.$LANG["common"][36].' :</i></b> '.$data["catname"]);
-
-         $pdf->displayLine('<b><i>'.$LANG["common"][57].' :</i></b> '.$data["name"]);
+         $pdf->displayText('<b><i>'.$LANG["common"][57].' :</i></b> ',$job->fields["name"], 1);
       }
    }
    $pdf->displaySpace();
@@ -2362,7 +2381,6 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
 
                   case 6 :
                      plugin_pdf_ticket($pdf,$item);
-                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 5 :
@@ -2424,7 +2442,6 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
 
                   case 6 :
                      plugin_pdf_ticket($pdf,$item);
-                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 7 :
@@ -2468,7 +2485,6 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
 
                   case 6 :
                      plugin_pdf_ticket($pdf,$item);
-                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 7 :
@@ -2513,7 +2529,6 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
 
                   case 6 :
                      plugin_pdf_ticket($pdf,$item);
-                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 7 :
@@ -2558,7 +2573,6 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
 
                   case 6 :
                      plugin_pdf_ticket($pdf,$item);
-                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 7 :
@@ -2648,7 +2662,6 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
 
                   case 6 :
                      plugin_pdf_ticket($pdf,$item);
-                     plugin_pdf_oldticket($pdf,$item);
                      break;
 
                   case 7 :
