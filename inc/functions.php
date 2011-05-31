@@ -947,64 +947,72 @@ function plugin_pdf_financial($pdf,$item) {
       $pdf->displayTitle("<b>".$LANG["financial"][3]."</b>");
 
       $pdf->setColumnsSize(50,50);
+
       $pdf->displayLine(
          "<b><i>".$LANG["financial"][26]." :</i></b> ".
             html_clean(Dropdown::getDropdownName("glpi_suppliers", $ic->fields["suppliers_id"])),
-         "<b><i>".$LANG["financial"][82]." :</i></b> ".$ic->fields["bill"]);
-
-      $pdf->displayLine("<b><i>".$LANG["financial"][18]." :</i></b> ".$ic->fields["order_number"],
-                        "<b><i>".$LANG["financial"][19]." :</i></b> ".$ic->fields["delivery_number"]);
-
-      $pdf->displayLine(
-         "<b><i>".$LANG["financial"][14]." :</i></b> ".convDate($ic->fields["buy_date"]),
-         "<b><i>".$LANG["financial"][76]." :</i></b> ".convDate($ic->fields["use_date"]));
-
-      $pdf->displayLine(
-         "<b><i>".$LANG["financial"][15]." :</i></b> ".
-               $ic->fields["warranty_duration"]." mois <b><i>Expire le</i></b> ".
-               getWarrantyExpir($ic->fields["buy_date"],$ic->fields["warranty_duration"]),
          "<b><i>".$LANG["financial"][87]." :</i></b> ".
-               html_clean(Dropdown::getDropdownName("glpi_budgets", $ic->fields["budgets_id"])));
+            html_clean(Dropdown::getDropdownName("glpi_budgets", $ic->fields["budgets_id"])));
 
       $pdf->displayLine(
-         "<b><i>".$LANG["financial"][78]." :</i></b> ".html_clean(formatNumber($ic->fields["warranty_value"])),
-         "<b><i>".$LANG["financial"][16]." :</i></b> ".$ic->fields["warranty_info"]);
-
-      $pdf->displayLine(
-         "<b><i>".$LANG["rulesengine"][13]." :</i></b> ".html_clean(formatNumber($ic->fields["value"])),
-         "<b><i>".$LANG["financial"][81]." :</i></b> ".Infocom::Amort($ic->fields["sink_type"],
-                                                                      $ic->fields["value"],
-                                                                      $ic->fields["sink_time"],
-                                                                      $ic->fields["sink_coeff"],
-                                                                      $ic->fields["buy_date"],
-                                                                      $ic->fields["use_date"],
-                                                                      $CFG_GLPI['date_tax'],"n"));
+         "<b><i>".$LANG["financial"][18]." :</i></b> ".$ic->fields["order_number"],
+         "<b><i>".$LANG["financial"][28]." :</i></b> ".convDate($ic->fields["order_date"]));
 
       $pdf->displayLine(
          "<b><i>".$LANG["financial"][20]." :</i></b> ".$ic->fields["immo_number"],
-         "<b><i>".$LANG["financial"][22]." :</i></b> ".
-               Infocom::getAmortTypeName($ic->fields["sink_type"]));
-
-      $pdf->displayLine("<b><i>".$LANG["financial"][23]." :</i></b> ".$ic->fields["sink_time"]." ".
-                                 $LANG['financial'][9],
-                        "<b><i>".$LANG["financial"][77]." :</i></b> ".$ic->fields["sink_coeff"]);
+         "<b><i>".$LANG["financial"][14]." :</i></b> ".convDate($ic->fields["buy_date"]));
 
       $pdf->displayLine(
-         "<b><i>".$LANG["financial"][89]." :</i></b> ".html_clean(Infocom::showTco($item->getField('ticket_tco')),
-                                                                        $ic->fields["value"]),
-         "<b><i>".$LANG["financial"][90]." :</i></b> ".html_clean(Infocom::showTco($item->getField('ticket_tco')),
-                                                                        $ic->fields["value"],
-                                                                        $ic->fields["buy_date"]));
+         "<b><i>".$LANG["financial"][82]." :</i></b> ".$ic->fields["bill"],
+         "<b><i>".$LANG["financial"][27]." :</i></b> ".convDate($ic->fields["delivery_date"]));
+
+      $pdf->displayLine(
+         "<b><i>".$LANG["financial"][19]." :</i></b> ".$ic->fields["delivery_number"],
+         "<b><i>".$LANG["financial"][76]." :</i></b> ".convDate($ic->fields["use_date"]));
+
+      $pdf->displayLine(
+         "<b><i>".$LANG["rulesengine"][13]." :</i></b> ".html_clean(formatNumber($ic->fields["value"])),
+         "<b><i>".$LANG["financial"][114]." :</i></b> ".convDate($ic->fields["inventory_date"]));
+
+      $pdf->displayLine(
+         "<b><i>".$LANG["financial"][78]." :</i></b> ".html_clean(formatNumber($ic->fields["warranty_value"])),
+         "<b><i>".$LANG["financial"][23]." :</i></b> ".$ic->fields["sink_time"]." ". $LANG['financial'][9].
+            ' ('.Infocom::getAmortTypeName($ic->fields["sink_type"]).')');
+
+      $pdf->displayLine(
+         "<b><i>".$LANG["financial"][81]." :</i></b> ".
+            Infocom::Amort($ic->fields["sink_type"], $ic->fields["value"], $ic->fields["sink_time"],
+                           $ic->fields["sink_coeff"], $ic->fields["buy_date"], $ic->fields["use_date"],
+                           $CFG_GLPI['date_tax'],"n"),
+         "<b><i>".$LANG["financial"][77]." :</i></b> ".$ic->fields["sink_coeff"]);
+
+      $pdf->displayLine(
+         "<b><i>".$LANG["financial"][89]." :</i></b> ".
+            html_clean(Infocom::showTco($item->getField('ticket_tco'), $ic->fields["value"])),
+         "<b><i>".$LANG["financial"][90]." :</i></b> ".
+            html_clean(Infocom::showTco($item->getField('ticket_tco'), $ic->fields["value"], $ic->fields["buy_date"])));
+
+      $pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $ic->fields["comment"], 1);
 
       $pdf->setColumnsSize(100);
+      $pdf->displayTitle("<b>".$LANG["financial"][7]."</b>");
+
+      $pdf->setColumnsSize(50,50);
+
+      $pdf->displayLine(
+         "<b><i>".$LANG["financial"][29]." :</i></b> ".convDate($ic->fields["warranty_date"]),
+         "<b><i>".$LANG["financial"][15]." :</i></b> ".$ic->fields["warranty_duration"].' '.$LANG['financial'][57].
+               ', '.$LANG['financial'][88].getWarrantyExpir($ic->fields["buy_date"],$ic->fields["warranty_duration"]));
+
       $col1 = "<b><i>".$LANG["setup"][247]." :</i></b> ";
       if ($ic->fields["alert"] == 0) {
          $col1 .= $LANG['choice'][0];
       } else if ($ic->fields["alert"] == 4) {
          $col1 .= $LANG["financial"][80];
       }
-      $pdf->displayLine($col1);
-      $pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $ic->fields["comment"]);
+      $pdf->displayLine(
+         "<b><i>".$LANG["financial"][16]." :</i></b> ".$ic->fields["warranty_info"],
+         $col1);
    } else {
       $pdf->displayTitle("<b>".$LANG['plugin_pdf']['financial'][1]."</b>");
    }
