@@ -1360,89 +1360,142 @@ function plugin_pdf_installations($pdf,$item){
 }
 
 
-function plugin_pdf_software($pdf,$comp){
+function plugin_pdf_software($pdf, $comp){
    global $DB,$LANG;
 
    $ID = $comp->getField('id');
 
-   $query = "SELECT  `glpi_softwareversions`.*,
-                     `glpi_computers_softwarelicenses`.`softwarelicenses_id`
-             FROM `glpi_computers_softwareversions`, `glpi_softwareversions`,
-                  `glpi_computers_softwarelicenses`
-             WHERE `glpi_computers_softwareversions`.`computers_id` = '".$ID."'
-                  AND `glpi_computers_softwareversions`.`softwareversions_id`
-                        = `glpi_softwareversions`.`id`
-                  AND `glpi_computers_softwarelicenses`.`computers_id` = '".$ID."'
-             ORDER BY `glpi_softwareversions`.`softwares_id` ASC";
+   // From Computer_SoftwareVersion::showForComputer();
+   $query = "SELECT `glpi_softwares`.`softwarecategories_id`,
+                    `glpi_softwares`.`name` AS softname,
+                    `glpi_computers_softwareversions`.`id`,
+                    `glpi_states`.`name` AS state,
+                    `glpi_softwareversions`.`id` AS verid,
+                    `glpi_softwareversions`.`softwares_id`,
+                    `glpi_softwareversions`.`name` AS version
+             FROM `glpi_computers_softwareversions`
+             LEFT JOIN `glpi_softwareversions`
+                  ON (`glpi_computers_softwareversions`.`softwareversions_id`
+                        = `glpi_softwareversions`.`id`)
+             LEFT JOIN `glpi_states`
+                  ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
+             LEFT JOIN `glpi_softwares`
+                  ON (`glpi_softwareversions`.`softwares_id` = `glpi_softwares`.`id`)
+             WHERE `glpi_computers_softwareversions`.`computers_id` = '$ID'
+             ORDER BY `softwarecategories_id`, `softname`, `version`";
 
    $output = array();
 
-   $software               = new Software;
-   $software_category      = new SoftwareCategory;
-   $software_licence       = new SoftwareLicense;
-   $software_version       = new SoftwareVersion;
+   $software_category      = new SoftwareCategory();
+   $software_version       = new SoftwareVersion();
 
    foreach ($DB->request($query) as $softwareversion) {
-
-      $software->getFromDB($softwareversion['softwares_id']);
-
-      if( $software->fields['softwarecategories_id'] != 0 ) {
-         $software_category->getFromDB($software->fields['softwarecategories_id']);
-      }
-
-      if( $softwareversion['softwarelicenses_id'] != 0 ) {
-         $software_licence->getFromDB($softwareversion['softwarelicenses_id']);
-
-         if( $software_licence->fields['softwarelicensetypes_id'] != 0 ) {
-            $lictype = $software_licence->fields['softwarelicensetypes_id'];
-         } else {
-            $lictype = 0;
-         }
-      }
-
-      $output[$softwareversion['id']]['category_id'] = $software->fields['softwarecategories_id'];
-      $output[$softwareversion['id']]['category'] = $software_category->getName();
-      $output[$softwareversion['id']]['softname'] = $software->getName();
-      $output[$softwareversion['id']]['state'] =
-            Dropdown::getDropdownName('glpi_states',$softwareversion['states_id']);
-      $output[$softwareversion['id']]['version'] = $softwareversion['name'];
-      $output[$softwareversion['id']]['computers_id'] = $ID;
-      $output[$softwareversion['id']]['lictype'] = $lictype;
+      $output[] = $softwareversion;
    }
 
-   $pdf->setColumnsSize(100);
-
+   $installed = array();
    if (count($output)) {
+      $pdf->setColumnsSize(100);
       $pdf->displayTitle('<b>'.$LANG["software"][17].'</b>');
 
       $cat = -1;
       foreach ($output as $soft) {
-         if ($soft["category_id"] != $cat) {
-            $cat = $soft["category_id"];
-            $catname = ($cat ? $soft["category"] : $LANG["softwarecategories"][2]);
+         if ($soft["softwarecategories_id"] != $cat) {
+            $cat = $soft["softwarecategories_id"];
+            if ($cat && $software_category->getFromDB($cat)) {
+               $catname = $software_category->getName();
+            } else {
+               $catname = $LANG["softwarecategories"][2];
+            }
 
             $pdf->setColumnsSize(100);
             $pdf->displayTitle('<b>'.$catname.'</b>');
 
-            $pdf->setColumnsSize(59,13,13,15);
+            $pdf->setColumnsSize(50,13,13,24);
             $pdf->displayTitle('<b>'.$LANG['common'][16].'</b>',
                                '<b>'.$LANG['state'][0].'</b>',
-                               '<b>'.$LANG['software'][5].'</b>',
-                               '<b>'.$LANG['software'][30].'</b>');
+                               '<b>'.$LANG['rulesengine'][78].'</b>',
+                               '<b>'.$LANG['install'][92].'</b>');
          }
 
-         $pdf->displayLine(
-            $soft['softname'],
-            $soft['state'],
-            $soft['version'],
-            ($soft['computers_id'] == $ID ? html_clean(
-                                            Dropdown::getDropdownName("glpi_softwarelicensetypes",
-                                            $soft["lictype"])) : ''));
+         // From Computer_SoftwareVersion::displaySoftsByCategory()
+         $verid = $soft['verid'];
+         $query = "SELECT `glpi_softwarelicenses`.*,
+                          `glpi_softwarelicensetypes`.`name` AS type
+                   FROM `glpi_computers_softwarelicenses`
+                   INNER JOIN `glpi_softwarelicenses`
+                        ON (`glpi_computers_softwarelicenses`.`softwarelicenses_id`
+                                 = `glpi_softwarelicenses`.`id`)
+                   LEFT JOIN `glpi_softwarelicensetypes`
+                        ON (`glpi_softwarelicenses`.`softwarelicensetypes_id`
+                                 =`glpi_softwarelicensetypes`.`id`)
+                   WHERE `glpi_computers_softwarelicenses`.`computers_id` = '$ID'
+                         AND (`glpi_softwarelicenses`.`softwareversions_id_use` = '$verid'
+                              OR (`glpi_softwarelicenses`.`softwareversions_id_use` = '0'
+                                  AND `glpi_softwarelicenses`.`softwareversions_id_buy` = '$verid'))";
+
+         $lic = '';
+         foreach ($DB->request($query) as $licdata) {
+            $installed[] = $licdata['id'];
+            $lic .= (empty($lic)?'':', ').'<b>'.$licdata['name'].'</b> '.$licdata['serial'];
+            if (!empty($licdata['type'])) {
+               $lic .= ' ('.$licdata['type'].')';
+            }
+         }
+
+         $pdf->displayLine($soft['softname'], $soft['state'], $soft['version'], $lic);
       } // Each version
 
    } else {
       $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['software'][1].'</b>');
    }
+
+   // Affected licenses NOT installed
+   $query = "SELECT `glpi_softwarelicenses`.*,
+                    `glpi_softwares`.`name` AS softname,
+                    `glpi_softwareversions`.`name` AS version,
+                    `glpi_states`.`name` AS state
+             FROM `glpi_softwarelicenses`
+             LEFT JOIN `glpi_computers_softwarelicenses`
+                   ON (`glpi_computers_softwarelicenses`.softwarelicenses_id
+                           = `glpi_softwarelicenses`.`id`)
+             INNER JOIN `glpi_softwares`
+                   ON (`glpi_softwarelicenses`.`softwares_id` = `glpi_softwares`.`id`)
+             LEFT JOIN `glpi_softwareversions`
+                   ON (`glpi_softwarelicenses`.`softwareversions_id_use`
+                           = `glpi_softwareversions`.`id`
+                        OR (`glpi_softwarelicenses`.`softwareversions_id_use` = '0'
+                            AND `glpi_softwarelicenses`.`softwareversions_id_buy`
+                                    = `glpi_softwareversions`.`id`))
+             LEFT JOIN `glpi_states`
+                  ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
+             WHERE `glpi_computers_softwarelicenses`.`computers_id` = '$ID' ";
+
+   if (count($installed)) {
+      $query .= " AND `glpi_softwarelicenses`.`id` NOT IN (".implode(',',$installed).")";
+   }
+
+   $req = $DB->request($query);
+   if ($req->numrows()) {
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle('<b>'.$LANG['software'][3].'</b>');
+
+      $pdf->setColumnsSize(50,13,13,24);
+      $pdf->displayTitle('<b>'.$LANG['common'][16].'</b>',
+                         '<b>'.$LANG['state'][0].'</b>',
+                         '<b>'.$LANG['rulesengine'][78].'</b>',
+                         '<b>'.$LANG['install'][92].'</b>');
+
+      foreach ($req as $data) {
+         $lic .= '<b>'.$data['name'].'</b> '.$data['serial'];
+         if (!empty($data['softwarelicensetypes_id'])) {
+            $lic .= ' ('.html_clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
+                                                              $data['softwarelicensetypes_id'])).')';
+         }
+         $pdf->displayLine($data['softname'], $data['state'], $data['version'], $lic);
+      }
+   }
+
    $pdf->displaySpace();
 }
 
