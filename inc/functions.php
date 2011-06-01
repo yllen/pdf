@@ -1022,7 +1022,7 @@ function plugin_pdf_main_software($pdf,$software) {
 
    $ID = $software->getField('id');
 
-   $col1 = '<b>'.$LANG['common'][2].' '.$software->fields['id'].')</b>';
+   $col1 = '<b>'.$LANG['common'][2].' '.$software->fields['id'].'</b>';
    $col2 = '<b>'.$LANG['common'][26].' : '.convDateTime($software->fields['date_mod']).'</b>';
 
    if (!empty($software->fields['template_name'])) {
@@ -1034,16 +1034,14 @@ function plugin_pdf_main_software($pdf,$software) {
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][16].' :</i></b> '.$software->fields['name'],
-      '<b><i>'.$LANG['common'][36].' :</i></b> '.
-         html_clean(Dropdown::getDropdownName('glpi_softwarecategories',
-                                              $software->fields['softwarecategories_id'])));
+      '<b><i>'.$LANG['common'][5].' :</i></b> '.
+         html_clean(Dropdown::getDropdownName('glpi_manufacturers', $software->fields['manufacturers_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][15].' :</i></b> '.
          html_clean(Dropdown::getDropdownName('glpi_locations', $software->fields['locations_id'])),
-      '<b><i>'.$LANG['software'][3].' :</i></b> '.
-         html_clean(Dropdown::getDropdownName('glpi_operatingsystems',
-                                              $software->fields['operatingsystems_id'])));
+      '<b><i>'.$LANG['common'][36].' :</i></b> '.
+         html_clean(Dropdown::getDropdownName('glpi_softwarecategories', $software->fields['softwarecategories_id'])));
 
    $pdf->displayLine(
       '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($software->fields['users_id_tech']),
@@ -1051,14 +1049,9 @@ function plugin_pdf_main_software($pdf,$software) {
          ($software->fields['is_helpdesk_visible']?$LANG['choice'][1]:$LANG['choice'][0]));
 
    $pdf->displayLine(
-      '<b><i>'.$LANG['common'][5].' :</i></b> '.
-         html_clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                              $software->fields['manufacturers_id'])));
-
-   $pdf->displayLine(
       '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($software->fields['users_id']),
-      '<b><i>'.$LANG['common'][35].' :</i></b> '.
-         html_clean(Dropdown::getDropdownName('glpi_groups', $software->fields['groups_id'])));
+      '<b><i>'.$LANG['software'][29].' :</i></b> '.
+         ($software->fields['is_update']?$LANG['choice'][1]:$LANG['choice'][0]), $col2);
 
    if ($software->fields['softwares_id']>0) {
       $col2 = '<b><i> '.$LANG['pager'][2].' </i></b> '.
@@ -1067,10 +1060,11 @@ function plugin_pdf_main_software($pdf,$software) {
    } else {
       $col2 = '';
    }
-
    $pdf->displayLine(
-      '<b><i>'.$LANG['software'][29].' :</i></b> '.
-         ($software->fields['is_update']?$LANG['choice'][1]:$LANG['choice'][0]), $col2);
+      '<b><i>'.$LANG['common'][35].' :</i></b> '.
+         html_clean(Dropdown::getDropdownName('glpi_groups', $software->fields['groups_id'])),
+      $col2);
+
 
    $pdf->setColumnsSize(100);
    $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $software->fields['comment']);
