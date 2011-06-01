@@ -1182,7 +1182,50 @@ function plugin_pdf_versions($pdf,$item){
 }
 
 
-function plugin_pdf_main_license($pdf,$license, $main=true) {
+function plugin_pdf_licensebyentity($pdf, $license) {
+   global $DB, $LANG;
+
+   $ID = $license->getField('id');
+
+   $pdf->setColumnsSize(65,35);
+   $pdf->setColumnsAlign('left', 'right');
+   $pdf->displayTitle(
+      '<b><i>'.$LANG['entity'][0].'</i></b>',
+      '<b><i>'.$LANG['software'][9]." - ".$LANG['tracking'][29].'</i></b>');
+
+   $tot = 0;
+   if (in_array(0,$_SESSION["glpiactiveentities"])) {
+      $nb = Computer_SoftwareLicense::countForLicense($ID, 0);
+      if ($nb>0) {
+         $pdf->displayLine($LANG['entity'][2], $nb);
+         $tot += $nb;
+      }
+   }
+   $sql = "SELECT `id`, `completename`
+           FROM `glpi_entities` " .
+           getEntitiesRestrictRequest('WHERE', 'glpi_entities') ."
+           ORDER BY `completename`";
+
+   foreach ($DB->request($sql) as $entity => $data) {
+      $nb = Computer_SoftwareLicense::countForLicense($ID,$entity);
+      if ($nb>0) {
+         $pdf->displayLine($data["completename"], $nb);
+         $tot += $nb;
+      }
+   }
+
+   if ($tot>0) {
+      $pdf->displayLine($LANG['common'][33], $tot);
+   } else {
+      $pdf->setColumnsSize(100);
+      $pdf->setColumnsAlign('center');
+      $pdf->displayLine($LANG['search'][15]);
+   }
+   $pdf->displaySpace();
+}
+
+
+function plugin_pdf_main_license($pdf,$license, $main=true, $cpt=true) {
    global $DB,$LANG;
 
    $ID = $license->getField('id');
@@ -1217,20 +1260,23 @@ function plugin_pdf_main_license($pdf,$license, $main=true) {
       '<b><i>'.$LANG['software'][2].'</i></b>: '.
          html_clean(Dropdown::getDropdownName('glpi_softwareversions',
                                               $license->fields['softwareversions_id_use'])),
-      '<b><i>'.$LANG['tracking'][29].'</i></b>: '.
-         ($license->fields['number']>0?$license->fields['number']:$LANG['software'][4]));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['help'][25].'</i></b>: '.
-         ($license->fields['computers_id']?html_clean(Dropdown::getDropdownName('glpi_computers',
-                                                            $license->fields['computers_id'])):''),
       '<b><i>'.$LANG['software'][32].'</i></b>: '.convDate($license->fields['expire']));
 
+   $col2 = '';
+   if ($cpt) {
+      $col2 = '<b><i>'.$LANG['software'][9].'</i></b>: '.
+              Computer_SoftwareLicense::countForLicense($ID);
+   }
+   $pdf->displayLine(
+      '<b><i>'.$LANG['tracking'][29].'</i></b>: '.
+         ($license->fields['number']>0?$license->fields['number']:$LANG['software'][4]),
+      $col2);
+
    $pdf->setColumnsSize(100);
-   $pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $license->fields['comment']);
+   $pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $license->fields['comment'], 1);
 
    if ($main) {
-   $pdf->displaySpace();
+      $pdf->displaySpace();
    }
 }
 
@@ -1282,7 +1328,7 @@ function plugin_pdf_licenses($pdf,$software,$infocom) {
             if ($license->getFromDB($data['id'])) {
                plugin_pdf_main_license($pdf,$license,false);
                if ($infocom) {
-                  plugin_pdf_financial($pdf,$data['id'],'SoftwareLicense');
+                  plugin_pdf_financial($pdf,$license);
                }
             }
          }
@@ -2739,9 +2785,17 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
             break;
 
          case 'SoftwareLicense' :
-            plugin_pdf_main_license($pdf,$item);
+            plugin_pdf_main_license($pdf,$item,true,!in_array(1,$tab));
             foreach ($tab as $i) {
                switch ($i) { // See SoftwareLicense::defineTabs();
+                  case 1:
+                     plugin_pdf_licensebyentity($pdf, $item);
+                     break;
+
+                  case 2:
+                     // TODO : computer list
+                     break;
+
                   case 4 :
                      plugin_pdf_financial($pdf,$item);
                      plugin_pdf_contract($pdf,$item);
@@ -2785,7 +2839,7 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
                switch ($i) { // See Software::defineTabs();
                   case 1 :
                      plugin_pdf_versions($pdf,$item);
-                     plugin_pdf_licenses($pdf,$item,in_array(2,$tab));
+                     plugin_pdf_licenses($pdf,$item,in_array(4,$tab));
                      break;
 
                   case 2 :
