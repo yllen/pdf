@@ -1137,9 +1137,13 @@ function plugin_pdf_versions($pdf,$item){
    $sID = $item->getField('id');
 
    $query = "SELECT `glpi_softwareversions`.*,
-                    `glpi_states`.`name` AS sname
+                    `glpi_states`.`name` AS sname,
+                    `glpi_operatingsystems`.`name` AS osname
              FROM `glpi_softwareversions`
-             LEFT JOIN `glpi_states` ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
+             LEFT JOIN `glpi_states`
+                  ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
+             LEFT JOIN `glpi_operatingsystems`
+                  ON (`glpi_operatingsystems`.`id` = `glpi_softwareversions`.`operatingsystems_id`)
              WHERE (`softwares_id` = '$sID')
              ORDER BY `name`";
 
@@ -1148,21 +1152,26 @@ function plugin_pdf_versions($pdf,$item){
 
    if ($result = $DB->query($query)) {
       if ($DB->numrows($result) > 0) {
-         $pdf->setColumnsSize(20,20,15,45);
+         $pdf->setColumnsSize(13,13,30,14,30);
          $pdf->displayTitle('<b><i>'.$LANG['software'][5].'</i></b>',
                             '<b><i>'.$LANG['state'][0].'</i></b>',
+                            '<b><i>'.$LANG['computers'][9].'</i></b>',
                             '<b><i>'.$LANG['software'][19].'</i></b>',
                             '<b><i>'.$LANG['common'][25].'</i></b>');
-         $pdf->setColumnsAlign('left','left','right','left');
+         $pdf->setColumnsAlign('left','left','left','right','left');
 
          for ($tot=$nb=0 ; $data=$DB->fetch_assoc($result) ; $tot+=$nb) {
             $nb = Computer_SoftwareVersion::countForVersion($data['id']);
-            $pdf->displayLine((empty($data['name'])?"(".$data['id'].")":$data['name']),
-                              $data['sname'], $nb,
-                              str_replace(array("\r","\n")," ",$data['comment']));
+            $pdf->displayLine(
+               (empty($data['name'])?"(".$data['id'].")":$data['name']),
+               $data['sname'],
+               $data['osname'],
+               $nb,
+               str_replace(array("\r","\n")," ",$data['comment'])
+            );
          }
-         $pdf->setColumnsAlign('left','right','right','left');
-         $pdf->displayTitle('',"<b>".$LANG['common'][33]." : </b>",$tot, '');
+         $pdf->setColumnsAlign('left','right','left', 'right','left');
+         $pdf->displayTitle('','',"<b>".$LANG['common'][33]." : </b>",$tot, '');
       } else {
          $pdf->displayLine($LANG['search'][15]);
       }
