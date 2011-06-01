@@ -659,30 +659,26 @@ function plugin_pdf_main_monitor($pdf,$item) {
    $pdf->displayLine( '<b><i>'.$LANG['monitors'][21].' :</i></b> '.$item->fields['size']);
 
 
-   $opts = array();
-   if ($item->fields['have_micro']) {
-      $opts[] = $LANG['monitors'][14];
+   $opts = array(
+      'have_micro'         => $LANG['monitors'][14],
+      'have_speaker'       => $LANG['monitors'][15],
+      'have_subd'          => $LANG['monitors'][19],
+      'have_bnc'           => $LANG['monitors'][20],
+      'have_dvi'           => $LANG['monitors'][32],
+      'have_pivot'         => $LANG['monitors'][33],
+      'have_hdmi'          => $LANG['monitors'][34],
+      'have_displayport'   => $LANG['monitors'][31],
+   );
+   foreach ($opts as $key => $val) {
+      if (!$item->fields[$key]) {
+         unset($opts[$key]);
+      }
    }
-   if ($item->fields['have_speaker']) {
-      $opts[] = $LANG['monitors'][15];
-   }
-   if ($item->fields['have_subd']) {
-      $opts[] = $LANG['monitors'][19];
-   }
-   if ($item->fields['have_bnc']) {
-      $opts[] = $LANG['monitors'][20];
-   }
-   if ($item->fields['have_dvi']) {
-      $opts[] = $LANG['monitors'][32];
-   }
-   if ($item->fields['have_pivot']) {
-      $opts[] = $LANG['monitors'][33];
-   }
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['monitors'][18].' : </i></b>'.implode(', ',$opts));
-
    $pdf->setColumnsSize(100);
+   $pdf->displayLine(
+      '<b><i>'.$LANG['monitors'][18].' : </i></b>'.
+         (count($opts) ? implode(', ',$opts) : $LANG['job'][32]));
+
    $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $item->fields['comment']);
 
    $pdf->displaySpace();
