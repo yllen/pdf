@@ -1182,6 +1182,133 @@ function plugin_pdf_versions($pdf,$item){
 }
 
 
+function plugin_pdf_licensecomputer($pdf, $license) {
+   global $DB, $LANG;
+
+   $ID = $license->getField('id');
+
+      $query_number = "SELECT COUNT(*) AS cpt
+                       FROM `glpi_computers_softwarelicenses`
+                       INNER JOIN `glpi_computers`
+                           ON (`glpi_computers_softwarelicenses`.`computers_id` = `glpi_computers`.`id`)
+                       WHERE `glpi_computers_softwarelicenses`.`softwarelicenses_id` = '$ID'" .
+                             getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
+                             AND `glpi_computers`.`is_deleted` = '0'
+                             AND `glpi_computers`.`is_template` = '0'";
+
+      $number = 0;
+      if ($result =$DB->query($query_number)) {
+         $number  = $DB->result($result,0,0);
+      }
+
+      $pdf->setColumnsSize(100);
+      $pdf->setColumnsAlign('center');
+      $title = '<b>'.$LANG['software'][9].' : </b>';
+      if ($number) {
+         if ($number>$_SESSION['glpilist_limit']) {
+            $title .= $_SESSION['glpilist_limit'].' / '.$number;
+         } else {
+            $title .= $number;
+         }
+         $pdf->displayTitle($title);
+
+         $query = "SELECT `glpi_computers_softwarelicenses`.*,
+                          `glpi_computers`.`name` AS compname,
+                          `glpi_computers`.`id` AS cID,
+                          `glpi_computers`.`serial`,
+                          `glpi_computers`.`otherserial`,
+                          `glpi_users`.`name` AS username,
+                          `glpi_softwarelicenses`.`name` AS license,
+                          `glpi_softwarelicenses`.`id` AS vID,
+                          `glpi_softwarelicenses`.`name` AS vername,
+                          `glpi_entities`.`name` AS entity,
+                          `glpi_locations`.`completename` AS location,
+                          `glpi_states`.`name` AS state,
+                          `glpi_groups`.`name` AS groupe,
+                          `glpi_softwarelicenses`.`name` AS lname,
+                          `glpi_softwarelicenses`.`id` AS lID
+                   FROM `glpi_computers_softwarelicenses`
+                   INNER JOIN `glpi_softwarelicenses`
+                        ON (`glpi_computers_softwarelicenses`.`softwarelicenses_id`
+                             = `glpi_softwarelicenses`.`id`)
+                   INNER JOIN `glpi_computers`
+                        ON (`glpi_computers_softwarelicenses`.`computers_id` = `glpi_computers`.`id`)
+                   LEFT JOIN `glpi_entities` ON (`glpi_computers`.`entities_id` = `glpi_entities`.`id`)
+                   LEFT JOIN `glpi_locations`
+                        ON (`glpi_computers`.`locations_id` = `glpi_locations`.`id`)
+                   LEFT JOIN `glpi_states` ON (`glpi_computers`.`states_id` = `glpi_states`.`id`)
+                   LEFT JOIN `glpi_groups` ON (`glpi_computers`.`groups_id` = `glpi_groups`.`id`)
+                   LEFT JOIN `glpi_users` ON (`glpi_computers`.`users_id` = `glpi_users`.`id`)
+                   WHERE (`glpi_softwarelicenses`.`id` = '$ID') " .
+                          getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
+                          AND `glpi_computers`.`is_deleted` = '0'
+                          AND `glpi_computers`.`is_template` = '0'
+                   ORDER BY `entity`, `compname`
+                   LIMIT 0," . intval($_SESSION['glpilist_limit']);
+         $result=$DB->query($query);
+
+         $showEntity = ($license->isRecursive());
+         if ($showEntity) {
+            $pdf->setColumnsSize(12,12,12,12,16,12,12,12);
+            $pdf->displayTitle(
+               '<b><i>'.$LANG['entity'][0],  // entity
+               $LANG['common'][16],          // name
+               $LANG['common'][19],          // serial
+               $LANG['common'][20],          // otherserial
+               $LANG['common'][15],          // location
+               $LANG['state'][0],            // state
+               $LANG['common'][35] ,         // groupe
+               $LANG['common'][34].'</i></b>'   // user
+            );
+         } else {
+            $pdf->setColumnsSize(14,14,14,18,14,13,13);
+            $pdf->displayTitle(
+               '<b><i>'.$LANG['common'][16], // name
+               $LANG['common'][19],          // serial
+               $LANG['common'][20],          // otherserial
+               $LANG['common'][15],          // location
+               $LANG['state'][0],            // state
+               $LANG['common'][35] ,         // groupe
+               $LANG['common'][34].'</i></b>'   // user
+            );
+         }
+         while ($data=$DB->fetch_assoc($result)) {
+            $compname = $data['compname'];
+            if (empty($compname) || $_SESSION['glpiis_ids_visible']) {
+               $compname .= " (".$data['cID'].")";
+            }
+            $entname = (empty($data['entity']) ? $LANG['entity'][2] : $data['entity']);
+
+            if ($showEntity) {
+               $pdf->displayLine(
+                  $entname,
+                  $compname,
+                  $data['serial'],
+                  $data['otherserial'],
+                  $data['location'],
+                  $data['state'],
+                  $data['groupe'],
+                  $data['username']
+               );
+            } else {
+               $pdf->displayLine(
+                  $compname,
+                  $data['serial'],
+                  $data['otherserial'],
+                  $data['location'],
+                  $data['state'],
+                  $data['groupe'],
+                  $data['username']
+               );
+            }
+         }
+      } else {
+         $pdf->displayTitle($title.$LANG['search'][15]);
+      }
+      $pdf->displaySpace();
+}
+
+
 function plugin_pdf_licensebyentity($pdf, $license) {
    global $DB, $LANG;
 
@@ -2785,7 +2912,7 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
             break;
 
          case 'SoftwareLicense' :
-            plugin_pdf_main_license($pdf,$item,true,!in_array(1,$tab));
+            plugin_pdf_main_license($pdf,$item,true,!(in_array(1,$tab) || in_array(2,$tab)));
             foreach ($tab as $i) {
                switch ($i) { // See SoftwareLicense::defineTabs();
                   case 1:
@@ -2793,7 +2920,7 @@ function plugin_pdf_general($item, $tab_id, $tab, $page=0, $render=true) {
                      break;
 
                   case 2:
-                     // TODO : computer list
+                     plugin_pdf_licensecomputer($pdf, $item);
                      break;
 
                   case 4 :
