@@ -815,9 +815,9 @@ function plugin_pdf_main_peripheral(PluginPdfSimplePDF $pdf, Peripheral $item) {
       '<b><i>'.$LANG['peripherals'][33].' :</i></b> '.
          ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 
-   $pdf->displayLine('<b><i>'.$LANG['phones'][18].' :</i></b> '.$item->fields['brand']);
-
    $pdf->setColumnsSize(100);
+   $pdf->displayLine('<b><i>'.$LANG['peripherals'][18].' :</i></b> '.$item->fields['brand']);
+
    $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $item->fields['comment']);
 
    $pdf->displaySpace();
