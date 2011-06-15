@@ -2677,8 +2677,8 @@ function plugin_pdf_main_knowbaseitem(PluginPdfSimplePDF $pdf, KnowbaseItem $ite
    }
 
    $knowbaseitemcategories_id = $item->getField('knowbaseitemcategories_id');
-   $fullcategoryname = getTreeValueCompleteName("glpi_knowbaseitemcategories",
-                                                $knowbaseitemcategories_id);
+   $fullcategoryname = html_clean(getTreeValueCompleteName("glpi_knowbaseitemcategories",
+                                                $knowbaseitemcategories_id));
 
    $question = html_clean(unclean_cross_side_scripting_deep(
                html_entity_decode($item->getField('question'),
