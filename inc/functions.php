@@ -524,7 +524,7 @@ function plugin_pdf_main_computer($pdf,$computer) {
 }
 
 
-function plugin_pdf_main_printer($pdf,$printer) {
+function plugin_pdf_main_printer($pdf, Printer $printer) {
    global $LANG;
 
    $ID = $printer->getField('id');
@@ -585,21 +585,23 @@ function plugin_pdf_main_printer($pdf,$printer) {
       '<b><i>'.$LANG['devices'][6].' :</i></b> '.$printer->fields['memory_size'],
       '<b><i>'.$LANG['printers'][30].' :</i></b> '.$printer->fields['init_pages_counter']);
 
-   $opts=array();
-   if ($printer->fields['have_serial']) {
-      $opts[] = $LANG['printers'][14];
-   }
-   if ($printer->fields['have_parallel']) {
-      $opts[] = $LANG['printers'][15];
-   }
-   if ($printer->fields['have_usb']) {
-   $opts[] = $LANG['printers'][27];
+   $opts = array(
+      'have_serial'   => $LANG['printers'][14],
+      'have_parallel' => $LANG['printers'][15],
+      'have_usb'      => $LANG['printers'][27],
+      'have_ethernet' => $LANG['printers'][28],
+      'have_wifi'     => $LANG['printers'][29],
+   );
+   foreach ($opts as $key => $val) {
+      if (!$printer->fields[$key]) {
+         unset($opts[$key]);
+      }
    }
 
+   $pdf->setColumnsSize(100);
    $pdf->displayLine('<b><i>'.$LANG['printers'][18].' : </i></b>'.implode(', ',$opts));
 
 
-   $pdf->setColumnsSize(100);
    $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $printer->fields['comment']);
 
    $pdf->displaySpace();
