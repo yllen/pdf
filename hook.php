@@ -61,6 +61,7 @@ function plugin_pdf_prefPDF($item) {
       case 'Peripheral' :
       case 'KnowbaseItem' :
       case 'SoftwareLicense' :
+      case 'SoftwareVersion' :
          $item->fields['id'] = 1;
          $tabs = $item->defineTabs();
          break;
@@ -70,14 +71,6 @@ function plugin_pdf_prefPDF($item) {
          $tabs = $item->defineTabs();
          if (isset($tabs[21])) {
             unset($tabs[21]); // Merge
-         }
-         break;
-
-      case 'SoftwareVersion' :
-         $item->fields['id'] = 1;
-         $tabs = $item->defineTabs();
-         if (isset($tabs[1])) {
-            unset($tabs[1]); // Main : TODO
          }
          break;
 
