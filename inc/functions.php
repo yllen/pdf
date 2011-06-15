@@ -79,21 +79,15 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
    }
 
    $pdf->setColumnsSize(100);
+
    $pdf->displayTitle('<b>'.
             (empty($job->fields["name"])?$LANG['reminder'][15]:$name=$job->fields["name"]).'</b>');
-
+/*
    $author_name='';
    if ($job->fields["users_id"]) {
       $author = new User();
       $author->getFromDB($job->fields["users_id"]);
       $author_name = $author->getName();
-   }
-
-   $recipient_name='';
-   if ($job->fields["users_id_recipient"]) {
-      $recipient = new User();
-      $recipient->getFromDB($job->fields["users_id_recipient"]);
-      $recipient_name = $recipient->getName();
    }
 
    $assign_name='';
@@ -102,11 +96,86 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
       $assign->getFromDB($job->fields["users_id_assign"]);
       $assign_name = $assign->getName();
    }
+*/
 
+   if (count($_SESSION['glpiactiveentities'])>1) {
+      $entity = " (".Dropdown::getDropdownName("glpi_entities",$job->fields["entities_id"]).")";
+   } else {
+      $entity = '';
+   }
+
+   $pdf->setColumnsSize(50,50);
+   $recipient_name='';
+   if ($job->fields["users_id_recipient"]) {
+      $recipient = new User();
+      $recipient->getFromDB($job->fields["users_id_recipient"]);
+      $recipient_name = $recipient->getName();
+   }
+   $pdf->displayLine("<b><i>".$LANG['joblist'][11]."</i></b> : ".convDateTime($job->fields["date"]).", ".
+                        '<b><i>'.$LANG['common'][95]."</i></b> : ".$recipient_name,
+                     $LANG['common'][26]." : ".convDateTime($job->fields["date_mod"]));
+
+   $status = html_clean($job->getStatus($job->fields["status"]));
+   switch ($job->getField('status')) {
+      case 'closed':
+         $status = $LANG['joblist'][12].' : '.convDateTime($job->fields['closedate']);
+         break;
+
+      case 'solved':
+         $status = $LANG['joblist'][14].' : '.convDateTime($job->fields['solvedate']);
+         break;
+
+      case 'waiting':
+         $status .= ' - '.$LANG['knowbase'][27].' : '.convDateTime($job->fields['begin_waiting_date']);
+         break;
+   }
+   $sla = $due = '';
+   if ($job->fields["slas_id"]>0) {
+      $sla = "<b><i>".$LANG['sla'][1]." : </b></i>".
+               html_clean(Dropdown::getDropdownName("glpi_slas", $job->fields["slas_id"]));
+   }
+   if ($job->fields['due_date']) {
+      $due .= "<b><i>".$LANG['sla'][5]." : </b></i>".convDateTime($job->fields['due_date']);
+   }
+
+   // status, due date
+   $pdf->displayLine(
+      "<b><i>".$LANG['joblist'][0]."</i></b> : $status", $due);
+
+   // Urgence, SLA
+   $pdf->displayLine(
+      "<b><i>".$LANG['joblist'][29]."</i></b> : ".
+            html_clean($job->getUrgencyName($job->fields["urgency"])), $sla);
+
+   // Impact / Type
+   $pdf->displayLine(
+      "<b><i>".$LANG['joblist'][30]."</i></b> : ".
+            html_clean($job->getImpactName($job->fields["impact"])),
+      "<b><i>".$LANG['common'][17]."</i></b> : ".
+            html_clean(Ticket::getTicketTypeName($job->fields["type"])));
+
+   // Priority / Category
+   $pdf->displayLine(
+      "<b><i>".$LANG['joblist'][2]."</i></b> : ".
+            html_clean($job->getPriorityName($job->fields["priority"])),
+      "<b><i>".$LANG['common'][36]."</i></b> : ".
+            html_clean(Dropdown::getDropdownName("glpi_ticketcategories",
+                                                 $job->fields["ticketcategories_id"])));
+
+   // Source / Validation
+   $pdf->displayLine(
+      "<b><i>".$LANG['job'][44]."</i></b> : ".
+            html_clean(Dropdown::getDropdownName('glpi_requesttypes',
+                                                 $job->fields['requesttypes_id'])),
+      "<b><i>".$LANG['validation'][0]."</i></b> : ".
+            html_clean(TicketValidation::getStatus($job->fields['global_validation'])));
+
+   // Item
    $serial_item = '';
    $location_item = '';
    $otherserial_item = '';
 
+   $pdf->setColumnsSize(100);
    if ($job->fields["itemtype"] && class_exists($job->fields["itemtype"])) {
       $item = new $job->fields["itemtype"]();
       if ($item->getFromDB($job->fields["items_id"])) {
@@ -122,87 +191,79 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
          }
          if (isset($item->fields["locations_id"])) {
             $location_item =
-               ", <b><i>".$LANG['common'][15]."</i></b> : ".
+               "\n<b><i>".$LANG['common'][15]."</i></b> : ".
                   html_clean(Dropdown::getDropdownName("glpi_locations",
                                                        $item->fields["locations_id"]));
          }
       }
-   }
-
-   if (count($_SESSION['glpiactiveentities'])>1) {
-      $entity = " (".Dropdown::getDropdownName("glpi_entities",$job->fields["entities_id"]).")";
+      $pdf->displayText(
+         "<b><i>".$LANG['common'][1]."</i></b> : ",
+         html_clean($item->getTypeName())." ".html_clean($item->getNameID()). $serial_item . $otherserial_item . $location_item,
+         1);
    } else {
-      $entity = '';
-   }
-   //closedate
-   if ($job->fields["status"]=="closed") {
-      $closedate = $LANG['joblist'][12]." : ".convDateTime($job->fields["closedate"]);
-   } else {
-      $closedate = $LANG['common'][26]." : ".convDateTime($job->fields["date_mod"]);
+      $pdf->displayLine("<b><i>".$LANG['common'][1]."</i></b> : ".$LANG['help'][30]);
    }
 
-   $pdf->setColumnsSize(50,50);
-   $pdf->displayLine("<b><i>".$LANG['joblist'][11]."</i></b> : ".convDateTime($job->fields["date"]).
-                    " ".$LANG['job'][2]." ".$recipient_name,$closedate);
+   $users = array();
+   foreach ($job->getUsers(Ticket::REQUESTER) as $k => $d) {
+      $users[] = html_clean(getUserName($k));
+   }
+   if (count($users)) {
+      $pdf->displayText('<b><i>'.$LANG['job'][4].'</i></b> : ', implode(', ', $users), 1);
+   }
+   $groups = array();
+   foreach ($job->getGroups(Ticket::REQUESTER) as $k => $d) {
+      $groups[] = html_clean(Dropdown::getDropdownName("glpi_groups", $k));
+   }
+   if (count($groups)) {
+      $pdf->displayText('<b><i>'.$LANG['setup'][249].'</i></b> : ', implode(', ', $groups), 1);
+   }
+   $users = array();
+   foreach ($job->getUsers(Ticket::OBSERVER) as $k => $d) {
+      $users[] = html_clean(getUserName($k));
+   }
+   if (count($users)) {
+      $pdf->displayText('<b><i>'.$LANG['common'][104].'</i></b> : ', implode(', ', $users), 1);
+   }
+   $groups = array();
+   foreach ($job->getGroups(Ticket::OBSERVER) as $k => $d) {
+      $groups[] = html_clean(Dropdown::getDropdownName("glpi_groups", $k));
+   }
+   if (count($groups)) {
+      $pdf->displayText('<b><i>'.$LANG['setup'][251].'</i></b> : ', implode(', ', $groups), 1);
+   }
 
-   // status, requester
-   $pdf->displayLine(
-      "<b><i>".$LANG['joblist'][0]."</i></b> : ".
-            html_clean($job->getStatus($job->fields["status"])),
+
+/*
+
       "<b><i>".$LANG['job'][4]."</i></b> : ".html_clean($author_name));
 
-   // Urgence / groups
-   $pdf->displayLine(
-      "<b><i>".$LANG['joblist'][29]."</i></b> : ".
-            html_clean($job->getUrgencyName($job->fields["urgency"])),
       "<b><i>".$LANG['common'][35]."</i></b> : ".
-            html_clean(Dropdown::getDropdownName("glpi_groups", $job->fields["groups_id"])));
+            html_clean());
 
    // Impact / Tech
-   $pdf->displayLine(
-      "<b><i>".$LANG['joblist'][30]."</i></b> : ".
-            html_clean($job->getImpactName($job->fields["impact"])),
       "<b><i>".$LANG['job'][6]."</i></b> : ".html_clean($assign_name));
 
    // Priority / Tech Groups
-   $pdf->displayLine(
-      "<b><i>".$LANG['joblist'][2]."</i></b> : ".
-            html_clean($job->getPriorityName($job->fields["priority"])),
       "<b><i>".$LANG['common'][35]."</i></b> : ".
             html_clean(Dropdown::getDropdownName("glpi_groups", $job->fields["groups_id_assign"])));
 
    // Category / Supplier
    $pdf->displayLine(
-      "<b><i>".$LANG['common'][36]."</i></b> : ".
-            html_clean(Dropdown::getDropdownName("glpi_ticketcategories",
-                                                 $job->fields["ticketcategories_id"])),
       "<b><i>".$LANG['financial'][26]."</i></b> : ".
             html_clean(Dropdown::getDropdownName("glpi_suppliers",
                                                  $job->fields["suppliers_id_assign"])));
 
    // Source / email
-   $pdf->displayLine(
-      "<b><i>".$LANG['job'][44]."</i></b> : ".
-            html_clean(Dropdown::getDropdownName('glpi_requesttypes',
-                                                 $job->fields['requesttypes_id'])),
       "<b><i>".$LANG['job'][19]."</i></b> : ".
          Dropdown::getYesNo($job->fields["use_email_notification"]));
 
    // Source / email
    $pdf->displayLine(
-      "<b><i>".$LANG['validation'][0]."</i></b> : ".
-            html_clean(TicketValidation::getStatus($job->fields['global_validation'])),
       "<b><i>".$LANG['joblist'][27]."</i></b> : ". $job->fields["user_email"]);
 
    // Equipment
-   $pdf->setColumnsSize(100);
-   if ($job->fields["itemtype"] && class_exists($job->fields["itemtype"])) {
-      $pdf->displayText(
-         "<b><i>".$LANG['common'][1]."</i></b> : ", html_clean($item->getTypeName())." ".
-               html_clean($item->getNameID()). $serial_item . $location_item . $otherserial_item);
-   } else {
-      $pdf->displayLine("<b><i>".$LANG['common'][1]."</i></b> : ".$LANG['help'][30]);
-   }
+*/
 
    // Description
    $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", $job->fields['content']);
