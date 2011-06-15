@@ -1187,6 +1187,51 @@ function plugin_pdf_versions(PluginPdfSimplePDF $pdf, Software $item){
 }
 
 
+function plugin_pdf_versionbyentity(PluginPdfSimplePDF $pdf, SoftwareVersion $version) {
+   global $DB, $CFG_GLPI, $LANG;
+
+   $softwareversions_id = $version->getField('id');
+
+   $pdf->setColumnsSize(75,25);
+   $pdf->setColumnsAlign('left', 'right');
+
+   $pdf->displayTitle('<b>'.$LANG['entity'][0], $LANG['software'][19].'</b>');
+
+   $lig = $tot = 0;
+   if (in_array(0, $_SESSION["glpiactiveentities"])) {
+      $nb = Computer_SoftwareVersion::countForVersion($softwareversions_id,0);
+      if ($nb>0) {
+         $pdf->displayLine($LANG['entity'][2], $nb);
+         $tot += $nb;
+         $lig++;
+      }
+   }
+   $sql = "SELECT `id`, `completename`
+           FROM `glpi_entities` " .
+           getEntitiesRestrictRequest('WHERE', 'glpi_entities') ."
+           ORDER BY `completename`";
+
+   foreach ($DB->request($sql) as $ID => $data) {
+      $nb = Computer_SoftwareVersion::countForVersion($softwareversions_id,$ID);
+      if ($nb>0) {
+         $pdf->displayLine($data["completename"], $nb);
+         $tot += $nb;
+         $lig++;
+      }
+   }
+
+   if ($tot>0) {
+      if ($lig>1) {
+         $pdf->displayLine($LANG['common'][33], $tot);
+      }
+   } else {
+      $pdf->setColumnsSize(100);
+      $pdf->displayLine($LANG['search'][15]);
+   }
+   $pdf->displaySpace();
+}
+
+
 function plugin_pdf_licensecomputer(PluginPdfSimplePDF $pdf, SoftwareLicense $license) {
    global $DB, $LANG;
 
@@ -1431,7 +1476,9 @@ function plugin_pdf_main_version(PluginPdfSimplePDF $pdf, SoftwareVersion $versi
    $pdf->displayLine(
       '<b><i>'.$LANG["state"][0].' :</i></b> '.
          html_clean(Dropdown::getDropdownName('glpi_states', $version->fields['states_id'])),
-      '');
+      '<b><i>'.$LANG['computers'][9].' :</i></b> '.
+         html_clean(Dropdown::getDropdownName('glpi_operatingsystems',
+                                              $version->fields['operatingsystems_id'])));
 
    $pdf->setColumnsSize(100);
    $pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $version->fields['comment']);
@@ -2997,6 +3044,10 @@ function plugin_pdf_general(CommonDBTM $item, $tab_id, $tab, $page=0, $render=tr
             plugin_pdf_main_version($pdf, $item);
             foreach ($tab as $i) {
                switch ($i) { // See SoftwareVersion::defineTabs();
+                  case 1:
+                     plugin_pdf_versionbyentity($pdf, $item);
+                     break;
+
                   case 2 :
                      plugin_pdf_installations($pdf, $item);
                      break;
