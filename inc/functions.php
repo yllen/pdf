@@ -688,7 +688,7 @@ function plugin_pdf_main_monitor($pdf,$item) {
 }
 
 
-function plugin_pdf_main_phone($pdf,$item) {
+function plugin_pdf_main_phone($pdf, Phone $item) {
    global $LANG;
 
    $ID = $item->getField('id');
@@ -739,23 +739,25 @@ function plugin_pdf_main_phone($pdf,$item) {
             ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 
    $pdf->displayLine(
-      '<b><i>'.$LANG['phones'][18].' :</i></b> '.$item->fields['brand'],
+      '<b><i>'.$LANG['peripherals'][18].' :</i></b> '.$item->fields['brand'],
       '<b><i>'.$LANG['phones'][36].' :</i></b> '.Dropdown::getYesNo($item->fields['phonepowersupplies_id']));
 
    $pdf->displayLine('<b><i>'.$LANG['setup'][71].' :</i></b> '.$item->fields['firmware'],
                      '<b><i>'.$LANG['phones'][40].' :</i></b> '.$item->fields['number_line']);
 
-   $opts = array();
-   if ($item->fields['have_headset']) {
-      $opts[] = $LANG['phones'][38];
+   $opts = array(
+      'have_headset' => $LANG['phones'][38],
+      'have_hp'      => $LANG['phones'][39],
+   );
+   foreach ($opts as $key => $val) {
+      if (!$item->fields[$key]) {
+         unset($opts[$key]);
+      }
    }
-   if ($item->fields['have_hp']) {
-      $opts[] = $LANG['phones'][39];
-   }
-
-   $pdf->displayLine('<b><i>'.$LANG['monitors'][18].' : </i></b>'.implode(', ',$opts));
 
    $pdf->setColumnsSize(100);
+   $pdf->displayLine('<b><i>'.$LANG['monitors'][18].' : </i></b>'.implode(', ',$opts));
+
    $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $item->fields['comment']);
 
    $pdf->displaySpace();
