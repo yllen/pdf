@@ -41,11 +41,11 @@ class PluginPdfProfile extends CommonDBTM {
 
       $tab = array();
 
-      $tab['common'] = $LANG['pulse2'][1];
+      $tab['common'] = $LANG['plugin_pdf']['title'][1];
 
       $tab['table']     = $this->getTable();
       $tab['field']     = 'use';
-      $tab['linkfield'] = 'id';$LANG['plugin_pdf']['title'][1];
+      $tab['linkfield'] = 'id';
       $tab['datatype']  = 'bool';
 
       return $tab;
