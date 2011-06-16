@@ -78,7 +78,9 @@ function plugin_pdf_prefPDF($item) {
       case 'Ticket' :
          $item->fields['id'] = 1;
          $tabs = $item->defineTabs();
-         $tabs['private'] = $LANG['common'][77];
+         if (haveRight("show_full_ticket", "1")) {
+            $tabs['private'] = $LANG['common'][77];
+         }
    }
    return $tabs;
 }
@@ -105,12 +107,12 @@ function plugin_pdf_get_headings($item,$withtemplate) {
    if ($type == 'Preference') {
       return array(1 => $LANG['plugin_pdf']['title'][1]);
 
-   } else if ($type == 'Profile') {
-      if ($item->fields['interface']!='helpdesk') {
-         return array(1 => $LANG['plugin_pdf']['title'][1]);
-      }
+   }
+   if ($type == 'Profile') {
+      return array(1 => $LANG['plugin_pdf']['title'][1]);
 
-   } else if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+   }
+   if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
       if ($item->getField('id') && !$withtemplate) {
          return array( 1 => $LANG['plugin_pdf']['title'][1]);
       }
@@ -125,10 +127,8 @@ function plugin_pdf_headings_actions($item) {
    $type = get_class($item);
    switch ($type) {
       case 'Profile' :
-         if ($item->getField('interface')!='helpdesk') {
-            return array(1 => "plugin_pdf_headings");
-         }
-         break;
+         return array(1 => "plugin_pdf_headings");
+
       case 'Preference' :
          return array(1 => "plugin_pdf_headings");
 

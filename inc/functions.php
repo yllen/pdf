@@ -68,13 +68,7 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
    global $LANG, $CFG_GLPI, $DB;
 
    $ID = $job->getField('id');
-   if (!haveRight("show_all_ticket","1")
-       && $job->fields["users_id"] != $_SESSION["glpiID"]
-       && $job->fields["users_id_assign"] != $_SESSION["glpiID"]
-       && !(haveRight("show_group_ticket",'1')
-            && in_array($job->fields["groups_id"],$_SESSION["glpigroups"]))
-       && !(haveRight("show_assign_ticket",'1')
-            && in_array($job->fields["groups_id_assign"],$_SESSION["glpigroups"]))){
+   if (!$job->can($ID, 'r')) {
       return false;
    }
 
