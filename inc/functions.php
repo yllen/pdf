@@ -82,21 +82,6 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
 
    $pdf->displayTitle('<b>'.
             (empty($job->fields["name"])?$LANG['reminder'][15]:$name=$job->fields["name"]).'</b>');
-/*
-   $author_name='';
-   if ($job->fields["users_id"]) {
-      $author = new User();
-      $author->getFromDB($job->fields["users_id"]);
-      $author_name = $author->getName();
-   }
-
-   $assign_name='';
-   if ($job->fields["users_id_assign"]) {
-      $assign = new User();
-      $assign->getFromDB($job->fields["users_id_assign"]);
-      $assign_name = $assign->getName();
-   }
-*/
 
    if (count($_SESSION['glpiactiveentities'])>1) {
       $entity = " (".Dropdown::getDropdownName("glpi_entities",$job->fields["entities_id"]).")";
@@ -198,12 +183,14 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
       }
       $pdf->displayText(
          "<b><i>".$LANG['common'][1]."</i></b> : ",
-         html_clean($item->getTypeName())." ".html_clean($item->getNameID()). $serial_item . $otherserial_item . $location_item,
+         html_clean($item->getTypeName())." ".html_clean($item->getNameID()).
+               $serial_item . $otherserial_item . $location_item,
          1);
    } else {
       $pdf->displayLine("<b><i>".$LANG['common'][1]."</i></b> : ".$LANG['help'][30]);
    }
 
+   // Requester
    $users = array();
    foreach ($job->getUsers(Ticket::REQUESTER) as $k => $d) {
       $users[] = html_clean(getUserName($k));
@@ -218,6 +205,7 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
    if (count($groups)) {
       $pdf->displayText('<b><i>'.$LANG['setup'][249].'</i></b> : ', implode(', ', $groups), 1);
    }
+   // Observer
    $users = array();
    foreach ($job->getUsers(Ticket::OBSERVER) as $k => $d) {
       $users[] = html_clean(getUserName($k));
@@ -232,38 +220,38 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
    if (count($groups)) {
       $pdf->displayText('<b><i>'.$LANG['setup'][251].'</i></b> : ', implode(', ', $groups), 1);
    }
+   // Assign to
+   $users = array();
+   foreach ($job->getUsers(Ticket::ASSIGN) as $k => $d) {
+      $users[] = html_clean(getUserName($k));
+   }
+   if (count($users)) {
+      $pdf->displayText('<b><i>'.$LANG['job'][5].' ('.$LANG['job'][3].')</i></b> : ', implode(', ', $users), 1);
+   }
+   $groups = array();
+   foreach ($job->getGroups(Ticket::ASSIGN) as $k => $d) {
+      $groups[] = html_clean(Dropdown::getDropdownName("glpi_groups", $k));
+   }
+   if (count($groups)) {
+      $pdf->displayText('<b><i>'.$LANG['job'][5].' ('.$LANG['Menu'][36].')</i></b> : ', implode(', ', $groups), 1);
+   }
+   if ($job->fields["suppliers_id_assign"]) {
+      $pdf->displayText('<b><i>'.$LANG['job'][5].' ('.$LANG['financial'][26].')</i></b> : ', implode(', ', $groups), 1);
+   }
 
-
-/*
-
-      "<b><i>".$LANG['job'][4]."</i></b> : ".html_clean($author_name));
-
-      "<b><i>".$LANG['common'][35]."</i></b> : ".
-            html_clean());
-
-   // Impact / Tech
-      "<b><i>".$LANG['job'][6]."</i></b> : ".html_clean($assign_name));
-
-   // Priority / Tech Groups
-      "<b><i>".$LANG['common'][35]."</i></b> : ".
-            html_clean(Dropdown::getDropdownName("glpi_groups", $job->fields["groups_id_assign"])));
-
-   // Category / Supplier
-   $pdf->displayLine(
-      "<b><i>".$LANG['financial'][26]."</i></b> : ".
-            html_clean(Dropdown::getDropdownName("glpi_suppliers",
-                                                 $job->fields["suppliers_id_assign"])));
-
-   // Source / email
-      "<b><i>".$LANG['job'][19]."</i></b> : ".
-         Dropdown::getYesNo($job->fields["use_email_notification"]));
-
-   // Source / email
-   $pdf->displayLine(
-      "<b><i>".$LANG['joblist'][27]."</i></b> : ". $job->fields["user_email"]);
-
-   // Equipment
-*/
+   // Linked tickets
+   $tickets   = Ticket_Ticket::getLinkedTicketsTo($ID);
+   if (is_array($tickets) && count($tickets)) {
+      $ticket = new Ticket();
+      foreach ($tickets as $linkID => $data) {
+         $tmp = Ticket_Ticket::getLinkName($data['link']).' '.$LANG['common'][2].' '.$data['tickets_id'].' : ';
+         if ($ticket->getFromDB($data['tickets_id'])) {
+            $tmp .= ' : '.$ticket->getName();
+         }
+         $jobs[] = $tmp;
+      }
+      $pdf->displayText('<b><i>'.$LANG['job'][55].'</i></b> : ', implode("\n", $jobs), 1);
+   }
 
    // Description
    $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", $job->fields['content']);
