@@ -2480,11 +2480,9 @@ function plugin_pdf_link(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
                $pdf->displayLink("$name - $link", $link);
             }
          } else { // Generated File
-            $ci->getFromDB($type,$ID);
-
             // Manage Filename
             if (strstr($link,"[NAME]")){
-               $link = str_replace("[NAME]",$ci->getName(),$link);
+               $link = str_replace("[NAME]",$item->getName(),$link);
             }
 
             if (strstr($link,"[LOGIN]")) {
