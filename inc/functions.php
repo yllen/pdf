@@ -431,15 +431,7 @@ function plugin_pdf_tasks(PluginPdfSimplePDF $pdf, Ticket $job, $private) {
    } else {
       while ($data=$DB->fetch_array($result)) {
 
-         $realtime = '';
-         $hour = floor($data["realtime"]);
-         $minute = round(($data["realtime"]-$hour)*60,0);
-         if ($hour) {
-            $realtime = "$hour ".$LANG['job'][21];
-         }
-         if ($minute || !$hour) {
-            $realtime .= " $minute ".$LANG['job'][22];
-         }
+         $realtime = timestampToString($data['actiontime'], false);
 
          $query2 = "SELECT *
                     FROM `glpi_ticketplannings`
