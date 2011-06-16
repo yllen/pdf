@@ -268,12 +268,15 @@ function plugin_pdf_cost(PluginPdfSimplePDF $pdf, Ticket $job) {
    $pdf->displayTitle($LANG['job'][20],$LANG['job'][40], $LANG['job'][41],
                       $LANG['job'][42], $LANG['job'][43]);
    $pdf->setColumnsAlign('center','right','right','right','right');
-   $pdf->displayLine(Ticket::getRealtime($job->fields["realtime"]),
+
+   $total = Ticket::trackingTotalCost($job->fields["actiontime"], $job->fields["cost_time"],
+                                      $job->fields["cost_fixed"], $job->fields["cost_material"]);
+
+   $pdf->displayLine(html_clean(Ticket::getActionTime($job->fields["actiontime"])),
                      html_clean(formatNumber($job->fields["cost_time"])),
                      html_clean(formatNumber($job->fields["cost_fixed"])),
                      html_clean(formatNumber($job->fields["cost_material"])),
-                     Ticket::trackingTotalCost($job->fields["realtime"], $job->fields["cost_time"],
-                                               $job->fields["cost_fixed"], $job->fields["cost_material"]));
+                     html_clean(formatNumber($total)));
    $pdf->displaySpace();
 }
 
@@ -290,9 +293,54 @@ function plugin_pdf_solution(PluginPdfSimplePDF $pdf, Ticket $job) {
       } else {
          $title = $LANG['jobresolution'][1];
       }
-      $pdf->displayText("<b><i>$title</i></b> : ", $job->fields['solution']);
+      $sol = html_clean(unclean_cross_side_scripting_deep(
+                        html_entity_decode($job->getField('solution'),
+                                           ENT_QUOTES, "UTF-8")));
+      $pdf->displayText("<b><i>$title</i></b> : ", $sol);
    } else {
       $pdf->displayLine($LANG['job'][32]);
+   }
+
+   $pdf->displaySpace();
+}
+
+
+function plugin_pdf_ticketstat(PluginPdfSimplePDF $pdf, Ticket $job) {
+   global $LANG;
+
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle("<b>".$LANG['common'][99]."</b>");
+
+   $pdf->setColumnsSize(50, 50);
+   $pdf->displayLine($LANG['reports'][60].' : ', convDateTime($job->fields['date']));
+   $pdf->displayLine($LANG['sla'][5].' : ', convDateTime($job->fields['due_date']));
+   if ($job->fields['status']=='solved' || $job->fields['status']=='closed') {
+      $pdf->displayLine($LANG['reports'][64].' : ', convDateTime($job->fields['solvedate']));
+   }
+   if ($job->fields['status']=='closed') {
+      $pdf->displayLine($LANG['reports'][61].' : ', convDateTime($job->fields['closedate']));
+   }
+
+   $pdf->setColumnsSize(100);
+   $pdf->displayTitle("<b>".$LANG['common'][100]."</b>");
+
+   $pdf->setColumnsSize(50, 50);
+   if ($job->fields['takeintoaccount_delay_stat']>0) {
+      $pdf->displayLine($LANG['stats'][12].' : ', html_clean(timestampToString($job->fields['takeintoaccount_delay_stat'],0)));
+   }
+
+   if ($job->fields['status']=='solved' || $job->fields['status']=='closed') {
+      if ($job->fields['solve_delay_stat']>0) {
+         $pdf->displayLine($LANG['stats'][9].' : ', html_clean(timestampToString($job->fields['solve_delay_stat'],0)));
+      }
+   }
+   if ($job->fields['status']=='closed') {
+      if ($job->fields['close_delay_stat']>0) {
+         $pdf->displayLine($LANG['stats'][10].' : ', html_clean(timestampToString($job->fields['close_delay_stat'],0)));
+      }
+   }
+   if ($job->fields['ticket_waiting_duration']>0) {
+      $pdf->displayLine($LANG['joblist'][26].' : ', html_clean(timestampToString($job->fields['ticket_waiting_duration'],0)));
    }
 
    $pdf->displaySpace();
@@ -431,7 +479,7 @@ function plugin_pdf_tasks(PluginPdfSimplePDF $pdf, Ticket $job, $private) {
    } else {
       while ($data=$DB->fetch_array($result)) {
 
-         $realtime = timestampToString($data['actiontime'], false);
+         $actiontime = timestampToString($data['actiontime'], false);
 
          $query2 = "SELECT *
                     FROM `glpi_ticketplannings`
@@ -463,7 +511,7 @@ function plugin_pdf_tasks(PluginPdfSimplePDF $pdf, Ticket $job, $private) {
          $pdf->displayLine(html_clean($lib),
                            convDateTime($data["date"]),
                            html_clean(getUserName($data["users_id"])),
-                           html_clean($realtime));
+                           html_clean($actiontime));
          $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", html_clean($data["content"]),1);
          $pdf->displayText("<b><i>".$LANG['job'][35]."</i></b> : ", html_clean($planification),1);
       }
@@ -3184,6 +3232,10 @@ function plugin_pdf_general(CommonDBTM $item, $tab_id, $tab, $page=0, $render=tr
 
                   case 7 :
                      plugin_pdf_validation($pdf, $item);
+                     break;
+
+                  case 8:
+                     plugin_pdf_ticketstat($pdf, $item);
                      break;
 
                   default :
