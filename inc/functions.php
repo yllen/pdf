@@ -2241,6 +2241,11 @@ function plugin_pdf_registry(PluginPdfSimplePDF $pdf, Computer $item) {
 }
 
 
+function plugin_pdf_oldticket(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
+   // Deprecated function, just for some plugins
+}
+
+
 function plugin_pdf_ticket(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
    global $DB,$CFG_GLPI, $LANG;
 
