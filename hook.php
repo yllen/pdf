@@ -55,6 +55,7 @@ function plugin_pdf_prefPDF($item) {
          }
       break;
 
+      case 'NetworkEquipment' :
       case 'Printer' :
       case 'Monitor' :
       case 'Phone' :
