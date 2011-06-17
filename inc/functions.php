@@ -186,45 +186,69 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
 
    // Requester
    $users = array();
-   foreach ($job->getUsers(Ticket::REQUESTER) as $k => $d) {
-      $users[] = html_clean(getUserName($k));
+   foreach ($job->getUsers(Ticket::REQUESTER) as $d) {
+      if ($d['users_id']) {
+         $tmp = html_clean(getUserName($d['users_id']));
+         if ($d['alternative_email']) {
+            $tmp .= ' ('.$d['alternative_email'].')';
+         }
+      } else {
+         $tmp = $d['alternative_email'];
+      }
+      $users[] = $tmp;
    }
    if (count($users)) {
       $pdf->displayText('<b><i>'.$LANG['job'][4].'</i></b> : ', implode(', ', $users), 1);
    }
    $groups = array();
-   foreach ($job->getGroups(Ticket::REQUESTER) as $k => $d) {
-      $groups[] = html_clean(Dropdown::getDropdownName("glpi_groups", $k));
+   foreach ($job->getGroups(Ticket::REQUESTER) as $d) {
+      $groups[] = html_clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
    }
    if (count($groups)) {
       $pdf->displayText('<b><i>'.$LANG['setup'][249].'</i></b> : ', implode(', ', $groups), 1);
    }
    // Observer
    $users = array();
-   foreach ($job->getUsers(Ticket::OBSERVER) as $k => $d) {
-      $users[] = html_clean(getUserName($k));
+   foreach ($job->getUsers(Ticket::OBSERVER) as $d) {
+      if ($d['users_id']) {
+         $tmp = html_clean(getUserName($d['users_id']));
+         if ($d['alternative_email']) {
+            $tmp .= ' ('.$d['alternative_email'].')';
+         }
+      } else {
+         $tmp = $d['alternative_email'];
+      }
+      $users[] = $tmp;
    }
    if (count($users)) {
       $pdf->displayText('<b><i>'.$LANG['common'][104].'</i></b> : ', implode(', ', $users), 1);
    }
    $groups = array();
-   foreach ($job->getGroups(Ticket::OBSERVER) as $k => $d) {
-      $groups[] = html_clean(Dropdown::getDropdownName("glpi_groups", $k));
+   foreach ($job->getGroups(Ticket::OBSERVER) as $d) {
+      $groups[] = html_clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
    }
    if (count($groups)) {
       $pdf->displayText('<b><i>'.$LANG['setup'][251].'</i></b> : ', implode(', ', $groups), 1);
    }
    // Assign to
    $users = array();
-   foreach ($job->getUsers(Ticket::ASSIGN) as $k => $d) {
-      $users[] = html_clean(getUserName($k));
+   foreach ($job->getUsers(Ticket::ASSIGN) as $d) {
+      if ($d['users_id']) {
+         $tmp = html_clean(getUserName($d['users_id']));
+         if ($d['alternative_email']) {
+            $tmp .= ' ('.$d['alternative_email'].')';
+         }
+      } else {
+         $tmp = $d['alternative_email'];
+      }
+      $users[] = $tmp;
    }
    if (count($users)) {
       $pdf->displayText('<b><i>'.$LANG['job'][5].' ('.$LANG['job'][3].')</i></b> : ', implode(', ', $users), 1);
    }
    $groups = array();
-   foreach ($job->getGroups(Ticket::ASSIGN) as $k => $d) {
-      $groups[] = html_clean(Dropdown::getDropdownName("glpi_groups", $k));
+   foreach ($job->getGroups(Ticket::ASSIGN) as $d) {
+      $groups[] = html_clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
    }
    if (count($groups)) {
       $pdf->displayText('<b><i>'.$LANG['job'][5].' ('.$LANG['Menu'][36].')</i></b> : ', implode(', ', $groups), 1);
@@ -2386,16 +2410,16 @@ function plugin_pdf_ticket(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
          $col = '';
          $users = $job->getUsers(Ticket::REQUESTER);
          if (count($users)) {
-            foreach ($users as $k => $d) {
-               $col .= (empty($col)?'':', ').getUserName($k);
+            foreach ($users as $d) {
+               $col .= (empty($col)?'':', ').getUserName($d['users_id']);
             }
          }
          $grps = $job->getGroups(Ticket::REQUESTER);
          if (count($grps)) {
             $col .= (empty($col)?'':' - ').'<b><i>'.$LANG['Menu'][36].' : </i></b>';
             $first = true;
-            foreach ($grps as $k => $d) {
-               $col .= ($first?'':', ').Dropdown::getDropdownName("glpi_groups", $k);
+            foreach ($grps as $d) {
+               $col .= ($first?'':', ').Dropdown::getDropdownName("glpi_groups", $d['groups_id']);
                $first = false;
             }
          }
@@ -2406,16 +2430,16 @@ function plugin_pdf_ticket(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
          $col = '';
          $users = $job->getUsers(Ticket::ASSIGN);
          if (count($users)) {
-            foreach ($users as $k => $d) {
-               $col .= (empty($col)?'':', ').getUserName($k);
+            foreach ($users as $d) {
+               $col .= (empty($col)?'':', ').getUserName($d['users_id']);
             }
          }
          $grps = $job->getGroups(Ticket::ASSIGN);
          if (count($grps)) {
             $col .= (empty($col)?'':' - ').'<b><i>'.$LANG['Menu'][36].' : </i></b>';
             $first = true;
-            foreach ($grps as $k => $d) {
-               $col .= ($first?'':', ').Dropdown::getDropdownName("glpi_groups", $k);
+            foreach ($grps as $d) {
+               $col .= ($first?'':', ').Dropdown::getDropdownName("glpi_groups", $d['groups_id']);
                $first = false;
             }
          }
