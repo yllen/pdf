@@ -176,7 +176,7 @@ function plugin_pdf_main_ticket(PluginPdfSimplePDF $pdf, Ticket $job) {
          }
       }
       $pdf->displayText(
-         "<b><i>".$LANG['common'][1]."</i></b> : ",
+         "<b><i>".$LANG['document'][14]."</i></b> : ",
          html_clean($item->getTypeName())." ".html_clean($item->getNameID()).
                $serial_item . $otherserial_item . $location_item,
          1);
