@@ -2092,14 +2092,13 @@ function plugin_pdf_port(PluginPdfSimplePDF $pdf, CommonDBTM $item){
       if (!$nb_connect) {
          $pdf->displayTitle('<b>0 '.$LANG["networking"][10].'</b>');
       } else {
-         $pdf->displayTitle('<b>'.$LANG["networking"][$nb_connect>1 ? 11 : 12]." : $nb_connect</b>");
+         $pdf->displayTitle('<b>'.ucfirst($LANG["networking"][$nb_connect>1 ? 11 : 12])." : $nb_connect</b>");
 
          while ($devid=$DB->fetch_row($result)) {
             $netport = new NetworkPort;
             $netport->getfromDB(current($devid));
-
-            $pdf->displayLine('<b><i># </i></b> '.$netport->fields["logical_number"].'  <b><i>'.
-                              $LANG["common"][16].' :</i></b> '.$netport->fields["name"]);
+            $pdf->displayTitle('<b>'.$LANG['networking'][4].'<i># '.$netport->fields["logical_number"].'</i>'.
+                     ' : '.$netport->fields["name"].'</b>');
 
             $pdf->displayLine('<b><i>'.$LANG["networking"][51].' :</i></b> '.
                               html_clean(Dropdown::getDropdownName("glpi_netpoints",
@@ -2115,15 +2114,15 @@ function plugin_pdf_port(PluginPdfSimplePDF $pdf, CommonDBTM $item){
 
             $query = "SELECT *
                       FROM `glpi_networkports_vlans`
-                      WHERE `networkports_id` = '$ID'";
+                      WHERE `networkports_id` = '".$netport->fields['id']."'";
 
             $result2 = $DB->query($query);
             if ($DB->numrows($result2) > 0) {
-               $line = '<b><i>'.$LANG["networking"][56].' :</i></b>';
+               $line = '<b><i>'.$LANG['networking'][56].' :</i></b>';
 
-               while ($line=$DB->fetch_array($result2)) {
-                  $line .= ' ' . html_clean(Dropdown::getDropdownName("glpi_networkports_vlans",
-                                                                      $line["vlans_id"]));
+               while ($a_line=$DB->fetch_array($result2)) {
+                  $line .= ' ' . html_clean(Dropdown::getDropdownName("glpi_vlans",
+                                                                      $a_line["vlans_id"]));
                }
                $pdf->displayLine($line);
             }
