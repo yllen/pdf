@@ -2118,24 +2118,23 @@ function plugin_pdf_port(PluginPdfSimplePDF $pdf, CommonDBTM $item){
 
             $result2 = $DB->query($query);
             if ($DB->numrows($result2) > 0) {
-               $line = '<b><i>'.$LANG['networking'][56].' :</i></b>';
-
                while ($a_line=$DB->fetch_array($result2)) {
-                  $line .= ' ' . html_clean(Dropdown::getDropdownName("glpi_vlans",
-                                                                      $a_line["vlans_id"]));
+                  $line .= (empty($line) ? '' : ', ').
+                           html_clean(Dropdown::getDropdownName("glpi_vlans", $a_line["vlans_id"]));
                }
-               $pdf->displayLine($line);
+               $pdf->displayText('<b><i>'.$LANG['networking'][56].' :</i></b>', $line, 1);
             }
 
-            $pdf->displayLine(
-               '<b><i>'.$LANG["common"][65].' :</i></b> '.
+            if ($netport->fields["networkinterfaces_id"]) {
+               $pdf->displayText(
+                  '<b><i>'.$LANG["common"][65].' :</i></b> ',
                   html_clean(Dropdown::getDropdownName("glpi_networkinterfaces",
-                                                       $netport->fields["networkinterfaces_id"])));
+                                                       $netport->fields["networkinterfaces_id"])),
+                  1);
+            }
 
             $contact = new NetworkPort;
             $netport2 = new NetworkPort;
-
-            $line = '<b><i>'.$LANG["networking"][17].' :</i></b> ';
 
             $add = $LANG["connect"][1];
             if ($cid = $contact->getContact($netport->fields["id"])) {
@@ -2148,8 +2147,7 @@ function plugin_pdf_port(PluginPdfSimplePDF $pdf, CommonDBTM $item){
                   }
                }
             }
-            $line .= $add;
-            $pdf->displayLine($line);
+            $pdf->displayText('<b><i>'.$LANG["networking"][17].' :</i></b> ', $add, 1);
          } // each port
       } // Found
    } // Query
