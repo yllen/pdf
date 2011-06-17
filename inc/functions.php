@@ -2118,6 +2118,7 @@ function plugin_pdf_port(PluginPdfSimplePDF $pdf, CommonDBTM $item){
 
             $result2 = $DB->query($query);
             if ($DB->numrows($result2) > 0) {
+               $line = '';
                while ($a_line=$DB->fetch_array($result2)) {
                   $line .= (empty($line) ? '' : ', ').
                            html_clean(Dropdown::getDropdownName("glpi_vlans", $a_line["vlans_id"]));
