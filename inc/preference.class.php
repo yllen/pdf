@@ -104,7 +104,8 @@ class PluginPdfPreference extends CommonDBTM {
           }
        }
 
-       echo "<form name='plugin_pdf_$type' id='plugin_pdf_$type' action='$action' method='post' ".
+      $formid="plugin_pdf_${type}_".mt_rand();
+      echo "<form name='$formid' id='$formid' action='$action' method='post' ".
              ($ID ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
 
        $landscape = false;
@@ -147,9 +148,9 @@ class PluginPdfPreference extends CommonDBTM {
        }
 
        echo "<tr class='tab_bg_2'><td colspan='2' class='left'>";
-       echo "<a onclick=\"if (markCheckboxes('plugin_pdf_$type') ) return false;\" href='".
+       echo "<a onclick=\"if (markCheckboxes('$formid') ) return false;\" href='".
              $_SERVER['PHP_SELF']."?select=all'>".$LANG['buttons'][18]."</a> / ";
-       echo "<a onclick=\"if (unMarkCheckboxes('plugin_pdf_$type') ) return false;\" href='".
+       echo "<a onclick=\"if (unMarkCheckboxes('$formid') ) return false;\" href='".
              $_SERVER['PHP_SELF']."?select=none'>".$LANG['buttons'][19]."</a></td>";
 
        echo "<td colspan='4' class='center'>";
