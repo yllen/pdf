@@ -37,15 +37,16 @@ Author :BALPE Dévi
 1 - Presentation
 This plugin enables you to print with format pdf all the mitres of a card computer 
 or a software of the inventory. 
-Compatibility : Glpi 0.78
+
+Compatibility : Glpi 0.80
 
 2 - Installation
 
 - Download the tarball of this plugin
 - Uncompress it in the plugins directory of your glpi installation
 
-Once copied in the repertory, in the mitre plugin you will see appearing “Impression pdf”.
+Once copied in the repertory, in the mitre plugin you will see appearing "Print to pdf".
 
 3 - Documentation
 
-https://forge.indepnet.net/wiki/pdf/En_manual
+https://forge.indepnet.net/projects/pdf/wiki/En_manual

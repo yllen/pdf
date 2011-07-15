@@ -32,8 +32,10 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-Version 0.8.0
-   #2551: Portage GLPI 0.80
+Version 0.80 - https://forge.indepnet.net/projects/pdf/versions/536
+   Task #2551: Portage GLPI 0.80
+   Feature #1530: export to PDF for NETWORKING-TYPE
+   Feature #2879: Allow print to PDF for post-only users
 
 Version 0.7.2
    #2612 Html char in volume size
