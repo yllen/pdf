@@ -2485,99 +2485,30 @@ function plugin_pdf_link(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
          }
          $link = $data["link"];
          $file = trim($data["data"]);
+
          if (empty($file)) {
-            if (strpos("[NAME]",$link)) {
-               $link = str_replace("[NAME]",$item->getName(),$link);
-            }
-            if (strpos("[ID]",$link)) {
-               $link = str_replace("[ID]",$ID,$link);
-            }
-
-            if (strpos("[SERIAL]",$link)) {
-               if ($tmp = $item->getField('serial')){
-                  $link = str_replace("[SERIAL]",$tmp,$link);
-               }
-            }
-
-            if (strpos("[OTHERSERIAL]",$link)) {
-               if ($tmp = $item->getField('otherserial')) {
-                  $link = str_replace("[OTHERSERIAL]",$tmp,$link);
-               }
-            }
-
-            if (strpos("[LOCATIONID]",$link)) {
-               if ($tmp = $item->getField('locations_id')){
-                  $link = str_replace("[LOCATIONID]",$tmp,$link);
-               }
-            }
-
-            if (strpos("[LOCATION]",$link)) {
-               if ($tmp = $item->getField('locations_id')){
-                  $link = str_replace("[LOCATION]",
-                                      html_clean(Dropdown::getDropdownName("glpi_locations",$tmp)),
-                                      $link);
-               }
-            }
-
-            if (strpos("[NETWORK]",$link)) {
-               if ($tmp = $item->getField('networks_id')){
-                  $link = str_replace("[NETWORK]",
-                                      html_clean(Dropdown::getDropdownName("glpi_networks",$tmp)),
-                                      $link);
-               }
-            }
-
-            if (strpos("[DOMAIN]",$link)) {
-               if ($tmp = $item->getField('domains_id'))
-                  $link = str_replace("[DOMAIN]",
-                                      html_clean(Dropdown::getDropdownName("glpi_domains",$tmp)),
-                                      $link);
-            }
-            $ipmac = array();
-            $j = 0;
-            if (strstr($link,"[IP]") || strstr($link,"[MAC]")) {
-               $query2 = "SELECT `ip`, `mac`
-                          FROM `glpi_networkports`
-                          WHERE `items_id` = '".$item->fields['id']."'
-                                AND `itemtype` = '$type'
-                          ORDER BY logical_number";
-
-               $result2 = $DB->query($query2);
-               if ($DB->numrows($result2) > 0) {
-                  while ($data2 = $DB->fetch_array($result2)) {
-                     $ipmac[$j]['ip'] = $data2["ip"];
-                     $ipmac[$j]['mac'] = $data2["mac"];
-                     $j++;
-                  }
-               }
-               if (count($ipmac) > 0) { // One link per network address
-                  foreach ($ipmac as $key => $val) {
-                     $tmplink = $link;
-                     $tmplink = str_replace("[IP]",$val['ip'],$tmplink);
-                     $tmplink = str_replace("[MAC]",$val['mac'],$tmplink);
-                     $pdf->displayLink("$name - $tmplink", $tmplink);
-                  }
-               }
-
-            } else { // Single link (not network info)
-               $pdf->displayLink("$name - $link", $link);
+            $links = Link::generateLinkContents($data['link'], $item, $name);
+            $i=1;
+            foreach ($links as $key => $link) {
+               $url = $link;
+               $pdf->displayLine("<b>$name #$i</b> : $link");
+               $i++;
             }
          } else { // Generated File
-            // Manage Filename
-            if (strstr($link,"[NAME]")){
-               $link = str_replace("[NAME]",$item->getName(),$link);
-            }
-
-            if (strstr($link,"[LOGIN]")) {
-               if (isset($_SESSION["glpiname"])){
-                  $link = str_replace("[LOGIN]",$_SESSION["glpiname"],$link);
+               $files = Link::generateLinkContents($data['link'], $item);
+               $links = Link::generateLinkContents($data['data'], $item);
+               $i=1;
+               foreach ($links as $key => $data) {
+                  if (isset($files[$key])) {
+                     // a different name for each file, ex name = foo-[IP].txt
+                     $file = $files[$key];
+                  } else {
+                     // same name for all files, ex name = foo.txt
+                     $file = reset($files);
+                  }
+                  $pdf->displayText("<b>$name #$i - $file :</b>", trim($data), 1, 10);
+                  $i++;
                }
-            }
-
-            if (strstr($link,"[ID]")) {
-               $link = str_replace("[ID]",$_GET["ID"],$link);
-            }
-            $pdf->displayLine("$name - $link");
          }
       } // Each link
    } else {
