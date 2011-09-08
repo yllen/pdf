@@ -69,7 +69,7 @@ class PluginPdfSimplePDF {
       $id_pdf = $this->pdf->openObject();
       $this->pdf->saveState();
       $this->pdf->ezStartPageNumbers($this->width-20,10,10,'left',
-                                     convDate(date("Y-m-d"))." - {PAGENUM}/{TOTALPAGENUM}");
+                                     Html::convDate(date("Y-m-d"))." - {PAGENUM}/{TOTALPAGENUM}");
       $this->pdf->setStrokeColor(0,0,0);
       $this->pdf->setLineStyle(1,'round','round');
       $this->pdf->rectangle(20,20,$this->width-40,$this->height-40);
@@ -107,7 +107,7 @@ class PluginPdfSimplePDF {
       $this->start_tab = $this->height-45;
       if (!empty($this->header)) {
          $this->pdf->addTextWrap(85,$this->start_tab,$this->width-110,14,
-                                 decodeFromUtf8($this->header,"windows-1252"),'center');
+                                 Toolbox::decodeFromUtf8($this->header,"windows-1252"),'center');
          $this->start_tab -= 30;
       }
    }
@@ -166,7 +166,7 @@ class PluginPdfSimplePDF {
       foreach ($msgs as $msg) {
          if ($i<count($this->cols)) {
             $this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,
-                                    decodeFromUtf8($msg,"windows-1252"),
+                                    Toolbox::decodeFromUtf8($msg,"windows-1252"),
                                     (isset($this->align[$i]) ? $this->align[$i] : 'center'));
             $i++;
          } else {
@@ -192,7 +192,7 @@ class PluginPdfSimplePDF {
       foreach ($msgs as $msg) {
          if ($i<count($this->cols)) {
             $this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,
-                                    decodeFromUtf8($msg,"windows-1252"),
+                                    Toolbox::decodeFromUtf8($msg,"windows-1252"),
                                     (isset($this->align[$i]) ? $this->align[$i] : 'left'));
             $i++;
          } else {
@@ -213,7 +213,7 @@ class PluginPdfSimplePDF {
       $this->displayBox(0.95);
       $i = 0;
 
-      $name = decodeFromUtf8($name,"windows-1252");
+      $name = Toolbox::decodeFromUtf8($name,"windows-1252");
       $w = $this->pdf->getTextWidth(9,$name);
       $this->pdf->addLink($URL,$this->colsx[$i]+2,$this->start_tab,$this->colsx[$i]+$w+2,
                           $this->start_tab+10);
@@ -252,12 +252,12 @@ class PluginPdfSimplePDF {
       $this->pdf->restoreState();
 
       // Title
-      $name = decodeFromUtf8($name,"windows-1252");
+      $name = Toolbox::decodeFromUtf8($name,"windows-1252");
       $x = 30 + $this->pdf->getTextWidth(9, $name);
       $this->pdf->addText(27,$this->start_tab,9,$name);
 
       $temp = str_replace("\r\n","\n",$content);
-      $lines = explode("\n", decodeFromUtf8($temp,"windows-1252"));
+      $lines = explode("\n", Toolbox::decodeFromUtf8($temp,"windows-1252"));
       $line = current($lines);
 
       // Content
@@ -293,9 +293,9 @@ class PluginPdfSimplePDF {
    public function displaySpace ($nb=1) {
       $this->start_tab -= ($nb * 20);
    }
-   
+
    public function addPngFromFile ($image,$dst_w,$dst_h) {
-      
+
       $size = GetImageSize($image);
       $src_w = $size[0];
       $src_h = $size[1];

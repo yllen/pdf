@@ -63,7 +63,7 @@ if (isset($_POST["plugin_pdf_inventory_type"])
                        'tab'    => $tab,
                        'page'   => (isset($_POST["page"]) ? $_POST["page"] : 0));
 
-      doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$options);
+      Plugin::doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$options);
    } else {
       die("Missing hook");
    }

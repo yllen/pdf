@@ -61,7 +61,7 @@ if (isset($_POST['plugin_pdf_user_preferences_save'])
                   VALUES (NULL , '".$_SESSION["glpiID"]."',
                           '".$_POST["plugin_pdf_inventory_type"]."', 'landscape')");
    }
-   glpi_header($_SERVER['HTTP_REFERER']);
+   Html::back();
 }
 
 ?>

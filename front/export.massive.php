@@ -68,7 +68,7 @@ if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
                     'tab'    => $tab,
                     'page'   => $pag);
 
-   doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF", $options);
+   Plugin::doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF", $options);
 } else {
    die("Missing hook");
 }

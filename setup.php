@@ -73,18 +73,18 @@ function plugin_version_pdf() {
    global $LANG;
 
    return array('name'           => $LANG['plugin_pdf']['title'][1],
-                'version'        => '0.80.3',
+                'version'        => '0.83',
                 'author'         => 'Dévi Balpe, Remi Collet, Nelly Lasson, Walid Nouh',
                 'homepage'       => 'https://forge.indepnet.net/projects/pdf',
-                'minGlpiVersion' => '0.80');
+                'minGlpiVersion' => '0.83');
 }
 
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_pdf_check_prerequisites(){
 
-   if (version_compare(GLPI_VERSION,'0.80.3','lt') || version_compare(GLPI_VERSION,'0.81','ge')) {
-      echo "This plugin requires GLPI 0.80.3";
+   if (version_compare(GLPI_VERSION,'0.83','lt') || version_compare(GLPI_VERSION,'0.84','ge')) {
+      echo "This plugin requires GLPI 0.83";
    }
    return true;
 }

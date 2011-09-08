@@ -78,7 +78,7 @@ function plugin_pdf_prefPDF($item) {
       case 'Ticket' :
          $item->fields['id'] = 1;
          $tabs = $item->defineTabs();
-         if (haveRight("show_full_ticket", "1")) {
+         if (Session::haveRight("show_full_ticket", "1")) {
             $tabs['private'] = $LANG['common'][77];
          }
    }

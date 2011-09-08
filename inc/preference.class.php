@@ -73,7 +73,7 @@ class PluginPdfPreference extends CommonDBTM {
        }
 
        // Main options
-       $options = doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "prefPDF", $item);
+       $options = Plugin::doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "prefPDF", $item);
        if (!is_array($options)) {
           return;
        }
