@@ -36,8 +36,11 @@
 class PluginPdfPreference extends CommonDBTM {
 
 
-   function showPreferences($target) {
+   static function showPreferences() {
       global $LANG, $DB, $CFG_GLPI, $PLUGIN_HOOKS;
+
+      $target = Toolbox::getItemTypeFormURL(__CLASS__);
+      $pref = new self();
 
       echo "<div class='center' id='pdf_type'>";
       foreach ($PLUGIN_HOOKS['plugin_pdf'] as $type => $plug) {
@@ -46,7 +49,7 @@ class PluginPdfPreference extends CommonDBTM {
          }
          $item = new $type();
          if ($item->canView()) {
-            $this->menu($item, $target);
+            $pref->menu($item, $target);
          }
       }
       echo "</div>";
@@ -174,6 +177,24 @@ class PluginPdfPreference extends CommonDBTM {
        echo "</table></form>";
     }
 
+
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+      global $LANG;
+
+      if ($item->getType() == 'Preference') {
+         return $LANG['plugin_pdf']['title'][1];
+      }
+      return '';
+   }
+
+
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+
+      if ($item->getType() == 'Preference') {
+         self::showPreferences();
+      }
+      return true;
+   }
 }
 
 ?>

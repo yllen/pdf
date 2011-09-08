@@ -36,9 +36,9 @@ function plugin_init_pdf() {
    global $PLUGIN_HOOKS,$LANG;
 
    // Params : plugin name - string type - number - attributes
-   Plugin::registerClass('PluginPdfProfile');
+   Plugin::registerClass('PluginPdfProfile',    array('addtabon' => 'Profile'));
 
-   Plugin::registerClass('PluginPdfPreference');
+   Plugin::registerClass('PluginPdfPreference', array('addtabon' => 'Preference'));
 
    $PLUGIN_HOOKS['change_profile']['pdf'] = array('PluginPdfProfile','changeprofile');
 

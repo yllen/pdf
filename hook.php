@@ -104,10 +104,6 @@ function plugin_pdf_get_headings($item,$withtemplate) {
    global $LANG, $PLUGIN_HOOKS;
 
    $type = get_class($item);
-   if ($type == 'Profile') {
-      return array(1 => $LANG['plugin_pdf']['title'][1]);
-
-   }
    if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
       if ($item->getField('id') && !$withtemplate) {
          return array( 1 => $LANG['plugin_pdf']['title'][1]);
