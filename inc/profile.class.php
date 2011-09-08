@@ -122,5 +122,29 @@ class PluginPdfProfile extends CommonDBTM {
    function canCreate() {
       return Session::haveRight('profile','w');
    }
+
+
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+      global $LANG;
+
+      if ($item->getType() == 'Profile') {
+         return $LANG['plugin_pdf']['title'][1];
+      }
+      return '';
+   }
+
+
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+
+      if ($item->getType() == 'Profile') {
+         $prof =  new self();
+         $ID = $item->getField('id');
+         if (!$prof->GetfromDB($ID)) {
+            $prof->createProfile($item);
+         }
+         $prof->showForm($ID);
+      }
+      return true;
+   }
 }
 ?>

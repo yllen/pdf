@@ -104,10 +104,6 @@ function plugin_pdf_get_headings($item,$withtemplate) {
    global $LANG, $PLUGIN_HOOKS;
 
    $type = get_class($item);
-   if ($type == 'Preference') {
-      return array(1 => $LANG['plugin_pdf']['title'][1]);
-
-   }
    if ($type == 'Profile') {
       return array(1 => $LANG['plugin_pdf']['title'][1]);
 
@@ -126,9 +122,6 @@ function plugin_pdf_headings_actions($item) {
 
    $type = get_class($item);
    switch ($type) {
-      case 'Profile' :
-         return array(1 => "plugin_pdf_headings");
-
       case 'Preference' :
          return array(1 => "plugin_pdf_headings");
 
@@ -149,16 +142,6 @@ function plugin_pdf_headings($item,$withtemplate=0) {
    $type = get_class($item);
 
    switch ($type) {
-      case 'Profile' :
-         $prof =  new PluginPdfProfile();
-         $ID = $item->getField('id');
-         if (!$prof->GetfromDB($ID)) {
-            $prof->createProfile($item);
-         }
-         $prof->showForm($ID,
-                         array('target' => $CFG_GLPI["root_doc"]."/plugins/pdf/front/profile.php"));
-         break;
-
       case 'Preference' :
          $pref->showPreferences($CFG_GLPI['root_doc']."/plugins/pdf/front/preference.form.php");
          break;
