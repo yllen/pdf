@@ -39,12 +39,14 @@ include (GLPI_ROOT."/inc/includes.php");
 Plugin::load('pdf', true);
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
+Toolbox::logDebug("Export", $_REQUEST);
 if (isset($_POST["plugin_pdf_inventory_type"])
     && class_exists($_POST["plugin_pdf_inventory_type"])
     && isset($_POST["itemID"])) {
 
    $type = $_POST["plugin_pdf_inventory_type"];
    $item = new $type();
+   $item->check($_POST["itemID"], 'r');
 
    if (isset($_SESSION["plugin_pdf"][$type])) {
       unset($_SESSION["plugin_pdf"][$type]);
@@ -57,13 +59,11 @@ if (isset($_POST["plugin_pdf_inventory_type"])
       }
    }
 
-   if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-      $options = array('item'   => $item,
-                       'tab_id' => array($_POST["itemID"]),
-                       'tab'    => $tab,
-                       'page'   => (isset($_POST["page"]) ? $_POST["page"] : 0));
+   if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])
+       && class_exists($PLUGIN_HOOKS['plugin_pdf'][$type])) {
 
-      Plugin::doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "generatePDF",$options);
+      $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$type]($item);
+      $itempdf->generatePDF(array($_POST["itemID"]), $tab, (isset($_POST["page"]) ? $_POST["page"] : 0));
    } else {
       die("Missing hook");
    }

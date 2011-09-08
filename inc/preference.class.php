@@ -59,53 +59,24 @@ class PluginPdfPreference extends CommonDBTM {
     function checkbox($num,$label,$checked=false) {
 
        echo "<td width='20%'><input type='checkbox' ".($checked==true?"checked='checked'":'').
-             " name='item[$num]' value='1'>".$label."</td>";
+             " name='item[$num]' value='1'>&nbsp;".$label."</td>";
     }
 
 
    function menu($item, $action) {
       global $LANG, $DB, $PLUGIN_HOOKS;
 
-      $type = get_class($item);
+      $type = $item->getType();
 
       // $ID set if current object, not set from preference
       $ID = (isset($item->fields['id']) ? $item->fields['id'] : 0);
 
-       if (!isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-          return;
-       }
-
-       // Main options
-       $options = Plugin::doOneHook($PLUGIN_HOOKS['plugin_pdf'][$type], "prefPDF", $item);
-       if (!is_array($options)) {
-          return;
-       }
-
-       // Plugin options
-       if (isset($PLUGIN_HOOKS["headings"]) && is_array($PLUGIN_HOOKS["headings"])) {
-          foreach ($PLUGIN_HOOKS["headings"] as $plug => $funcname) {
-             if (file_exists(GLPI_ROOT . "/plugins/$plug/hook.php")) {
-                include_once(GLPI_ROOT . "/plugins/$plug/hook.php");
-             }
-
-             if (is_callable($funcname)
-                 && isset($PLUGIN_HOOKS["headings_actionpdf"][$plug])
-                 && is_callable($funcaction=$PLUGIN_HOOKS["headings_actionpdf"][$plug])) {
-
-                $title = call_user_func($funcname,$item,'');
-                $calls = call_user_func($funcaction,$item,'');
-
-                if (is_array($title) && count($title)) {
-                   foreach ($title as $key => $val) {
-                      $opt = $plug."_".$key;
-                      if (isset($calls[$key]) && is_callable($calls[$key])) {
-                         $options[$opt]=$val;
-                      }
-                   }
-                }
-             }
-          }
-       }
+      if (!isset($PLUGIN_HOOKS['plugin_pdf'][$type])
+          || !class_exists($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+         return;
+      }
+      $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$type]();
+      $options = $itempdf->defineAllTabs();
 
       $formid="plugin_pdf_${type}_".mt_rand();
       echo "<form name='$formid' id='$formid' action='$action' method='post' ".
@@ -134,7 +105,10 @@ class PluginPdfPreference extends CommonDBTM {
           if (!$i) {
              echo "<tr class='tab_bg_1'>";
           }
-          $this->checkbox($num,$title,(isset($values[$num])?true:false));
+          if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
+             $title = "$title ($num)";
+          }
+          $this->checkbox($num, $title, (isset($values[$num]) ? true : false));
           if ($i==4) {
              echo "</tr>";
              $i = 0;

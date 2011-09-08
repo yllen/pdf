@@ -35,6 +35,16 @@
 
 include_once (GLPI_ROOT . '/plugins/pdf/inc/functions.php');
 
+
+function plugin_pdf_postinit() {
+   global $CFG_GLPI, $PLUGIN_HOOKS;
+
+   foreach ($PLUGIN_HOOKS['plugin_pdf'] as $type => $typepdf) {
+      CommonGLPI::registerStandardTab($type, $typepdf);
+   }
+}
+
+
 /**
  * Hook : options for one type
  *
@@ -97,56 +107,6 @@ function plugin_pdf_prefPDF($item) {
  */
 function plugin_pdf_generatePDF($options) {
    plugin_pdf_general($options['item'], $options['tab_id'], $options['tab'], $options['page']);
-}
-
-
-function plugin_pdf_get_headings($item,$withtemplate) {
-   global $LANG, $PLUGIN_HOOKS;
-
-   $type = get_class($item);
-   if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-      if ($item->getField('id') && !$withtemplate) {
-         return array( 1 => $LANG['plugin_pdf']['title'][1]);
-      }
-   }
-   return false;
-}
-
-
-function plugin_pdf_headings_actions($item) {
-   global $PLUGIN_HOOKS;
-
-   $type = get_class($item);
-   switch ($type) {
-      case 'Preference' :
-         return array(1 => "plugin_pdf_headings");
-
-      default :
-         if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-            return array(1 => "plugin_pdf_headings");
-         }
-   }
-   return false;
-}
-
-
-// action heading
-function plugin_pdf_headings($item,$withtemplate=0) {
-   global $CFG_GLPI,$PLUGIN_HOOKS;
-
-   $pref = new PluginPdfPreference;
-   $type = get_class($item);
-
-   switch ($type) {
-      case 'Preference' :
-         $pref->showPreferences($CFG_GLPI['root_doc']."/plugins/pdf/front/preference.form.php");
-         break;
-
-      default :
-         if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-            $pref->menu($item,$CFG_GLPI['root_doc']."/plugins/pdf/front/export.php");
-         }
-   }
 }
 
 
