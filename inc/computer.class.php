@@ -223,18 +223,6 @@ class PluginPdfComputer extends PluginPdfCommon {
             PluginPdfComputer_Item::pdfForComputer($pdf, $item);
             break;
 
-         case 'NetworkPort####1' :
-            PluginPdfNetworkPort::pdfForItem($pdf, $item);
-            break;
-
-         case 'Infocom####1' :
-            PluginPdfInfocom::pdfForItem($pdf, $item);
-            break;
-
-         case 'Contract_Item####1' :
-            PluginPdfContract_Item::pdfForItem($pdf, $item);
-            break;
-
          case 'Document####1' :
             PluginPdfDocument::pdfForItem($pdf, $item);
             break;
@@ -245,22 +233,6 @@ class PluginPdfComputer extends PluginPdfCommon {
 
          case 'RegistryKey####1' :
             PluginPdfRegistryKey::pdfForComputer($pdf, $item);
-            break;
-
-         case 'Ticket####1' :
-            PluginPdfTicket::pdfForItem($pdf, $item);
-            break;
-
-         case 'Link####1' :
-            PluginPdfLink::pdfForItem($pdf, $item);
-            break;
-
-         case 'Reservation####1' :
-            PluginPdfReservation::pdfForItem($pdf, $item);
-            break;
-
-         case 'Log####1' :
-            PluginPdfLog::pdfForItem($pdf, $item);
             break;
 
          default :

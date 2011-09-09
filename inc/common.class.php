@@ -126,7 +126,8 @@ abstract class PluginPdfCommon {
 
 
    /**
-    * export Tab content
+    * export Tab content - specific content for this type
+    * is run first, before displayCommonTabForPDF.
     *
     * @since version 0.83
     *
@@ -134,10 +135,72 @@ abstract class PluginPdfCommon {
     * @param $item  CommonGLPI object for which the tab need to be displayed
     * @param $tab   string tab number
     *
-    * @return true
+    * @return true if display done (else will search for another handler)
    **/
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
       return false;
+   }
+
+
+   /**
+    * export Tab content - classic content use by various object
+    *
+    * @since version 0.83
+    *
+    * @param $pdf   PluginPdfSimplePDF object for output
+    * @param $item  CommonGLPI object for which the tab need to be displayed
+    * @param $tab   string tab number
+    *
+    * @return true if display done (else will search for another handler)
+   **/
+   static final function displayCommonTabForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
+
+      switch ($tab) {
+         /* PHP 5.3 : unconnment this and drop case in all sub-classes
+         case '_main_' :
+            static::pdfMain($pdf, $item);
+            break;
+         */
+         case 'Note' :
+            self::pdfNote($pdf, $item);
+            break;
+
+         case 'Document####1' :
+            PluginPdfDocument::pdfForItem($pdf, $item);
+            break;
+
+         case 'NetworkPort####1' :
+            PluginPdfNetworkPort::pdfForItem($pdf, $item);
+            break;
+
+         case 'Infocom####1' :
+            PluginPdfInfocom::pdfForItem($pdf, $item);
+            break;
+
+         case 'Contract_Item####1' :
+            PluginPdfContract_Item::pdfForItem($pdf, $item);
+            break;
+
+         case 'Ticket####1' :
+            PluginPdfTicket::pdfForItem($pdf, $item);
+            break;
+
+         case 'Link####1' :
+            PluginPdfLink::pdfForItem($pdf, $item);
+            break;
+
+         case 'Reservation####1' :
+            PluginPdfReservation::pdfForItem($pdf, $item);
+            break;
+
+         case 'Log####1' :
+            PluginPdfLog::pdfForItem($pdf, $item);
+            break;
+
+         default :
+            return false;
+      }
+      return true;
    }
 
 
@@ -232,10 +295,8 @@ abstract class PluginPdfCommon {
          }
 
          foreach ($tabs as $tab) {
-            if ($tab == 'Note') {
-               $this->pdfNote($this->pdf, $this->obj);
-
-            } else if (!$this->displayTabContentForPDF($this->pdf, $this->obj, $tab)) {
+            if (!$this->displayTabContentForPDF($this->pdf, $this->obj, $tab)
+                && !$this->displayCommonTabForPDF($this->pdf, $this->obj, $tab)) {
 
             }
          }
