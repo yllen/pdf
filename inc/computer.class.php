@@ -34,10 +34,20 @@
 
 class PluginPdfComputer extends PluginPdfCommon {
 
+
    function __construct(Computer $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Computer());
    }
+
+
+   function defineAllTabs($options=array()) {
+
+      $onglets = parent::defineAllTabs($options);
+      unset($onglets['OcsLink####1']); // TODO add method to print OCS
+      return $onglets;
+   }
+
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Computer $computer){
       global $LANG;
@@ -227,6 +237,30 @@ class PluginPdfComputer extends PluginPdfCommon {
 
          case 'Document####1' :
             PluginPdfDocument::pdfForItem($pdf, $item);
+            break;
+
+         case 'ComputerVirtualMachine####1' :
+            PluginPdfComputerVirtualMachine::pdfForComputer($pdf, $item);
+            break;
+
+         case 'RegistryKey####1' :
+            PluginPdfRegistryKey::pdfForComputer($pdf, $item);
+            break;
+
+         case 'Ticket####1' :
+            PluginPdfTicket::pdfForItem($pdf, $item);
+            break;
+
+         case 'Link####1' :
+            PluginPdfLink::pdfForItem($pdf, $item);
+            break;
+
+         case 'Reservation####1' :
+            PluginPdfReservation::pdfForItem($pdf, $item);
+            break;
+
+         case 'Log####1' :
+            PluginPdfLog::pdfForItem($pdf, $item);
             break;
 
          default :

@@ -1,0 +1,104 @@
+<?php
+
+/*
+ * @version $Id$
+ -------------------------------------------------------------------------
+ GLPI - Gestionnaire Libre de Parc Informatique
+ Copyright (C) 2003-2011 by the INDEPNET Development Team.
+
+ http://indepnet.net/   http://glpi-project.org
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of GLPI.
+
+ GLPI is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ GLPI is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with GLPI; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ --------------------------------------------------------------------------
+*/
+
+// Original Author of file: Remi Collet
+// ----------------------------------------------------------------------
+
+class PluginPdfLink extends PluginPdfCommon {
+
+   function __construct(Link $obj=NULL) {
+
+      $this->obj = ($obj ? $obj : new Link());
+   }
+
+   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
+      global $DB,$LANG;
+
+      $ID = $item->getField('id');
+      $type = get_class($item);
+
+      if (!Session::haveRight("link","r")) {
+         return false;
+      }
+
+      $query = "SELECT `glpi_links`.`id` AS ID, `glpi_links`.`link`, `glpi_links`.`name`,
+                       `glpi_links`.`data`
+                FROM `glpi_links`
+                INNER JOIN `glpi_links_itemtypes`
+                     ON `glpi_links`.`id` = `glpi_links_itemtypes`.`links_id`
+                WHERE `glpi_links_itemtypes`.`itemtype` = '$type'
+                ORDER BY `glpi_links`.`name`";
+
+      $result=$DB->query($query);
+
+      $pdf->setColumnsSize(100);
+      if ($DB->numrows($result) > 0) {
+         $pdf->displayTitle('<b>'.$LANG["title"][33].'</b>');
+
+         while ($data = $DB->fetch_assoc($result)) {
+            $name = $data["name"];
+            if (empty($name)) {
+               $name = $data["link"];
+            }
+            $link = $data["link"];
+            $file = trim($data["data"]);
+
+            if (empty($file)) {
+               $links = Link::generateLinkContents($data['link'], $item, $name);
+               $i=1;
+               foreach ($links as $key => $link) {
+                  $url = $link;
+                  $pdf->displayLine("<b>$name #$i</b> : $link");
+                  $i++;
+               }
+            } else { // Generated File
+                  $files = Link::generateLinkContents($data['link'], $item);
+                  $links = Link::generateLinkContents($data['data'], $item);
+                  $i=1;
+                  foreach ($links as $key => $data) {
+                     if (isset($files[$key])) {
+                        // a different name for each file, ex name = foo-[IP].txt
+                        $file = $files[$key];
+                     } else {
+                        // same name for all files, ex name = foo.txt
+                        $file = reset($files);
+                     }
+                     $pdf->displayText("<b>$name #$i - $file :</b>", trim($data), 1, 10);
+                     $i++;
+                  }
+            }
+         } // Each link
+      } else {
+         $pdf->displayTitle('<b>'.$LANG["links"][7].'</b>');
+      }
+      $pdf->displaySpace();
+   }
+}

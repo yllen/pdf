@@ -191,6 +191,24 @@ abstract class PluginPdfCommon {
    }
 
 
+   static function pdfNote(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
+      global $LANG;
+
+      $ID = $item->getField('id');
+
+      $note = trim($item->getField('notepad'));
+
+      $pdf->setColumnsSize(100);
+      if (Toolbox::strlen($note) > 0) {
+         $pdf->displayTitle('<b>'.$LANG["title"][37].'</b>');
+         $pdf->displayText('', $note, 5);
+      } else {
+         $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['note'][1].'</b>');
+      }
+      $pdf->displaySpace();
+   }
+
+
    /**
     * Generate the PDF for some object
     *
@@ -214,7 +232,10 @@ abstract class PluginPdfCommon {
          }
 
          foreach ($tabs as $tab) {
-            if (!$this->displayTabContentForPDF($this->pdf, $this->obj, $tab)) {
+            if ($tab == 'Note') {
+               $this->pdfNote($this->pdf, $this->obj);
+
+            } else if (!$this->displayTabContentForPDF($this->pdf, $this->obj, $tab)) {
 
             }
          }

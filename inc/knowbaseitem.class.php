@@ -34,10 +34,12 @@
 
 class PluginPdfKnowbaseItem extends PluginPdfCommon {
 
+
    function __construct(KnowbaseItem $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new KnowbaseItem());
    }
+
 
    function defineAllTabs($options=array()) {
 
@@ -45,6 +47,7 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
       unset($onglets['KnowbaseItem####1']);
       return $onglets;
    }
+
 
    static function pdfMain(PluginPdfSimplePDF $pdf, KnowbaseItem $item){
       global $DB,$LANG;
