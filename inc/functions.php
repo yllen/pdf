@@ -2233,51 +2233,6 @@ function plugin_pdf_contract (PluginPdfSimplePDF $pdf, CommonDBTM $item){
 }
 
 
-function plugin_pdf_document(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-   global $DB,$LANG;
-
-   $ID = $item->getField('id');
-   $type = get_class($item);
-
-   if (!Session::haveRight("document","r")) {
-      return false;
-   }
-
-   $query = "SELECT `glpi_documents_items`.`id` AS assocID,
-                    `glpi_documents`.*
-             FROM `glpi_documents_items`
-             LEFT JOIN `glpi_documents`
-                  ON (`glpi_documents_items`.`documents_id` = `glpi_documents`.`id`)
-             WHERE `glpi_documents_items`.`items_id` = '$ID'
-                   AND `glpi_documents_items`.`itemtype` = '$type'";
-
-   $result = $DB->query($query);
-   $number = $DB->numrows($result);
-
-   $pdf->setColumnsSize(100);
-   if (!$number) {
-      $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['document'][1].'</b>');
-   } else {
-      $pdf->displayTitle('<b>'.$LANG["document"][21].' :</b>');
-
-      $pdf->setColumnsSize(32,15,21,19,13);
-      $pdf->displayTitle('<b>'.$LANG["common"][16].'</b>',
-                         '<b>'.$LANG["document"][2].'</b>',
-                         '<b>'.$LANG["document"][33].'</b>',
-                         '<b>'.$LANG["document"][3].'</b>',
-                         '<b>'.$LANG["document"][4].'</b>');
-
-      while ($data = $DB->fetch_assoc($result)) {
-         $pdf->displayLine($data["name"], basename($data["filename"]), $data["link"],
-                           Html::clean(Dropdown::getDropdownName("glpi_documentcategories",
-                                                                $data["documentcategories_id"])),
-                           $data["mime"]);
-      }
-   }
-   $pdf->displaySpace();
-}
-
-
 function plugin_pdf_registry(PluginPdfSimplePDF $pdf, Computer $item) {
    global $DB,$LANG;
 
@@ -2773,63 +2728,6 @@ function plugin_pdf_history(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
    $pdf->displaySpace();
 }
 
-function plugin_pdf_main_knowbaseitem(PluginPdfSimplePDF $pdf, KnowbaseItem $item){
-   global $DB,$LANG;
-
-   $ID = $item->getField('id');
-
-   if (!Session::haveRight('knowbase', 'r') || !Session::haveRight('faq', 'r')) {
-      return false;
-   }
-
-   $knowbaseitemcategories_id = $item->getField('knowbaseitemcategories_id');
-   $fullcategoryname = Html::clean(getTreeValueCompleteName("glpi_knowbaseitemcategories",
-                                                $knowbaseitemcategories_id));
-
-   $question = Html::clean(Toobox::unclean_cross_side_scripting_deep(
-               html_entity_decode($item->getField('question'),
-                                       ENT_QUOTES, "UTF-8")));
-
-   $answer = Html::clean(Toobox::unclean_cross_side_scripting_deep(
-               html_entity_decode($item->getField('answer'),
-                                       ENT_QUOTES, "UTF-8")));
-
-
-   $pdf->setColumnsSize(100);
-
-   if (Toolbox::strlen($fullcategoryname) > 0) {
-      $pdf->displayTitle('<b>'.$LANG['common'][36].'</b>');
-      $pdf->displayLine($fullcategoryname);
-   }
-
-   if (Toolbox::strlen($question) > 0) {
-      $pdf->displayTitle('<b>'.$LANG['knowbase'][14].'</b>');
-      $pdf->displayText('', $question, 5);
-   } else {
-      $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['knowbase'][1].'</b>');
-   }
-
-   if (Toolbox::strlen($answer) > 0) {
-      $pdf->displayTitle('<b>'.$LANG['knowbase'][15].'</b>');
-      $pdf->displayText('', $answer, 5);
-   } else {
-      $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['knowbase'][2].'</b>');
-   }
-
-   $pdf->setColumnsSize(50,15,15,10,10);
-   $pdf->displayTitle($LANG['common'][37],   // Author
-                      $LANG['common'][27],   // Created
-                      $LANG['common'][26],   // Updated TODO : find a shorter locale
-                      $LANG['Menu'][20],     // FAQ
-                      $LANG['knowbase'][26]);   // # of Views
-   $pdf->displayLine(getUserName($item->fields["users_id"]),
-                     Html::convDateTime($item->fields["date"]),
-                     Html::convDateTime($item->fields["date_mod"]),
-                     Dropdown::getYesNo($item->fields["is_faq"]),
-                     $item->fields["view"]);
-
-   $pdf->displaySpace();
-}
 
 function plugin_pdf_pluginhook($onglet, PluginPdfSimplePDF $pdf, CommonDBTM $item) {
    global $PLUGIN_HOOKS;

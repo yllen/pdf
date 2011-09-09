@@ -34,21 +34,9 @@
 
 abstract class PluginPdfCommon {
 
-   static protected $othertabs = array();
-
    protected $obj= NULL;
 
    abstract function __construct();
-
-   static function registerStandardTab($typeform, $typetab) {
-
-      if (isset(self::$othertabs[$typeform])) {
-         self::$othertabs[$typeform][] = $typetab;
-      } else {
-         self::$othertabs[$typeform] = array($typetab);
-      }
-   }
-
 
    /**
     * Add standard define tab
@@ -69,8 +57,8 @@ abstract class PluginPdfCommon {
 
       if (!is_integer($itemtype) && class_exists($itemtype)) {
          $obj = new $itemtype();
-         if (method_exists($obj, "getTabNameForPdf")) {
-            $titles = $obj->getTabNameForPdf($this, $withtemplate);
+         if (method_exists($itemtype, "displayTabContentForPDF")) {
+            $titles = $obj->getTabNameForItem($this->obj, $withtemplate);
             if (!is_array($titles)) {
                $titles = array(1 => $titles);
             }
@@ -86,15 +74,18 @@ abstract class PluginPdfCommon {
 
 
    function defineAllTabs($options=array()) {
+      global $LANG;
 
-      $onglets  = $this->obj->defineTabs();
+      $onglets  = array_merge(
+         array('_main_' => $this->obj->getTypeName(1)),
+         $this->obj->defineTabs());
+
       unset($onglets['empty']);
 
+      $othertabs = CommonGLPI::getOtherTabs($this->obj->getType());
       // Add plugins TAB
-      if (isset(self::$othertabs[$this->obj->getType()]) && !$this->obj->isNewItem()) {
-         foreach(self::$othertabs[$this->obj->getType()] as $typetab) {
-            $this->addStandardTab($typetab, $onglets, $options);
-         }
+      foreach($othertabs as $typetab) {
+         $this->addStandardTab($typetab, $onglets, $options);
       }
 
       return $onglets;
@@ -105,6 +96,11 @@ abstract class PluginPdfCommon {
       global $LANG;
 
       return $LANG['plugin_pdf']['title'][1];
+   }
+
+
+   static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
+      return false;
    }
 
 
@@ -142,8 +138,8 @@ abstract class PluginPdfCommon {
    }
 
 
-   function generatePDF($tab_id, $tab, $page=0, $render=true) {
-      Toolbox::logDebug("generatePDF", $tab);
+   function generatePDF($tab_id, $tabs, $page=0, $render=true) {
+      Toolbox::logDebug("generatePDF", $tabs);
 
       $this->pdf = new PluginPdfSimplePDF('a4', ($page ? 'landscape' : 'portrait'));
 
@@ -153,6 +149,12 @@ abstract class PluginPdfCommon {
          } else {
             // Object not found or no right to read
             continue;
+         }
+
+         foreach ($tabs as $tab) {
+            if (!$this->displayTabContentForPDF($this->pdf, $this->obj, $tab)) {
+
+            }
          }
       }
       if($render) {
