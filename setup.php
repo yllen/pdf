@@ -50,9 +50,7 @@ function plugin_init_pdf() {
       // Define the type for which we know how to generate PDF, need :
       // - plugin_pdf_prefPDF($type)
       // - plugin_pdf_generatePDF($type, $tab_id, $tab, $page=0)
-      /*
-      $PLUGIN_HOOKS['plugin_pdf']['Computer']         = 'pdf';
-      */
+      $PLUGIN_HOOKS['plugin_pdf']['Computer']         = 'PluginPdfComputer';
       $PLUGIN_HOOKS['plugin_pdf']['KnowbaseItem']     = 'PluginPdfKnowbaseItem';
       /*
       $PLUGIN_HOOKS['plugin_pdf']['Monitor']          = 'pdf';

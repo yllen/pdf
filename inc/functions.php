@@ -538,99 +538,6 @@ function plugin_pdf_tasks(PluginPdfSimplePDF $pdf, Ticket $job, $private) {
 }
 
 
-function plugin_pdf_main_computer(PluginPdfSimplePDF $pdf, Computer $computer) {
-   global $LANG;
-
-   $ID = $computer->getField('id');
-
-   $pdf->setColumnsSize(50,50);
-   $col1 = '<b>'.$LANG['common'][2].' '.$computer->fields['id'].'</b>';
-   $col2 = $LANG['common'][26].' : '.Html::convDateTime($computer->fields['date_mod']);
-   if(!empty($computer->fields['template_name'])) {
-      $col2 .= ' ('.$LANG['common'][13].' : '.$computer->fields['template_name'].')';
-   } else if($computer->fields['is_ocs_import']) {
-      $col2 = ' ('.$LANG['ocsng'][7].')';
-   }
-   $pdf->displayTitle($col1, $col2);
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][16].' :</i></b> '.$computer->fields['name'],
-      '<b><i>'.$LANG['state'][0].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_states',$computer->fields['states_id'])));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][15].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_locations', $computer->fields['locations_id'])),
-      '<b><i>'.$LANG['common'][17].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_computertypes',
-                                              $computer->fields['computertypes_id'])));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($computer->fields['users_id_tech']),
-      '<b><i>'.$LANG['common'][5].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                              $computer->fields['manufacturers_id'])));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][21].' :</i></b> '.$computer->fields['contact_num'],
-      '<b><i>'.$LANG['common'][22].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_computermodels',
-                                              $computer->fields['computermodels_id'])));
-
-   $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$computer->fields['contact'],
-                     '<b><i>'.$LANG['common'][19].' :</i></b> '.$computer->fields['serial']);
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($computer->fields['users_id']),
-      '<b><i>'.$LANG['common'][20].' :</i></b> '.$computer->fields['otherserial']);
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][35].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_groups',$computer->fields['groups_id'])),
-      '<b><i>'.$LANG['setup'][88].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_networks', $computer->fields['networks_id'])));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['setup'][89].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_domains', $computer->fields['domains_id'])),
-      '<b><i>'.$LANG['computers'][53].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_operatingsystemservicepacks',
-                                              $computer->fields['operatingsystemservicepacks_id'])));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['computers'][9].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
-                                              $computer->fields['operatingsystems_id'])),
-      '<b><i>'.$LANG['computers'][52].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_operatingsystemversions',
-                                              $computer->fields['operatingsystemversions_id'])));
-
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['computers'][11].' :</i></b> '.$computer->fields['os_licenseid'],
-      '<b><i>'.$LANG['computers'][10].' :</i></b> '.$computer->fields['os_license_number']);
-
-   if ($computer->fields['is_ocs_import']) {
-      $col1 = '<b><i>'.$LANG['ocsng'][6].' '.$LANG['Menu'][33].' :</i></b> '.$LANG['choice'][1];
-   } else {
-      $col1 = '<b><i>'.$LANG['ocsng'][6].' '.$LANG['Menu'][33].' :</i></b> '.$LANG['choice'][0];
-   }
-
-   $pdf->displayLine($col1,'<b><i>'.$LANG['computers'][51].' :</i></b> '.
-      Html::clean(Dropdown::getDropdownName('glpi_autoupdatesystems',
-                                           $computer->fields['autoupdatesystems_id'])));
-
-   $pdf->setColumnsSize(100);
-   $pdf->displayLine(
-      '<b><i>'.$LANG['computers'][58].' :</i></b> '.$computer->fields['uuid']);
-
-
-   $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $computer->fields['comment']);
-
-   $pdf->displaySpace();
-}
-
-
 function plugin_pdf_main_printer(PluginPdfSimplePDF $pdf, Printer $printer) {
    global $LANG;
 
@@ -1252,63 +1159,6 @@ function plugin_pdf_main_software(PluginPdfSimplePDF $pdf, Software $software) {
 }
 
 
-function plugin_pdf_device(PluginPdfSimplePDF $pdf, Computer $computer) {
-   global $DB, $LANG;
-
-   $devtypes = Computer_Device::getDeviceTypes();
-
-   $ID = $computer->getField('id');
-   if (!$computer->can($ID, 'r')) {
-      return false;
-   }
-
-   $pdf->setColumnsSize(100);
-   $pdf->displayTitle('<b>'.$LANG["title"][30].'</b>');
-
-   $pdf->setColumnsSize(3,14,42,41);
-
-   foreach ($devtypes as $itemtype) {
-      $device = new $itemtype;
-
-      $specificities = $device->getSpecifityLabel();
-      $specif_fields = array_keys($specificities);
-      $specif_text = implode(',',$specif_fields);
-      if (!empty($specif_text)) {
-         $specif_text=" ,".$specif_text." ";
-      }
-
-      $linktable = getTableForItemType('Computer_'.$itemtype);
-      $fk = getForeignKeyFieldForTable(getTableForItemType($itemtype));
-
-      $query = "SELECT count(*) AS NB, `id`, `$fk` $specif_text
-               FROM `$linktable`
-               WHERE `computers_id` = '$ID'
-               GROUP BY `$fk` $specif_text";
-
-      foreach($DB->request($query) as $data) {
-
-         if ($device->getFromDB($data[$fk])) {
-
-            $spec = $device->getFormData();
-            $col4 = '';
-            if (isset($spec['label']) && count($spec['label'])) {
-               $colspan = (60/count($spec['label']));
-               foreach ($spec['label'] as $i => $label) {
-                  if (isset($spec['value'][$i])) {
-                     $col4 .= '<b><i>'.$spec['label'][$i].' :</i></b> '.$spec['value'][$i]." ";
-                  } else {
-                     $col4 .= '<b><i>'.$spec['label'][$i].' :</i></b> '.$data['specificity']." ";
-                  }
-               }
-            }
-            $pdf->displayLine($data['NB'], $device->getTypeName(), $device->getName(), $col4);
-         }
-      }
-   }
-
-   $pdf->displaySpace();
-}
-
 
 function plugin_pdf_versions(PluginPdfSimplePDF $pdf, Software $item){
    global $DB,$LANG;
@@ -1811,146 +1661,6 @@ function plugin_pdf_installations(PluginPdfSimplePDF $pdf, CommonDBTM $item){
       $pdf->displayTitle('<b>'.$LANG['software'][19].'</b>');
       $pdf->displayLine($LANG['search'][15]."!");
    }
-   $pdf->displaySpace();
-}
-
-
-function plugin_pdf_software(PluginPdfSimplePDF $pdf, Computer $comp){
-   global $DB,$LANG;
-
-   $ID = $comp->getField('id');
-
-   // From Computer_SoftwareVersion::showForComputer();
-   $query = "SELECT `glpi_softwares`.`softwarecategories_id`,
-                    `glpi_softwares`.`name` AS softname,
-                    `glpi_computers_softwareversions`.`id`,
-                    `glpi_states`.`name` AS state,
-                    `glpi_softwareversions`.`id` AS verid,
-                    `glpi_softwareversions`.`softwares_id`,
-                    `glpi_softwareversions`.`name` AS version
-             FROM `glpi_computers_softwareversions`
-             LEFT JOIN `glpi_softwareversions`
-                  ON (`glpi_computers_softwareversions`.`softwareversions_id`
-                        = `glpi_softwareversions`.`id`)
-             LEFT JOIN `glpi_states`
-                  ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
-             LEFT JOIN `glpi_softwares`
-                  ON (`glpi_softwareversions`.`softwares_id` = `glpi_softwares`.`id`)
-             WHERE `glpi_computers_softwareversions`.`computers_id` = '$ID'
-             ORDER BY `softwarecategories_id`, `softname`, `version`";
-
-   $output = array();
-
-   $software_category      = new SoftwareCategory();
-   $software_version       = new SoftwareVersion();
-
-   foreach ($DB->request($query) as $softwareversion) {
-      $output[] = $softwareversion;
-   }
-
-   $installed = array();
-   if (count($output)) {
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.$LANG["software"][17].'</b>');
-
-      $cat = -1;
-      foreach ($output as $soft) {
-         if ($soft["softwarecategories_id"] != $cat) {
-            $cat = $soft["softwarecategories_id"];
-            if ($cat && $software_category->getFromDB($cat)) {
-               $catname = $software_category->getName();
-            } else {
-               $catname = $LANG["softwarecategories"][2];
-            }
-
-            $pdf->setColumnsSize(100);
-            $pdf->displayTitle('<b>'.$catname.'</b>');
-
-            $pdf->setColumnsSize(50,13,13,24);
-            $pdf->displayTitle('<b>'.$LANG['common'][16].'</b>',
-                               '<b>'.$LANG['state'][0].'</b>',
-                               '<b>'.$LANG['rulesengine'][78].'</b>',
-                               '<b>'.$LANG['install'][92].'</b>');
-         }
-
-         // From Computer_SoftwareVersion::displaySoftsByCategory()
-         $verid = $soft['verid'];
-         $query = "SELECT `glpi_softwarelicenses`.*,
-                          `glpi_softwarelicensetypes`.`name` AS type
-                   FROM `glpi_computers_softwarelicenses`
-                   INNER JOIN `glpi_softwarelicenses`
-                        ON (`glpi_computers_softwarelicenses`.`softwarelicenses_id`
-                                 = `glpi_softwarelicenses`.`id`)
-                   LEFT JOIN `glpi_softwarelicensetypes`
-                        ON (`glpi_softwarelicenses`.`softwarelicensetypes_id`
-                                 =`glpi_softwarelicensetypes`.`id`)
-                   WHERE `glpi_computers_softwarelicenses`.`computers_id` = '$ID'
-                         AND (`glpi_softwarelicenses`.`softwareversions_id_use` = '$verid'
-                              OR (`glpi_softwarelicenses`.`softwareversions_id_use` = '0'
-                                  AND `glpi_softwarelicenses`.`softwareversions_id_buy` = '$verid'))";
-
-         $lic = '';
-         foreach ($DB->request($query) as $licdata) {
-            $installed[] = $licdata['id'];
-            $lic .= (empty($lic)?'':', ').'<b>'.$licdata['name'].'</b> '.$licdata['serial'];
-            if (!empty($licdata['type'])) {
-               $lic .= ' ('.$licdata['type'].')';
-            }
-         }
-
-         $pdf->displayLine($soft['softname'], $soft['state'], $soft['version'], $lic);
-      } // Each version
-
-   } else {
-      $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['software'][1].'</b>');
-   }
-
-   // Affected licenses NOT installed
-   $query = "SELECT `glpi_softwarelicenses`.*,
-                    `glpi_softwares`.`name` AS softname,
-                    `glpi_softwareversions`.`name` AS version,
-                    `glpi_states`.`name` AS state
-             FROM `glpi_softwarelicenses`
-             LEFT JOIN `glpi_computers_softwarelicenses`
-                   ON (`glpi_computers_softwarelicenses`.softwarelicenses_id
-                           = `glpi_softwarelicenses`.`id`)
-             INNER JOIN `glpi_softwares`
-                   ON (`glpi_softwarelicenses`.`softwares_id` = `glpi_softwares`.`id`)
-             LEFT JOIN `glpi_softwareversions`
-                   ON (`glpi_softwarelicenses`.`softwareversions_id_use`
-                           = `glpi_softwareversions`.`id`
-                        OR (`glpi_softwarelicenses`.`softwareversions_id_use` = '0'
-                            AND `glpi_softwarelicenses`.`softwareversions_id_buy`
-                                    = `glpi_softwareversions`.`id`))
-             LEFT JOIN `glpi_states`
-                  ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
-             WHERE `glpi_computers_softwarelicenses`.`computers_id` = '$ID' ";
-
-   if (count($installed)) {
-      $query .= " AND `glpi_softwarelicenses`.`id` NOT IN (".implode(',',$installed).")";
-   }
-
-   $req = $DB->request($query);
-   if ($req->numrows()) {
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.$LANG['software'][3].'</b>');
-
-      $pdf->setColumnsSize(50,13,13,24);
-      $pdf->displayTitle('<b>'.$LANG['common'][16].'</b>',
-                         '<b>'.$LANG['state'][0].'</b>',
-                         '<b>'.$LANG['rulesengine'][78].'</b>',
-                         '<b>'.$LANG['install'][92].'</b>');
-
-      foreach ($req as $data) {
-         $lic .= '<b>'.$data['name'].'</b> '.$data['serial'];
-         if (!empty($data['softwarelicensetypes_id'])) {
-            $lic .= ' ('.Html::clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
-                                                              $data['softwarelicensetypes_id'])).')';
-         }
-         $pdf->displayLine($data['softname'], $data['state'], $data['version'], $lic);
-      }
-   }
-
    $pdf->displaySpace();
 }
 
@@ -2473,48 +2183,6 @@ function plugin_pdf_link(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
 }
 
 
-function plugin_pdf_volume(PluginPdfSimplePDF $pdf, Computer $item) {
-   global $DB, $LANG;
-
-   $ID = $item->getField('id');
-
-   $query = "SELECT `glpi_filesystems`.`name` AS fsname, `glpi_computerdisks`.*
-             FROM `glpi_computerdisks`
-             LEFT JOIN `glpi_filesystems`
-               ON (`glpi_computerdisks`.`filesystems_id` = `glpi_filesystems`.`id`)
-             WHERE (`computers_id` = '$ID')";
-
-   $result=$DB->query($query);
-
-   $pdf->setColumnsSize(100);
-   if ($DB->numrows($result) > 0) {
-      $pdf->displayTitle("<b>".$LANG['computers'][8]."</b>");
-
-      $pdf->setColumnsSize(22,23,22,11,11,11);
-      $pdf->displayTitle('<b>'.$LANG['common'][16].'</b>',
-                         '<b>'.$LANG['computers'][6].'</b>',
-                         '<b>'.$LANG['computers'][5].'</b>',
-                         '<b>'.$LANG['common'][17].'</b>',
-                         '<b>'.$LANG['computers'][3].'</b>',
-                         '<b>'.$LANG['computers'][2].'</b>');
-
-      $pdf->setColumnsAlign('left','left','left','center','right','right');
-
-      while ($data = $DB->fetch_assoc($result)) {
-         $pdf->displayLine('<b>'.Toolbox::decodeFromUtf8((empty($data['name'])?$data['ID']:$data['name']),"windows-1252").'</b>',
-                           $data['device'],
-                           $data['mountpoint'],
-                           Html::clean(Dropdown::getDropdownName('glpi_filesystems',$data["filesystems_id"])),
-                           Html::clean(Html::formatNumber($data['totalsize'], false, 0))." ".$LANG['common'][82],
-                           Html::clean(Html::formatNumber($data['freesize'], false, 0))." ".$LANG['common'][82]);
-      }
-   } else {
-      $pdf->displayTitle("<b>".$LANG['computers'][8] . " - " . $LANG['search'][15]."</b>");
-   }
-   $pdf->displaySpace();
-}
-
-
 function plugin_pdf_vm(PluginPdfSimplePDF $pdf, Computer $item) {
    global $DB, $LANG;
 
@@ -2819,9 +2487,6 @@ function plugin_pdf_general(CommonDBTM $item, $tab_id, $tab, $page=0, $render=tr
                      plugin_pdf_history($pdf, $item);
                      break;
 
-                  case 20 :
-                     plugin_pdf_volume($pdf, $item);
-                     break;
 
                   case 21 :
                      plugin_pdf_vm($pdf, $item);
@@ -3199,19 +2864,6 @@ function plugin_pdf_general(CommonDBTM $item, $tab_id, $tab, $page=0, $render=tr
             }
             break;
 
-         case 'KnowbaseItem' :
-            plugin_pdf_main_knowbaseitem($pdf, $item);
-            foreach ($tab as $i) {
-               switch ($i) {
-                  case 1 :
-                     plugin_pdf_document($pdf, $item);
-                     break;
-
-                  default :
-                     plugin_pdf_pluginhook($i, $pdf, $item);
-               }
-            }
-            break;
       } // Switch type
    } // Each ID
 
