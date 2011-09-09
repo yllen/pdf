@@ -39,7 +39,6 @@ include (GLPI_ROOT."/inc/includes.php");
 Plugin::load('pdf', true);
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
-Toolbox::logDebug("Export", $_REQUEST);
 if (isset($_POST["plugin_pdf_inventory_type"])
     && class_exists($_POST["plugin_pdf_inventory_type"])
     && isset($_POST["itemID"])) {

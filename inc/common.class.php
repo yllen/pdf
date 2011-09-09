@@ -36,7 +36,10 @@ abstract class PluginPdfCommon {
 
    protected $obj= NULL;
 
-   abstract function __construct();
+   /**
+    * Constructor, should intialize $this->obj property
+   **/
+   abstract function __construct(CommonGLPI $obj=NULL);
 
    /**
     * Add standard define tab
@@ -47,7 +50,7 @@ abstract class PluginPdfCommon {
     *
     *  @return nothing (set the tab array)
    **/
-   function addStandardTab($itemtype, &$ong, $options) {
+   final function addStandardTab($itemtype, &$ong, $options) {
       global $LANG;
 
       $withtemplate = 0;
@@ -55,7 +58,9 @@ abstract class PluginPdfCommon {
          $withtemplate = $options['withtemplate'];
       }
 
-      if (!is_integer($itemtype) && class_exists($itemtype)) {
+      if (!is_integer($itemtype)
+          && !preg_match('/^PluginPdf/', $itemtype)
+          && class_exists($itemtype)) {
          $obj = new $itemtype();
          if (method_exists($itemtype, "displayTabContentForPDF")) {
             $titles = $obj->getTabNameForItem($this->obj, $withtemplate);
@@ -73,6 +78,13 @@ abstract class PluginPdfCommon {
    }
 
 
+   /**
+    * Get the list of the printable tab for the object
+    * Can be overriden to remove some unwanted tab
+    *
+    * @param $options Array of options
+    *
+    */
    function defineAllTabs($options=array()) {
       global $LANG;
 
@@ -80,9 +92,10 @@ abstract class PluginPdfCommon {
          array('_main_' => $this->obj->getTypeName(1)),
          $this->obj->defineTabs());
 
+      $othertabs = CommonGLPI::getOtherTabs($this->obj->getType());
+
       unset($onglets['empty']);
 
-      $othertabs = CommonGLPI::getOtherTabs($this->obj->getType());
       // Add plugins TAB
       foreach($othertabs as $typetab) {
          $this->addStandardTab($typetab, $onglets, $options);
@@ -92,6 +105,19 @@ abstract class PluginPdfCommon {
    }
 
 
+   /**
+    * Get Tab Name used for itemtype
+    *
+    * NB : Only called for existing object
+    *      Must check right on what will be displayed + template
+    *
+    * @since version 0.83
+    *
+    * @param $item         CommonDBTM object for which the tab need to be displayed
+    * @param $withtemplate boolean is a template object ?
+    *
+    *  @return string tab name
+   **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
       global $LANG;
 
@@ -99,11 +125,33 @@ abstract class PluginPdfCommon {
    }
 
 
+   /**
+    * export Tab content
+    *
+    * @since version 0.83
+    *
+    * @param $pdf   PluginPdfSimplePDF object for output
+    * @param $item  CommonGLPI object for which the tab need to be displayed
+    * @param $tab   string tab number
+    *
+    * @return true
+   **/
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
       return false;
    }
 
 
+   /**
+    * show Tab content
+    *
+    * @since version 0.83
+    *
+    * @param $item         CommonGLPI object for which the tab need to be displayed
+    * @param $tabnum       integer tab number
+    * @param $withtemplate boolean is a template object ?
+    *
+    * @return true
+   **/
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
       global $CFG_GLPI;
 
@@ -114,7 +162,12 @@ abstract class PluginPdfCommon {
    }
 
 
-   function addHeader($ID) {
+   /**
+    * Read the object and create header for all pages
+    *
+    * @param $ID integer, ID of the object to print
+   **/
+   private function addHeader($ID) {
       global $LANG;
 
       $entity = '';
@@ -138,8 +191,17 @@ abstract class PluginPdfCommon {
    }
 
 
-   function generatePDF($tab_id, $tabs, $page=0, $render=true) {
-      Toolbox::logDebug("generatePDF", $tabs);
+   /**
+    * Generate the PDF for some object
+    *
+    * @param $tab_id  Array   of ID of object to print
+    * @param $tabs    Array   of name of tab to print
+    * @param $page    Integer 1 for landscape, 0 for portrait
+    * @param $render  Boolean send result if true,  return result if false
+    *
+    * @return pdf output if $render is false
+   **/
+   final function generatePDF($tab_id, $tabs, $page=0, $render=true) {
 
       $this->pdf = new PluginPdfSimplePDF('a4', ($page ? 'landscape' : 'portrait'));
 

@@ -192,7 +192,6 @@ class PluginPdfComputer extends PluginPdfCommon {
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
-Toolbox::logDebug("displayTabContentForPDF", $item->getType(), $tab);
       switch ($tab) {
          case '_main_' :
             self::pdfMain($pdf, $item);
@@ -208,6 +207,26 @@ Toolbox::logDebug("displayTabContentForPDF", $item->getType(), $tab);
 
          case 'Computer_SoftwareVersion####1' :
             PluginPdfComputer_SoftwareVersion::pdfForComputer($pdf, $item);
+            break;
+
+         case 'Computer_Item####1' :
+            PluginPdfComputer_Item::pdfForComputer($pdf, $item);
+            break;
+
+         case 'NetworkPort####1' :
+            PluginPdfNetworkPort::pdfForItem($pdf, $item);
+            break;
+
+         case 'Infocom####1' :
+            PluginPdfInfocom::pdfForItem($pdf, $item);
+            break;
+
+         case 'Contract_Item####1' :
+            PluginPdfContract_Item::pdfForItem($pdf, $item);
+            break;
+
+         case 'Document####1' :
+            PluginPdfDocument::pdfForItem($pdf, $item);
             break;
 
          default :

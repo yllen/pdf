@@ -33,8 +33,6 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-include_once (GLPI_ROOT . '/plugins/pdf/inc/functions.php');
-
 
 function plugin_pdf_postinit() {
    global $CFG_GLPI, $PLUGIN_HOOKS;
