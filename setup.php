@@ -47,11 +47,11 @@ function plugin_init_pdf() {
       $PLUGIN_HOOKS['use_massive_action']['pdf']   = 1;
 
 
-      // Define the type for which we know how to generate PDF, need :
+      // Define the type for which we know how to generate PDF :
       $PLUGIN_HOOKS['plugin_pdf']['Computer']         = 'PluginPdfComputer';
       $PLUGIN_HOOKS['plugin_pdf']['KnowbaseItem']     = 'PluginPdfKnowbaseItem';
+      $PLUGIN_HOOKS['plugin_pdf']['Monitor']          = 'PluginPdfMonitor';
       /*
-      $PLUGIN_HOOKS['plugin_pdf']['Monitor']          = 'pdf';
       $PLUGIN_HOOKS['plugin_pdf']['NetworkEquipment'] = 'pdf';
       $PLUGIN_HOOKS['plugin_pdf']['Peripheral']       = 'pdf';
       $PLUGIN_HOOKS['plugin_pdf']['Phone']            = 'pdf';

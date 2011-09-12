@@ -41,12 +41,12 @@ $LANG['plugin_pdf']['button'][2] = "Sauvegarder";
 $LANG['plugin_pdf']['knowbase'][1]   = "Pas de question trouvée";
 $LANG['plugin_pdf']['knowbase'][2]   = "Pas de reponse trouvée";
 
-$LANG['plugin_pdf']['note'][1]   = "Pas de notes trouvées";
+$LANG['plugin_pdf']['note'][1]   = "Pas de note trouvée";
 
-$LANG['plugin_pdf']['document'][1]  = "Pas de documents associés";
+$LANG['plugin_pdf']['document'][1]  = "Pas de document associé";
 
-$LANG['plugin_pdf']['financial'][1] = "Pas d'informations financières";
-$LANG['plugin_pdf']['financial'][2] = "Pas de contrats associés";
+$LANG['plugin_pdf']['financial'][1] = "Pas d'information financière";
+$LANG['plugin_pdf']['financial'][2] = "Pas de contrat associé";
 
 $LANG['plugin_pdf']['software'][1]  = "Pas de logiciel installé";
 

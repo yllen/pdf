@@ -124,4 +124,61 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
       } // each type
       $pdf->displaySpace();
    }
+
+
+   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
+      global $DB,$LANG;
+
+      $ID = $item->getField('id');
+      $type = $item->getType();
+
+      $info = new InfoCom();
+      $comp = new Computer();
+
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
+
+      $query = "SELECT *
+                FROM `glpi_computers_items`
+                WHERE `items_id` = '$ID'
+                      AND `itemtype` = '$type'";
+
+      if ($result = $DB->query($query)) {
+         $resultnum = $DB->numrows($result);
+         if ($resultnum > 0) {
+            for ($j=0 ; $j < $resultnum ; $j++) {
+               $tID = $DB->result($result, $j, "computers_id");
+               $connID = $DB->result($result, $j, "id");
+               $comp->getFromDB($tID);
+               $info->getFromDBforDevice('Computer',$tID) || $info->getEmpty();
+
+               $line1 = ($comp->fields['name']?$comp->fields['name']:"(".$comp->fields['id'].")")." - ";
+               if ($comp->fields['serial']) {
+                  $line1 .= $LANG["common"][19] . " : " .$comp->fields['serial']." - ";
+               }
+               $line1 .= Html::clean(Dropdown::getDropdownName("glpi_states",$comp->fields['states_id']));
+
+               $line2 = "";
+               if ($comp->fields['otherserial']) {
+                  $line2 .= $LANG["common"][20] . " : " .$comp->fields['otherserial']." - ";
+               }
+               if ($info->fields['immo_number']) {
+                  if ($line2) {
+                     $line2 .= " - ";
+                  }
+                  $line2 .= $LANG["financial"][20] . " : " . $info->fields['immo_number'];
+               }
+               if ($line2) {
+                  $pdf->displayText('<b>'.$LANG['help'][25].' : </b>', $line1 . "\n" . $line2, 2);
+               } else {
+                  $pdf->displayText('<b>'.$LANG['help'][25].' : </b>', $line1, 1);
+               }
+            }// each device   of current type
+
+         } else { // No row
+            $pdf->displayLine($LANG['connect'][1]);
+         } // No row
+      } // Result
+      $pdf->displaySpace();
+   }
 }

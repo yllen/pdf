@@ -622,85 +622,6 @@ function plugin_pdf_main_printer(PluginPdfSimplePDF $pdf, Printer $printer) {
 }
 
 
-function plugin_pdf_main_monitor(PluginPdfSimplePDF $pdf, Monitor $item) {
-   global $LANG;
-
-   $ID = $item->getField('id');
-
-   $pdf->setColumnsSize(50,50);
-   $col1 = '<b>'.$LANG['common'][2].' '.$item->fields['id'].'</b>';
-   $col2 = $LANG['common'][26].' : '.Html::convDateTime($item->fields['date_mod']);
-
-   if (!empty($printer->fields['template_name'])) {
-      $col2 .= ' ('.$LANG['common'][13].' : '.$item->fields['template_name'].')';
-   }
-   $pdf->displayTitle($col1, $col2);
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][16].' :</i></b> '.$item->fields['name'],
-      '<b><i>'.$LANG['state'][0].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_states', $item->fields['states_id'])));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][15].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_locations', $item->fields['locations_id'])),
-      '<b><i>'.$LANG['common'][17].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_monitortypes',
-                                                 $item->fields['monitortypes_id'])));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($item->fields['users_id_tech']),
-      '<b><i>'.$LANG['common'][5].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                                 $item->fields['manufacturers_id'])));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][21].' :</i></b> '.$item->fields['contact_num'],
-      '<b><i>'.$LANG['common'][22].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_monitormodels',
-                                                 $item->fields['monitormodels_id'])));
-
-   $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$item->fields['contact'],
-                     '<b><i>'.$LANG['common'][19].' :</i></b> '.$item->fields['serial']);
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($item->fields['users_id']),
-      '<b><i>'.$LANG['common'][20].' :</i></b> '.$item->fields['otherserial']);
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][35].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
-      '<b><i>'.$LANG['peripherals'][33].' :</i></b> '.
-            ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
-
-   $pdf->displayLine( '<b><i>'.$LANG['monitors'][21].' :</i></b> '.$item->fields['size']);
-
-
-   $opts = array(
-      'have_micro'         => $LANG['monitors'][14],
-      'have_speaker'       => $LANG['monitors'][15],
-      'have_subd'          => $LANG['monitors'][19],
-      'have_bnc'           => $LANG['monitors'][20],
-      'have_dvi'           => $LANG['monitors'][32],
-      'have_pivot'         => $LANG['monitors'][33],
-      'have_hdmi'          => $LANG['monitors'][34],
-      'have_displayport'   => $LANG['monitors'][31],
-   );
-   foreach ($opts as $key => $val) {
-      if (!$item->fields[$key]) {
-         unset($opts[$key]);
-      }
-   }
-   $pdf->setColumnsSize(100);
-   $pdf->displayLine(
-      '<b><i>'.$LANG['monitors'][18].' : </i></b>'.
-         (count($opts) ? implode(', ',$opts) : $LANG['job'][32]));
-
-   $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $item->fields['comment']);
-
-   $pdf->displaySpace();
-}
-
 
 function plugin_pdf_main_network(PluginPdfSimplePDF $pdf, NetworkEquipment $item) {
    global $LANG;
@@ -1577,75 +1498,6 @@ function plugin_pdf_installations(PluginPdfSimplePDF $pdf, CommonDBTM $item){
 
 
 
-function plugin_pdf_device_connection(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-   global $DB,$LANG;
-
-   $ID = $item->getField('id');
-   $type = $item->getType();
-
-   $info = new InfoCom();
-   $comp = new Computer();
-
-   $pdf->setColumnsSize(100);
-   $pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
-
-   $query = "SELECT *
-             FROM `glpi_computers_items`
-             WHERE `items_id` = '$ID'
-                   AND `itemtype` = '$type'";
-
-   if ($result = $DB->query($query)) {
-      $resultnum = $DB->numrows($result);
-      if ($resultnum > 0) {
-         for ($j=0 ; $j < $resultnum ; $j++) {
-            $tID = $DB->result($result, $j, "computers_id");
-            $connID = $DB->result($result, $j, "id");
-            $comp->getFromDB($tID);
-            $info->getFromDBforDevice('Computer',$tID) || $info->getEmpty();
-
-            $line1 = ($comp->fields['name']?$comp->fields['name']:"(".$comp->fields['id'].")")." - ";
-            if ($comp->fields['serial']) {
-               $line1 .= $LANG["common"][19] . " : " .$comp->fields['serial']." - ";
-            }
-            $line1 .= Html::clean(Dropdown::getDropdownName("glpi_states",$comp->fields['states_id']));
-
-            $line2 = "";
-            if ($comp->fields['otherserial']) {
-               $line2 .= $LANG["common"][20] . " : " .$comp->fields['otherserial']." - ";
-            }
-            if ($info->fields['immo_number']) {
-               if ($line2) {
-                  $line2 .= " - ";
-               }
-               $line2 .= $LANG["financial"][20] . " : " . $info->fields['immo_number'];
-            }
-            if ($line2) {
-               $pdf->displayText('<b>'.$LANG['help'][25].' : </b>', $line1 . "\n" . $line2, 2);
-            } else {
-               $pdf->displayText('<b>'.$LANG['help'][25].' : </b>', $line1, 1);
-            }
-         }// each device	of current type
-
-      } else { // No row
-         $pdf->displayLine($LANG['connect'][1]);
-      } // No row
-   } // Result
-   $pdf->displaySpace();
-}
-
-
-
-
-
-
-function plugin_pdf_oldticket(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
-   // Deprecated function, just for some plugins
-}
-
-
-
-
-
 function plugin_pdf_pluginhook($onglet, PluginPdfSimplePDF $pdf, CommonDBTM $item) {
    global $PLUGIN_HOOKS;
 
@@ -1686,66 +1538,6 @@ function plugin_pdf_general(CommonDBTM $item, $tab_id, $tab, $page=0, $render=tr
       }
 
       switch (get_class($item)) {
-         case 'Computer' :
-            plugin_pdf_main_computer($pdf, $item);
-            foreach ($tab as $i) {
-               switch($i) { // See Computer::defineTabs();
-                  case 4 :
-                     plugin_pdf_financial($pdf, $item);
-                     plugin_pdf_contract ($pdf, $item);
-                     break;
-
-                  case 3 :
-                     plugin_pdf_computer_connection($pdf, $item);
-                     plugin_pdf_port($pdf, $item);
-                     break;
-
-                  case 1 :
-                     plugin_pdf_device($pdf, $item);
-                     break;
-
-                  case 2 :
-                     plugin_pdf_software($pdf, $item);
-                     break;
-
-                  case 6 :
-                     plugin_pdf_ticket($pdf, $item);
-                     break;
-
-                  case 5 :
-                     plugin_pdf_document($pdf, $item);
-                     break;
-
-                  case 14 :
-                     plugin_pdf_registry($pdf, $item);
-                     break;
-
-                  case 7 :
-                     plugin_pdf_link($pdf, $item);
-                     break;
-
-                  case 10 :
-                     plugin_pdf_note($pdf, $item);
-                     break;
-
-                  case 11 :
-                     plugin_pdf_reservation($pdf, $item);
-                     break;
-
-                  case 12 :
-                     plugin_pdf_history($pdf, $item);
-                     break;
-
-
-                  case 21 :
-                     plugin_pdf_vm($pdf, $item);
-                     break;
-
-                  default :
-                     plugin_pdf_pluginhook($i, $pdf, $item);
-               }
-            }
-            break;
 
          case 'Printer' :
             plugin_pdf_main_printer($pdf, $item);
@@ -1759,49 +1551,6 @@ function plugin_pdf_general(CommonDBTM $item, $tab_id, $tab, $page=0, $render=tr
                   case 3 :
                      plugin_pdf_device_connection($pdf, $item);
                      plugin_pdf_port($pdf, $item);
-                     break;
-
-                  case 4 :
-                     plugin_pdf_financial($pdf, $item);
-                     plugin_pdf_contract ($pdf, $item);
-                     break;
-
-                  case 5 :
-                     plugin_pdf_document($pdf, $item);
-                     break;
-
-                  case 6 :
-                     plugin_pdf_ticket($pdf, $item);
-                     break;
-
-                  case 7 :
-                     plugin_pdf_link($pdf, $item);
-                     break;
-
-                  case 10 :
-                     plugin_pdf_note($pdf, $item);
-                     break;
-
-                  case 11 :
-                     plugin_pdf_reservation($pdf, $item);
-                     break;
-
-                  case 12 :
-                     plugin_pdf_history($pdf, $item);
-                     break;
-
-                  default :
-                     plugin_pdf_pluginhook($i, $pdf, $item);
-               }
-            }
-            break;
-
-         case 'Monitor' :
-            plugin_pdf_main_monitor($pdf, $item);
-            foreach ($tab as $i) {
-               switch ($i) { // See Monitor::defineTabs();
-                  case 1 :
-                     plugin_pdf_device_connection($pdf, $item);
                      break;
 
                   case 4 :
