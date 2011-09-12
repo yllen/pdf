@@ -51,11 +51,11 @@ function plugin_init_pdf() {
       $PLUGIN_HOOKS['plugin_pdf']['Computer']         = 'PluginPdfComputer';
       $PLUGIN_HOOKS['plugin_pdf']['KnowbaseItem']     = 'PluginPdfKnowbaseItem';
       $PLUGIN_HOOKS['plugin_pdf']['Monitor']          = 'PluginPdfMonitor';
+      $PLUGIN_HOOKS['plugin_pdf']['NetworkEquipment'] = 'PluginPdfNetworkEquipment';
       $PLUGIN_HOOKS['plugin_pdf']['Peripheral']       = 'PluginPdfPeripheral';
       $PLUGIN_HOOKS['plugin_pdf']['Phone']            = 'PluginPdfPhone';
       $PLUGIN_HOOKS['plugin_pdf']['Printer']          = 'PluginPdfPrinter';
       /*
-      $PLUGIN_HOOKS['plugin_pdf']['NetworkEquipment'] = 'pdf';
       $PLUGIN_HOOKS['plugin_pdf']['Software']         = 'pdf';
       $PLUGIN_HOOKS['plugin_pdf']['SoftwareLicense']  = 'pdf';
       $PLUGIN_HOOKS['plugin_pdf']['SoftwareVersion']  = 'pdf';
