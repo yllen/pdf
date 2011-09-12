@@ -55,10 +55,10 @@ function plugin_init_pdf() {
       $PLUGIN_HOOKS['plugin_pdf']['Peripheral']       = 'PluginPdfPeripheral';
       $PLUGIN_HOOKS['plugin_pdf']['Phone']            = 'PluginPdfPhone';
       $PLUGIN_HOOKS['plugin_pdf']['Printer']          = 'PluginPdfPrinter';
+      $PLUGIN_HOOKS['plugin_pdf']['Software']         = 'PluginPdfSoftware';
+      $PLUGIN_HOOKS['plugin_pdf']['SoftwareLicense']  = 'PluginPdfSoftwareLicense';
+      $PLUGIN_HOOKS['plugin_pdf']['SoftwareVersion']  = 'PluginPdfSoftwareVersion';
       /*
-      $PLUGIN_HOOKS['plugin_pdf']['Software']         = 'pdf';
-      $PLUGIN_HOOKS['plugin_pdf']['SoftwareLicense']  = 'pdf';
-      $PLUGIN_HOOKS['plugin_pdf']['SoftwareVersion']  = 'pdf';
       $PLUGIN_HOOKS['plugin_pdf']['Ticket']           = 'pdf';
       */
       // End init, when all types are registered by all plugins
