@@ -766,65 +766,6 @@ function plugin_pdf_main_phone(PluginPdfSimplePDF $pdf, Phone $item) {
 }
 
 
-function plugin_pdf_main_peripheral(PluginPdfSimplePDF $pdf, Peripheral $item) {
-   global $LANG;
-
-   $ID = $item->getField('id');
-
-   $pdf->setColumnsSize(50,50);
-   $col1 = '<b>'.$LANG['common'][2].' '.$item->fields['id'].'</b>';
-   $col2 = $LANG['common'][26].' : '.Html::convDateTime($item->fields['date_mod']);
-
-   if (!empty($printer->fields['template_name'])) {
-      $col2 .= ' ('.$LANG['common'][13].' : '.$item->fields['template_name'].')';
-   }
-   $pdf->displayTitle($col1, $col2);
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][16].' :</i></b> '.$item->fields['name'],
-      '<b><i>'.$LANG['state'][0].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_states', $item->fields['states_id'])));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][15].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_locations', $item->fields['locations_id'])),
-      '<b><i>'.$LANG['common'][17].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_peripheraltypes',
-                                              $item->fields['peripheraltypes_id'])));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($item->fields['users_id_tech']),
-      '<b><i>'.$LANG['common'][5].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                              $item->fields['manufacturers_id'])));
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][21].' :</i></b> '.$item->fields['contact_num'],
-      '<b><i>'.$LANG['common'][22].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_peripheralmodels',
-                                              $item->fields['peripheralmodels_id'])));
-
-   $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$item->fields['contact'],
-                     '<b><i>'.$LANG['common'][19].' :</i></b> '.$item->fields['serial']);
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($item->fields['users_id']),
-      '<b><i>'.$LANG['common'][20].' :</i></b> '.$item->fields['otherserial']);
-
-   $pdf->displayLine(
-      '<b><i>'.$LANG['common'][35].' :</i></b> '.
-         Html::clean(Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
-      '<b><i>'.$LANG['peripherals'][33].' :</i></b> '.
-         ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
-
-   $pdf->setColumnsSize(100);
-   $pdf->displayLine('<b><i>'.$LANG['peripherals'][18].' :</i></b> '.$item->fields['brand']);
-
-   $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $item->fields['comment']);
-
-   $pdf->displaySpace();
-}
-
 
 function plugin_pdf_cartridges(PluginPdfSimplePDF $pdf, Printer $p, $old=false) {
    global $DB,$CFG_GLPI, $LANG;
@@ -1549,50 +1490,6 @@ function plugin_pdf_general(CommonDBTM $item, $tab_id, $tab, $page=0, $render=tr
                      break;
 
                   case 3 :
-                     plugin_pdf_device_connection($pdf, $item);
-                     plugin_pdf_port($pdf, $item);
-                     break;
-
-                  case 4 :
-                     plugin_pdf_financial($pdf, $item);
-                     plugin_pdf_contract ($pdf, $item);
-                     break;
-
-                  case 5 :
-                     plugin_pdf_document($pdf, $item);
-                     break;
-
-                  case 6 :
-                     plugin_pdf_ticket($pdf, $item);
-                     break;
-
-                  case 7 :
-                     plugin_pdf_link($pdf, $item);
-                     break;
-
-                  case 10 :
-                     plugin_pdf_note($pdf, $item);
-                     break;
-
-                  case 11 :
-                     plugin_pdf_reservation($pdf, $item);
-                     break;
-
-                  case 12 :
-                     plugin_pdf_history($pdf, $item);
-                     break;
-
-                  default :
-                     plugin_pdf_pluginhook($i, $pdf, $item);
-               }
-            }
-            break;
-
-         case 'Peripheral' :
-            plugin_pdf_main_peripheral($pdf, $item);
-            foreach ($tab as $i) {
-               switch ($i) { // See Peripheral::defineTabs();
-                  case 1 :
                      plugin_pdf_device_connection($pdf, $item);
                      plugin_pdf_port($pdf, $item);
                      break;
