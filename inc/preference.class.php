@@ -69,13 +69,18 @@ class PluginPdfPreference extends CommonDBTM {
       $type = $item->getType();
 
       // $ID set if current object, not set from preference
-      $ID = (isset($item->fields['id']) ? $item->fields['id'] : 0);
+      if (isset($item->fields['id'])) {
+         $ID = $item->fields['id'];
+      } else {
+         $ID = 0;
+         $item->getEmpty();
+      }
 
       if (!isset($PLUGIN_HOOKS['plugin_pdf'][$type])
           || !class_exists($PLUGIN_HOOKS['plugin_pdf'][$type])) {
          return;
       }
-      $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$type]();
+      $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$type]($item);
       $options = $itempdf->defineAllTabs();
 
       $formid="plugin_pdf_${type}_".mt_rand();

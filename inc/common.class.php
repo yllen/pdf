@@ -219,7 +219,7 @@ abstract class PluginPdfCommon {
       global $CFG_GLPI;
 
       $pref = new PluginPdfPreference;
-      $pref->menu($item,$CFG_GLPI['root_doc']."/plugins/pdf/front/export.php");
+      $pref->menu($item, $CFG_GLPI['root_doc']."/plugins/pdf/front/export.php");
 
       return true;
    }
