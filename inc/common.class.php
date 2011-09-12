@@ -297,7 +297,18 @@ abstract class PluginPdfCommon {
          foreach ($tabs as $tab) {
             if (!$this->displayTabContentForPDF($this->pdf, $this->obj, $tab)
                 && !$this->displayCommonTabForPDF($this->pdf, $this->obj, $tab)) {
+               $data     = explode('####',$tab);
+               $itemtype = $data[0];
+               // Default set
+               $tabnum   = (isset($data[1]) ? $data[1] : 1);
 
+               if (!is_integer($itemtype) && $itemtype!='empty' && class_exists($itemtype)) {
+                  $obj = new $itemtype();
+                  if ($obj->displayTabContentForPdf($this->pdf, $this->obj, $tabnum)) {
+                     continue;
+                  }
+               }
+               Toolbox::logInFile('php-errors', "PDF: don't know how to display '$tab' tab\n");
             }
          }
       }
