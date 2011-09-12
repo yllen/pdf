@@ -59,10 +59,10 @@ abstract class PluginPdfCommon {
       }
 
       if (!is_integer($itemtype)
-          && !preg_match('/^PluginPdf/', $itemtype)
           && class_exists($itemtype)) {
          $obj = new $itemtype();
-         if (method_exists($itemtype, "displayTabContentForPDF")) {
+         if (method_exists($itemtype, "displayTabContentForPDF")
+             && !($obj instanceof PluginPdfCommon)) {
             $titles = $obj->getTabNameForItem($this->obj, $withtemplate);
             if (!is_array($titles)) {
                $titles = array(1 => $titles);
