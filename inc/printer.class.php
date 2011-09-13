@@ -73,34 +73,38 @@ class PluginPdfPrinter extends PluginPdfCommon {
                                                  $printer->fields['manufacturers_id'])));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][21].' :</i></b> '.$printer->fields['contact_num'],
+         '<b><i>'.$LANG['common'][109].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_groups', $printer->fields['groups_id_tech'])),
          '<b><i>'.$LANG['common'][22].' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_printermodels',
                                                  $printer->fields['printermodels_id'])));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][18].' :</i></b> '.$printer->fields['contact'],
+         '<b><i>'.$LANG['common'][21].' :</i></b> '.$printer->fields['contact_num'],
          '<b><i>'.$LANG['common'][19].' :</i></b> '.$printer->fields['serial']);
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($printer->fields['users_id']),
+         '<b><i>'.$LANG['common'][18].' :</i></b> '.$printer->fields['contact'],
          '<b><i>'.$LANG['common'][20].' :</i></b> '.$printer->fields['otherserial']);
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][35].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_groups', $printer->fields['groups_id'])),
+         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($printer->fields['users_id']),
          '<b><i>'.$LANG['peripherals'][33].' :</i></b> '.
             ($printer->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['setup'][89].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_domains', $printer->fields['domains_id'])),
+         '<b><i>'.$LANG['common'][35].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_groups', $printer->fields['groups_id'])),
         '<b><i>'.$LANG['setup'][88].' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_networks', $printer->fields['networks_id'])));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['devices'][6].' :</i></b> '.$printer->fields['memory_size'],
+         '<b><i>'.$LANG['setup'][89].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_domains', $printer->fields['domains_id'])),
          '<b><i>'.$LANG['printers'][30].' :</i></b> '.$printer->fields['init_pages_counter']);
+
+      $pdf->displayLine(
+         '<b><i>'.$LANG['devices'][6].' :</i></b> '.$printer->fields['memory_size']);
 
       $opts = array(
          'have_serial'   => $LANG['printers'][14],
@@ -116,7 +120,8 @@ class PluginPdfPrinter extends PluginPdfCommon {
       }
 
       $pdf->setColumnsSize(100);
-      $pdf->displayLine('<b><i>'.$LANG['printers'][18].' : </i></b>'.implode(', ',$opts));
+      $pdf->displayLine('<b><i>'.$LANG['printers'][18].' : </i></b>'.
+                        (count($opts) ? implode(', ',$opts) : $LANG['common'][49]));
 
       $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $printer->fields['comment']);
 
