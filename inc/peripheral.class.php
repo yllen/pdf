@@ -75,6 +75,11 @@ class PluginPdfPeripheral extends PluginPdfCommon {
                                                  $item->fields['manufacturers_id'])));
 
       $pdf->displayLine(
+         '<b><i>'.$LANG['common'][109].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id_tech'])),
+         '<b><i>'.$LANG['peripherals'][18].' :</i></b> '.$item->fields['brand']);
+
+      $pdf->displayLine(
          '<b><i>'.$LANG['common'][21].' :</i></b> '.$item->fields['contact_num'],
          '<b><i>'.$LANG['common'][22].' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_peripheralmodels',
@@ -94,8 +99,6 @@ class PluginPdfPeripheral extends PluginPdfCommon {
             ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 
       $pdf->setColumnsSize(100);
-      $pdf->displayLine('<b><i>'.$LANG['peripherals'][18].' :</i></b> '.$item->fields['brand']);
-
       $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $item->fields['comment']);
 
       $pdf->displaySpace();
