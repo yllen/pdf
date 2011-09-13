@@ -71,35 +71,37 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
                                                     $item->fields['manufacturers_id'])));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][21].' :</i></b> '.$item->fields['contact_num'],
+         '<b><i>'.$LANG['common'][109].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id_tech'])),
          '<b><i>'.$LANG['common'][22].' :</i></b> '.
                Html::clean(Dropdown::getDropdownName('glpi_networkequipmentmodels',
                                                     $item->fields['networkequipmentmodels_id'])));
 
-      $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$item->fields['contact'],
+      $pdf->displayLine(
+         '<b><i>'.$LANG['common'][21].' :</i></b> '.$item->fields['contact_num'],
                         '<b><i>'.$LANG['common'][19].' :</i></b> '.$item->fields['serial']);
 
-      $pdf->displayLine(
-         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($item->fields['users_id']),
+      $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$item->fields['contact'],
          '<b><i>'.$LANG['common'][20].' :</i></b> '.$item->fields['otherserial']);
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][35].' :</i></b> '.
-               Html::clean(Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
+         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($item->fields['users_id']),
          '<b><i>'.$LANG['setup'][88].' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_networks', $item->fields['networks_id'])));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['setup'][89].' :</i></b> '.
-               Html::clean(Dropdown::getDropdownName('glpi_domains', $item->fields['domains_id'])),
+         '<b><i>'.$LANG['common'][35].' :</i></b> '.
+               Html::clean(Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
          '<b><i>'.$LANG['setup'][71].' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_networkequipmentfirmwares', $item->fields['networkequipmentfirmwares_id'])));
 
-      $pdf->displayLine('<b><i>'.$LANG['networking'][14].' :</i></b> '.$item->fields['ip'],
+      $pdf->displayLine(
+         '<b><i>'.$LANG['setup'][89].' :</i></b> '.
+               Html::clean(Dropdown::getDropdownName('glpi_domains', $item->fields['domains_id'])),
                         '<b><i>'.$LANG['networking'][5].' :</i></b> '.$item->fields['ram']);
 
-      $pdf->displayLine('<b><i>'.$LANG['networking'][15].' :</i></b> '.$item->fields['mac'],
-                        '');
+      $pdf->displayLine('<b><i>'.$LANG['networking'][14].' :</i></b> '.$item->fields['ip'],
+                        '<b><i>'.$LANG['networking'][15].' :</i></b> '.$item->fields['mac']);
 
       $pdf->setColumnsSize(100);
       $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $item->fields['comment']);
