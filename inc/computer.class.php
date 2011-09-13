@@ -50,7 +50,7 @@ class PluginPdfComputer extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Computer $computer){
-      global $LANG;
+      global $DB, $LANG;
 
       $ID = $computer->getField('id');
 
@@ -60,7 +60,7 @@ class PluginPdfComputer extends PluginPdfCommon {
       if(!empty($computer->fields['template_name'])) {
          $col2 .= ' ('.$LANG['common'][13].' : '.$computer->fields['template_name'].')';
       } else if($computer->fields['is_ocs_import']) {
-         $col2 = ' ('.$LANG['ocsng'][7].')';
+         $col2 .= ' ('.$LANG['ocsng'][7].')';
       }
       $pdf->displayTitle($col1, $col2);
 
@@ -83,55 +83,72 @@ class PluginPdfComputer extends PluginPdfCommon {
                                                  $computer->fields['manufacturers_id'])));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][21].' :</i></b> '.$computer->fields['contact_num'],
+         '<b><i>'.$LANG['common'][109].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_groups',$computer->fields['groups_id_tech'])),
          '<b><i>'.$LANG['common'][22].' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_computermodels',
                                                  $computer->fields['computermodels_id'])));
 
-      $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$computer->fields['contact'],
+      $pdf->displayLine(
+         '<b><i>'.$LANG['common'][21].' :</i></b> '.$computer->fields['contact_num'],
                         '<b><i>'.$LANG['common'][19].' :</i></b> '.$computer->fields['serial']);
 
-      $pdf->displayLine(
-         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($computer->fields['users_id']),
+      $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$computer->fields['contact'],
          '<b><i>'.$LANG['common'][20].' :</i></b> '.$computer->fields['otherserial']);
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][35].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_groups',$computer->fields['groups_id'])),
+         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($computer->fields['users_id']),
          '<b><i>'.$LANG['setup'][88].' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_networks', $computer->fields['networks_id'])));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['setup'][89].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_domains', $computer->fields['domains_id'])),
+         '<b><i>'.$LANG['common'][35].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_groups',$computer->fields['groups_id'])),
          '<b><i>'.$LANG['computers'][53].' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_operatingsystemservicepacks',
                                                  $computer->fields['operatingsystemservicepacks_id'])));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['computers'][9].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
-                                                 $computer->fields['operatingsystems_id'])),
+         '<b><i>'.$LANG['setup'][89].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_domains', $computer->fields['domains_id'])),
          '<b><i>'.$LANG['computers'][52].' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_operatingsystemversions',
                                                  $computer->fields['operatingsystemversions_id'])));
 
+      $pdf->displayLine(
+         '<b><i>'.$LANG['computers'][9].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
+                                                 $computer->fields['operatingsystems_id'])),
+         '<b><i>'.$LANG['computers'][10].' :</i></b> '.$computer->fields['os_license_number']);
+
 
       $pdf->displayLine(
          '<b><i>'.$LANG['computers'][11].' :</i></b> '.$computer->fields['os_licenseid'],
-         '<b><i>'.$LANG['computers'][10].' :</i></b> '.$computer->fields['os_license_number']);
-
-      if ($computer->fields['is_ocs_import']) {
-         $col1 = '<b><i>'.$LANG['ocsng'][6].' '.$LANG['ocsconfig'][0].' :</i></b> '.$LANG['choice'][1];
-      } else {
-         $col1 = '<b><i>'.$LANG['ocsng'][6].' '.$LANG['ocsconfig'][0].' :</i></b> '.$LANG['choice'][0];
-      }
-
-      $pdf->displayLine($col1,'<b><i>'.$LANG['computers'][51].' :</i></b> '.
+                        '<b><i>'.$LANG['computers'][51].' :</i></b> '.
          Html::clean(Dropdown::getDropdownName('glpi_autoupdatesystems',
                                               $computer->fields['autoupdatesystems_id'])));
 
       $pdf->setColumnsSize(100);
+      if ($computer->fields['is_ocs_import'] && Session::haveRight("view_ocsng","r")) {
+         $tmp = '';
+         $query = "SELECT *
+                   FROM `glpi_ocslinks`
+                   WHERE `computers_id` = '$ID'";
+
+         $result = $DB->query($query);
+         if ($DB->numrows($result)==1) {
+            $dataocs = $DB->fetch_array($result);
+            $tmp .= '<b>'.$LANG['ocsng'][14].'</b> : '.Html::convDateTime($dataocs["last_ocs_update"]).', ';
+            $tmp .= '<b>'.$LANG['ocsng'][13].'</b> : '.Html::convDateTime($dataocs["last_update"]).', ';
+         }
+
+         $tmp .= '<b>'.$LANG['ocsng'][6].'</b> : '.
+                 ($computer->getField('use_auto_update') ? $LANG['choice'][1] : $LANG['choice'][0]);
+
+         $pdf->displayText('<b>'.$LANG['ocsng'][0].'</b> : ', $tmp);
+      }
+
+
       $pdf->displayLine(
          '<b><i>'.$LANG['computers'][58].' :</i></b> '.$computer->fields['uuid']);
 
