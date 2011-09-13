@@ -73,7 +73,8 @@ class PluginPdfSoftware extends PluginPdfCommon {
             ($software->fields['is_helpdesk_visible']?$LANG['choice'][1]:$LANG['choice'][0]));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($software->fields['users_id']),
+         '<b><i>'.$LANG['common'][109].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_groups', $software->fields['groups_id_tech'])),
          '<b><i>'.$LANG['software'][29].' :</i></b> '.
             ($software->fields['is_update']?$LANG['choice'][1]:$LANG['choice'][0]), $col2);
 
@@ -85,9 +86,12 @@ class PluginPdfSoftware extends PluginPdfCommon {
          $col2 = '';
       }
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][35].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_groups', $software->fields['groups_id'])),
+         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($software->fields['users_id']),
          $col2);
+
+      $pdf->displayLine(
+         '<b><i>'.$LANG['common'][35].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_groups', $software->fields['groups_id'])));
 
 
       $pdf->setColumnsSize(100);
