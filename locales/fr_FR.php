@@ -54,4 +54,4 @@ $LANG['plugin_pdf']['ticket'][1]  = "Suivis";
 $LANG['plugin_pdf']['ticket'][2]  = "Tâches";
 $LANG['plugin_pdf']['ticket'][3]  = "ancien(s) ticket(s)";
 $LANG['plugin_pdf']['ticket'][4]  = "Pas d'ancien ticket";
-?>
+$LANG['plugin_pdf']['ticket'][5]  = "Pas de réponse à l'enquête";

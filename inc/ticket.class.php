@@ -39,6 +39,219 @@ class PluginPdfTicket extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new Ticket());
    }
 
+   static function pdfMain(PluginPdfSimplePDF $pdf, Ticket $job) {
+      global $LANG, $CFG_GLPI, $DB;
+
+      $ID = $job->getField('id');
+      if (!$job->can($ID, 'r')) {
+         return false;
+      }
+
+      $pdf->setColumnsSize(100);
+
+      $pdf->displayTitle('<b>'.
+               (empty($job->fields["name"])?$LANG['reminder'][15]:$name=$job->fields["name"]).'</b>');
+
+      if (count($_SESSION['glpiactiveentities'])>1) {
+         $entity = " (".Dropdown::getDropdownName("glpi_entities",$job->fields["entities_id"]).")";
+      } else {
+         $entity = '';
+      }
+
+      $pdf->setColumnsSize(50,50);
+      $recipient_name='';
+      if ($job->fields["users_id_recipient"]) {
+         $recipient = new User();
+         $recipient->getFromDB($job->fields["users_id_recipient"]);
+         $recipient_name = $recipient->getName();
+      }
+      $pdf->displayLine("<b><i>".$LANG['joblist'][11]."</i></b> : ".Html::convDateTime($job->fields["date"]).", ".
+                           '<b><i>'.$LANG['common'][95]."</i></b> : ".$recipient_name,
+                        $LANG['common'][26]." : ".Html::convDateTime($job->fields["date_mod"]));
+
+      $status = Html::clean($job->getStatus($job->fields["status"]));
+      switch ($job->getField('status')) {
+         case 'closed':
+            $status = $LANG['joblist'][12].' : '.Html::convDateTime($job->fields['closedate']);
+            break;
+
+         case 'solved':
+            $status = $LANG['joblist'][14].' : '.Html::convDateTime($job->fields['solvedate']);
+            break;
+
+         case 'waiting':
+            $status .= ' - '.$LANG['knowbase'][27].' : '.Html::convDateTime($job->fields['begin_waiting_date']);
+            break;
+      }
+      $sla = $due = '';
+      if ($job->fields["slas_id"]>0) {
+         $sla = "<b><i>".$LANG['sla'][1]." : </b></i>".
+                  Html::clean(Dropdown::getDropdownName("glpi_slas", $job->fields["slas_id"]));
+      }
+      if ($job->fields['due_date']) {
+         $due .= "<b><i>".$LANG['sla'][5]." : </b></i>".Html::convDateTime($job->fields['due_date']);
+      }
+
+      // status, due date
+      $pdf->displayLine(
+         "<b><i>".$LANG['joblist'][0]."</i></b> : $status", $due);
+
+      // Urgence, SLA
+      $pdf->displayLine(
+         "<b><i>".$LANG['joblist'][29]."</i></b> : ".
+               Html::clean($job->getUrgencyName($job->fields["urgency"])), $sla);
+
+      // Impact / Type
+      $pdf->displayLine(
+         "<b><i>".$LANG['joblist'][30]."</i></b> : ".
+               Html::clean($job->getImpactName($job->fields["impact"])),
+         "<b><i>".$LANG['common'][17]."</i></b> : ".
+               Html::clean(Ticket::getTicketTypeName($job->fields["type"])));
+
+      // Priority / Category
+      $pdf->displayLine(
+         "<b><i>".$LANG['joblist'][2]."</i></b> : ".
+               Html::clean($job->getPriorityName($job->fields["priority"])),
+         "<b><i>".$LANG['common'][36]."</i></b> : ".
+               Html::clean(Dropdown::getDropdownName("glpi_itilcategories",
+                                                    $job->fields["itilcategories_id"])));
+
+      // Source / Validation
+      $pdf->displayLine(
+         "<b><i>".$LANG['job'][44]."</i></b> : ".
+               Html::clean(Dropdown::getDropdownName('glpi_requesttypes',
+                                                    $job->fields['requesttypes_id'])),
+         "<b><i>".$LANG['validation'][0]."</i></b> : ".
+               Html::clean(TicketValidation::getStatus($job->fields['global_validation'])));
+
+      // Item
+      $serial_item = '';
+      $location_item = '';
+      $otherserial_item = '';
+
+      $pdf->setColumnsSize(100);
+      if ($job->fields["itemtype"] && class_exists($job->fields["itemtype"])) {
+         $item = new $job->fields["itemtype"]();
+         if ($item->getFromDB($job->fields["items_id"])) {
+            if (isset($item->fields["serial"])) {
+               $serial_item =
+                  ", <b><i>".$LANG['common'][19]."</i></b> : ".
+                                 Html::clean($item->fields["serial"]);
+            }
+            if (isset($item->fields["otherserial"])) {
+               $otherserial_item =
+                  ", <b><i>".$LANG['common'][20]."</i></b> : ".
+                                 Html::clean($item->fields["otherserial"]);
+            }
+            if (isset($item->fields["locations_id"])) {
+               $location_item =
+                  "\n<b><i>".$LANG['common'][15]."</i></b> : ".
+                     Html::clean(Dropdown::getDropdownName("glpi_locations",
+                                                          $item->fields["locations_id"]));
+            }
+         }
+         $pdf->displayText(
+            "<b><i>".$LANG['document'][14]."</i></b> : ",
+            Html::clean($item->getTypeName())." ".Html::clean($item->getNameID()).
+                  $serial_item . $otherserial_item . $location_item,
+            1);
+      } else {
+         $pdf->displayLine("<b><i>".$LANG['common'][1]."</i></b> : ".$LANG['help'][30]);
+      }
+
+      // Requester
+      $users = array();
+      foreach ($job->getUsers(Ticket::REQUESTER) as $d) {
+         if ($d['users_id']) {
+            $tmp = Html::clean(getUserName($d['users_id']));
+            if ($d['alternative_email']) {
+               $tmp .= ' ('.$d['alternative_email'].')';
+            }
+         } else {
+            $tmp = $d['alternative_email'];
+         }
+         $users[] = $tmp;
+      }
+      if (count($users)) {
+         $pdf->displayText('<b><i>'.$LANG['job'][4].'</i></b> : ', implode(', ', $users), 1);
+      }
+      $groups = array();
+      foreach ($job->getGroups(Ticket::REQUESTER) as $d) {
+         $groups[] = Html::clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+      }
+      if (count($groups)) {
+         $pdf->displayText('<b><i>'.$LANG['setup'][249].'</i></b> : ', implode(', ', $groups), 1);
+      }
+      // Observer
+      $users = array();
+      foreach ($job->getUsers(Ticket::OBSERVER) as $d) {
+         if ($d['users_id']) {
+            $tmp = Html::clean(getUserName($d['users_id']));
+            if ($d['alternative_email']) {
+               $tmp .= ' ('.$d['alternative_email'].')';
+            }
+         } else {
+            $tmp = $d['alternative_email'];
+         }
+         $users[] = $tmp;
+      }
+      if (count($users)) {
+         $pdf->displayText('<b><i>'.$LANG['common'][104].'</i></b> : ', implode(', ', $users), 1);
+      }
+      $groups = array();
+      foreach ($job->getGroups(Ticket::OBSERVER) as $d) {
+         $groups[] = Html::clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+      }
+      if (count($groups)) {
+         $pdf->displayText('<b><i>'.$LANG['setup'][251].'</i></b> : ', implode(', ', $groups), 1);
+      }
+      // Assign to
+      $users = array();
+      foreach ($job->getUsers(Ticket::ASSIGN) as $d) {
+         if ($d['users_id']) {
+            $tmp = Html::clean(getUserName($d['users_id']));
+            if ($d['alternative_email']) {
+               $tmp .= ' ('.$d['alternative_email'].')';
+            }
+         } else {
+            $tmp = $d['alternative_email'];
+         }
+         $users[] = $tmp;
+      }
+      if (count($users)) {
+         $pdf->displayText('<b><i>'.$LANG['job'][5].' ('.$LANG['job'][3].')</i></b> : ', implode(', ', $users), 1);
+      }
+      $groups = array();
+      foreach ($job->getGroups(Ticket::ASSIGN) as $d) {
+         $groups[] = Html::clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+      }
+      if (count($groups)) {
+         $pdf->displayText('<b><i>'.$LANG['job'][5].' ('.$LANG['Menu'][36].')</i></b> : ', implode(', ', $groups), 1);
+      }
+      if ($job->fields["suppliers_id_assign"]) {
+         $pdf->displayText('<b><i>'.$LANG['job'][5].' ('.$LANG['financial'][26].')</i></b> : ', implode(', ', $groups), 1);
+      }
+
+      // Linked tickets
+      $tickets   = Ticket_Ticket::getLinkedTicketsTo($ID);
+      if (is_array($tickets) && count($tickets)) {
+         $ticket = new Ticket();
+         foreach ($tickets as $linkID => $data) {
+            $tmp = Ticket_Ticket::getLinkName($data['link']).' '.$LANG['common'][2].' '.$data['tickets_id'].' : ';
+            if ($ticket->getFromDB($data['tickets_id'])) {
+               $tmp .= ' : '.$ticket->getName();
+            }
+            $jobs[] = $tmp;
+         }
+         $pdf->displayText('<b><i>'.$LANG['job'][55].'</i></b> : ', implode("\n", $jobs), 1);
+      }
+
+      // Description
+      $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", $job->fields['content']);
+      $pdf->displaySpace();
+   }
+
+
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
       global $DB,$CFG_GLPI, $LANG;
 
@@ -161,5 +374,158 @@ class PluginPdfTicket extends PluginPdfCommon {
          }
       }
       $pdf->displaySpace();
+   }
+
+
+   static function pdfCost(PluginPdfSimplePDF $pdf, Ticket $job) {
+      global $LANG, $CFG_GLPI, $DB;
+
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle("<b>".$LANG['job'][47]."</b>");
+
+      $pdf->setColumnsSize(20,20,20,20,20);
+      $pdf->displayTitle($LANG['job'][20],$LANG['job'][40], $LANG['job'][41],
+                         $LANG['job'][42], $LANG['job'][43]);
+      $pdf->setColumnsAlign('center','right','right','right','right');
+
+      $total = Ticket::trackingTotalCost($job->fields["actiontime"], $job->fields["cost_time"],
+                                         $job->fields["cost_fixed"], $job->fields["cost_material"]);
+
+      $pdf->displayLine(Html::clean(Ticket::getActionTime($job->fields["actiontime"])),
+                        Html::clean(Html::formatNumber($job->fields["cost_time"])),
+                        Html::clean(Html::formatNumber($job->fields["cost_fixed"])),
+                        Html::clean(Html::formatNumber($job->fields["cost_material"])),
+                        Html::clean(Html::formatNumber($total)));
+      $pdf->displaySpace();
+   }
+
+
+   static function pdfSolution(PluginPdfSimplePDF $pdf, Ticket $job) {
+      global $LANG, $CFG_GLPI, $DB;
+
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle("<b>".$LANG['jobresolution'][1]."</b>");
+
+      if ($job->fields['solutiontypes_id'] || !empty($job->fields['solution'])) {
+         if ($job->fields['solutiontypes_id']) {
+            $title = Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
+                                           $job->getField('solutiontypes_id')));
+         } else {
+            $title = $LANG['jobresolution'][1];
+         }
+         $sol = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
+                           html_entity_decode($job->getField('solution'),
+                                              ENT_QUOTES, "UTF-8")));
+         $pdf->displayText("<b><i>$title</i></b> : ", $sol);
+      } else {
+         $pdf->displayLine($LANG['job'][32]);
+      }
+
+      $pdf->displaySpace();
+   }
+
+
+   static function pdfStat(PluginPdfSimplePDF $pdf, Ticket $job) {
+      global $LANG;
+
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle("<b>".$LANG['common'][99]."</b>");
+
+      $pdf->setColumnsSize(50, 50);
+      $pdf->displayLine($LANG['reports'][60].' : ', Html::convDateTime($job->fields['date']));
+      $pdf->displayLine($LANG['sla'][5].' : ', Html::convDateTime($job->fields['due_date']));
+      if ($job->fields['status']=='solved' || $job->fields['status']=='closed') {
+         $pdf->displayLine($LANG['reports'][64].' : ', Html::convDateTime($job->fields['solvedate']));
+      }
+      if ($job->fields['status']=='closed') {
+         $pdf->displayLine($LANG['reports'][61].' : ', Html::convDateTime($job->fields['closedate']));
+      }
+
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle("<b>".$LANG['common'][100]."</b>");
+
+      $pdf->setColumnsSize(50, 50);
+      if ($job->fields['takeintoaccount_delay_stat']>0) {
+         $pdf->displayLine($LANG['stats'][12].' : ', Html::clean(Html::timestampToString($job->fields['takeintoaccount_delay_stat'],0)));
+      }
+
+      if ($job->fields['status']=='solved' || $job->fields['status']=='closed') {
+         if ($job->fields['solve_delay_stat']>0) {
+            $pdf->displayLine($LANG['stats'][9].' : ', Html::clean(Html::timestampToString($job->fields['solve_delay_stat'],0)));
+         }
+      }
+      if ($job->fields['status']=='closed') {
+         if ($job->fields['close_delay_stat']>0) {
+            $pdf->displayLine($LANG['stats'][10].' : ', Html::clean(Html::timestampToString($job->fields['close_delay_stat'],0)));
+         }
+      }
+      if ($job->fields['ticket_waiting_duration']>0) {
+         $pdf->displayLine($LANG['joblist'][26].' : ', Html::clean(Html::timestampToString($job->fields['ticket_waiting_duration'],0)));
+      }
+
+      $pdf->displaySpace();
+   }
+
+
+   function defineAllTabs($options=array()) {
+      global $LANG;
+
+      $onglets = parent::defineAllTabs($options);
+
+      if (Session::haveRight("show_full_ticket","1")) {
+         $onglets['_private_'] = $LANG['common'][77];
+      }
+      unset($onglets['Problem####1']); // TODO add method to print linked Problems
+      unset($onglets['Change####1']);  // TODO add method to print linked Changes
+
+      return $onglets;
+   }
+
+
+   static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
+
+      $private = isset($_REQUEST['item']['_private_']);
+
+      switch ($tab) {
+         case '_main_' :
+            self::pdfMain($pdf, $item);
+            break;
+
+         case '_private_' :
+            // nothing to export, just a flag
+            break;
+
+         case 'TicketFollowup####1' :
+            PluginPdfTicketFollowup::pdfForTicket($pdf, $item, $private);
+            break;
+
+         case 'TicketTask####1' :
+            PluginPdfTicketTask::pdfForTicket($pdf, $item, $private);
+            break;
+
+         case 'TicketValidation####1' :
+            PluginPdfTicketValidation::pdfForTicket($pdf, $item);
+            break;
+
+         case 'Ticket####1' :
+            self::pdfCost($pdf, $item);
+            break;
+
+         case 'Ticket####2' :
+            self::pdfSolution($pdf, $item);
+            break;
+
+         case 'Ticket####3' :
+            PluginPdfTicketSatisfaction::pdfForTicket($pdf, $item);
+            break;
+
+         case 'Ticket####4' :
+            self::pdfStat($pdf, $item);
+            break;
+
+         default :
+            return false;
+      }
+      return true;
    }
 }

@@ -58,9 +58,8 @@ function plugin_init_pdf() {
       $PLUGIN_HOOKS['plugin_pdf']['Software']         = 'PluginPdfSoftware';
       $PLUGIN_HOOKS['plugin_pdf']['SoftwareLicense']  = 'PluginPdfSoftwareLicense';
       $PLUGIN_HOOKS['plugin_pdf']['SoftwareVersion']  = 'PluginPdfSoftwareVersion';
-      /*
-      $PLUGIN_HOOKS['plugin_pdf']['Ticket']           = 'pdf';
-      */
+      $PLUGIN_HOOKS['plugin_pdf']['Ticket']           = 'PluginPdfTicket';
+
       // End init, when all types are registered by all plugins
       $PLUGIN_HOOKS['post_init']['pdf'] = 'plugin_pdf_postinit';
    }
