@@ -56,12 +56,21 @@ class PluginPdfTicketSatisfaction extends PluginPdfCommon {
          $pdf->displayLine($LANG['satisfaction'][10]." ($url)");
 
       } else if ($survey->getField('date_answered')){                // With anwser
+      $sat = $survey->getField('satisfaction');
+      $tabsat = array(0 => $LANG['job'][32],
+                      1 => $LANG['help'][7],
+                      2 => $LANG['help'][6],
+                      3 => $LANG['help'][5],
+                      4 => $LANG['help'][4],
+                      5 => $LANG['help'][3]);
+      if (isset($tabsat[$sat])) {
+         $sat = $tabsat[$sat]. "  ($sat/5)";
+      }
          $pdf->displayLine('<b>'.$LANG['satisfaction'][6].'</b> : '.
                            Html::convDateTime($survey->getField('date_begin')));
          $pdf->displayLine('<b>'.$LANG['satisfaction'][4].'</b> : '.
                            Html::convDateTime($survey->getField('date_answered')));
-         $pdf->displayLine('<b>'.$LANG['satisfaction'][1].'</b> : '.
-                           $survey->getField('satisfaction'));
+         $pdf->displayLine('<b>'.$LANG['satisfaction'][1].'</b> : '.$sat);
          $pdf->displayText('<b>'.$LANG['common'][25].'</b> : ',
                            $survey->getField('comment'));
 
