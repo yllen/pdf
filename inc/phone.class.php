@@ -74,30 +74,36 @@ class PluginPdfPhone extends PluginPdfCommon {
                                                     $item->fields['manufacturers_id'])));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][21].' :</i></b> '.$item->fields['contact_num'],
+         '<b><i>'.$LANG['common'][109].' :</i></b> '.
+            Html::clean(Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id_tech'])),
          '<b><i>'.$LANG['common'][22].' :</i></b> '.
                Html::clean(Dropdown::getDropdownName('glpi_phonemodels',
                                                     $item->fields['phonemodels_id'])));
 
-      $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$item->fields['contact'],
-                        '<b><i>'.$LANG['common'][19].' :</i></b> '.$item->fields['serial']);
+      $pdf->displayLine(
+         '<b><i>'.$LANG['common'][21].' :</i></b> '.$item->fields['contact_num'],
+         '<b><i>'.$LANG['common'][19].' :</i></b> '.$item->fields['serial']);
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($item->fields['users_id']),
+         '<b><i>'.$LANG['common'][18].' :</i></b> '.$item->fields['contact'],
          '<b><i>'.$LANG['common'][20].' :</i></b> '.$item->fields['otherserial']);
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][35].' :</i></b> '.
-               Html::clean(Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
+         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($item->fields['users_id']),
          '<b><i>'.$LANG['peripherals'][33].' :</i></b> '.
                ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['peripherals'][18].' :</i></b> '.$item->fields['brand'],
+         '<b><i>'.$LANG['common'][35].' :</i></b> '.
+               Html::clean(Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
          '<b><i>'.$LANG['phones'][36].' :</i></b> '.Dropdown::getYesNo($item->fields['phonepowersupplies_id']));
 
-      $pdf->displayLine('<b><i>'.$LANG['setup'][71].' :</i></b> '.$item->fields['firmware'],
+      $pdf->displayLine(
+         '<b><i>'.$LANG['peripherals'][18].' :</i></b> '.$item->fields['brand'],
                         '<b><i>'.$LANG['phones'][40].' :</i></b> '.$item->fields['number_line']);
+
+      $pdf->displayLine(
+         '<b><i>'.$LANG['setup'][71].' :</i></b> '.$item->fields['firmware']);
 
       $opts = array(
          'have_headset' => $LANG['phones'][38],
@@ -110,7 +116,8 @@ class PluginPdfPhone extends PluginPdfCommon {
       }
 
       $pdf->setColumnsSize(100);
-      $pdf->displayLine('<b><i>'.$LANG['monitors'][18].' : </i></b>'.implode(', ',$opts));
+      $pdf->displayLine('<b><i>'.$LANG['monitors'][18].' : </i></b>'.
+                        (count($opts) ? implode(', ',$opts) : $LANG['job'][32]));
 
       $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $item->fields['comment']);
 
