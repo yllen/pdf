@@ -87,74 +87,77 @@ class PluginPdfPreference extends CommonDBTM {
       echo "<form name='$formid' id='$formid' action='$action' method='post' ".
              ($ID ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
 
-       $landscape = false;
-       $values = array();
-       $sql = "SELECT `tabref`
-               FROM `".$this->getTable()."`
-               WHERE `users_ID` = '" . $_SESSION['glpiID'] . "'
-                     AND `itemtype` = '$type'";
+      $landscape = false;
+      $values = array();
+      $sql = "SELECT `tabref`
+              FROM `".$this->getTable()."`
+              WHERE `users_ID` = '" . $_SESSION['glpiID'] . "'
+                    AND `itemtype` = '$type'";
 
-       foreach ($DB->request($sql) AS $data) {
-          if ($data["tabref"]=='landscape') {
-             $landscape = true;
-          } else {
-             $values[$data["tabref"]] = $data["tabref"];
-          }
-       }
+      foreach ($DB->request($sql) AS $data) {
+         if ($data["tabref"]=='landscape') {
+            $landscape = true;
+         } else {
+            $values[$data["tabref"]] = $data["tabref"];
+         }
+      }
+      // Always export, at least, main part.
+      if (!count($values) && isset($options['_main_'])) {
+         $values['_main_'] = 1;
+      }
+      echo "<tr><th colspan='6'>" . $LANG['plugin_pdf']['title'][2]. "&nbsp;: ".
+              $item->getTypeName() ."</th></tr>";
 
-       echo "<tr><th colspan='6'>" . $LANG['plugin_pdf']['title'][2]. "&nbsp;: ".
-               $item->getTypeName() ."</th></tr>";
+      $i = 0;
+      foreach ($options as $num => $title) {
+         if (!$i) {
+            echo "<tr class='tab_bg_1'>";
+         }
+         if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
+            $title = "$title ($num)";
+         }
+         $this->checkbox($num, $title, (isset($values[$num]) ? true : false));
+         if ($i==4) {
+            echo "</tr>";
+            $i = 0;
+         } else {
+            $i++;
+         }
+      }
+      if ($i) {
+         while ($i<=4) {
+            echo "<td width='20%'>&nbsp;</td>";
+            $i++;
+         }
+         echo "</tr>";
+      }
 
-       $i = 0;
-       foreach ($options as $num => $title) {
-          if (!$i) {
-             echo "<tr class='tab_bg_1'>";
-          }
-          if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
-             $title = "$title ($num)";
-          }
-          $this->checkbox($num, $title, (isset($values[$num]) ? true : false));
-          if ($i==4) {
-             echo "</tr>";
-             $i = 0;
-          } else {
-             $i++;
-          }
-       }
-       if ($i) {
-          while ($i<=4) {
-             echo "<td width='20%'>&nbsp;</td>";
-             $i++;
-          }
-          echo "</tr>";
-       }
+      echo "<tr class='tab_bg_2'><td colspan='2' class='left'>";
+      echo "<a onclick=\"if (markCheckboxes('$formid') ) return false;\" href='".
+           $_SERVER['PHP_SELF']."?select=all'>".$LANG['buttons'][18]."</a> / ";
+      echo "<a onclick=\"if (unMarkCheckboxes('$formid') ) return false;\" href='".
+           $_SERVER['PHP_SELF']."?select=none'>".$LANG['buttons'][19]."</a></td>";
 
-       echo "<tr class='tab_bg_2'><td colspan='2' class='left'>";
-       echo "<a onclick=\"if (markCheckboxes('$formid') ) return false;\" href='".
-             $_SERVER['PHP_SELF']."?select=all'>".$LANG['buttons'][18]."</a> / ";
-       echo "<a onclick=\"if (unMarkCheckboxes('$formid') ) return false;\" href='".
-             $_SERVER['PHP_SELF']."?select=none'>".$LANG['buttons'][19]."</a></td>";
+      echo "<td colspan='4' class='center'>";
+      echo "<input type='hidden' name='plugin_pdf_inventory_type' value='$type'>";
+      echo "<input type='hidden' name='indice' value='".count($options)."'>";
 
-       echo "<td colspan='4' class='center'>";
-       echo "<input type='hidden' name='plugin_pdf_inventory_type' value='$type'>";
-       echo "<input type='hidden' name='indice' value='".count($options)."'>";
+      echo "<select name='page'>\n";
+      echo "<option value='0'>".$LANG['common'][69]."</option>\n"; // Portrait
+      echo "<option value='1'".($landscape?"selected='selected'":'').">".$LANG['common'][68].
+           "</option>\n"; // Paysage
+      echo "</select>&nbsp;&nbsp;&nbsp;&nbsp;\n";
 
-       echo "<select name='page'>\n";
-       echo "<option value='0'>".$LANG['common'][69]."</option>\n"; // Portrait
-       echo "<option value='1'".($landscape?"selected='selected'":'').">".$LANG['common'][68].
-            "</option>\n"; // Paysage
-       echo "</select>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-
-       if ($ID) {
-          echo "<input type='hidden' name='itemID' value='$ID'>";
-          echo "<input type='submit' value='" . $LANG['plugin_pdf']['button'][1] .
-                "' name='generate' class='submit'></td></tr>";
-       } else {
-          echo "<input type='submit' value='" . $LANG['plugin_pdf']['button'][2] .
-                "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
-       }
-       echo "</table></form>";
-    }
+      if ($ID) {
+         echo "<input type='hidden' name='itemID' value='$ID'>";
+         echo "<input type='submit' value='" . $LANG['plugin_pdf']['button'][1] .
+              "' name='generate' class='submit'></td></tr>";
+      } else {
+         echo "<input type='submit' value='" . $LANG['plugin_pdf']['button'][2] .
+              "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
+      }
+      echo "</table></form>";
+   }
 
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
