@@ -56,10 +56,9 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
       $pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
 
       foreach ($items as $type => $title) {
-         if (!class_exists($type)) {
+         if (!($item = getItemForItemtype($type))) {
             continue;
          }
-         $item = new $type();
          if (!$item->canView()) {
             continue;
          }

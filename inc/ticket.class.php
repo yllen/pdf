@@ -130,8 +130,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $otherserial_item = '';
 
       $pdf->setColumnsSize(100);
-      if ($job->fields["itemtype"] && class_exists($job->fields["itemtype"])) {
-         $item = new $job->fields["itemtype"]();
+      if ($job->fields["itemtype"] && ($item = getItemForItemtype($job->fields["itemtype"]))) {
          if ($item->getFromDB($job->fields["items_id"])) {
             if (isset($item->fields["serial"])) {
                $serial_item =

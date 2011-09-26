@@ -40,11 +40,10 @@ Plugin::load('pdf', true);
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
 if (isset($_POST["plugin_pdf_inventory_type"])
-    && class_exists($_POST["plugin_pdf_inventory_type"])
+    && ($item = getItemForItemtype($_POST["plugin_pdf_inventory_type"]))
     && isset($_POST["itemID"])) {
 
    $type = $_POST["plugin_pdf_inventory_type"];
-   $item = new $type();
    $item->check($_POST["itemID"], 'r');
 
    if (isset($_SESSION["plugin_pdf"][$type])) {

@@ -59,8 +59,7 @@ abstract class PluginPdfCommon {
       }
 
       if (!is_integer($itemtype)
-          && class_exists($itemtype)) {
-         $obj = new $itemtype();
+          && ($obj = getItemForItemtype($itemtype))) {
          if (method_exists($itemtype, "displayTabContentForPDF")
              && !($obj instanceof PluginPdfCommon)) {
             $titles = $obj->getTabNameForItem($this->obj, $withtemplate);
@@ -302,8 +301,9 @@ abstract class PluginPdfCommon {
                // Default set
                $tabnum   = (isset($data[1]) ? $data[1] : 1);
 
-               if (!is_integer($itemtype) && $itemtype!='empty' && class_exists($itemtype)) {
-                  $obj = new $itemtype();
+               if (!is_integer($itemtype)
+                   && $itemtype != 'empty'
+                   && ($obj = getItemForItemtype($itemtype))) {
                   if ($obj->displayTabContentForPdf($this->pdf, $this->obj, $tabnum)) {
                      continue;
                   }
