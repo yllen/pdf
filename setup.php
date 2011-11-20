@@ -48,6 +48,7 @@ function plugin_init_pdf() {
 
       // Define the type for which we know how to generate PDF :
       $PLUGIN_HOOKS['plugin_pdf']['Computer']         = 'PluginPdfComputer';
+      $PLUGIN_HOOKS['plugin_pdf']['Group']            = 'PluginPdfGroup';
       $PLUGIN_HOOKS['plugin_pdf']['KnowbaseItem']     = 'PluginPdfKnowbaseItem';
       $PLUGIN_HOOKS['plugin_pdf']['Monitor']          = 'PluginPdfMonitor';
       $PLUGIN_HOOKS['plugin_pdf']['NetworkEquipment'] = 'PluginPdfNetworkEquipment';

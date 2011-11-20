@@ -240,9 +240,15 @@ abstract class PluginPdfCommon {
          } else {
             $name = $LANG["common"][2].' '.$ID;
          }
-         if (Session::isMultiEntitiesMode() && isset($this->obj->fields['entities_id'])) {
+         if (Session::isMultiEntitiesMode() && $this->obj->isEntityAssign()) {
             $entity = ' ('.Html::clean(Dropdown::getDropdownName('glpi_entities',
-                                                                $this->obj->fields['entities_id'])).')';
+                                                                $this->obj->getEntityID()));
+            /*
+            if ($this->obj->isRecursive()) {
+               $entity .= ' <b>(R)</b>';
+            }
+            */
+            $entity .= ')';
          }
          $this->pdf->setHeader($this->obj->getTypeName()." - <b>$name</b>$entity");
 
