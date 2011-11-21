@@ -140,6 +140,11 @@ class PluginPdfPreference extends CommonDBTM {
       echo "<input type='hidden' name='plugin_pdf_inventory_type' value='$type'>";
       echo "<input type='hidden' name='indice' value='".count($options)."'>";
 
+      if ($ID) {
+         echo $LANG['pager'][4]."&nbsp;";
+         Dropdown::showListLimit();
+         echo "&nbsp;".$LANG['pager'][5]."&nbsp;&nbsp;";
+      }
       echo "<select name='page'>\n";
       echo "<option value='0'>".$LANG['common'][69]."</option>\n"; // Portrait
       echo "<option value='1'".($landscape?"selected='selected'":'').">".$LANG['common'][68].

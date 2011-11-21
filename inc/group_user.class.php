@@ -51,7 +51,9 @@ class PluginPdfGroup_User extends PluginPdfCommon {
       $title = "<b>".$LANG['Menu'][14]."</b> (D=".$LANG['profiles'][29].")";
       $number = count($used);
       if ($number > $_SESSION['glpilist_limit']) {
-         $title .= " $number/".$_SESSION['glpilist_limit'];
+         $title .= " (".$_SESSION['glpilist_limit']."/$number)";
+      } else {
+         $title .= " ($number)";
       }
       $pdf->setColumnsSize(100);
       $pdf->displayTitle($title);
