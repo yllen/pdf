@@ -80,11 +80,35 @@ class PluginPdfGroup extends PluginPdfCommon {
    }
 
 
+   function defineAllTabs($options=array()) {
+      global $LANG;
+
+      $onglets = parent::defineAllTabs($options);
+
+      unset($onglets['Group####4']);   // TODO Groupes
+      unset($onglets['Group####1']);   // TODO Matériels utilisés
+      unset($onglets['Group####2']);   // TODO Matériels gérés
+      unset($onglets['Group####3']);   // TODO iaison annuaire LDAP
+      unset($onglets['NotificationTarget####1']);  // TODO Notifications
+      unset($onglets['Ticket####1']);  // TODO  Tickets créés
+
+      $onglets['_tree'] = $LANG['entity'][7];
+
+      return $onglets;
+   }
+
+
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
+
+      $tree = isset($_REQUEST['item']['_tree']);
 
       switch ($tab) {
          case '_main_' :
             self::pdfMain($pdf, $item);
+            break;
+
+         case 'User####1' :
+            PluginPdfGroup_User::pdfForGroup($pdf, $item, $tree);
             break;
 
          default :
