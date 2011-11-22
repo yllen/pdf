@@ -473,8 +473,8 @@ class PluginPdfTicket extends PluginPdfCommon {
       if (Session::haveRight("show_full_ticket","1")) {
          $onglets['_private_'] = $LANG['common'][77];
       }
-      unset($onglets['Problem####1']); // TODO add method to print linked Problems
-      unset($onglets['Change####1']);  // TODO add method to print linked Changes
+      unset($onglets['Problem$1']); // TODO add method to print linked Problems
+      unset($onglets['Change$1']);  // TODO add method to print linked Changes
 
       return $onglets;
    }
@@ -493,31 +493,31 @@ class PluginPdfTicket extends PluginPdfCommon {
             // nothing to export, just a flag
             break;
 
-         case 'TicketFollowup####1' :
+         case 'TicketFollowup$1' :
             PluginPdfTicketFollowup::pdfForTicket($pdf, $item, $private);
             break;
 
-         case 'TicketTask####1' :
+         case 'TicketTask$1' :
             PluginPdfTicketTask::pdfForTicket($pdf, $item, $private);
             break;
 
-         case 'TicketValidation####1' :
+         case 'TicketValidation$1' :
             PluginPdfTicketValidation::pdfForTicket($pdf, $item);
             break;
 
-         case 'Ticket####1' :
+         case 'Ticket$1' :
             self::pdfCost($pdf, $item);
             break;
 
-         case 'Ticket####2' :
+         case 'Ticket$2' :
             self::pdfSolution($pdf, $item);
             break;
 
-         case 'Ticket####3' :
+         case 'Ticket$3' :
             PluginPdfTicketSatisfaction::pdfForTicket($pdf, $item);
             break;
 
-         case 'Ticket####4' :
+         case 'Ticket$4' :
             self::pdfStat($pdf, $item);
             break;
 

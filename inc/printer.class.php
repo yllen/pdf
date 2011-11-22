@@ -135,11 +135,11 @@ class PluginPdfPrinter extends PluginPdfCommon {
             self::pdfMain($pdf, $item);
             break;
 
-          case 'Computer_Item####1' :
+          case 'Computer_Item$1' :
             PluginPdfComputer_Item::pdfForItem($pdf, $item);
             break;
 
-         case 'Cartridge####1' :
+         case 'Cartridge$1' :
             PluginPdfCartridge::pdfForPrinter($pdf, $item, false);
             PluginPdfCartridge::pdfForPrinter($pdf, $item, true);
             break;

@@ -43,7 +43,7 @@ class PluginPdfComputer extends PluginPdfCommon {
    function defineAllTabs($options=array()) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['OcsLink####1']); // TODO add method to print OCS
+      unset($onglets['OcsLink$1']); // TODO add method to print OCS
       return $onglets;
    }
 
@@ -223,31 +223,31 @@ class PluginPdfComputer extends PluginPdfCommon {
             self::pdfMain($pdf, $item);
             break;
 
-         case 'DeviceProcessor####1' :
+         case 'DeviceProcessor$1' :
             self::pdfDevice($pdf, $item);
             break;
 
-         case 'ComputerDisk####1' :
+         case 'ComputerDisk$1' :
             PluginPdfComputerDisk::pdfForComputer($pdf, $item);
             break;
 
-         case 'Computer_SoftwareVersion####1' :
+         case 'Computer_SoftwareVersion$1' :
             PluginPdfComputer_SoftwareVersion::pdfForComputer($pdf, $item);
             break;
 
-         case 'Computer_Item####1' :
+         case 'Computer_Item$1' :
             PluginPdfComputer_Item::pdfForComputer($pdf, $item);
             break;
 
-         case 'Document####1' :
+         case 'Document$1' :
             PluginPdfDocument::pdfForItem($pdf, $item);
             break;
 
-         case 'ComputerVirtualMachine####1' :
+         case 'ComputerVirtualMachine$1' :
             PluginPdfComputerVirtualMachine::pdfForComputer($pdf, $item);
             break;
 
-         case 'RegistryKey####1' :
+         case 'RegistryKey$1' :
             PluginPdfRegistryKey::pdfForComputer($pdf, $item);
             break;
 

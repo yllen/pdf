@@ -43,7 +43,7 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
    function defineAllTabs($options=array()) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['KnowbaseItem####1']);
+      unset($onglets['KnowbaseItem$1']);
       return $onglets;
    }
 
@@ -114,7 +114,7 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
             self::pdfMain($pdf, $item);
             break;
 
-         case 'Document####1' :
+         case 'Document$1' :
             PluginPdfDocument::pdfForItem($pdf, $item);
             break;
 

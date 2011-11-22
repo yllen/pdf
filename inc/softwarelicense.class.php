@@ -135,16 +135,16 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
 
       switch ($tab) {
          case '_main_' :
-            $cpt = !(isset($_REQUEST['item']['Computer_SoftwareLicense####1'])
-                     || isset($_REQUEST['item']['Computer_SoftwareLicense####2']));
+            $cpt = !(isset($_REQUEST['item']['Computer_SoftwareLicense$1'])
+                     || isset($_REQUEST['item']['Computer_SoftwareLicense$2']));
             self::pdfMain($pdf, $item, true, $cpt);
             break;
 
-         case 'Computer_SoftwareLicense####1' :
+         case 'Computer_SoftwareLicense$1' :
             PluginPdfComputer_SoftwareLicense::pdfForLicenseByEntity($pdf, $item);
             break;
 
-         case 'Computer_SoftwareLicense####2' :
+         case 'Computer_SoftwareLicense$2' :
             PluginPdfComputer_SoftwareLicense::pdfForLicenseByComputer($pdf, $item);
             break;
 

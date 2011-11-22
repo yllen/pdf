@@ -68,7 +68,7 @@ abstract class PluginPdfCommon {
 
             foreach ($titles as $key => $val) {
                if (!empty($val)) {
-                  $ong[$itemtype.'####'.$key] = $val;
+                  $ong[$itemtype.'$'.$key] = $val;
                }
             }
          }
@@ -163,35 +163,35 @@ abstract class PluginPdfCommon {
             self::pdfNote($pdf, $item);
             break;
 
-         case 'Document####1' :
+         case 'Document$1' :
             PluginPdfDocument::pdfForItem($pdf, $item);
             break;
 
-         case 'NetworkPort####1' :
+         case 'NetworkPort$1' :
             PluginPdfNetworkPort::pdfForItem($pdf, $item);
             break;
 
-         case 'Infocom####1' :
+         case 'Infocom$1' :
             PluginPdfInfocom::pdfForItem($pdf, $item);
             break;
 
-         case 'Contract_Item####1' :
+         case 'Contract_Item$1' :
             PluginPdfContract_Item::pdfForItem($pdf, $item);
             break;
 
-         case 'Ticket####1' :
+         case 'Ticket$1' :
             PluginPdfTicket::pdfForItem($pdf, $item);
             break;
 
-         case 'Link####1' :
+         case 'Link$1' :
             PluginPdfLink::pdfForItem($pdf, $item);
             break;
 
-         case 'Reservation####1' :
+         case 'Reservation$1' :
             PluginPdfReservation::pdfForItem($pdf, $item);
             break;
 
-         case 'Log####1' :
+         case 'Log$1' :
             PluginPdfLog::pdfForItem($pdf, $item);
             break;
 
@@ -301,7 +301,7 @@ abstract class PluginPdfCommon {
          foreach ($tabs as $tab) {
             if (!$this->displayTabContentForPDF($this->pdf, $this->obj, $tab)
                 && !$this->displayCommonTabForPDF($this->pdf, $this->obj, $tab)) {
-               $data     = explode('####',$tab);
+               $data     = explode('$',$tab);
                $itemtype = $data[0];
                // Default set
                $tabnum   = (isset($data[1]) ? $data[1] : 1);

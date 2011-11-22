@@ -131,7 +131,7 @@ class PluginPdfPhone extends PluginPdfCommon {
             self::pdfMain($pdf, $item);
             break;
 
-          case 'Computer_Item####1' :
+          case 'Computer_Item$1' :
             PluginPdfComputer_Item::pdfForItem($pdf, $item);
             break;
 

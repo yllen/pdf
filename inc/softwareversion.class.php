@@ -126,11 +126,11 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
             self::pdfMain($pdf, $item);
             break;
 
-         case 'Computer_SoftwareVersion####1' :
+         case 'Computer_SoftwareVersion$1' :
             PluginPdfComputer_SoftwareVersion::pdfForVersionByEntity($pdf, $item);
             break;
 
-         case 'Computer_SoftwareVersion####2' :
+         case 'Computer_SoftwareVersion$2' :
             PluginPdfComputer_SoftwareVersion::pdfForItem($pdf, $item);
             break;
 
