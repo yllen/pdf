@@ -80,19 +80,114 @@ class PluginPdfGroup extends PluginPdfCommon {
    }
 
 
+   // From Group::showLDAPForm()
+   static function pdfLdapForm(PluginPdfSimplePDF $pdf, Group $item) {
+      global $LANG;
+
+      if (Session::haveRight("config","r") && AuthLdap::useAuthLdap()) {
+         $pdf->setColumnsSize(100);
+         $pdf->displayTitle($LANG['setup'][3]);
+
+         $pdf->displayText('<b>'.$LANG['setup'][260].' : </b>', $item->getField('ldap_field'), 1);
+         $pdf->displayText('<b>'.$LANG['setup'][601].' : </b>', $item->getField('ldap_value'), 1);
+         $pdf->displayText('<b>'.$LANG['setup'][261].' : </b>', $item->getField('ldap_group_dn'), 1);
+
+         $pdf->displaySpace();
+      }
+   }
+
+
+   // From Group::showItems()
+   static function pdfItems(PluginPdfSimplePDF $pdf, Group $group, $tech, $tree, $user) {
+      global $LANG, $CFG_GLPI;
+
+      if ($tech) {
+         $types = $CFG_GLPI['linkgroup_tech_types'];
+         $field = 'groups_id_tech';
+         $title = $LANG['common'][112];
+      } else {
+         $types = $CFG_GLPI['linkgroup_types'];
+         $field = 'groups_id';
+         $title = $LANG['common'][111];
+      }
+
+      $datas  = array();
+      $max = $group->getDataItems($types, $field, $tree, $user, 0, $datas);
+      $nb = count($datas);
+
+      if ($nb<$max) {
+         $title .= " ($nb/$max)";
+      } else {
+         $title .= " ($nb)";
+      }
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle($title);
+
+      if ($nb) {
+         if ($tree || $user) {
+            $pdf->setColumnsSize(16, 20, 34, 30);
+            $pdf->displayTitle(
+               $LANG['common'][17], // Type
+               $LANG['common'][16], // Name
+               $LANG['entity'][0],  // Entity
+               Group::getTypeName(1)." / ".User::getTypeName(1)
+            );
+         } else {
+            $pdf->setColumnsSize(20, 25, 55);
+            $pdf->displayTitle(
+               $LANG['common'][17], // Type
+               $LANG['common'][16], // Name
+               $LANG['entity'][0]   // Entity
+            );
+         }
+      } else {
+         $pdf->displayLine($LANG['search'][15]);
+      }
+
+      $tmpgrp = new Group();
+      $tmpusr = new User();
+
+      foreach ($datas as $data) {
+         if (!($item = getItemForItemtype($data['itemtype']))) {
+            continue;
+         }
+         $item->getFromDB($data['items_id']);
+
+         $col4='';
+         if ($tree || $user) {
+            if ($grp = $item->getField($field)) {
+               if ($tmpgrp->getFromDB($grp)) {
+                  $col4 = $tmpgrp->getNameID();
+               }
+               // $col4 = Html::clean(Dropdown::getDropdownName('glpi_groups', ));
+
+            } else if ($usr = $item->getField(str_replace('groups', 'users', $field))) {
+               $col4 = Html::clean(getUserName($usr));
+            }
+
+         }
+         $pdf->displayLine(
+            $item->getTypeName(1),
+            $item->getName(),
+            Html::clean(Dropdown::getDropdownName("glpi_entities", $item->getEntityID())),
+            $col4
+         );
+      }
+      $pdf->displaySpace();
+   }
+
+
    function defineAllTabs($options=array()) {
       global $LANG;
 
       $onglets = parent::defineAllTabs($options);
 
       unset($onglets['Group$4']);   // TODO Groupes
-      unset($onglets['Group$1']);   // TODO Matériels utilisés
-      unset($onglets['Group$2']);   // TODO Matériels gérés
-      unset($onglets['Group$3']);   // TODO iaison annuaire LDAP
       unset($onglets['NotificationTarget$1']);  // TODO Notifications
       unset($onglets['Ticket$1']);  // TODO  Tickets créés
 
-      $onglets['_tree'] = $LANG['entity'][7];
+      $onglets['_tree'] = $LANG['group'][3];
+      $onglets['_user'] = $LANG['plugin_pdf']['group'][1];
 
       return $onglets;
    }
@@ -101,14 +196,32 @@ class PluginPdfGroup extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       $tree = isset($_REQUEST['item']['_tree']);
+      $user = isset($_REQUEST['item']['_user']);
 
       switch ($tab) {
          case '_main_' :
             self::pdfMain($pdf, $item);
             break;
 
+         case 'Group$1' :
+            self::pdfItems($pdf, $item, false, $tree, $user);
+            break;
+
+         case 'Group$2' :
+            self::pdfItems($pdf, $item, true, $tree, $user);
+            break;
+
+         case 'Group$3' :
+            self::pdfLdapForm($pdf, $item);
+            break;
+
          case 'User$1' :
             PluginPdfGroup_User::pdfForGroup($pdf, $item, $tree);
+            break;
+
+         // Igone tabs which are export options
+         case '_tree' :
+         case '_user' :
             break;
 
          default :

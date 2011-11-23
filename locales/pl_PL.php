@@ -37,6 +37,8 @@ $LANG['plugin_pdf']['title'][2]  = "Wybierz tabele do wydruku PDF";
 $LANG['plugin_pdf']['button'][1] = "Drukuj";
 $LANG['plugin_pdf']['button'][2] = "Zapisz";
 
+$LANG['plugin_pdf']['group'][1] = "Members equipment";
+
 $LANG['plugin_pdf']['knowbase'][1]   = "No question found";
 $LANG['plugin_pdf']['knowbase'][2]   = "No answer found";
 

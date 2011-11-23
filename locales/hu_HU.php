@@ -37,6 +37,8 @@ $LANG['plugin_pdf']['title'][2]  = "Válaszdki a pdf-be nyomtatandó táblákat"
 $LANG['plugin_pdf']['button'][1] = "Nyomtatás";
 $LANG['plugin_pdf']['button'][2] = "Mentés";
 
+$LANG['plugin_pdf']['group'][1] = "Members equipment";
+
 $LANG['plugin_pdf']['knowbase'][1]   = "No question found";
 $LANG['plugin_pdf']['knowbase'][2]   = "No answer found";
 

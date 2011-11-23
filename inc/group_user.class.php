@@ -72,9 +72,7 @@ class PluginPdfGroup_User extends PluginPdfCommon {
 
          for ($i=0 ; $i<$number && $i<$_SESSION['glpilist_limit'] ; $i++) {
             $data = $used[$i];
-            $user->getFromDB($data["id"]);
-
-            $name = $user->getName();
+            $name = Html::clean(getUserName($data["id"]));
             if ($data["is_dynamic"]) {
                $name .= " <b>(D)</b>";
             }
