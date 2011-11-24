@@ -250,7 +250,7 @@ class PluginPdfTicket extends PluginPdfCommon {
    }
 
 
-   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
+   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item, $tree=false) {
       global $DB,$CFG_GLPI, $LANG;
 
       $ID = $item->getField('id');
@@ -263,6 +263,15 @@ class PluginPdfTicket extends PluginPdfCommon {
       if ($type == 'Sla') {
          $restrict                 = "(`slas_id` = '$ID')";
          $order                    = '`glpi_tickets`.`due_date` DESC';
+      } else if ($type == 'Group') {
+         if ($tree) {
+            $restrict = "IN (".implode(',', getSonsOf('glpi_groups', $item->getID())).")";
+         } else {
+            $restrict = "='".$item->getID()."'";
+         }
+         $restrict                 = "(`glpi_groups_tickets`.`groups_id` $restrict
+                                       AND `glpi_groups_tickets`.`type` = ".Ticket::REQUESTER.")";
+         $order                    = '`glpi_tickets`.`date_mod` DESC';
       } else {
          $restrict                 = "(`items_id` = '$ID' AND `itemtype` = '$type')";
          $order                    = '`glpi_tickets`.`date_mod` DESC';

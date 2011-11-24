@@ -184,7 +184,6 @@ class PluginPdfGroup extends PluginPdfCommon {
 
       unset($onglets['Group$4']);   // TODO Groupes
       unset($onglets['NotificationTarget$1']);  // TODO Notifications
-      unset($onglets['Ticket$1']);  // TODO  Tickets créés
 
       $onglets['_tree'] = $LANG['group'][3];
       $onglets['_user'] = $LANG['plugin_pdf']['group'][1];
@@ -217,6 +216,10 @@ class PluginPdfGroup extends PluginPdfCommon {
 
          case 'User$1' :
             PluginPdfGroup_User::pdfForGroup($pdf, $item, $tree);
+            break;
+
+         case 'Ticket$1' :
+            PluginPdfTicket::pdfForItem($pdf, $item, $tree);
             break;
 
          // Igone tabs which are export options
