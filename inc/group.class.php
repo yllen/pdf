@@ -182,7 +182,6 @@ class PluginPdfGroup extends PluginPdfCommon {
 
       $onglets = parent::defineAllTabs($options);
 
-      unset($onglets['Group$4']);   // TODO Groupes
       unset($onglets['NotificationTarget$1']);  // TODO Notifications
 
       $onglets['_tree'] = $LANG['group'][3];
@@ -191,6 +190,65 @@ class PluginPdfGroup extends PluginPdfCommon {
       return $onglets;
    }
 
+
+   static function pdfChildren(PluginPdfSimplePDF $pdf, CommonTreeDropdown $item) {
+      global $LANG, $DB;
+
+      $ID = $item->getID();
+      $fields        = $item->getAdditionalFields();
+      $nb            = count($fields);
+      $entity_assign = $item->isEntityAssign();
+
+      $fk   = $item->getForeignKeyField();
+      $crit = array($fk     => $item->getID(),
+                    'ORDER' => 'name');
+
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle($LANG['setup'][76].' <b>'.$item->getNameID().'</b>');
+
+      if ($item->haveChildren()) {
+         if ($entity_assign) {
+            if ($fk == 'entities_id') {
+               $crit['id']  = $_SESSION['glpiactiveentities'];
+               $crit['id'] += $_SESSION['glpiparententities'];
+            } else {
+               $crit['entities_id'] = $_SESSION['glpiactiveentities'];
+            }
+
+            $pdf->setColumnsSize(30, 30, 40);
+            $pdf->displayTitle(
+               $LANG['common'][16],       // Name
+               $LANG['entity'][0],        // Entity
+               $LANG['common'][25]        // Comment
+            );
+         } else {
+            $pdf->setColumnsSize(45, 55);
+            $pdf->displayTitle(
+               $LANG['common'][16],       // Name
+               $LANG['common'][25]        // Comment
+            );
+         }
+
+         foreach ($DB->request($item->getTable(), $crit) as $data) {
+            if ($entity_assign) {
+               $pdf->displayLine(
+                  $data['name'],
+                  Html::clean(Dropdown::getDropdownName("glpi_entities", $data["entities_id"])),
+                  $data['comment']
+               );
+            } else {
+               $pdf->displayLine(
+                  $data['name'],
+                  $data['comment']
+               );
+            }
+         }
+      } else {
+         $pdf->displayLine($LANG['search'][15]);
+      }
+
+      $pdf->displaySpace();
+   }
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
@@ -212,6 +270,10 @@ class PluginPdfGroup extends PluginPdfCommon {
 
          case 'Group$3' :
             self::pdfLdapForm($pdf, $item);
+            break;
+
+         case 'Group$4' :
+            self::pdfChildren($pdf, $item);
             break;
 
          case 'User$1' :
