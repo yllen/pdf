@@ -34,7 +34,7 @@
 class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
 
 
-   function __construct(Computer_SoftwareLicense $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Computer_SoftwareLicense());
    }

@@ -33,7 +33,7 @@
 
 class PluginPdfContract_Item extends PluginPdfCommon {
 
-   function __construct(Contract_Item $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Contract_Item());
    }

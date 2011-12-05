@@ -34,7 +34,7 @@
 class PluginPdfPhone extends PluginPdfCommon {
 
 
-   function __construct(Phone $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Phone());
    }

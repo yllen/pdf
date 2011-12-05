@@ -34,7 +34,7 @@
 class PluginPdfTicketTask extends PluginPdfCommon {
 
 
-   function __construct(TicketTask $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new TicketTask());
    }

@@ -33,7 +33,7 @@
 
 class PluginPdfInfocom extends PluginPdfCommon {
 
-   function __construct(Infocom $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Infocom());
    }

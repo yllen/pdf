@@ -34,7 +34,7 @@
 class PluginPdfTicketFollowup extends PluginPdfCommon {
 
 
-   function __construct(TicketFollowup $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new TicketFollowup());
    }

@@ -33,7 +33,7 @@
 
 class PluginPdfLink extends PluginPdfCommon {
 
-   function __construct(Link $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Link());
    }

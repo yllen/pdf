@@ -34,7 +34,7 @@
 class PluginPdfPeripheral extends PluginPdfCommon {
 
 
-   function __construct(Peripheral $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Peripheral());
    }

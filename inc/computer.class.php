@@ -34,7 +34,7 @@
 class PluginPdfComputer extends PluginPdfCommon {
 
 
-   function __construct(Computer $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Computer());
    }

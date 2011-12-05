@@ -33,7 +33,7 @@
 
 class PluginPdfLog extends PluginPdfCommon {
 
-   function __construct(Log $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Log());
    }

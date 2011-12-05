@@ -33,7 +33,7 @@
 
 class PluginPdfDocument extends PluginPdfCommon {
 
-   function __construct(Document $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Document());
    }

@@ -33,7 +33,7 @@
 
 class PluginPdfTicket extends PluginPdfCommon {
 
-   function __construct(Ticket $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Ticket());
    }

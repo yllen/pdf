@@ -33,7 +33,7 @@
 
 class PluginPdfRegistryKey extends PluginPdfCommon {
 
-   function __construct(RegistryKey $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new RegistryKey());
    }

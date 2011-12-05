@@ -33,7 +33,7 @@
 
 class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
 
-   function __construct(ComputerVirtualMachine $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new ComputerVirtualMachine());
    }

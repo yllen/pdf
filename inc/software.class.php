@@ -34,7 +34,7 @@
 class PluginPdfSoftware extends PluginPdfCommon {
 
 
-   function __construct(Software $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Software());
    }

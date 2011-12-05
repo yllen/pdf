@@ -33,7 +33,7 @@
 
 class PluginPdfGroup_User extends PluginPdfCommon {
 
-   function __construct(Group_User $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Group_User());
    }

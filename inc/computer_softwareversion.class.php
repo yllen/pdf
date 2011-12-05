@@ -34,7 +34,7 @@
 class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
 
 
-   function __construct(Computer_SoftwareVersion $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Computer_SoftwareVersion());
    }

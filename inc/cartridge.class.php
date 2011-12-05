@@ -34,7 +34,7 @@
 class PluginPdfCartridge extends PluginPdfCommon {
 
 
-   function __construct(Cartridge $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Cartridge());
    }

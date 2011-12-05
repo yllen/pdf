@@ -33,7 +33,7 @@
 class PluginPdfGroup extends PluginPdfCommon {
 
 
-   function __construct(Group $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Group());
    }

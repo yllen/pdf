@@ -34,7 +34,7 @@
 class PluginPdfTicketValidation extends PluginPdfCommon {
 
 
-   function __construct(TicketValidation $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new TicketValidation());
    }

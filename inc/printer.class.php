@@ -34,7 +34,7 @@
 class PluginPdfPrinter extends PluginPdfCommon {
 
 
-   function __construct(Printer $obj=NULL) {
+   function __construct(CommonGLPI $obj=NULL) {
 
       $this->obj = ($obj ? $obj : new Printer());
    }
