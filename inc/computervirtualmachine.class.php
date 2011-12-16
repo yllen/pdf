@@ -49,16 +49,20 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       if (count($virtualmachines)) {
          $pdf->displayTitle("<b>".$LANG['computers'][66]."</b>");
-         $pdf->setColumnsSize(12,13,12,13,12,13,12,13);
+         $pdf->setColumnsSize(20,8,8,8,25,8,8,15);
+         $pdf->setColumnsAlign('left', 'center', 'center', 'center', 'left', 'right', 'right', 'left');
+         $typ = explode(' ', $LANG['computers'][62]);
+         $sys = explode(' ', $LANG['computers'][60]);
+         $sta = explode(' ', $LANG['computers'][63]);
          $pdf->displayTitle(
-            $LANG['common'][16],
-            $LANG['computers'][62],
-            $LANG['computers'][60],
-            $LANG['computers'][63],
-            $LANG['computers'][58],
-            $LANG['computers'][61],
-            $LANG['computers'][24],
-            $LANG['computers'][64]
+            $LANG['common'][16],    // Name
+            $typ[0],                // Type
+            $sys[0],                // Systeme
+            $sta[0],                // State
+            $LANG['computers'][58], // uuid
+            'CPU',                  // cpu
+            $LANG['common'][82],    // ram
+            $LANG['computers'][64]  // computer
          );
 
          foreach ($virtualmachines as $virtualmachine) {
@@ -79,7 +83,8 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
                                                     $virtualmachine['virtualmachinestates_id'])),
                $virtualmachine['uuid'],
                $virtualmachine['vcpu'],
-               $virtualmachine['ram'],
+
+               Html::clean(Html::formatNumber($virtualmachine['ram'],false,0)),
                $name
             );
          }
