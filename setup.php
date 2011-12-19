@@ -83,6 +83,7 @@ function plugin_pdf_check_prerequisites(){
 
    if (version_compare(GLPI_VERSION,'0.83','lt') || version_compare(GLPI_VERSION,'0.84','ge')) {
       echo "This plugin requires GLPI 0.83";
+      return false;
    }
    return true;
 }
