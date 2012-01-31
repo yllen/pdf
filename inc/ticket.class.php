@@ -466,8 +466,8 @@ class PluginPdfTicket extends PluginPdfCommon {
             $pdf->displayLine($LANG['stats'][10].' : ', Html::clean(Html::timestampToString($job->fields['close_delay_stat'],0)));
          }
       }
-      if ($job->fields['ticket_waiting_duration']>0) {
-         $pdf->displayLine($LANG['joblist'][26].' : ', Html::clean(Html::timestampToString($job->fields['ticket_waiting_duration'],0)));
+      if ($job->fields['waiting_duration']>0) {
+         $pdf->displayLine($LANG['joblist'][26].' : ', Html::clean(Html::timestampToString($job->fields['waiting_duration'],0)));
       }
 
       $pdf->displaySpace();
