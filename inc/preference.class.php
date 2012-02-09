@@ -166,7 +166,9 @@ class PluginPdfPreference extends CommonDBTM {
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
       global $LANG;
 
-      if ($item->getType() == 'Preference') {
+      if ($item->getType() == 'Preference'
+          && isset($_SESSION['glpi_plugin_pdf_profile'])
+          && $_SESSION['glpi_plugin_pdf_profile']['use']) {
          return $LANG['plugin_pdf']['title'][1];
       }
       return '';
