@@ -118,8 +118,10 @@ abstract class PluginPdfCommon {
    **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
       global $LANG;
-
-      return $LANG['plugin_pdf']['title'][1];
+      
+      if(!isset($withtemplate) || empty($withtemplate)) {
+         return $LANG['plugin_pdf']['title'][1];
+      }
    }
 
 
