@@ -118,7 +118,7 @@ abstract class PluginPdfCommon {
    **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
       global $LANG;
-      
+
       if(!isset($withtemplate) || empty($withtemplate)) {
          return $LANG['plugin_pdf']['title'][1];
       }
@@ -310,6 +310,7 @@ abstract class PluginPdfCommon {
 
                if (!is_integer($itemtype)
                    && $itemtype != 'empty'
+                   && method_exists($itemtype, "displayTabContentForPdf")
                    && ($obj = getItemForItemtype($itemtype))) {
                   if ($obj->displayTabContentForPdf($this->pdf, $this->obj, $tabnum)) {
                      continue;
