@@ -41,6 +41,14 @@ class PluginPdfMonitor extends PluginPdfCommon {
 
 
 
+   function defineAllTabs($options=array()) {
+
+      $onglets = parent::defineAllTabs($options);
+      unset($onglets['Item_Problem$1']); // TODO add method to print linked Problems
+      return $onglets;
+   }
+
+
    static function pdfMain(PluginPdfSimplePDF $pdf, Monitor $item) {
       global $LANG;
 
