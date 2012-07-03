@@ -159,7 +159,8 @@ class PluginPdfPreference extends CommonDBTM {
          echo "<input type='submit' value='" . $LANG['plugin_pdf']['button'][2] .
               "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
       }
-      echo "</table></form>";
+      echo "</table>";
+      Html::closeForm();
    }
 
 

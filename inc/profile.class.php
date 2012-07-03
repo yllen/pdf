@@ -100,7 +100,8 @@ class PluginPdfProfile extends CommonDBTM {
                "' class='submit'>&nbsp;";
          echo "</td></tr>\n";
       }
-      echo "</table></form>";
+      echo "</table>";
+      Html::closeForm();
    }
 
 

@@ -34,6 +34,8 @@
 function plugin_init_pdf() {
    global $PLUGIN_HOOKS,$LANG;
 
+   $PLUGIN_HOOKS['csrf_compliant']['behaviors'] = true;
+
    Plugin::registerClass('PluginPdfProfile',    array('addtabon' => 'Profile'));
    Plugin::registerClass('PluginPdfPreference', array('addtabon' => 'Preference'));
 
@@ -70,19 +72,19 @@ function plugin_version_pdf() {
    global $LANG;
 
    return array('name'           => $LANG['plugin_pdf']['title'][1],
-                'version'        => '0.83',
+                'version'        => '0.83.3',
                 'author'         => 'Dévi Balpe, Remi Collet, Nelly Mahu-Lasson, Walid Nouh',
                 'license'        => 'GPLv2+',
                 'homepage'       => 'https://forge.indepnet.net/projects/pdf',
-                'minGlpiVersion' => '0.83');
+                'minGlpiVersion' => '0.83.3');
 }
 
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_pdf_check_prerequisites(){
 
-   if (version_compare(GLPI_VERSION,'0.83','lt') || version_compare(GLPI_VERSION,'0.84','ge')) {
-      echo "This plugin requires GLPI 0.83";
+   if (version_compare(GLPI_VERSION,'0.83.3','lt') || version_compare(GLPI_VERSION,'0.84','ge')) {
+      echo "This plugin requires GLPI 0.83.3";
       return false;
    }
    return true;
