@@ -34,7 +34,7 @@
 function plugin_init_pdf() {
    global $PLUGIN_HOOKS,$LANG;
 
-   $PLUGIN_HOOKS['csrf_compliant']['behaviors'] = true;
+   $PLUGIN_HOOKS['csrf_compliant']['pdf'] = true;
 
    Plugin::registerClass('PluginPdfProfile',    array('addtabon' => 'Profile'));
    Plugin::registerClass('PluginPdfPreference', array('addtabon' => 'Preference'));
