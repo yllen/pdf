@@ -39,7 +39,6 @@ Plugin::load('pdf', true);
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
 
 $type = $_SESSION["plugin_pdf"]["type"];
-unset($_SESSION["plugin_pdf"]["type"]);
 $item = new $type();
 
 $tab_id = unserialize($_SESSION["plugin_pdf"]["tab_id"]);
@@ -57,9 +56,12 @@ while ($data = $DB->fetch_array($result)) {
    if ($data["tabref"] == 'landscape') {
       $pag = 1;
    } else {
-      $tab[]=$data["tabref"];
+      $tab[]= $data["tabref"];
    }
 }
+   if (empty($tab)) {
+      $tab[] = '_main_';
+   }
 
 if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
 
