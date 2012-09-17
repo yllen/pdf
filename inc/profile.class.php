@@ -59,9 +59,22 @@ class PluginPdfProfile extends CommonDBTM {
 
 
    //if profile deleted
-   static function cleanProfiles(Profile $prof) {
+   static function cleanProfile(Profile $prof) {
       $plugprof = new self();
       $plugprof->delete(array('id'=>$prof->getField("id")));
+   }
+
+
+   // if profile cloned
+   static function cloneProfile(Profile $prof) {
+
+      $plugprof = new self();
+      if ($plugprof->getFromDB($prof->input['_old_id'])) {
+         $input            = ToolBox::addslashes_deep($plugprof->fields);
+         $input['profile'] = ToolBox::addslashes_deep($prof->getName());
+         $input['id']      = $prof->getID();
+         $plugprof->add($input);
+      }
    }
 
 

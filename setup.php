@@ -40,7 +40,8 @@ function plugin_init_pdf() {
    Plugin::registerClass('PluginPdfPreference', array('addtabon' => 'Preference'));
 
    $PLUGIN_HOOKS['change_profile']['pdf'] = array('PluginPdfProfile','changeprofile');
-   $PLUGIN_HOOKS['pre_item_purge']['pdf'] = array('Profile' => array('PluginPdfProfile','cleanProfiles'));
+   $PLUGIN_HOOKS['pre_item_purge']['pdf'] = array('Profile' => array('PluginPdfProfile','cleanProfile'));
+   $PLUGIN_HOOKS['item_clone']['pdf']     = array('Profile' => array('PluginPdfProfile','cloneProfile'));
 
    if (isset($_SESSION["glpi_plugin_pdf_profile"])
        && $_SESSION["glpi_plugin_pdf_profile"]["use"]) {
