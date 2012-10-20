@@ -3,7 +3,7 @@
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2011 by the pdf Development Team.
+ Copyright (C) 2003-2012 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -27,8 +27,7 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: BALPE Dévi
-// Purpose of file:
+// Original Author of file: Pieter Liekens
 // ----------------------------------------------------------------------
 
 $LANG['plugin_pdf']['title'][1]  = "Printen naar pdf";
@@ -50,7 +49,6 @@ $LANG['plugin_pdf']['financial'][1] = "Geen financiele informatie";
 $LANG['plugin_pdf']['financial'][2] = "Geen verbonden contract";
 
 $LANG['plugin_pdf']['software'][1]  = "Geen geinstalleerde software";
-
 
 $LANG['plugin_pdf']['ticket'][1]  = "Opvolging";
 $LANG['plugin_pdf']['ticket'][2]  = "Taken";
