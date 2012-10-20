@@ -3,7 +3,7 @@
  * @version $Id: monitor.class.php 303 2011-11-08 11:38:25Z remi $
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2011 by the pdf Development Team.
+ Copyright (C) 2003-2012 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
