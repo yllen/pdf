@@ -3,7 +3,7 @@
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2011 by the pdf Development Team.
+ Copyright (C) 2003-2012 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,7 +28,6 @@
 */
 
 // Original Author of file: BALPE Dévi
-// Purpose of file:
 // ----------------------------------------------------------------------
 
 $LANG['plugin_pdf']['title'][1]  = "Impression pdf";

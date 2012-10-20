@@ -3,7 +3,7 @@
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2011 by the pdf Development Team.
+ Copyright (C) 2003-2012 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -26,8 +26,7 @@
  along with pdf. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
 */
-// Original Author of file: BALPE Dévi
-// Purpose of file: plugin PDF - Italian traslation - Passero 17.07.2009
+// Original Author of file: Passero
 // ----------------------------------------------------------------------
 
 $LANG['plugin_pdf']['title'][1]  = "Stampa pdf";
