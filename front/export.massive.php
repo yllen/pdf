@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,11 +27,7 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: BALPE Dévi
-// ----------------------------------------------------------------------
-
-define('GLPI_ROOT', '../../..');
-include (GLPI_ROOT."/inc/includes.php");
+include ("../../../inc/includes.php");
 
 Plugin::load('pdf', true);
 include_once (GLPI_ROOT."/lib/ezpdf/class.ezpdf.php");
@@ -69,5 +64,4 @@ if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
 } else {
    die("Missing hook");
 }
-
 ?>

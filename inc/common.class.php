@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,17 +27,16 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
-
 abstract class PluginPdfCommon {
 
    protected $obj= NULL;
+
 
    /**
     * Constructor, should intialize $this->obj property
    **/
    abstract function __construct(CommonGLPI $obj=NULL);
+
 
    /**
     * Add standard define tab
@@ -47,10 +45,9 @@ abstract class PluginPdfCommon {
     * @param $ong       array defined tab array
     * @param $options   array of options (for withtemplate)
     *
-    *  @return nothing (set the tab array)
+    * @return nothing (set the tab array)
    **/
    final function addStandardTab($itemtype, &$ong, $options) {
-      global $LANG;
 
       $withtemplate = 0;
       if (isset($options['withtemplate'])) {
@@ -59,8 +56,10 @@ abstract class PluginPdfCommon {
 
       if (!is_integer($itemtype)
           && ($obj = getItemForItemtype($itemtype))) {
+
          if (method_exists($itemtype, "displayTabContentForPDF")
              && !($obj instanceof PluginPdfCommon)) {
+
             $titles = $obj->getTabNameForItem($this->obj, $withtemplate);
             if (!is_array($titles)) {
                $titles = array(1 => $titles);
@@ -81,14 +80,11 @@ abstract class PluginPdfCommon {
     * Can be overriden to remove some unwanted tab
     *
     * @param $options Array of options
-    *
-    */
+   **/
    function defineAllTabs($options=array()) {
-      global $LANG;
 
-      $onglets  = array_merge(
-         array('_main_' => $this->obj->getTypeName(1)),
-         $this->obj->defineTabs());
+      $onglets  = array_merge(array('_main_' => $this->obj->getTypeName(1)),
+                              $this->obj->defineTabs());
 
       $othertabs = CommonGLPI::getOtherTabs($this->obj->getType());
 
@@ -117,10 +113,9 @@ abstract class PluginPdfCommon {
     *  @return string tab name
    **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-      global $LANG;
 
       if(!isset($withtemplate) || empty($withtemplate)) {
-         return $LANG['plugin_pdf']['title'][1];
+         return __('Print to pdf', 'pdf');
       }
    }
 
@@ -131,8 +126,8 @@ abstract class PluginPdfCommon {
     *
     * @since version 0.83
     *
-    * @param $pdf   PluginPdfSimplePDF object for output
-    * @param $item  CommonGLPI object for which the tab need to be displayed
+    * @param $pdf          PluginPdfSimplePDF object for output
+    * @param $item         CommonGLPI object for which the tab need to be displayed
     * @param $tab   string tab number
     *
     * @return true if display done (else will search for another handler)
@@ -147,8 +142,8 @@ abstract class PluginPdfCommon {
     *
     * @since version 0.83
     *
-    * @param $pdf   PluginPdfSimplePDF object for output
-    * @param $item  CommonGLPI object for which the tab need to be displayed
+    * @param $pdf          PluginPdfSimplePDF object for output
+    * @param $item         CommonGLPI object for which the tab need to be displayed
     * @param $tab   string tab number
     *
     * @return true if display done (else will search for another handler)
@@ -156,11 +151,10 @@ abstract class PluginPdfCommon {
    static final function displayCommonTabForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         /* PHP 5.3 : unconnment this and drop case in all sub-classes
          case '_main_' :
             static::pdfMain($pdf, $item);
             break;
-         */
+
          case 'Note' :
             self::pdfNote($pdf, $item);
             break;
@@ -231,7 +225,6 @@ abstract class PluginPdfCommon {
     * @param $ID integer, ID of the object to print
    **/
    private function addHeader($ID) {
-      global $LANG;
 
       $entity = '';
       if ($this->obj->getFromDB($ID) && $this->obj->can($ID,'r')) {
@@ -240,19 +233,14 @@ abstract class PluginPdfCommon {
              && $this->obj->isField('name')) {
             $name = $this->obj->getField('name');
          } else {
-            $name = $LANG["common"][2].' '.$ID;
+            $name = sprintf(__('%1$s %2$s'), __('ID'), $ID);
          }
          if (Session::isMultiEntitiesMode() && $this->obj->isEntityAssign()) {
             $entity = ' ('.Html::clean(Dropdown::getDropdownName('glpi_entities',
-                                                                $this->obj->getEntityID()));
-            /*
-            if ($this->obj->isRecursive()) {
-               $entity .= ' <b>(R)</b>';
-            }
-            */
-            $entity .= ')';
+                                                                $this->obj->getEntityID())).')';
          }
-         $this->pdf->setHeader($this->obj->getTypeName()." - <b>$name</b>$entity");
+         $this->pdf->setHeader(sprintf(__('%1$s - %2$s'), $this->obj->getTypeName(),
+                                       sprintf(__('%1$s %2$s'), '<b>'.$name.'</b>', $entity)));
 
          return true;
       }
@@ -261,18 +249,16 @@ abstract class PluginPdfCommon {
 
 
    static function pdfNote(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
-      global $LANG;
 
-      $ID = $item->getField('id');
-
+      $ID   = $item->getField('id');
       $note = trim($item->getField('notepad'));
 
       $pdf->setColumnsSize(100);
       if (Toolbox::strlen($note) > 0) {
-         $pdf->displayTitle('<b>'.$LANG["title"][37].'</b>');
+         $pdf->displayTitle('<b>'.__('Notes').'</b>');
          $pdf->displayText('', $note, 5);
       } else {
-         $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['note'][1].'</b>');
+         $pdf->displayTitle('<b>'.__('No note found', 'pdf').'</b>');
       }
       $pdf->displaySpace();
    }
@@ -303,20 +289,22 @@ abstract class PluginPdfCommon {
          foreach ($tabs as $tab) {
             if (!$this->displayTabContentForPDF($this->pdf, $this->obj, $tab)
                 && !$this->displayCommonTabForPDF($this->pdf, $this->obj, $tab)) {
+
                $data     = explode('$',$tab);
                $itemtype = $data[0];
                // Default set
                $tabnum   = (isset($data[1]) ? $data[1] : 1);
 
                if (!is_integer($itemtype)
-                   && $itemtype != 'empty'
+                   && ($itemtype != 'empty')
                    && method_exists($itemtype, "displayTabContentForPdf")
                    && ($obj = getItemForItemtype($itemtype))) {
                   if ($obj->displayTabContentForPdf($this->pdf, $this->obj, $tabnum)) {
                      continue;
                   }
                }
-               Toolbox::logInFile('php-errors', "PDF: don't know how to display '$tab' tab\n");
+               Toolbox::logInFile('php-errors',
+                                  sprintf(__("PDF: don't know how to display $s tab").'\n', $tab));
             }
          }
       }

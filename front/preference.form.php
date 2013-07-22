@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,13 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-// Original Author of file: Balpe Dévi / Remi Collet
-// ----------------------------------------------------------------------
-if (!defined('GLPI_ROOT')) {
-   define('GLPI_ROOT', '../../..');
-}
-
-include_once (GLPI_ROOT . "/inc/includes.php");
+include_once ("../../../inc/includes.php");
 
 //Save user preferences
 if (isset($_POST['plugin_pdf_user_preferences_save'])
@@ -47,19 +40,18 @@ if (isset($_POST['plugin_pdf_user_preferences_save'])
 
    if (isset($_POST['item'])) {
       foreach ($_POST['item'] as $key => $val) {
-         $DB->query("INSERT INTO
-                     `glpi_plugin_pdf_preferences` (`id` ,`users_id` ,`itemtype` ,`tabref`)
+         $DB->query("INSERT INTO `glpi_plugin_pdf_preferences`
+                            (`id` ,`users_id` ,`itemtype` ,`tabref`)
                      VALUES (NULL , '".$_SESSION["glpiID"]."',
                              '".$_POST["plugin_pdf_inventory_type"]."', '$key')");
       }
    }
    if (isset($_POST["page"]) && $_POST["page"]) {
-      $DB->query("INSERT INTO
-                  `glpi_plugin_pdf_preferences` (`id` ,`users_id` ,`itemtype` ,`tabref`)
+      $DB->query("INSERT INTO `glpi_plugin_pdf_preferences`
+                         (`id` ,`users_id` ,`itemtype` ,`tabref`)
                   VALUES (NULL , '".$_SESSION["glpiID"]."',
                           '".$_POST["plugin_pdf_inventory_type"]."', 'landscape')");
    }
    Html::back();
 }
-
 ?>

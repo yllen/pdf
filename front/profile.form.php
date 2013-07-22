@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,14 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
-
-if (!defined('GLPI_ROOT')) {
-   define('GLPI_ROOT', '../../..');
-}
-
-include_once (GLPI_ROOT . "/inc/includes.php");
+include_once ("../../../inc/includes.php");
 Session::checkRight("profile","r");
 
 // Mainly usefull if not actived
@@ -48,5 +40,4 @@ if (isset($_POST["update_user_profile"])) {
    $prof->update($_POST);
    Html::back();
 }
-
 ?>

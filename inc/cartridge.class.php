@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,19 +27,24 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
-
 class PluginPdfCartridge extends PluginPdfCommon {
 
 
+   /**
+    * @param $obj (defult NULL)
+   **/
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new Cartridge());
    }
 
+
+   /**
+    * @param $pdf                PluginPdfSimplePDF object
+    * @param $p                  Printer object
+    * @param $old
+   **/
    static function pdfForPrinter(PluginPdfSimplePDF $pdf, Printer $p, $old=false) {
-      global $DB,$CFG_GLPI, $LANG;
+      global $DB,$CFG_GLPI;
 
       $instID = $p->getField('id');
 
@@ -61,8 +65,8 @@ class PluginPdfCartridge extends PluginPdfCommon {
                        `glpi_cartridges`.`date_out`,
                        `glpi_cartridges`.`date_in`
                 FROM `glpi_cartridges`, `glpi_cartridgeitems`
-                WHERE `glpi_cartridges`.`date_out` $dateout
-                      AND `glpi_cartridges`.`printers_id` = '$instID'
+                WHERE `glpi_cartridges`.`date_out` ".$dateout."
+                      AND `glpi_cartridges`.`printers_id` = '".$instID."'
                       AND `glpi_cartridges`.`cartridgeitems_id` = `glpi_cartridgeitems`.`id`
                 ORDER BY `glpi_cartridges`.`date_out` ASC,
                          `glpi_cartridges`.`date_use` DESC,
@@ -70,33 +74,30 @@ class PluginPdfCartridge extends PluginPdfCommon {
 
       $result = $DB->query($query);
       $number = $DB->numrows($result);
-      $i = 0;
-      $pages=$p->fields['init_pages_counter'];
+      $i      = 0;
+      $pages  = $p->fields['init_pages_counter'];
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".($old ? $LANG['cartridges'][35] : $LANG['cartridges'][33] )."</b>");
+      $pdf->displayTitle("<b>".($old ? __('Worn cartridges') : __('Used cartridges') )."</b>");
 
       if (!$number) {
-         $pdf->displayLine($LANG['search'][15]);
+         $pdf->displayLine(__('No item found'));
       } else {
          $pdf->setColumnsSize(25,13,12,12,12,26);
-         $pdf->displayTitle('<b><i>'.$LANG['cartridges'][12],
-                                     $LANG['consumables'][23],
-                                     $LANG['cartridges'][24],
-                                     $LANG['consumables'][26],
-                                     $LANG['search'][9],
-                                     $LANG['cartridges'][39].'</b></i>');
+         $pdf->displayTitle('<b><i>'.__('Cartridge type'), __('State'), __('Add Date'),
+                                     __('Use date'), __('End date'), __('Printer counter').
+                            '</b></i>');
 
-         $stock_time = 0;
-         $use_time = 0;
-         $pages_printed = 0;
+         $stock_time       = 0;
+         $use_time         = 0;
+         $pages_printed    = 0;
          $nb_pages_printed = 0;
-         while ($data=$DB->fetch_array($result)) {
+         while ($data = $DB->fetch_array($result)) {
             $date_in  = Html::convDate($data["date_in"]);
             $date_use = Html::convDate($data["date_use"]);
             $date_out = Html::convDate($data["date_out"]);
 
-            $col1 = $data["name"]." - ".$data["ref"];
+            $col1 = sprintf(__('%1$s - %2$s'), $data["name"], $data["ref"]);
             $col2 = Cartridge::getStatus($data["date_use"], $data["date_out"]);
             $col6 = '';
 
@@ -118,9 +119,10 @@ class PluginPdfCartridge extends PluginPdfCommon {
                $col6 = $data['pages'];
 
                if ($pages < $data['pages']) {
-                  $pages_printed += $data['pages'] - $pages;
+                  $pages_printed   += $data['pages'] - $pages;
                   $nb_pages_printed++;
-                  $col6 .= " (". ($data['pages']-$pages)." ".$LANG['printers'][31].")";
+                  $col6  = sprintf(__('%1$s (%2$s)'), $col6,
+                                   __('%d printed pages'), ($data['pages']-$pages));
                   $pages = $data['pages'];
                }
             }
@@ -134,13 +136,16 @@ class PluginPdfCartridge extends PluginPdfCommon {
                $nb_pages_printed = 1;
             }
 
+            $nbstock = round($stock_time/$number/60/60/24/30.5,1);
+            $nbuse   = round($use_time/$number/60/60/24/30.5,1);
             $pdf->setColumnsSize(33,33,34);
             $pdf->displayTitle(
-               "<b><i>".$LANG['cartridges'][40]." :</i></b> ".
-                  round($stock_time/$number/60/60/24/30.5,1)." ".$LANG['financial'][57],
-               "<b><i>".$LANG['cartridges'][41]." :</i></b> ".
-                  round($use_time/$number/60/60/24/30.5,1)." ".$LANG['financial'][57],
-               "<b><i>".$LANG['cartridges'][42]." :</i></b> ".round($pages_printed/$nb_pages_printed));
+               "<b><i>".sprintf(__('%1$s: %2$s'), __('Average time in stock')."</i></b>",
+                                _n('%d month', '%d months', $nbstock), $nbstock),
+               "<b><i>".sprintf(__('%1$s: %2$s'),__('Average time in use')."</i></b>",
+                                _n('%d month', '%d months', $nbuse), $nbuse),
+               "<b><i>".sprintf(__('%1$s: %2$s'), __('Average number of printed pages')."</i></b>",
+                                round($pages_printed/$nb_pages_printed)));
          }
          $pdf->displaySpace();
       }
