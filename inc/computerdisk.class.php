@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,13 +27,12 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
+
 
 class PluginPdfComputerDisk extends PluginPdfCommon {
 
-   function __construct(CommonGLPI $obj=NULL) {
 
+   function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new ComputerDisk());
    }
 
@@ -48,34 +46,35 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
                 FROM `glpi_computerdisks`
                 LEFT JOIN `glpi_filesystems`
                   ON (`glpi_computerdisks`.`filesystems_id` = `glpi_filesystems`.`id`)
-                WHERE (`computers_id` = '$ID')";
+                WHERE (`computers_id` = '".$ID."')";
 
-      $result=$DB->query($query);
+      $result = $DB->query($query);
 
       $pdf->setColumnsSize(100);
       if ($DB->numrows($result) > 0) {
-         $pdf->displayTitle("<b>".$LANG['computers'][8]."</b>");
+         $pdf->displayTitle("<b>"._n('Volume', 'Volumes', 2)."</b>");
 
          $pdf->setColumnsSize(22,23,22,11,11,11);
-         $pdf->displayTitle('<b>'.$LANG['common'][16].'</b>',
-                            '<b>'.$LANG['computers'][6].'</b>',
-                            '<b>'.$LANG['computers'][5].'</b>',
-                            '<b>'.$LANG['common'][17].'</b>',
-                            '<b>'.$LANG['computers'][3].'</b>',
-                            '<b>'.$LANG['computers'][2].'</b>');
+         $pdf->displayTitle('<b>'.__('Name'), __('Partition'), _('Mount point'), __('Type'),
+                                  __('Global size'), __('Free size').'</b>');
 
          $pdf->setColumnsAlign('left','left','left','center','right','right');
 
          while ($data = $DB->fetch_assoc($result)) {
-            $pdf->displayLine('<b>'.Toolbox::decodeFromUtf8((empty($data['name'])?$data['ID']:$data['name']),"windows-1252").'</b>',
+            $pdf->displayLine('<b>'.Toolbox::decodeFromUtf8((empty($data['name'])
+                                                              ?$data['ID']:$data['name']),
+                                                            "windows-1252").'</b>',
                               $data['device'],
                               $data['mountpoint'],
-                              Html::clean(Dropdown::getDropdownName('glpi_filesystems',$data["filesystems_id"])),
-                              Html::clean(Html::formatNumber($data['totalsize'], false, 0))." ".$LANG['common'][82],
-                              Html::clean(Html::formatNumber($data['freesize'], false, 0))." ".$LANG['common'][82]);
+                              Html::clean(Dropdown::getDropdownName('glpi_filesystems',
+                                                                    $data["filesystems_id"])),
+                              sprintf(__('%s Mio'),
+                                      Html::clean(Html::formatNumber($data['totalsize'], false, 0))),
+                              sprintf(__('%s Mio'),
+                                      Html::clean(Html::formatNumber($data['freesize'], false, 0))));
          }
       } else {
-         $pdf->displayTitle("<b>".$LANG['computers'][8] . " - " . $LANG['search'][15]."</b>");
+         $pdf->displayTitle("<b>".__('No volume found', 'pdf')."</b>");
       }
       $pdf->displaySpace();
    }

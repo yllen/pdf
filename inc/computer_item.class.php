@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,13 +27,11 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfComputer_Item extends PluginPdfCommon {
 
-   function __construct(CommonGLPI $obj=NULL) {
 
+   function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new Computer_Item());
    }
 
@@ -44,15 +41,15 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
 
       $ID = $comp->getField('id');
 
-      $items = array('Printer'    => $LANG['Menu'][2],
-                     'Monitor'    => $LANG['Menu'][3],
-                     'Peripheral' => $LANG['Menu'][16],
-                     'Phone'      => $LANG['Menu'][34]);
+      $items = array('Printer'    => _n('Printer', 'Printers', 2),
+                     'Monitor'    => _n('Monitor', 'Monitors', 2),
+                     'Peripheral' => _n('Device', 'Devices', 2),
+                     'Phone'      => _n('Phone', 'Phones', 2));
 
       $info = new InfoCom();
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
+      $pdf->displayTitle('<b>'.__('Direct connections').'</b>');
 
       foreach ($items as $type => $title) {
          if (!($item = getItemForItemtype($type))) {
@@ -63,58 +60,64 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
          }
          $query = "SELECT *
                    FROM `glpi_computers_items`
-                   WHERE `computers_id` = '$ID'
-                         AND `itemtype` = '$type'";
+                   WHERE `computers_id` = '".$ID."'
+                         AND `itemtype` = '".$type."'";
 
          if ($result = $DB->query($query)) {
             $resultnum = $DB->numrows($result);
             if ($resultnum > 0) {
                for ($j=0 ; $j < $resultnum ; $j++) {
-                  $tID = $DB->result($result, $j, "items_id");
+                  $tID    = $DB->result($result, $j, "items_id");
                   $connID = $DB->result($result, $j, "id");
                   $item->getFromDB($tID);
                   $info->getFromDBforDevice($type,$tID) || $info->getEmpty();
 
-                  $line1 = $item->getName()." - ";
+                  $line1 = $item->getName();
                   if ($item->getField("serial") != null) {
-                     $line1 .= $LANG["common"][19] . " : " .$item->getField("serial")." - ";
+                     $line1 = sprintf(__('%1$s - %2$s'), $line1,
+                                       sprintf(__('%1$s: %2$s'), __('Serial number'),
+                                               $item->getField("serial")));
                   }
-                  $line1 .= Html::clean(Dropdown::getDropdownName("glpi_states",
-                                                                 $item->getField('states_id')));
+
+                  $line1 = sprintf(__('%1$s - %2$s'), $line1,
+                                   Html::clean(Dropdown::getDropdownName("glpi_states",
+                                                                         $item->getField('states_id'))));
 
                   $line2 = "";
                   if ($item->getField("otherserial") != null) {
-                     $line2 = $LANG["common"][20] . " : " . $item->getField("otherserial");
+                     $line2 = sprintf(__('%1$s: %2$s'), __('Inventory number'),
+                                      $item->getField("otherserial"));
                   }
                   if ($info->fields["immo_number"]) {
-                     if ($line2) {
-                        $line2 .= " - ";
-                     }
-                     $line2 .= $LANG["financial"][20] . " : " . $info->fields["immo_number"];
+                     $line2 = sprintf(__('%1$s - %2$s'), $line2,
+                                      sprintf(__('%1$s: %2$s'), __('Immobilization number'),
+                                              $info->fields["immo_number"]));
                   }
                   if ($line2) {
-                     $pdf->displayText('<b>'.$item->getTypeName().' : </b>', $line1 . "\n" . $line2, 2);
+                     $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), $item->getTypeName().'</b>',
+                                                     $line1 . "\n" . $line2), 2);
                   } else {
-                     $pdf->displayText('<b>'.$item->getTypeName().' : </b>', $line1, 1);
+                     $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), $item->getTypeName().'</b>',
+                                                     $line1), 1);
                   }
                }// each device   of current type
 
             } else { // No row
                switch ($type) {
                   case 'Printer' :
-                     $pdf->displayLine($LANG["computers"][38]);
+                     $pdf->displayLine(__('Use unitary management'));
                      break;
 
                   case 'Monitor' :
-                     $pdf->displayLine($LANG["computers"][37]);
+                     $pdf->displayLine(__('Writer'));
                      break;
 
                   case 'Peripheral' :
-                     $pdf->displayLine($LANG["computers"][47]);
+                     $pdf->displayLine(__('Progress'));
                      break;
 
                   case 'Phone' :
-                     $pdf->displayLine($LANG["computers"][54]);
+                     $pdf->displayLine(__('Item not found'));
                      break;
                }
             } // No row
@@ -127,54 +130,60 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
       global $DB,$LANG;
 
-      $ID = $item->getField('id');
+      $ID   = $item->getField('id');
       $type = $item->getType();
 
       $info = new InfoCom();
       $comp = new Computer();
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.$LANG["connect"][0].' :</b>');
+      $pdf->displayTitle('<b>'.__('Direct connections').'</b>');
 
       $query = "SELECT *
                 FROM `glpi_computers_items`
-                WHERE `items_id` = '$ID'
-                      AND `itemtype` = '$type'";
+                WHERE `items_id` = '".$ID."'
+                      AND `itemtype` = '".$type."'";
 
       if ($result = $DB->query($query)) {
          $resultnum = $DB->numrows($result);
          if ($resultnum > 0) {
             for ($j=0 ; $j < $resultnum ; $j++) {
-               $tID = $DB->result($result, $j, "computers_id");
+               $tID    = $DB->result($result, $j, "computers_id");
                $connID = $DB->result($result, $j, "id");
                $comp->getFromDB($tID);
                $info->getFromDBforDevice('Computer',$tID) || $info->getEmpty();
 
-               $line1 = ($comp->fields['name']?$comp->fields['name']:"(".$comp->fields['id'].")")." - ";
+               $line1 = ($comp->fields['name']?$comp->fields['name']:"(".$comp->fields['id'].")");
                if ($comp->fields['serial']) {
-                  $line1 .= $LANG["common"][19] . " : " .$comp->fields['serial']." - ";
+                  $line1 = sprintf(__('%1$s - %2$s'), $line1,
+                                   sprintf(__('%1$s: %2$s'), __('Serial number'),
+                                           $comp->fields['serial']));
                }
-               $line1 .= Html::clean(Dropdown::getDropdownName("glpi_states",$comp->fields['states_id']));
+               $line1 = sprintf(__('%1$s - %2$s'), $line1,
+                                Html::clean(Dropdown::getDropdownName("glpi_states",
+                                                                      $comp->fields['states_id'])));
 
                $line2 = "";
                if ($comp->fields['otherserial']) {
-                  $line2 .= $LANG["common"][20] . " : " .$comp->fields['otherserial']." - ";
+                  $line2 = sprintf(__('%1$s: %2$s'), __('Inventory number'),
+                                   $item->getField("otherserial"));
                }
                if ($info->fields['immo_number']) {
-                  if ($line2) {
-                     $line2 .= " - ";
-                  }
-                  $line2 .= $LANG["financial"][20] . " : " . $info->fields['immo_number'];
+                  $line2 = sprintf(__('%1$s - %2$s'), $line2,
+                                   sprintf(__('%1$s: %2$s'), __('Immobilization number'),
+                                           $info->fields["immo_number"]));
                }
                if ($line2) {
-                  $pdf->displayText('<b>'.$LANG['help'][25].' : </b>', $line1 . "\n" . $line2, 2);
+                  $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Computer').'/b>',
+                                                  $line1 . "\n" . $line2), 2);
                } else {
-                  $pdf->displayText('<b>'.$LANG['help'][25].' : </b>', $line1, 1);
+                  $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Computer').'/b>',
+                                                  $line1), 1);
                }
             }// each device   of current type
 
          } else { // No row
-            $pdf->displayLine($LANG['connect'][1]);
+            $pdf->displayLine(__('Not connected.'));
          } // No row
       } // Result
       $pdf->displaySpace();

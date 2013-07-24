@@ -314,4 +314,84 @@ abstract class PluginPdfCommon {
          return $this->pdf->output();
       }
    }
+
+
+   static function mainTitle(PluginPdfSimplePDF $pdf, $item) {
+
+      $pdf->setColumnsSize(50,50);
+
+      $col1 = '<b>'.sprintf(__('%1$s %2$s'),__('ID'), $item->fields['id']).'</b>';
+      $col2 = sprintf(__('%1$s: %2$s'), __('Last update'),
+                      Html::convDateTime($item->fields['date_mod']));
+      if (!empty($printer->fields['template_name'])) {
+         $col2 = sprintf(__('%1$s (%2$s)'), $col2,
+                         sprintf(__('%1$s: %2$s'), __('Template name'),
+                                 $item->fields['template_name']));
+      }
+      return $pdf->displayTitle($col1, $col2);
+   }
+
+
+   static function mainLine(PluginPdfSimplePDF $pdf, $item, $field) {
+
+      $type = Toolbox::strtolower($item->getType());
+      switch($field) {
+         case 'name-status' :
+            return $pdf->displayLine(
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
+                                      $item->fields['name']),
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Status').'</i></b>',
+                                      Html::clean(Dropdown::getDropdownName('glpi_states',
+                                                                            $item->fields['states_id']))));
+
+         case 'location-type' :
+            return $pdf->displayLine(
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
+                                      Html::clean(Dropdown::getDropdownName('glpi_locations',
+                                                                            $item->fields['locations_id']))),
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Type').'</i></b>',
+                                      Html::clean(Dropdown::getDropdownName('glpi_'.$type.'types',
+                                                                            $item->fields[$type.'types_id']))));
+
+         case 'tech-manufacturer' :
+            return $pdf->displayLine(
+                     '<b><i>'.sprintf(__('%1$s: %2$s'),
+                                      __('Technician in charge of the hardware').'</i></b>',
+                                      getUserName($item->fields['users_id_tech'])),
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Manufacturer').'</i></b>',
+                                      Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
+                                                                            $item->fields['manufacturers_id']))));
+         case 'group-model' :
+            return $pdf->displayLine(
+                     '<b><i>'.sprintf(__('%1$s: %2$s'),
+                                      __('Group in charge of the hardware').'</i></b>',
+                                      Html::clean(Dropdown::getDropdownName('glpi_groups',
+                                                                            $item->fields['groups_id_tech']))),
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Model').'</i></b>',
+                                      Html::clean(Dropdown::getDropdownName('glpi_'.$type.'models',
+                                                                            $item->fields[$type.'models_id']))));
+
+         case 'usernum-serial' :
+            return $pdf->displayLine(
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Alternate username number').'</i></b>',
+                                      $item->fields['contact_num']),
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Serial number').'</i></b>',
+                                      $item->fields['serial']));
+
+         case 'user-otherserial' :
+            return $pdf->displayLine(
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Alternate username').'</i></b>',
+                                      $item->fields['contact']),
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Inventory number').'</i></b>',
+                                      $item->fields['otherserial']));
+
+         case 'comment' :
+            return $pdf->displayText('<b><i>'.sprintf(__('%1$s: %2$s'), __('Comments').'</i></b>',
+                                                      $item->fields['comment']));
+
+       default :
+        return;
+      }
+   }
+
 }

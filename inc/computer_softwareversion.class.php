@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,59 +27,52 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new Computer_SoftwareVersion());
    }
 
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-      global $DB,$LANG;
+      global $DB;
 
-      $ID = $item->getField('id');
+      $ID   = $item->getField('id');
       $type = $item->getType();
       $crit = ($type=='Software' ? 'softwares_id' : 'id');
 
-      if ($type=='Software') {
-         $crit = 'softwares_id';
+      if ($type == 'Software') {
+         $crit      = 'softwares_id';
          // Software ID
-         $query_number = "SELECT COUNT(*) AS cpt
-                          FROM `glpi_computers_softwareversions`
-                          INNER JOIN `glpi_softwareversions`
-                              ON (`glpi_computers_softwareversions`.`softwareversions_id`
-                                    = `glpi_softwareversions`.`id`)
-                          INNER JOIN `glpi_computers`
-                              ON (`glpi_computers_softwareversions`.`computers_id`
-                                    = `glpi_computers`.`id`)
-                          WHERE `glpi_softwareversions`.`softwares_id` = '$ID'" .
-                                getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
-                                AND `glpi_computers`.`is_deleted` = '0'
-                                AND `glpi_computers`.`is_template` = '0'";
+         $innerjoin = "INNER JOIN `glpi_softwareversions`
+                           ON (`glpi_computers_softwareversions`.`softwareversions_id`
+                               = `glpi_softwareversions`.`id`)";
+         $where     = "WHERE `glpi_softwareversions`.`softwares_id` = '".$ID."'";
 
       } else {
-         $crit = 'id';
+         $crit      = 'id';
          //SoftwareVersion ID
-         $query_number = "SELECT COUNT(*) AS cpt
-                          FROM `glpi_computers_softwareversions`
-                          INNER JOIN `glpi_computers`
-                              ON (`glpi_computers_softwareversions`.`computers_id`
-                                    = `glpi_computers`.`id`)
-                          WHERE `glpi_computers_softwareversions`.`softwareversions_id` = '$ID'" .
-                                getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
-                                AND `glpi_computers`.`is_deleted` = '0'
-                                AND `glpi_computers`.`is_template` = '0'";
+         $innerjoin = '';
+         $where       = "WHERE `glpi_computers_softwareversions`.`softwareversions_id` = '".$ID."'";
+
       }
+      $query_number = "SELECT COUNT(*) AS cpt
+                       FROM `glpi_computers_softwareversions`
+                       $innerjoin
+                       INNER JOIN `glpi_computers`
+                           ON (`glpi_computers_softwareversions`.`computers_id` = `glpi_computers`.`id`)
+                       $where".
+                       getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
+                            AND `glpi_computers`.`is_deleted` = '0'
+                            AND `glpi_computers`.`is_template` = '0'";
+
       $total = 0;
       if ($result =$DB->query($query_number)) {
          $total  = $DB->result($result,0,0);
       }
-         $query = "SELECT DISTINCT `glpi_computers_softwareversions`.*,
+      $query = "SELECT DISTINCT `glpi_computers_softwareversions`.*,
                           `glpi_computers`.`name` AS compname,
                           `glpi_computers`.`id` AS cID,
                           `glpi_computers`.`serial`,
@@ -97,45 +89,46 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                           `glpi_locations`.`completename` AS location,
                           `glpi_states`.`name` AS state,
                           `glpi_groups`.`name` AS groupe
-                   FROM `glpi_computers_softwareversions`
-                   INNER JOIN `glpi_softwareversions`
-                        ON (`glpi_computers_softwareversions`.`softwareversions_id`
+                FROM `glpi_computers_softwareversions`
+                INNER JOIN `glpi_softwareversions`
+                     ON (`glpi_computers_softwareversions`.`softwareversions_id`
                               = `glpi_softwareversions`.`id`)
-                   INNER JOIN `glpi_computers`
-                        ON (`glpi_computers_softwareversions`.`computers_id` = `glpi_computers`.`id`)
-                   LEFT JOIN `glpi_entities` ON (`glpi_computers`.`entities_id` = `glpi_entities`.`id`)
-                   LEFT JOIN `glpi_locations`
-                        ON (`glpi_computers`.`locations_id` = `glpi_locations`.`id`)
-                   LEFT JOIN `glpi_states` ON (`glpi_computers`.`states_id` = `glpi_states`.`id`)
-                   LEFT JOIN `glpi_groups` ON (`glpi_computers`.`groups_id` = `glpi_groups`.`id`)
-                   LEFT JOIN `glpi_users` ON (`glpi_computers`.`users_id` = `glpi_users`.`id`)
-                   WHERE (`glpi_softwareversions`.`$crit` = '$ID') " .
-                          getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
-                          AND `glpi_computers`.`is_deleted` = '0'
-                          AND `glpi_computers`.`is_template` = '0'
-                   ORDER BY version, compname
-                   LIMIT 0," . intval($_SESSION['glpilist_limit']);
+                INNER JOIN `glpi_computers`
+                     ON (`glpi_computers_softwareversions`.`computers_id` = `glpi_computers`.`id`)
+                LEFT JOIN `glpi_entities` ON (`glpi_computers`.`entities_id` = `glpi_entities`.`id`)
+                LEFT JOIN `glpi_locations`
+                     ON (`glpi_computers`.`locations_id` = `glpi_locations`.`id`)
+                LEFT JOIN `glpi_states` ON (`glpi_computers`.`states_id` = `glpi_states`.`id`)
+                LEFT JOIN `glpi_groups` ON (`glpi_computers`.`groups_id` = `glpi_groups`.`id`)
+                LEFT JOIN `glpi_users` ON (`glpi_computers`.`users_id` = `glpi_users`.`id`)
+                WHERE (`glpi_softwareversions`.`$crit` = '$ID') " .
+                      getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
+                      AND `glpi_computers`.`is_deleted` = '0'
+                      AND `glpi_computers`.`is_template` = '0'
+                ORDER BY version, compname
+                LIMIT 0," . intval($_SESSION['glpilist_limit']);
 
       $pdf->setColumnsSize(100);
 
-      if (($result=$DB->query($query)) && ($number=$DB->numrows($result))>0) {
-         if ($number==$total) {
-            $pdf->displayTitle('<b>'.$LANG['software'][19]." : $number</b>");
+      if (($result = $DB->query($query))
+          && (($number = $DB->numrows($result)) > 0)) {
+         if ($number == $total) {
+            $pdf->displayTitle('<b>'.sprintf(__('%1$s: %2$s'),
+                                             _n('Installation', 'Installations', 2), $number)."</b>");
          } else {
-            $pdf->displayTitle('<b>'.$LANG['software'][19]." : $number / $total</b>");
+            $pdf->displayTitle('<b>'.sprintf(__('%1$s: %2$s'),
+                                             _n('Installation', 'Installations', 2),
+                                             $number / $total)."</b>");
          }
          $pdf->setColumnsSize(12,16,15,15,22,20);
-         $pdf->displayTitle('<b><i>'.$LANG['software'][5],  // vername
-                                     $LANG['common'][16],   // compname
-                                     $LANG['common'][19],   // serial
-                                     $LANG['common'][20],   // asset
-                                     $LANG['common'][15],   // location
-                                     $LANG['software'][11].'</i></b>'); // licname
+         $pdf->displayTitle('<b><i>'._n('Version', 'Versions', 2), __('Name'), __('Serial number'),
+                                     __('Inventory number'), __('Location'),
+                                     _n('License', 'Licenses', 2).'</i></b>');
 
          while ($data = $DB->fetch_assoc($result)) {
             $compname = $data['compname'];
             if (empty($compname) || $_SESSION['glpiis_ids_visible']) {
-               $compname .= " (".$data['cID'].")";
+               $compname = sprintf(__('%1$s (%2$s)'), $compname, $data['cID']);
             }
             $lics = Computer_SoftwareLicense::GetLicenseForInstallation($data['cID'], $data['vID']);
 
@@ -144,7 +137,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                foreach ($lics as $lic) {
                   $licname = $lic['name'];
                   if (!empty($lic['type'])) {
-                     $licname .= " (".$lic['type'].")";
+                     $licname = sprintf(__('%1$s (%2$s)'), $licname, $lic['type']);
                   }
                   $tmp[] = $licname;
                }
@@ -153,28 +146,28 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                               $data['location'], implode(', ', $tmp));
          }
       } else {
-         $pdf->displayTitle('<b>'.$LANG['software'][19].'</b>');
-         $pdf->displayLine($LANG['search'][15]."!");
+         $pdf->displayTitle('<b>'._n('Installation', 'Installations', 2).'</b>');
+         $pdf->displayLine(__('No item found'));
       }
       $pdf->displaySpace();
    }
 
 
    static function pdfForVersionByEntity(PluginPdfSimplePDF $pdf, SoftwareVersion $version) {
-      global $DB, $CFG_GLPI, $LANG;
+      global $DB, $CFG_GLPI;
 
       $softwareversions_id = $version->getField('id');
 
       $pdf->setColumnsSize(75,25);
       $pdf->setColumnsAlign('left', 'right');
 
-      $pdf->displayTitle('<b>'.$LANG['entity'][0], $LANG['software'][19].'</b>');
+      $pdf->displayTitle('<b>'._('Entity'), _n('Installation', 'Installations', 2).'</b>');
 
       $lig = $tot = 0;
       if (in_array(0, $_SESSION["glpiactiveentities"])) {
          $nb = Computer_SoftwareVersion::countForVersion($softwareversions_id,0);
-         if ($nb>0) {
-            $pdf->displayLine($LANG['entity'][2], $nb);
+         if ($nb > 0) {
+            $pdf->displayLine(__('Root entity'), $nb);
             $tot += $nb;
             $lig++;
          }
@@ -186,27 +179,27 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
 
       foreach ($DB->request($sql) as $ID => $data) {
          $nb = Computer_SoftwareVersion::countForVersion($softwareversions_id,$ID);
-         if ($nb>0) {
+         if ($nb > 0) {
             $pdf->displayLine($data["completename"], $nb);
             $tot += $nb;
             $lig++;
          }
       }
 
-      if ($tot>0) {
-         if ($lig>1) {
-            $pdf->displayLine($LANG['common'][33], $tot);
+      if ($tot > 0) {
+         if ($lig > 1) {
+            $pdf->displayLine(__('Total'), $tot);
          }
       } else {
          $pdf->setColumnsSize(100);
-         $pdf->displayLine($LANG['search'][15]);
+         $pdf->displayLine(__('No item found'));
       }
       $pdf->displaySpace();
    }
 
 
    static function pdfForComputer(PluginPdfSimplePDF $pdf, Computer $comp){
-      global $DB,$LANG;
+      global $DB;
 
       $ID = $comp->getField('id');
 
@@ -229,10 +222,10 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                 WHERE `glpi_computers_softwareversions`.`computers_id` = '$ID'
                 ORDER BY `softwarecategories_id`, `softname`, `version`";
 
-      $output = array();
+      $output              = array();
 
-      $software_category      = new SoftwareCategory();
-      $software_version       = new SoftwareVersion();
+      $software_category   = new SoftwareCategory();
+      $software_version    = new SoftwareVersion();
 
       foreach ($DB->request($query) as $softwareversion) {
          $output[] = $softwareversion;
@@ -241,7 +234,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
       $installed = array();
       if (count($output)) {
          $pdf->setColumnsSize(100);
-         $pdf->displayTitle('<b>'.$LANG["software"][17].'</b>');
+         $pdf->displayTitle('<b>'._n('Installed software', 'Installed software', 2, 'pdf').'</b>');
 
          $cat = -1;
          foreach ($output as $soft) {
@@ -250,17 +243,15 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                if ($cat && $software_category->getFromDB($cat)) {
                   $catname = $software_category->getName();
                } else {
-                  $catname = $LANG["softwarecategories"][2];
+                  $catname = __('Uncategorized software');
                }
 
                $pdf->setColumnsSize(100);
                $pdf->displayTitle('<b>'.$catname.'</b>');
 
                $pdf->setColumnsSize(50,13,13,24);
-               $pdf->displayTitle('<b>'.$LANG['common'][16].'</b>',
-                                  '<b>'.$LANG['state'][0].'</b>',
-                                  '<b>'.$LANG['rulesengine'][78].'</b>',
-                                  '<b>'.$LANG['install'][92].'</b>');
+               $pdf->displayTitle('<b>'.__('Name'), __('Status'), __('Version'), __('License').
+                                  '</b>');
             }
 
             // From Computer_SoftwareVersion::displaySoftsByCategory()
@@ -284,7 +275,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                $installed[] = $licdata['id'];
                $lic .= (empty($lic)?'':', ').'<b>'.$licdata['name'].'</b> '.$licdata['serial'];
                if (!empty($licdata['type'])) {
-                  $lic .= ' ('.$licdata['type'].')';
+                  $lic = sprintf(__('%1$s (%2$s)'), $lic, $licdata['type']);
                }
             }
 
@@ -292,7 +283,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
          } // Each version
 
       } else {
-         $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['software'][1].'</b>');
+         $pdf->displayTitle('<b>'.__('No installed software', 'pdf').'</b>');
       }
 
       // Affected licenses NOT installed
@@ -323,19 +314,18 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
       $req = $DB->request($query);
       if ($req->numrows()) {
          $pdf->setColumnsSize(100);
-         $pdf->displayTitle('<b>'.$LANG['software'][3].'</b>');
+         $pdf->displayTitle('<b>'.__('Affected licenses of not installed software').'</b>');
 
          $pdf->setColumnsSize(50,13,13,24);
-         $pdf->displayTitle('<b>'.$LANG['common'][16].'</b>',
-                            '<b>'.$LANG['state'][0].'</b>',
-                            '<b>'.$LANG['rulesengine'][78].'</b>',
-                            '<b>'.$LANG['install'][92].'</b>');
+         $pdf->displayTitle('<b>'.__('Name'), __('Status'), __('Version'), __('License').'</b>');
 
+         $lic = '';
          foreach ($req as $data) {
             $lic .= '<b>'.$data['name'].'</b> '.$data['serial'];
             if (!empty($data['softwarelicensetypes_id'])) {
-               $lic .= ' ('.html_clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
-                                                                 $data['softwarelicensetypes_id'])).')';
+               $lic = sprintf(__('%1$s (%2$s)'), $lic,
+                              html_clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
+                                                                   $data['softwarelicensetypes_id'])));
             }
             $pdf->displayLine($data['softname'], $data['state'], $data['version'], $lic);
          }

@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -35,10 +34,10 @@ class PluginPdfPreference extends CommonDBTM {
 
 
    static function showPreferences() {
-      global $LANG, $DB, $CFG_GLPI, $PLUGIN_HOOKS;
+      global $DB, $CFG_GLPI, $PLUGIN_HOOKS;
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
-      $pref = new self();
+      $pref   = new self();
 
       echo "<div class='center' id='pdf_type'>";
       foreach ($PLUGIN_HOOKS['plugin_pdf'] as $type => $plug) {
@@ -53,15 +52,24 @@ class PluginPdfPreference extends CommonDBTM {
    }
 
 
-    function checkbox($num,$label,$checked=false) {
+   /**
+    * @param $num
+    * @param $label
+    * @param $checked   (false by default)
+   **/
+   function checkbox($num,$label,$checked=false) {
 
        echo "<td width='20%'><input type='checkbox' ".($checked==true?"checked='checked'":'').
              " name='item[$num]' value='1'>&nbsp;".$label."</td>";
     }
 
 
+    /**
+     * @param $item
+     * @param $action
+    **/
    function menu($item, $action) {
-      global $LANG, $DB, $PLUGIN_HOOKS;
+      global $DB, $PLUGIN_HOOKS;
 
       $type = $item->getType();
 
@@ -81,11 +89,12 @@ class PluginPdfPreference extends CommonDBTM {
       $options = $itempdf->defineAllTabs();
 
       $formid="plugin_pdf_${type}_".mt_rand();
-      echo "<form name='$formid' id='$formid' action='$action' method='post' ".
+      echo "<form name='".$formid."' id='".$formid."' action='$action' method='post' ".
              ($ID ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
 
       $landscape = false;
-      $values = array();
+      $values    = array();
+
       $sql = "SELECT `tabref`
               FROM `".$this->getTable()."`
               WHERE `users_ID` = '" . $_SESSION['glpiID'] . "'
@@ -102,8 +111,10 @@ class PluginPdfPreference extends CommonDBTM {
       if (!count($values) && isset($options['_main_'])) {
          $values['_main_'] = 1;
       }
-      echo "<tr><th colspan='6'>" . $LANG['plugin_pdf']['title'][2]. "&nbsp;: ".
-              $item->getTypeName() ."</th></tr>";
+      echo "<tr><th colspan='6'>".sprintf(__('%1$s: %2$s'),
+                                          __('Choose the tables to print in pdf', 'pdf'),
+                                          $item->getTypeName());
+      echo "</th></tr>";
 
       $i = 0;
       foreach ($options as $num => $title) {
@@ -114,7 +125,7 @@ class PluginPdfPreference extends CommonDBTM {
             $title = "$title ($num)";
          }
          $this->checkbox($num, $title, (isset($values[$num]) ? true : false));
-         if ($i==4) {
+         if ($i == 4) {
             echo "</tr>";
             $i = 0;
          } else {
@@ -122,7 +133,7 @@ class PluginPdfPreference extends CommonDBTM {
          }
       }
       if ($i) {
-         while ($i<=4) {
+         while ($i <= 4) {
             echo "<td width='20%'>&nbsp;</td>";
             $i++;
          }
@@ -130,32 +141,30 @@ class PluginPdfPreference extends CommonDBTM {
       }
 
       echo "<tr class='tab_bg_2'><td colspan='2' class='left'>";
-      echo "<a onclick=\"if (markCheckboxes('$formid') ) return false;\" href='".
-           $_SERVER['PHP_SELF']."?select=all'>".$LANG['buttons'][18]."</a> / ";
-      echo "<a onclick=\"if (unMarkCheckboxes('$formid') ) return false;\" href='".
-           $_SERVER['PHP_SELF']."?select=none'>".$LANG['buttons'][19]."</a></td>";
+      echo "<a onclick=\"if (markCheckboxes('".$formid."') ) return false;\" href='".
+           $_SERVER['PHP_SELF']."?select=all'>".__('Check all')."</a> / ";
+      echo "<a onclick=\"if (unMarkCheckboxes('".$formid."') ) return false;\" href='".
+           $_SERVER['PHP_SELF']."?select=none'>".__('Uncheck all')."</a></td>";
 
       echo "<td colspan='4' class='center'>";
-      echo "<input type='hidden' name='plugin_pdf_inventory_type' value='$type'>";
+      echo "<input type='hidden' name='plugin_pdf_inventory_type' value='".$type."'>";
       echo "<input type='hidden' name='indice' value='".count($options)."'>";
 
       if ($ID) {
-         echo $LANG['pager'][4]."&nbsp;";
-         Dropdown::showListLimit();
-         echo "&nbsp;".$LANG['pager'][5]."&nbsp;&nbsp;";
+         printf(__('Display %d items', 'pdf'), Dropdown::showListLimit());
       }
       echo "<select name='page'>\n";
-      echo "<option value='0'>".$LANG['common'][69]."</option>\n"; // Portrait
-      echo "<option value='1'".($landscape?"selected='selected'":'').">".$LANG['common'][68].
+      echo "<option value='0'>".__('Portrait', 'pdf')."</option>\n"; // Portrait
+      echo "<option value='1'".($landscape?"selected='selected'":'').">".__('Landscape', 'pdf').
            "</option>\n"; // Paysage
       echo "</select>&nbsp;&nbsp;&nbsp;&nbsp;\n";
 
       if ($ID) {
-         echo "<input type='hidden' name='itemID' value='$ID'>";
-         echo "<input type='submit' value='" . $LANG['plugin_pdf']['button'][1] .
+         echo "<input type='hidden' name='itemID' value='".$ID."'>";
+         echo "<input type='submit' value='". _sx('button','Print', 'pdf') .
               "' name='generate' class='submit'></td></tr>";
       } else {
-         echo "<input type='submit' value='" . $LANG['plugin_pdf']['button'][2] .
+         echo "<input type='submit' value='" . _sx('button', 'Save') .
               "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
       }
       echo "</table>";
@@ -166,10 +175,10 @@ class PluginPdfPreference extends CommonDBTM {
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
       global $LANG;
 
-      if ($item->getType() == 'Preference'
+      if (($item->getType() == 'Preference')
           && isset($_SESSION['glpi_plugin_pdf_profile'])
           && $_SESSION['glpi_plugin_pdf_profile']['use']) {
-         return $LANG['plugin_pdf']['title'][1];
+         return __('Print to pdf', 'pdf');
       }
       return '';
    }
@@ -183,5 +192,4 @@ class PluginPdfPreference extends CommonDBTM {
       return true;
    }
 }
-
 ?>

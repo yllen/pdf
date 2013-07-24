@@ -3,7 +3,7 @@
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -27,19 +27,15 @@
  --------------------------------------------------------------------------
  */
 
-// ----------------------------------------------------------------------
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfProfile extends CommonDBTM {
 
 
    function getSearchOptions() {
-      global $LANG;
 
       $tab = array();
 
-      $tab['common'] = $LANG['plugin_pdf']['title'][1];
+      $tab['common'] = __('Print to pdf', 'pdf');
 
       $tab['table']     = $this->getTable();
       $tab['field']     = 'use';
@@ -59,6 +55,7 @@ class PluginPdfProfile extends CommonDBTM {
 
    //if profile deleted
    static function cleanProfile(Profile $prof) {
+
       $plugprof = new self();
       $plugprof->delete(array('id'=>$prof->getField("id")));
    }
@@ -78,7 +75,7 @@ class PluginPdfProfile extends CommonDBTM {
 
 
    function showForm($ID, $options=array()) {
-      global $LANG,$DB;
+      global $DB;
 
       $target = $this->getFormURL();
       if (isset($options['target'])) {
@@ -96,11 +93,13 @@ class PluginPdfProfile extends CommonDBTM {
 
       echo "<form action='".$target."' method='post'>";
       echo "<table class='tab_cadre_fixe'>";
-      echo "<tr><th colspan='2' class='center b'>".
-            $LANG['plugin_pdf']['title'][1]. " - " .$this->fields["profile"]."</th></tr>";
+      echo "<tr><th colspan='2' class='center b'>".sprintf(__('%1$s - %2$s'),
+                                                           __('Print to pdf', 'pdf'),
+                                                           $this->fields["profile"]);
+      echo "</th></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td>".$LANG['plugin_pdf']['title'][1]."&nbsp;:</td><td>";
+      echo "<td>".__('Print to pdf', 'pdf')."</td><td>";
       Dropdown::showYesNo("use",(isset($this->fields["use"])?$this->fields["use"]:''));
       echo "</td></tr>\n";
 
@@ -108,7 +107,7 @@ class PluginPdfProfile extends CommonDBTM {
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='2' class='center'>";
          echo "<input type='hidden' name='id' value=$ID>";
-         echo "<input type='submit' name='update_user_profile' value='".$LANG["buttons"][7].
+         echo "<input type='submit' name='update_user_profile' value='"._sx('button', 'Update').
                "' class='submit'>&nbsp;";
          echo "</td></tr>\n";
       }
@@ -127,20 +126,21 @@ class PluginPdfProfile extends CommonDBTM {
        }
    }
 
-   function canView() {
+
+   static function canView() {
       return Session::haveRight('profile','r');
    }
 
-   function canCreate() {
+
+   static function canCreate() {
       return Session::haveRight('profile','w');
    }
 
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-      global $LANG;
 
       if ($item->getType() == 'Profile') {
-         return $LANG['plugin_pdf']['title'][1];
+         return __('Print to pdf', 'pdf');
       }
       return '';
    }

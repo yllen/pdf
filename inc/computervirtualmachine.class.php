@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,15 +27,14 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
 
-   function __construct(CommonGLPI $obj=NULL) {
 
+   function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new ComputerVirtualMachine());
    }
+
 
    static function pdfForComputer(PluginPdfSimplePDF $pdf, Computer $item) {
       global $DB, $LANG;
@@ -48,22 +46,14 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
                                               "`computers_id` = '$ID'");
       $pdf->setColumnsSize(100);
       if (count($virtualmachines)) {
-         $pdf->displayTitle("<b>".$LANG['computers'][66]."</b>");
+         $pdf->displayTitle("<b>".__('List of virtual machines')."</b>");
          $pdf->setColumnsSize(20,8,8,8,25,8,8,15);
          $pdf->setColumnsAlign('left', 'center', 'center', 'center', 'left', 'right', 'right', 'left');
-         $typ = explode(' ', $LANG['computers'][62]);
-         $sys = explode(' ', $LANG['computers'][60]);
-         $sta = explode(' ', $LANG['computers'][63]);
-         $pdf->displayTitle(
-            $LANG['common'][16],    // Name
-            $typ[0],                // Type
-            $sys[0],                // Systeme
-            $sta[0],                // State
-            $LANG['computers'][58], // uuid
-            'CPU',                  // cpu
-            $LANG['common'][82],    // ram
-            $LANG['computers'][64]  // computer
-         );
+         $typ = explode(' ', __('Virtualization system'));
+         $sys = explode(' ', __('Virtualization model'));
+         $sta = explode(' ', __('State of the virtual machine'));
+         $pdf->displayTitle(__('Name'), $typ[0], $sys[0], $sta[0], __('UUID'), __('CPU'), __('Mio'),
+                            __('Machine'));
 
          foreach ($virtualmachines as $virtualmachine) {
             $name = '';
@@ -89,7 +79,7 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
             );
          }
       } else {
-         $pdf->displayTitle("<b>".$LANG['computers'][59]."</b>");
+         $pdf->displayTitle("<b>".__('No virtual machine associated with the computer')."</b>");
       }
 
       // From ComputerVirtualMachine::showForVirtualMachine()
@@ -99,18 +89,20 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
 
          if (count($hosts)) {
             $pdf->setColumnsSize(100);
-            $pdf->displayTitle("<b>".$LANG['computers'][65]."</b>");
+            $pdf->displayTitle("<b>".__('List of host machines')."</b>");
 
             $pdf->setColumnsSize(26,37,37);
-            $pdf->displayTitle($LANG['common'][16], $LANG['computers'][9], $LANG['entity'][0]);
+            $pdf->displayTitle(__('Name'), __('Operating system'), __('Entity'));
 
             $computer = new Computer();
             foreach ($hosts as $host) {
                if ($computer->getFromDB($host['computers_id'])) {
                   $pdf->displayLine(
                      $computer->getName(),
-                     Html::clean(Dropdown::getDropdownName('glpi_operatingsystems', $computer->getField('operatingsystems_id'))),
-                     Html::clean(Dropdown::getDropdownName('glpi_entities', $computer->getEntityID()))
+                     Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
+                                                           $computer->getField('operatingsystems_id'))),
+                     Html::clean(Dropdown::getDropdownName('glpi_entities',
+                                                           $computer->getEntityID()))
                   );
                }
             }

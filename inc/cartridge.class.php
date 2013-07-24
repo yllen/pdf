@@ -84,7 +84,7 @@ class PluginPdfCartridge extends PluginPdfCommon {
          $pdf->displayLine(__('No item found'));
       } else {
          $pdf->setColumnsSize(25,13,12,12,12,26);
-         $pdf->displayTitle('<b><i>'.__('Cartridge type'), __('State'), __('Add Date'),
+         $pdf->displayTitle('<b><i>'.__('Cartridge type'), __('State'), __('Add date'),
                                      __('Use date'), __('End date'), __('Printer counter').
                             '</b></i>');
 

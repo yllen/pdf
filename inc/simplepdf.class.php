@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,10 +27,6 @@
  --------------------------------------------------------------------------
  */
 
-// ----------------------------------------------------------------------
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
-
 class PluginPdfSimplePDF {
 
    private $df;
@@ -48,6 +43,11 @@ class PluginPdfSimplePDF {
    private $colsw = array();
    private $align = array();
 
+
+   /**
+    * @param $format    (default a4)
+    * @param $orient    (default portrait)
+   **/
    function __construct ($format='a4', $orient='portrait') {
 
       // A4 is 595.28 x 841.89
@@ -82,20 +82,23 @@ class PluginPdfSimplePDF {
    }
 
 
-   public function setHeader ($msg) {
+   /**
+    * @param $msg
+   **/
+   public function setHeader($msg) {
       $this->header = $msg;
    }
 
 
-   public function render () {
+   public function render() {
       $this->pdf->ezStream();
    }
 
-   public function output () {
+   public function output() {
       return $this->pdf->output();
    }
 
-   public function newPage () {
+   public function newPage() {
 
       if ($this->start_tab<$this->height) { // This is not the first page
          $this->pdf->ezText("",1000);
@@ -112,7 +115,7 @@ class PluginPdfSimplePDF {
 
 
    // Args is relative size of each column
-   public function setColumnsSize () {
+   public function setColumnsSize() {
 
       $this->cols = $tmp = func_get_args();
       $this->colsx = array();
@@ -137,7 +140,10 @@ class PluginPdfSimplePDF {
    }
 
 
-   public function displayBox ($gray) {
+   /**
+    * @param $gray
+   **/
+   public function displayBox($gray) {
 
       $this->pdf->saveState();
       $this->pdf->setColor($gray,$gray,$gray);
@@ -149,7 +155,7 @@ class PluginPdfSimplePDF {
    }
 
 
-   public function displayTitle () {
+   public function displayTitle() {
 
       $msgs = func_get_args();
 
@@ -175,7 +181,7 @@ class PluginPdfSimplePDF {
    }
 
 
-   public function displayLine () {
+   public function displayLine() {
 
       $msgs = func_get_args();
 
@@ -201,7 +207,11 @@ class PluginPdfSimplePDF {
    }
 
 
-   public function displayLink ($name, $URL) {
+   /**
+    * @param $name
+    * @param $URL
+   **/
+   public function displayLink($name, $URL) {
 
       // New page if less than 1 line available
       if ($this->start_tab < 30) {
@@ -226,15 +236,15 @@ class PluginPdfSimplePDF {
    }
 
 
-   /*
+   /**
     * Display a multi-line Box : 1 column only
     *
-    * @param $name string display on the left, before text
-    * @param $content string of text display on right (multi-line)
-    * @param $minline integer for minimum box size
-    * @param $maxline interger for maximum box size (1 page = 80 lines)
-	 */
-   public function displayText ($name, $content, $minline=3, $maxline=100) {
+    * @param $name      string   display on the left, before text
+    * @param $content   string   of text display on right (multi-line)
+    * @param $minline   integer  for minimum box size (default 3)
+    * @param $maxline   interger for maximum box size (1 page = 80 lines) (default 100)
+   **/
+   public function displayText($name, $content='', $minline=3, $maxline=100) {
 
       // New page if less than $minline available
       if ($this->start_tab < (20+10/$minline)) {
@@ -254,9 +264,9 @@ class PluginPdfSimplePDF {
       $x = 30 + $this->pdf->getTextWidth(9, $name);
       $this->pdf->addText(27,$this->start_tab,9,$name);
 
-      $temp = str_replace("\r\n","\n",$content);
+      $temp  = str_replace("\r\n","\n",$content);
       $lines = explode("\n", Toolbox::decodeFromUtf8($temp,"windows-1252"));
-      $line = current($lines);
+      $line  = current($lines);
 
       // Content
       while ($line!==false && $maxline>0) {
@@ -288,11 +298,20 @@ class PluginPdfSimplePDF {
    }
 
 
-   public function displaySpace ($nb=1) {
+   /**
+    * @param $nb     (default 1)
+   **/
+   public function displaySpace($nb=1) {
       $this->start_tab -= ($nb * 20);
    }
 
-   public function addPngFromFile ($image,$dst_w,$dst_h) {
+
+   /**
+    * @param $image
+    * @param $dst_w
+    * @param $dst_h
+   **/
+   public function addPngFromFile($image,$dst_w,$dst_h) {
 
       $size = GetImageSize($image);
       $src_w = $size[0];
@@ -313,9 +332,7 @@ class PluginPdfSimplePDF {
       $this->start_tab -= $dst_h;
       $pos_h = $this->start_tab;
       $this->pdf->addPngFromFile($image,$pos_w,$pos_h,$dst_w,$dst_h);
-
    }
 
 }
-
 ?>
