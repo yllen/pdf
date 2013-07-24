@@ -304,7 +304,7 @@ abstract class PluginPdfCommon {
                   }
                }
                Toolbox::logInFile('php-errors',
-                                  sprintf(__("PDF: don't know how to display $s tab").'\n', $tab));
+                                  sprintf(__("PDF: don't know how to display %s tab").'\n', $tab));
             }
          }
       }

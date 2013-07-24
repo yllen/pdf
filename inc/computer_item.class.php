@@ -37,7 +37,7 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
 
 
    static function pdfForComputer(PluginPdfSimplePDF $pdf, Computer $comp) {
-      global $DB,$LANG;
+      global $DB;
 
       $ID = $comp->getField('id');
 
@@ -128,7 +128,7 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
 
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-      global $DB,$LANG;
+      global $DB;
 
       $ID   = $item->getField('id');
       $type = $item->getType();

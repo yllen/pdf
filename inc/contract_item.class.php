@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,31 +27,30 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfContract_Item extends PluginPdfCommon {
 
-   function __construct(CommonGLPI $obj=NULL) {
 
+   function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new Contract_Item());
    }
 
+
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-      global $DB,$CFG_GLPI,$LANG;
+      global $DB,$CFG_GLPIG;
 
       if (!Session::haveRight("contract","r")) {
          return false;
       }
 
       $type = $item->getType();
-      $ID = $item->getField('id');
-      $con = new Contract();
+      $ID   = $item->getField('id');
+      $con  = new Contract();
 
       $query = "SELECT *
                 FROM `glpi_contracts_items`
-                WHERE `glpi_contracts_items`.`items_id` = '$ID'
-                      AND `glpi_contracts_items`.`itemtype` = '$type'";
+                WHERE `glpi_contracts_items`.`items_id` = '".$ID."'
+                      AND `glpi_contracts_items`.`itemtype` = '".$type."'";
 
       $result = $DB->query($query);
       $number = $DB->numrows($result);
@@ -60,16 +58,16 @@ class PluginPdfContract_Item extends PluginPdfCommon {
 
       $pdf->setColumnsSize(100);
       if ($number > 0) {
-         $pdf->displayTitle('<b>'.$LANG["financial"][66].'</b>');
+         $pdf->displayTitle('<b>'._N('Associated contract', 'Associated contracts', 2).'</b>');
 
          $pdf->setColumnsSize(19,19,19,16,11,16);
-         $pdf->displayTitle($LANG["common"][16], $LANG["financial"][4], $LANG["financial"][6],
-                            $LANG["financial"][26], $LANG["search"][8], $LANG["financial"][8]);
+         $pdf->displayTitle(__('Name'), _sx('phone', 'Number'), __('Contract type'),
+                            __('Supplier'), __('Start date'), __('Initial contract period'));
 
          $i++;
 
          while ($j < $number) {
-            $cID = $DB->result($result, $j, "contracts_id");
+            $cID     = $DB->result($result, $j, "contracts_id");
             $assocID = $DB->result($result, $j, "id");
 
             if ($con->getFromDB($cID)) {
@@ -80,12 +78,13 @@ class PluginPdfContract_Item extends PluginPdfCommon {
                                                        $con->fields["contracttypes_id"])),
                   str_replace("<br>", " ", $con->getSuppliersNames()),
                   Html::convDate($con->fields["begin_date"]),
-                  $con->fields["duration"]." ".$LANG["financial"][57]);
+                  sprintf(_n('%d month', '%d months', $con->fields["duration"]),
+                          $con->fields["duration"]));
             }
             $j++;
          }
       } else {
-         $pdf->displayTitle("<b>".$LANG['plugin_pdf']['financial'][2]."</b>");
+         $pdf->displayTitle("<b>".__('Lifelong')."</b>");
       }
       $pdf->displaySpace();
    }

@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,19 +27,17 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfGroup_User extends PluginPdfCommon {
 
-   function __construct(CommonGLPI $obj=NULL) {
 
+   function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new Group_User());
    }
 
 
    static function pdfForGroup(PluginPdfSimplePDF $pdf, Group $group, $tree) {
-      global $DB,$CFG_GLPI, $LANG;
+      global $DB,$CFG_GLPI;
 
       $used        = array();
       $ids         = array();
@@ -48,12 +45,13 @@ class PluginPdfGroup_User extends PluginPdfCommon {
       // Retrieve member list
       $entityrestrict = Group_User::getDataForGroup($group, $used, $ids, '', $tree);
 
-      $title = "<b>".$LANG['Menu'][14]."</b> (D=".$LANG['profiles'][29].")";
+      $title  = "<b>".sprintf(__('%1$s (%2$s)'), _n('User', 'Users', 2)."</b>",
+                              __('D=Dynamic'));
       $number = count($used);
       if ($number > $_SESSION['glpilist_limit']) {
-         $title .= " (".$_SESSION['glpilist_limit']."/$number)";
+         $title = sprintf(__('%1$s (%2$s)'), $title, $_SESSION['glpilist_limit']."/".$number);
       } else {
-         $title .= " ($number)";
+         $title = sprintf(__('%1$s (%2$s)'), $title, $number);
       }
       $pdf->setColumnsSize(100);
       $pdf->displayTitle($title);
@@ -64,38 +62,32 @@ class PluginPdfGroup_User extends PluginPdfCommon {
 
          if ($tree) {
             $pdf->setColumnsSize(35,45,10,10);
-            $pdf->displayTitle(User::getTypeName(1), Group::getTypeName(1), $LANG['common'][64], $LANG['common'][123]);
+            $pdf->displayTitle(User::getTypeName(1), Group::getTypeName(1), __('Manager'),
+                               __('Delegatee'));
          } else {
             $pdf->setColumnsSize(60,20,20);
-            $pdf->displayTitle(User::getTypeName(1), $LANG['common'][64], $LANG['common'][123]);
+            $pdf->displayTitle(User::getTypeName(1), __('Manager'), __('Delegatee'));
          }
 
          for ($i=0 ; $i<$number && $i<$_SESSION['glpilist_limit'] ; $i++) {
             $data = $used[$i];
             $name = Html::clean(getUserName($data["id"]));
             if ($data["is_dynamic"]) {
-               $name .= " <b>(D)</b>";
+               $name = sprintf(__('%1$s (%2$s)'), $name, '<b>'.__('D').'</b>');
             }
 
             if ($tree) {
                $group->getFromDB($data["groups_id"]);
-               $pdf->displayLine(
-                  $name,
-                  $group->getName(),
-                  Dropdown::getYesNo($data['is_manager']),
-                  Dropdown::getYesNo($data['is_userdelegate'])
-               );
+               $pdf->displayLine($name, $group->getName(), Dropdown::getYesNo($data['is_manager']),
+                                 Dropdown::getYesNo($data['is_userdelegate']));
             } else {
-               $pdf->displayLine(
-                  $name,
-                  Dropdown::getYesNo($data['is_manager']),
-                  Dropdown::getYesNo($data['is_userdelegate'])
-               );
+                $pdf->displayLine($name, Dropdown::getYesNo($data['is_manager']),
+                                  Dropdown::getYesNo($data['is_userdelegate']));
             }
          }
       } else {
          $pdf->setColumnsAlign('center');
-         $pdf->displayLine($LANG['search'][15]);
+         $pdf->displayLine(__('No item found'));
       }
       $pdf->displaySpace();
   }

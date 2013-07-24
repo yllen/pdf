@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,20 +27,19 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfDocument extends PluginPdfCommon {
 
-   function __construct(CommonGLPI $obj=NULL) {
 
+   function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new Document());
    }
 
-   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-      global $DB,$LANG;
 
-      $ID = $item->getField('id');
+   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
+      global $DB;
+
+      $ID   = $item->getField('id');
       $type = get_class($item);
 
       if (!Session::haveRight("document","r")) {
@@ -53,29 +51,26 @@ class PluginPdfDocument extends PluginPdfCommon {
                 FROM `glpi_documents_items`
                 LEFT JOIN `glpi_documents`
                      ON (`glpi_documents_items`.`documents_id` = `glpi_documents`.`id`)
-                WHERE `glpi_documents_items`.`items_id` = '$ID'
-                      AND `glpi_documents_items`.`itemtype` = '$type'";
+                WHERE `glpi_documents_items`.`items_id` = '".$ID."'
+                      AND `glpi_documents_items`.`itemtype` = '".$type."'";
 
       $result = $DB->query($query);
       $number = $DB->numrows($result);
 
       $pdf->setColumnsSize(100);
       if (!$number) {
-         $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['document'][1].'</b>');
+         $pdf->displayTitle('<b>'.__('No associated documents', 'pdf').'</b>');
       } else {
-         $pdf->displayTitle('<b>'.$LANG["document"][21].' :</b>');
+         $pdf->displayTitle('<b>'.__('Associated documents', 'pdf').'</b>');
 
          $pdf->setColumnsSize(32,15,21,19,13);
-         $pdf->displayTitle('<b>'.$LANG["common"][16].'</b>',
-                            '<b>'.$LANG["document"][2].'</b>',
-                            '<b>'.$LANG["document"][33].'</b>',
-                            '<b>'.$LANG["document"][3].'</b>',
-                            '<b>'.$LANG["document"][4].'</b>');
+         $pdf->displayTitle('<b>'.__('Name'), __('File'), __('Web link'), __('Heading'),
+                                  _('MIME type').'</b>');
 
          while ($data = $DB->fetch_assoc($result)) {
             $pdf->displayLine($data["name"], basename($data["filename"]), $data["link"],
                               Html::clean(Dropdown::getDropdownName("glpi_documentcategories",
-                                                                   $data["documentcategories_id"])),
+                                                                    $data["documentcategories_id"])),
                               $data["mime"]);
          }
       }

@@ -37,7 +37,7 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
 
 
    static function pdfForComputer(PluginPdfSimplePDF $pdf, Computer $item) {
-      global $DB, $LANG;
+      global $DB;
 
       $ID = $item->getField('id');
 
