@@ -83,7 +83,7 @@ class PluginPdfTicketValidation extends PluginPdfCommon {
             }
          }
       } else {
-         $pdf->displayLine($LANG['search'][15]);
+         $pdf->displayLine(__('No item found'));
       }
       $pdf->displaySpace();
    }

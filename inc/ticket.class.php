@@ -66,7 +66,8 @@ class PluginPdfTicket extends PluginPdfCommon {
       }
       $pdf->displayLine("<b><i>".$LANG['joblist'][11]."</i></b> : ".Html::convDateTime($job->fields["date"]).", ".
                            '<b><i>'.$LANG['common'][95]."</i></b> : ".$recipient_name,
-                        $LANG['common'][26]." : ".Html::convDateTime($job->fields["date_mod"]));
+                        sprintf(__('%1$s: %2$s'), __('Last update'),
+                                Html::convDateTime($job->fields["date_mod"])));
 
       $status = Html::clean($job->getStatus($job->fields["status"]));
       switch ($job->getField('status')) {
@@ -133,17 +134,17 @@ class PluginPdfTicket extends PluginPdfCommon {
          if ($item->getFromDB($job->fields["items_id"])) {
             if (isset($item->fields["serial"])) {
                $serial_item =
-                  ", <b><i>".$LANG['common'][19]."</i></b> : ".
+                  ", <b><i>".__('Serial number')."</i></b> : ".
                                  Html::clean($item->fields["serial"]);
             }
             if (isset($item->fields["otherserial"])) {
                $otherserial_item =
-                  ", <b><i>".$LANG['common'][20]."</i></b> : ".
+                  ", <b><i>".__('Inventory number')."</i></b> : ".
                                  Html::clean($item->fields["otherserial"]);
             }
             if (isset($item->fields["locations_id"])) {
                $location_item =
-                  "\n<b><i>".$LANG['common'][15]."</i></b> : ".
+                  "\n<b><i>".__('Location')."</i></b> : ".
                      Html::clean(Dropdown::getDropdownName("glpi_locations",
                                                           $item->fields["locations_id"]));
             }
@@ -235,7 +236,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       if (is_array($tickets) && count($tickets)) {
          $ticket = new Ticket();
          foreach ($tickets as $linkID => $data) {
-            $tmp = Ticket_Ticket::getLinkName($data['link']).' '.$LANG['common'][2].' '.$data['tickets_id'].' : ';
+            $tmp = Ticket_Ticket::getLinkName($data['link']).' '.__('ID').' '.$data['tickets_id'].' : ';
             if ($ticket->getFromDB($data['tickets_id'])) {
                $tmp .= ' : '.$ticket->getName();
             }
@@ -494,10 +495,6 @@ class PluginPdfTicket extends PluginPdfCommon {
       $private = isset($_REQUEST['item']['_private_']);
 
       switch ($tab) {
-         case '_main_' :
-            self::pdfMain($pdf, $item);
-            break;
-
          case '_private_' :
             // nothing to export, just a flag
             break;

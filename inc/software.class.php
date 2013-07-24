@@ -43,25 +43,15 @@ class PluginPdfSoftware extends PluginPdfCommon {
    static function pdfMain(PluginPdfSimplePDF $pdf, Software $software) {
       global $LANG;
 
-      $ID = $software->getField('id');
-
-      $col1 = '<b>'.$LANG['common'][2].' '.$software->fields['id'].'</b>';
-      $col2 = '<b>'.$LANG['common'][26].' : '.Html::convDateTime($software->fields['date_mod']).'</b>';
-
-      if (!empty($software->fields['template_name'])) {
-         $col2 .= ' ('.$LANG['common'][13].' : '.$software->fields['template_name'].')';
-      }
-
-      $pdf->setColumnsSize(50,50);
-      $pdf->displayTitle($col1, $col2);
+      PluginPdfCommon::mainTitle($pdf, $software);
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][16].' :</i></b> '.$software->fields['name'],
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $software->fields['name']),
          '<b><i>'.$LANG['common'][5].' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_manufacturers', $software->fields['manufacturers_id'])));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][15].' :</i></b> '.
+         '<b><i>'.__('Location').' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_locations', $software->fields['locations_id'])),
          '<b><i>'.$LANG['common'][36].' :</i></b> '.
             Html::clean(Dropdown::getDropdownName('glpi_softwarecategories', $software->fields['softwarecategories_id'])));
@@ -85,16 +75,18 @@ class PluginPdfSoftware extends PluginPdfCommon {
          $col2 = '';
       }
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($software->fields['users_id']),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
+                          getUserName($software->fields['users_id'])),
          $col2);
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][35].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_groups', $software->fields['groups_id'])));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_groups',
+                                                                $software->fields['groups_id']))));
 
 
       $pdf->setColumnsSize(100);
-      $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $software->fields['comment']);
+      PluginPdfCommon::mainLine($pdf, $software, 'comment');
 
       $pdf->displaySpace();
    }
@@ -112,10 +104,6 @@ class PluginPdfSoftware extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         case '_main_' :
-            self::pdfMain($pdf, $item);
-            break;
-
          case 'SoftwareVersion$1' :
             PluginPdfSoftwareVersion::pdfForSoftware($pdf, $item);
             break;

@@ -51,7 +51,7 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
          $entity = ' ('.Html::clean(Dropdown::getDropdownName('glpi_entities',
                                                              $license->fields['entities_id'])).')';
       }
-      $pdf->displayTitle('<b><i>'.$LANG['common'][2]."</i> : $ID</b>$entity");
+      $pdf->displayTitle('<b><i>'.__('ID')."</i> : $ID</b>$entity");
 
       $pdf->setColumnsSize(50,50);
 
@@ -62,14 +62,15 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
             Html::clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
                                                  $license->fields['softwarelicensetypes_id'])));
 
-      $pdf->displayLine('<b><i>'.$LANG['common'][16].'</i></b>: '.$license->fields['name'],
-                        '<b><i>'.$LANG['common'][19].'</i></b>: '.$license->fields['serial']);
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
+                                         $license->fields['name']),
+                        '<b><i>'.__('Serial number').'</i></b>: '.$license->fields['serial']);
 
       $pdf->displayLine(
          '<b><i>'.$LANG['software'][1].'</i></b>: '.
             Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
                                                  $license->fields['softwareversions_id_buy'])),
-         '<b><i>'.$LANG['common'][20].'</i></b>: '.$license->fields['otherserial']);
+         '<b><i>'.__('Inventory number').'</i></b>: '.$license->fields['otherserial']);
 
       $pdf->displayLine(
          '<b><i>'.$LANG['software'][2].'</i></b>: '.
@@ -79,7 +80,7 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
 
       $col2 = '';
       if ($cpt) {
-         $col2 = '<b><i>'.$LANG['software'][9].'</i></b>: '.
+         $col2 = '<b><i>'.__('Affected computers').'</i></b>: '.
                  Computer_SoftwareLicense::countForLicense($ID);
       }
       $pdf->displayLine(
@@ -122,10 +123,10 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
                }
             }
          } else {
-            $pdf->displayLine($LANG['search'][15]);
+            $pdf->displayLine(__('No item found'));
          }
       } else {
-         $pdf->displayLine($LANG['search'][15]."!");
+         $pdf->displayLine(__('No item found'));
       }
       $pdf->displaySpace();
    }

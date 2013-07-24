@@ -51,34 +51,11 @@ class PluginPdfPeripheral extends PluginPdfCommon {
    static function pdfMain(PluginPdfSimplePDF $pdf, Peripheral $item) {
       global $LANG;
 
-      $ID = $item->getField('id');
+      PluginPdfCommon::mainTitle($pdf, $item);
 
-      $pdf->setColumnsSize(50,50);
-      $col1 = '<b>'.$LANG['common'][2].' '.$item->fields['id'].'</b>';
-      $col2 = $LANG['common'][26].' : '.Html::convDateTime($item->fields['date_mod']);
-
-      if (!empty($printer->fields['template_name'])) {
-         $col2 .= ' ('.$LANG['common'][13].' : '.$item->fields['template_name'].')';
-      }
-      $pdf->displayTitle($col1, $col2);
-
-      $pdf->displayLine(
-         '<b><i>'.$LANG['common'][16].' :</i></b> '.$item->fields['name'],
-         '<b><i>'.$LANG['state'][0].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_states', $item->fields['states_id'])));
-
-      $pdf->displayLine(
-         '<b><i>'.$LANG['common'][15].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_locations', $item->fields['locations_id'])),
-         '<b><i>'.$LANG['common'][17].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_peripheraltypes',
-                                                 $item->fields['peripheraltypes_id'])));
-
-      $pdf->displayLine(
-         '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($item->fields['users_id_tech']),
-         '<b><i>'.$LANG['common'][5].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                                 $item->fields['manufacturers_id'])));
+      PluginPdfCommon::mainLine($pdf, $item, 'name-status');
+      PluginPdfCommon::mainLine($pdf, $item, 'location-type');
+      PluginPdfCommon::mainLine($pdf, $item, 'tech-manufacturer');
 
       $pdf->displayLine(
          '<b><i>'.$LANG['common'][109].' :</i></b> '.
@@ -92,20 +69,20 @@ class PluginPdfPeripheral extends PluginPdfCommon {
                                                  $item->fields['peripheralmodels_id'])));
 
       $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$item->fields['contact'],
-                        '<b><i>'.$LANG['common'][19].' :</i></b> '.$item->fields['serial']);
+                        '<b><i>'.__('Serial number').' :</i></b> '.$item->fields['serial']);
+
+      PluginPdfCommon::mainLine($pdf, $item, 'user-otherserial');
+
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][34].' :</i></b> '.getUserName($item->fields['users_id']),
-         '<b><i>'.$LANG['common'][20].' :</i></b> '.$item->fields['otherserial']);
-
-      $pdf->displayLine(
-         '<b><i>'.$LANG['common'][35].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_groups',
+                                                                $item->fields['groups_id']))),
          '<b><i>'.$LANG['peripherals'][33].' :</i></b> '.
             ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 
       $pdf->setColumnsSize(100);
-      $pdf->displayText('<b><i>'.$LANG['common'][25].' :</i></b>', $item->fields['comment']);
+      PluginPdfCommon::mainLine($pdf, $item, 'comment');
 
       $pdf->displaySpace();
    }
@@ -114,10 +91,6 @@ class PluginPdfPeripheral extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         case '_main_' :
-            self::pdfMain($pdf, $item);
-            break;
-
           case 'Computer_Item$1' :
             PluginPdfComputer_Item::pdfForItem($pdf, $item);
             break;

@@ -46,12 +46,12 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
       $ID = $version->getField('id');
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b><i>'.$LANG['common'][2]."</i> : $ID</b>");
+      $pdf->displayTitle('<b><i>'.__('ID')."</i> : $ID</b>");
 
       $pdf->setColumnsSize(50,50);
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][16].'</i></b>: '.$version->fields['name'],
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $version->fields['name']),
          '<b><i>'.$LANG['help'][31].'</i></b>: '.
             Html::clean(Dropdown::getDropdownName('glpi_softwares', $version->fields['softwares_id'])));
 
@@ -110,10 +110,10 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
             $pdf->setColumnsAlign('left','right','left', 'right','left');
             $pdf->displayTitle('','',"<b>".$LANG['common'][33]." : </b>",$tot, '');
          } else {
-            $pdf->displayLine($LANG['search'][15]);
+            $pdf->displayLine(__('No item found'));
          }
       } else {
-         $pdf->displayLine($LANG['search'][15]."!");
+         $pdf->displayLine(__('No item found'));
       }
       $pdf->displaySpace();
    }
@@ -122,10 +122,6 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         case '_main_' :
-            self::pdfMain($pdf, $item);
-            break;
-
          case 'Computer_SoftwareVersion$1' :
             PluginPdfComputer_SoftwareVersion::pdfForVersionByEntity($pdf, $item);
             break;

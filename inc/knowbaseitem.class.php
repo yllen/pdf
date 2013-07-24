@@ -94,7 +94,7 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
       $pdf->setColumnsSize(50,15,15,10,10);
       $pdf->displayTitle($LANG['common'][37],   // Author
                          $LANG['common'][27],   // Created
-                         $LANG['common'][26],   // Updated TODO : find a shorter locale
+                         __('Last update'),   // Updated TODO : find a shorter locale
                          $LANG['Menu'][20],     // FAQ
                          $LANG['knowbase'][26]);   // # of Views
       $pdf->displayLine(getUserName($item->fields["users_id"]),
@@ -110,10 +110,6 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         case '_main_' :
-            self::pdfMain($pdf, $item);
-            break;
-
          case 'Document$1' :
             PluginPdfDocument::pdfForItem($pdf, $item);
             break;
