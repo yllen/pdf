@@ -53,5 +53,7 @@ if (isset($_POST['plugin_pdf_user_preferences_save'])
                           '".$_POST["plugin_pdf_inventory_type"]."', 'landscape')");
    }
    Html::back();
+} else {
+   Html::redirect("../../../front/preference.php");
 }
 ?>

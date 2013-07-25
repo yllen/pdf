@@ -89,11 +89,11 @@ class PluginPdfGroup extends PluginPdfCommon {
 
          $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'),
                                          __('User attribute containing its groups').'</b>',
-                                         $item->getField('ldap_field')), 1);
+                                         $item->getField('ldap_field')));
          $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Attribute value').'</b>',
-                                         $item->getField('ldap_value')), 1);
+                                         $item->getField('ldap_value')));
          $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Group DN').'</b>',
-                                         $item->getField('ldap_group_dn')), 1);
+                                         $item->getField('ldap_group_dn')));
 
          $pdf->displaySpace();
       }
@@ -255,7 +255,7 @@ class PluginPdfGroup extends PluginPdfCommon {
             self::pdfChildren($pdf, $item);
             break;
 
-         case 'User$1' :
+         case 'Group_User$1' :
             PluginPdfGroup_User::pdfForGroup($pdf, $item, $tree);
             break;
 
