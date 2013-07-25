@@ -130,7 +130,7 @@ class PluginPdfComputer extends PluginPdfCommon {
    static function pdfDevice(PluginPdfSimplePDF $pdf, Computer $computer) {
       global $DB;
 
-      $devtypes = Computer_Device::getDeviceTypes();
+      $devtypes = Item_Devices::getDeviceTypes();
 
       $ID = $computer->getField('id');
       if (!$computer->can($ID, 'r')) {
@@ -143,38 +143,54 @@ class PluginPdfComputer extends PluginPdfCommon {
       $pdf->setColumnsSize(3,14,42,41);
 
       foreach ($devtypes as $itemtype) {
-         $device = new $itemtype;
-
-         $specificities = $device->getSpecifityLabel();
+         
+         $devicetypes = new $itemtype();
+         $specificities = $devicetypes->getSpecificities();
          $specif_fields = array_keys($specificities);
          $specif_text   = implode(',',$specif_fields);
          if (!empty($specif_text)) {
             $specif_text=" ,".$specif_text." ";
          }
-
-         $linktable = getTableForItemType('Computer_'.$itemtype);
-         $fk        = getForeignKeyFieldForTable(getTableForItemType($itemtype));
+         $associated_type  = str_replace('Item_', '', $itemtype);
+         $linktable        = getTableForItemType($itemtype);
+         $fk               = getForeignKeyFieldForTable(getTableForItemType($associated_type));
 
          $query = "SELECT count(*) AS NB, `id`, `".$fk."`".$specif_text."
                    FROM `".$linktable."`
-                   WHERE `computers_id` = '".$ID."'
+                   WHERE `items_id` = '".$ID."'
+                   AND `itemtype` = 'Computer'
                    GROUP BY `".$fk."`".$specif_text;
-
+         
+         $device = new $associated_type();
          foreach ($DB->request($query) as $data) {
 
             if ($device->getFromDB($data[$fk])) {
 
-               $spec = $device->getFormData();
+               $spec = $device->getAdditionalFields();
                $col4 = '';
-               if (isset($spec['label']) && count($spec['label'])) {
-                  $colspan = (60/count($spec['label']));
-                  foreach ($spec['label'] as $i => $label) {
-                     if (isset($spec['value'][$i])) {
-                        $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $spec['label'][$i].'</i></b>',
-                                                  $spec['value'][$i]." ");
-                     } else {
-                        $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $spec['label'][$i].'</i></b>',
-                                                  $data['specificity']." ");
+               if (count($spec)) {
+                  $colspan = (60/count($spec));
+                  foreach ($spec as $i => $label) {
+                     if (isset($device->fields[$label["name"]])
+                           && !empty($device->fields[$label["name"]])) {
+                        
+                        if ($label["type"] == "dropdownValue"
+                              && $device->fields[$label["name"]] != 0) {
+                           $table = getTableNameForForeignKeyField($label["name"]);
+                           $value = Dropdown::getDropdownName($table,
+                                                       $device->fields[$label["name"]]);
+
+                           $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $label["label"].'</i></b>',
+                                                  Html::clean($value)." ");
+                        } else {
+                           $value = $device->fields[$label["name"]];
+                           $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $label["label"].'</i></b>',
+                                                 $value." ");
+                        }                         
+                     } else if (isset($device->fields[$label["name"]."_default"])
+                                    && !empty($device->fields[$label["name"]."_default"])) {
+                        $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $label["label"].'</i></b>',
+                                                  $device->fields[$label["name"]."_default"]." ");
                      }
                   }
                }
@@ -190,7 +206,7 @@ class PluginPdfComputer extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         case 'DeviceProcessor$1' :
+         case 'Item_Devices$1' :
             self::pdfDevice($pdf, $item);
             break;
 

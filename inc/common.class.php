@@ -296,11 +296,17 @@ abstract class PluginPdfCommon {
                $tabnum   = (isset($data[1]) ? $data[1] : 1);
 
                if (!is_integer($itemtype)
-                   && ($itemtype != 'empty')
-                   && method_exists($itemtype, "displayTabContentForPdf")
+                   && ($itemtype != 'empty')) {
+                  if ($itemtype == "Item_Devices") {
+                     $PluginPdfComputer = new PluginPdfComputer();
+                     if ($PluginPdfComputer->displayTabContentForPdf($this->pdf, $this->obj, $tabnum)) {
+                        continue;
+                     }
+                  } else if (method_exists($itemtype, "displayTabContentForPdf")
                    && ($obj = getItemForItemtype($itemtype))) {
-                  if ($obj->displayTabContentForPdf($this->pdf, $this->obj, $tabnum)) {
-                     continue;
+                     if ($obj->displayTabContentForPdf($this->pdf, $this->obj, $tabnum)) {
+                        continue;
+                     }
                   }
                }
                Toolbox::logInFile('php-errors',
