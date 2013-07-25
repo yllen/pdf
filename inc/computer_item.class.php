@@ -105,19 +105,23 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
             } else { // No row
                switch ($type) {
                   case 'Printer' :
-                     $pdf->displayLine(__('Use unitary management'));
+                     $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Printer'),
+                                      __('Not connected.')));
                      break;
 
                   case 'Monitor' :
-                     $pdf->displayLine(__('Writer'));
+                     $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Monitor'),
+                                      __('Not connected.')));
                      break;
 
                   case 'Peripheral' :
-                     $pdf->displayLine(__('Progress'));
+                     $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Peripheral'),
+                                      __('Not connected.')));
                      break;
 
                   case 'Phone' :
-                     $pdf->displayLine(__('Item not found'));
+                     $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Phone'),
+                                      __('Not connected.')));
                      break;
                }
             } // No row
