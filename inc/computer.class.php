@@ -222,7 +222,7 @@ class PluginPdfComputer extends PluginPdfCommon {
             PluginPdfComputer_Item::pdfForComputer($pdf, $item);
             break;
 
-         case 'Document$1' :
+         case 'Document_Item$1' :
             PluginPdfDocument::pdfForItem($pdf, $item);
             break;
 
