@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,15 +27,14 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfLog extends PluginPdfCommon {
 
-   function __construct(CommonGLPI $obj=NULL) {
 
+   function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new Log());
    }
+
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
       global $LANG;
@@ -46,21 +44,20 @@ class PluginPdfLog extends PluginPdfCommon {
 
       $pdf->setColumnsSize(100);
       if (count($changes) > 0) {
-         $pdf->displayTitle("<b>".$LANG["title"][38]."</b>");
+         $pdf->displayTitle("<b>".__('Historical')."</b>");
 
          $pdf->setColumnsSize(14,15,20,51);
-         $pdf->displayTitle('<b><i>'.$LANG["common"][27].'</i></b>',
-                            '<b><i>'.$LANG["common"][34].'</i></b>',
-                            '<b><i>'.$LANG["event"][18].'</i></b>',
-                            '<b><i>'.$LANG["event"][19].'</i></b>');
+         $pdf->displayTitle('<b><i>'.__('ID'), __('Date'), __('User'), __('Field'),
+                            _x('name', 'Update').'</i></b>');
 
          foreach ($changes as $data) {
             if ($data['display_history']) {
-               $pdf->displayLine($data['date_mod'], $data['user_name'], $data['field'], Html::clean($data['change']));
+               $pdf->displayLine($data['id'], $data['date_mod'], $data['user_name'], $data['field'],
+                                 Html::clean($data['change']));
             }
          } // Each log
       } else {
-         $pdf->displayTitle("<b>".$LANG["event"][20]."</b>");
+         $pdf->displayTitle("<b>".__('No historical')."</b>");
       }
       $pdf->displaySpace();
    }

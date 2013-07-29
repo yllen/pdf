@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,14 +27,11 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfKnowbaseItem extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new KnowbaseItem());
    }
 
@@ -49,7 +45,7 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, KnowbaseItem $item){
-      global $DB,$LANG;
+      global $DB;
 
       $ID = $item->getField('id');
 
@@ -66,37 +62,33 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
                                           ENT_QUOTES, "UTF-8")));
 
       $answer = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
-                  html_entity_decode($item->getField('answer'),
-                                          ENT_QUOTES, "UTF-8")));
+                  html_entity_decode($item->getField('answer'), ENT_QUOTES, "UTF-8")));
 
 
       $pdf->setColumnsSize(100);
 
       if (Toolbox::strlen($fullcategoryname) > 0) {
-         $pdf->displayTitle('<b>'.$LANG['common'][36].'</b>');
+         $pdf->displayTitle('<b>'.__('Category name').'</b>');
          $pdf->displayLine($fullcategoryname);
       }
 
       if (Toolbox::strlen($question) > 0) {
-         $pdf->displayTitle('<b>'.$LANG['knowbase'][14].'</b>');
+         $pdf->displayTitle('<b>'.__('Subject').'</b>');
          $pdf->displayText('', $question, 5);
       } else {
-         $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['knowbase'][1].'</b>');
+         $pdf->displayTitle('<b>'.__('No question found', 'pdf').'</b>');
       }
 
       if (Toolbox::strlen($answer) > 0) {
-         $pdf->displayTitle('<b>'.$LANG['knowbase'][15].'</b>');
+         $pdf->displayTitle('<b>'.__('Content').'</b>');
          $pdf->displayText('', $answer, 5);
       } else {
-         $pdf->displayTitle('<b>'.$LANG['plugin_pdf']['knowbase'][2].'</b>');
+         $pdf->displayTitle('<b>'.__('No answer found').'</b>');
       }
 
       $pdf->setColumnsSize(50,15,15,10,10);
-      $pdf->displayTitle($LANG['common'][37],   // Author
-                         $LANG['common'][27],   // Created
-                         __('Last update'),   // Updated TODO : find a shorter locale
-                         $LANG['Menu'][20],     // FAQ
-                         $LANG['knowbase'][26]);   // # of Views
+      $pdf->displayTitle(__('Writer'), __('Creation date'), __('Last update'), __('FAQ'),
+                         _n('View', 'Views', 2));
       $pdf->displayLine(getUserName($item->fields["users_id"]),
                         Html::convDateTime($item->fields["date"]),
                         Html::convDateTime($item->fields["date_mod"]),

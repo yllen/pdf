@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,20 +27,17 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
-
 class PluginPdfLink extends PluginPdfCommon {
 
-   function __construct(CommonGLPI $obj=NULL) {
 
+   function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new Link());
    }
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
-      global $DB,$LANG;
+      global $DB;
 
-      $ID = $item->getField('id');
+      $ID   = $item->getField('id');
       $type = get_class($item);
 
       if (!Session::haveRight("link","r")) {
@@ -53,14 +49,14 @@ class PluginPdfLink extends PluginPdfCommon {
                 FROM `glpi_links`
                 INNER JOIN `glpi_links_itemtypes`
                      ON `glpi_links`.`id` = `glpi_links_itemtypes`.`links_id`
-                WHERE `glpi_links_itemtypes`.`itemtype` = '$type'
+                WHERE `glpi_links_itemtypes`.`itemtype` = '".$type."'
                 ORDER BY `glpi_links`.`name`";
 
       $result=$DB->query($query);
 
       $pdf->setColumnsSize(100);
       if ($DB->numrows($result) > 0) {
-         $pdf->displayTitle('<b>'.$LANG["title"][33].'</b>');
+         $pdf->displayTitle('<b>'.__('External Links').'</b>');
 
          while ($data = $DB->fetch_assoc($result)) {
             $name = $data["name"];
@@ -72,10 +68,11 @@ class PluginPdfLink extends PluginPdfCommon {
 
             if (empty($file)) {
                $links = Link::generateLinkContents($data['link'], $item, $name);
-               $i=1;
+               $i     = 1;
                foreach ($links as $key => $link) {
                   $url = $link;
-                  $pdf->displayLine("<b>$name #$i</b> : $link");
+                  $pdf->displayLine(sprintf(__('%1$s: %2$s'), "<b>$name #$i</b>", $link));
+                  $i++;
                   $i++;
                }
             } else { // Generated File
@@ -90,13 +87,14 @@ class PluginPdfLink extends PluginPdfCommon {
                         // same name for all files, ex name = foo.txt
                         $file = reset($files);
                      }
-                     $pdf->displayText("<b>$name #$i - $file :</b>", trim($data), 1, 10);
+                     $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b>$name #$i - $file</b>",
+                                               trim($data), 1, 10));
                      $i++;
                   }
             }
          } // Each link
       } else {
-         $pdf->displayTitle('<b>'.$LANG["links"][7].'</b>');
+         $pdf->displayTitle('<b>'.__('No link defined').'</b>');
       }
       $pdf->displaySpace();
    }
