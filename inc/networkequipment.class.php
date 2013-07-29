@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,14 +27,11 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfNetworkEquipment extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new NetworkEquipment());
    }
 
@@ -49,7 +45,6 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, NetworkEquipment $item) {
-      global $LANG;
 
       PluginPdfCommon::mainTitle($pdf, $item);
 
@@ -73,17 +68,19 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_groups',
                                                                 $item->fields['groups_id']))),
-         '<b><i>'.$LANG['setup'][71].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_networkequipmentfirmwares', $item->fields['networkequipmentfirmwares_id'])));
-
-      $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Domain').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_domains',
-                                                                $item->fields['domains_id']))),
-                        '<b><i>'.$LANG['networking'][5].' :</i></b> '.$item->fields['ram']);
+                                                                $item->fields['domains_id']))));
 
-      $pdf->displayLine('<b><i>'.$LANG['networking'][14].' :</i></b> '.$item->fields['ip'],
-                        '<b><i>'.$LANG['networking'][15].' :</i></b> '.$item->fields['mac']);
+      $pdf->displayLine(__('The MAC address and the IP of the equipment are included in an aggregated network port'));
+
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), _n('Firmware', 'Firmwares', 1).'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_networkequipmentfirmwares',
+                                                                $item->fields['networkequipmentfirmwares_id']))),
+         '<b><i>'.sprintf(__('%1$s: %2$s'),
+                          sprintf(__('%1$s (%2$s)'), __('Memory'),__('Mio')).'</i></b>',
+                                  $item->fields['ram']));
 
       $pdf->setColumnsSize(100);
       PluginPdfCommon::mainLine($pdf, $item, 'comment');

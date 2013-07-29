@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,17 +27,13 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfMonitor extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new Monitor());
    }
-
 
 
    function defineAllTabs($options=array()) {
@@ -50,7 +45,6 @@ class PluginPdfMonitor extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Monitor $item) {
-      global $LANG;
 
       PluginPdfCommon::mainTitle($pdf, $item);
 
@@ -65,25 +59,25 @@ class PluginPdfMonitor extends PluginPdfCommon {
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
                           getUserName($item->fields['users_id'])),
-         '<b><i>'.$LANG['peripherals'][33].' :</i></b> '.
-               ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Management type').'</i></b>',
+                          ($item->fields['is_global']?__('Global management')
+                                                     :__('Unit management'))));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_groups',
                                                                 $item->fields['groups_id']))),
-         '<b><i>'.$LANG['monitors'][21].' :</i></b> '.$item->fields['size'].'"');
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Size').'</i></b>',
+                          sprintf(__('%1$s %2$s'), $item->fields['size'], '"')));
 
-      $opts = array(
-         'have_micro'         => $LANG['monitors'][14],
-         'have_speaker'       => $LANG['monitors'][15],
-         'have_subd'          => $LANG['monitors'][19],
-         'have_bnc'           => $LANG['monitors'][20],
-         'have_dvi'           => $LANG['monitors'][32],
-         'have_pivot'         => $LANG['monitors'][33],
-         'have_hdmi'          => $LANG['monitors'][34],
-         'have_displayport'   => $LANG['monitors'][31],
-      );
+      $opts = array('have_micro'         => __('Microphone'),
+                    'have_speaker'       => __('Speakers'),
+                    'have_subd'          => __('Sub-D'),
+                    'have_bnc'           => __('BNC'),
+                    'have_dvi'           => __('DVI'),
+                    'have_pivot'         => __('Pivot'),
+                    'have_hdmi'          => __('HDMI'),
+                    'have_displayport'   => __('DisplayPort'));
       foreach ($opts as $key => $val) {
          if (!$item->fields[$key]) {
             unset($opts[$key]);
@@ -91,8 +85,8 @@ class PluginPdfMonitor extends PluginPdfCommon {
       }
       $pdf->setColumnsSize(100);
       $pdf->displayLine(
-         '<b><i>'.$LANG['monitors'][18].' : </i></b>'.
-            (count($opts) ? implode(', ',$opts) : $LANG['job'][32]));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Flags').'</i></b>',
+                          (count($opts) ? implode(', ',$opts) : __('None'))));
 
       PluginPdfCommon::mainLine($pdf, $item, 'comment');
 

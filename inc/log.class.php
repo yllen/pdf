@@ -37,7 +37,6 @@ class PluginPdfLog extends PluginPdfCommon {
 
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
-      global $LANG;
 
       // Get the Full history for the item (really a good idea ?, should we limit this)
       $changes = Log::getHistoryData($item);

@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,91 +27,81 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfNetworkPort extends PluginPdfCommon {
 
-   function __construct(CommonGLPI $obj=NULL) {
 
+   function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new NetworkPort());
    }
 
+
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-      global $DB,$LANG;
+      global $DB;
 
-      $ID = $item->getField('id');
-      $type = get_class($item);
+      $ID       = $item->getField('id');
+      $type     = get_class($item);
 
-      $query = "SELECT `id`
+      $query = "SELECT `glpi_networkports`.`id`
                 FROM `glpi_networkports`
-                WHERE `items_id` = '$ID'
-                      AND `itemtype` = '$type'
+                WHERE `items_id` = '".$ID."'
+                      AND `itemtype` = '".$type."'
                 ORDER BY `name`, `logical_number`";
-
+      $result = $DB->query($query);
+      $data = $DB->fetch_assoc($result);
       $pdf->setColumnsSize(100);
       if ($result = $DB->query($query)) {
          $nb_connect = $DB->numrows($result);
          if (!$nb_connect) {
-            $pdf->displayTitle('<b>0 '.$LANG["networking"][10].'</b>');
+            $pdf->displayTitle('<b>0 '.__('No network port found').'</b>');
          } else {
-            $pdf->displayTitle('<b>'.ucfirst($LANG["networking"][$nb_connect>1 ? 11 : 12])." : $nb_connect</b>");
+            $pdf->displayTitle('<b>'.sprintf(__('%1$s: %2$d'),
+                                             _n('Network port', 'Network ports',$nb_connect),
+                                             $nb_connect."</b>"));
 
-            while ($devid=$DB->fetch_row($result)) {
+            while ($devid = $DB->fetch_row($result)) {
                $netport = new NetworkPort;
                $netport->getfromDB(current($devid));
-               $pdf->displayTitle('<b>'.$LANG['networking'][4].'<i># '.$netport->fields["logical_number"].'</i>'.
-                        ' : '.$netport->fields["name"].'</b>');
+               $instantiation_type = $netport->fields["instantiation_type"];
+               $instname = call_user_func(array($instantiation_type, 'getTypeName'));
+               $pdf->displayTitle('<b>'.$instname.'</b>');
 
-               $pdf->displayLine('<b><i>'.$LANG["networking"][51].' :</i></b> '.
-                                 Html::clean(Dropdown::getDropdownName("glpi_netpoints",
-                                                                      $netport->fields["netpoints_id"])));
+               $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), '#</b>',
+                                               $netport->fields["logical_number"]));
 
-               $pdf->displayLine('<b><i>'.$LANG["networking"][14].' / '.
-                                 $LANG["networking"][15].' :</i></b> '.$netport->fields["ip"].' / '.
-                                 $netport->fields["mac"]);
+               $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Name').'</b>',
+                                               $netport->fields["name"]));
 
-               $pdf->displayLine('<b><i>'.$LANG["networking"][60].' / '.$LANG["networking"][61].' / '.
-                                 $LANG["networking"][59].' :</i></b> '.$netport->fields["netmask"].' / '.
-                                 $netport->fields["subnet"].' / '.$netport->fields["gateway"]);
-
-               $query = "SELECT *
-                         FROM `glpi_networkports_vlans`
-                         WHERE `networkports_id` = '".$netport->fields['id']."'";
-
-               $result2 = $DB->query($query);
-               if ($DB->numrows($result2) > 0) {
-                  $line = '';
-                  while ($a_line=$DB->fetch_array($result2)) {
-                     $line .= (empty($line) ? '' : ', ').
-                              Html::clean(Dropdown::getDropdownName("glpi_vlans", $a_line["vlans_id"]));
-                  }
-                  $pdf->displayText('<b><i>'.$LANG['networking'][56].' :</i></b>', $line, 1);
-               }
-
-               if ($netport->fields["networkinterfaces_id"]) {
-                  $pdf->displayText(
-                     '<b><i>'.$LANG["common"][65].' :</i></b> ',
-                     Html::clean(Dropdown::getDropdownName("glpi_networkinterfaces",
-                                                          $netport->fields["networkinterfaces_id"])),
-                     1);
-               }
-
-               $contact = new NetworkPort;
+               $contact  = new NetworkPort;
                $netport2 = new NetworkPort;
 
-               $add = $LANG["connect"][1];
+               $add = __('Not connected.');
                if ($cid = $contact->getContact($netport->fields["id"])) {
                   if ($netport2->getfromDB($cid)
                       && ($device2 = getItemForItemtype($netport2->fields["itemtype"]))) {
                      if ($device2->getFromDB($netport2->fields["items_id"])) {
-                        $add = $netport2->getName().' '.$LANG['networking'][25].' '.
+                        $add = $netport2->getName().' '.__('on').' '.
                                $device2->getName().' ('.$device2->getTypeName().')';
                      }
                   }
                }
-               $pdf->displayText('<b><i>'.$LANG["networking"][17].' :</i></b> ', $add, 1);
+               $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Connected to').'</b>',
+                                                   $add));
+              $sql = "SELECT `speed`, `type`
+                      FROM `glpi_networkportethernets`
+                      WHERE `networkports_id` = '".$netport->fields['id']."'";
+              $res = $DB->query($sql);
+              $dateth = $DB->fetch_assoc($res);
+
+              $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Ethernet port speed').'</b>',
+                                              NetworkPortEthernet::getPortSpeed($dateth['speed'])));
+
+              $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Ethernet port type').'</b>',
+                                              NetworkPortEthernet::getPortTypeName($dateth['type'])));
+
+//TODO revoir problème avec le retour des fonctions ci-dessus + reste à faire
             } // each port
+
          } // Found
       } // Query
       $pdf->displaySpace();
