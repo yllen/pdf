@@ -61,7 +61,7 @@ class PluginPdfContract_Item extends PluginPdfCommon {
          $pdf->displayTitle('<b>'._N('Associated contract', 'Associated contracts', 2).'</b>');
 
          $pdf->setColumnsSize(19,19,19,16,11,16);
-         $pdf->displayTitle(__('Name'), _sx('phone', 'Number'), __('Contract type'),
+         $pdf->displayTitle(__('Name'), _x('phone', 'Number'), __('Contract type'),
                             __('Supplier'), __('Start date'), __('Initial contract period'));
 
          $i++;

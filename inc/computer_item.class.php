@@ -105,23 +105,19 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
             } else { // No row
                switch ($type) {
                   case 'Printer' :
-                     $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Printer'),
-                                      __('Not connected.')));
+                     $pdf->displayLine(sprintf(__('No printer', 'pdf')));
                      break;
 
                   case 'Monitor' :
-                     $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Monitor'),
-                                      __('Not connected.')));
+                     $pdf->displayLine(sprintf(__('No monitor', 'pdf')));
                      break;
 
                   case 'Peripheral' :
-                     $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Peripheral'),
-                                      __('Not connected.')));
+                     $pdf->displayLine(sprintf(__('No peripheral', 'pdf')));
                      break;
 
                   case 'Phone' :
-                     $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Phone'),
-                                      __('Not connected.')));
+                     $pdf->displayLine(sprintf(__('No phone', 'pdf')));
                      break;
                }
             } // No row

@@ -299,11 +299,12 @@ abstract class PluginPdfCommon {
                    && ($itemtype != 'empty')) {
                   if ($itemtype == "Item_Devices") {
                      $PluginPdfComputer = new PluginPdfComputer();
-                     if ($PluginPdfComputer->displayTabContentForPdf($this->pdf, $this->obj, $tabnum)) {
+                     if ($PluginPdfComputer->displayTabContentForPdf($this->pdf, $this->obj,
+                                                                     $tabnum)) {
                         continue;
                      }
                   } else if (method_exists($itemtype, "displayTabContentForPdf")
-                   && ($obj = getItemForItemtype($itemtype))) {
+                             && ($obj = getItemForItemtype($itemtype))) {
                      if ($obj->displayTabContentForPdf($this->pdf, $this->obj, $tabnum)) {
                         continue;
                      }

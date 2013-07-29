@@ -143,8 +143,8 @@ class PluginPdfComputer extends PluginPdfCommon {
       $pdf->setColumnsSize(3,14,42,41);
 
       foreach ($devtypes as $itemtype) {
-         
-         $devicetypes = new $itemtype();
+
+         $devicetypes   = new $itemtype();
          $specificities = $devicetypes->getSpecificities();
          $specif_fields = array_keys($specificities);
          $specif_text   = implode(',',$specif_fields);
@@ -160,7 +160,7 @@ class PluginPdfComputer extends PluginPdfCommon {
                    WHERE `items_id` = '".$ID."'
                    AND `itemtype` = 'Computer'
                    GROUP BY `".$fk."`".$specif_text;
-         
+
          $device = new $associated_type();
          foreach ($DB->request($query) as $data) {
 
@@ -172,23 +172,23 @@ class PluginPdfComputer extends PluginPdfCommon {
                   $colspan = (60/count($spec));
                   foreach ($spec as $i => $label) {
                      if (isset($device->fields[$label["name"]])
-                           && !empty($device->fields[$label["name"]])) {
-                        
-                        if ($label["type"] == "dropdownValue"
-                              && $device->fields[$label["name"]] != 0) {
+                         && !empty($device->fields[$label["name"]])) {
+
+                        if (($label["type"] == "dropdownValue")
+                            && ($device->fields[$label["name"]] != 0)) {
                            $table = getTableNameForForeignKeyField($label["name"]);
                            $value = Dropdown::getDropdownName($table,
-                                                       $device->fields[$label["name"]]);
+                                                              $device->fields[$label["name"]]);
 
                            $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $label["label"].'</i></b>',
-                                                  Html::clean($value)." ");
+                                                     Html::clean($value)." ");
                         } else {
                            $value = $device->fields[$label["name"]];
                            $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $label["label"].'</i></b>',
-                                                 $value." ");
-                        }                         
+                                                     $value." ");
+                        }
                      } else if (isset($device->fields[$label["name"]."_default"])
-                                    && !empty($device->fields[$label["name"]."_default"])) {
+                                && !empty($device->fields[$label["name"]."_default"])) {
                         $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $label["label"].'</i></b>',
                                                   $device->fields[$label["name"]."_default"]." ");
                      }
