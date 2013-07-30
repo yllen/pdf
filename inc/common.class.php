@@ -378,19 +378,27 @@ abstract class PluginPdfCommon {
                                       Html::clean(Dropdown::getDropdownName('glpi_'.$type.'models',
                                                                             $item->fields[$type.'models_id']))));
 
-         case 'usernum-serial' :
+         case 'contactnum-serial' :
             return $pdf->displayLine(
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Alternate username number').'</i></b>',
                                       $item->fields['contact_num']),
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Serial number').'</i></b>',
                                       $item->fields['serial']));
 
-         case 'user-otherserial' :
+         case 'contact-otherserial' :
             return $pdf->displayLine(
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Alternate username').'</i></b>',
                                       $item->fields['contact']),
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Inventory number').'</i></b>',
                                       $item->fields['otherserial']));
+
+         case 'user-management' :
+            return $pdf->displayLine(
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
+                                      getUserName($item->fields['users_id'])),
+                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Management type').'</i></b>',
+                                      ($item->fields['is_global']?__('Global management')
+                                                                 :__('Unit management'))));
 
          case 'comment' :
             return $pdf->displayText('<b><i>'.sprintf(__('%1$s: %2$s'), __('Comments').'</i></b>',

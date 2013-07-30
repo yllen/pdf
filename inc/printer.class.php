@@ -51,16 +51,9 @@ class PluginPdfPrinter extends PluginPdfCommon {
        PluginPdfCommon::mainLine($pdf, $printer, 'location-type');
        PluginPdfCommon::mainLine($pdf, $printer, 'tech-manufacturer');
        PluginPdfCommon::mainLine($pdf, $printer, 'group-model');
-       PluginPdfCommon::mainLine($pdf, $printer, 'usernum-serial');
-       PluginPdfCommon::mainLine($pdf, $printer, 'user-otherserial');
-
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                          getUserName($printer->fields['users_id'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Management type').'</i></b>',
-                          ($printer->fields['is_global']
-                           ? __('Global management') : __('Unit management'))));
+       PluginPdfCommon::mainLine($pdf, $printer, 'contactnum-serial');
+       PluginPdfCommon::mainLine($pdf, $printer, 'contact-otherserial');
+       PluginPdfCommon::mainLine($pdf, $printer, 'user-management');
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
@@ -74,18 +67,20 @@ class PluginPdfPrinter extends PluginPdfCommon {
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Domain').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_domains',
                                                                 $printer->fields['domains_id']))),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Initial page counter').'</i></b>',
-                          $printer->fields['init_pages_counter']));
-
-      $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Memory').'</i></b>',
                           $printer->fields['memory_size']));
+
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Initial page counter').'</i></b>',
+                          $printer->fields['init_pages_counter']),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Current counter of pages').'</i></b>',
+                          $printer->fields['last_pages_counter']));
 
       $opts = array('have_serial'   => __('Serial'),
                     'have_parallel' => __('Parallel'),
                     'have_usb'      => __('USB'),
                     'have_ethernet' => __('Ethernet'),
-                    'have_wifi'     => __('Wiifi'));
+                    'have_wifi'     => __('Wifi'));
 
       foreach ($opts as $key => $val) {
          if (!$printer->fields[$key]) {
@@ -94,7 +89,8 @@ class PluginPdfPrinter extends PluginPdfCommon {
       }
 
       $pdf->setColumnsSize(100);
-      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), _n('Port', 'Ports', count($opts)).'</i></b>',
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'),
+                                         _n('Port', 'Ports', count($opts)).'</i></b>',
                                          (count($opts) ? implode(', ',$opts) : __('None'))));
 
       PluginPdfCommon::mainLine($pdf, $printer, 'comment');

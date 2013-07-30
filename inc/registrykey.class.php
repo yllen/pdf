@@ -30,7 +30,9 @@
 
 // Original Author of file: Remi Collet
 // ----------------------------------------------------------------------
+//TODO in plugin OCS
 
+/*
 class PluginPdfRegistryKey extends PluginPdfCommon {
 
    function __construct(CommonGLPI $obj=NULL) {
@@ -82,4 +84,4 @@ class PluginPdfRegistryKey extends PluginPdfCommon {
       }
       $pdf->displaySpace();
    }
-}
+}*/

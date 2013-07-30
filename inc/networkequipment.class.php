@@ -52,8 +52,8 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
       PluginPdfCommon::mainLine($pdf, $item, 'location-type');
       PluginPdfCommon::mainLine($pdf, $item, 'tech-manufacturer');
       PluginPdfCommon::mainLine($pdf, $item, 'group-model');
-      PluginPdfCommon::mainLine($pdf, $item, 'usernum-serial');
-      PluginPdfCommon::mainLine($pdf, $item, 'user-otherserial');
+      PluginPdfCommon::mainLine($pdf, $item, 'contactnum-serial');
+      PluginPdfCommon::mainLine($pdf, $item, 'contact-otherserial');
 
 
 

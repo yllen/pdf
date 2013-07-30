@@ -47,8 +47,7 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                 WHERE `items_id` = '".$ID."'
                       AND `itemtype` = '".$type."'
                 ORDER BY `name`, `logical_number`";
-      $result = $DB->query($query);
-      $data = $DB->fetch_assoc($result);
+
       $pdf->setColumnsSize(100);
       if ($result = $DB->query($query)) {
          $nb_connect = $DB->numrows($result);
@@ -77,7 +76,7 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
 
                $add = __('Not connected.');
                if ($cid = $contact->getContact($netport->fields["id"])) {
-                  if ($netport2->getfromDB($cid)
+                  if ($netport2->getFromDB($cid)
                       && ($device2 = getItemForItemtype($netport2->fields["itemtype"]))) {
                      if ($device2->getFromDB($netport2->fields["items_id"])) {
                         $add = $netport2->getName().' '.__('on').' '.
@@ -85,21 +84,52 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                      }
                   }
                }
-               $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Connected to').'</b>',
+
+               if ($instantiation_type == 'NetworkPortEthernet') {
+                  $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Connected to').'</b>',
                                                    $add));
-              $sql = "SELECT `speed`, `type`
-                      FROM `glpi_networkportethernets`
-                      WHERE `networkports_id` = '".$netport->fields['id']."'";
-              $res = $DB->query($sql);
-              $dateth = $DB->fetch_assoc($res);
+                  $netportethernet = new NetworkPortEthernet();
+                  $speed = $type = '';
+                  if ($netportethernet->getFromDB($netport->fields['id'])) {
+                     $speed = NetworkPortEthernet::getPortSpeed($netportethernet->fields['speed']);
+                     $type  = NetworkPortEthernet::getPortTypeName($netportethernet->fields['type']);
+                  }
+                  $pdf->displayLine(
+                     '<b>'.sprintf(__('%1$s: %2$s'), __('Ethernet port speed').'</b>', $speed));
+                  $pdf->displayLine(
+                     '<b>'.sprintf(__('%1$s: %2$s'), __('Ethernet port type').'</b>', $type));
 
-              $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Ethernet port speed').'</b>',
-                                              NetworkPortEthernet::getPortSpeed($dateth['speed'])));
+                  $netpoint = new Netpoint();
+                  $outlet = '';
+                  if ($netpoint->getFromDB($netportethernet->fields['netpoints_id'])) {
+                     $outlet = $netpoint->fields['name'];
+                  }
+                  $pdf->displayLine(
+                     '<b>'.sprintf(__('%1$s: %2$s'), __('Network outlet').'</b>',
+                                   $outlet));
 
-              $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Ethernet port type').'</b>',
-                                              NetworkPortEthernet::getPortTypeName($dateth['type'])));
+               }
+               $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('MAC').'</b>',
+                                              $netport->fields["mac"]));
 
-//TODO revoir problème avec le retour des fonctions ci-dessus + reste à faire
+               $sqlip = "LEFT JOIN `glpi_networknames`
+                           ON (`glpi_ipaddresses`.`items_id` = `glpi_networknames`.`id`
+                               AND `glpi_ipaddresses`.`entities_id`
+                                    = '".$_SESSION['glpiactive_entity']."')
+                         WHERE `glpi_networknames`.`items_id` = '".$netport->fields["id"]."'";
+
+               $ipname = '';
+               $ip     = new IPAddress();
+               if ($ip->getFromDBByQuery($sqlip)) {
+                  $ipname   = $ip->fields['name'];
+               }
+
+               $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('ip').'</b>',
+                                              $ipname));
+
+
+    //TODO A compléter
+
             } // each port
 
          } // Found

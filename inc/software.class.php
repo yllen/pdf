@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,61 +27,67 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfSoftware extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new Software());
    }
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Software $software) {
-      global $LANG;
 
       PluginPdfCommon::mainTitle($pdf, $software);
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $software->fields['name']),
-         '<b><i>'.$LANG['common'][5].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_manufacturers', $software->fields['manufacturers_id'])));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Publisher').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
+                                                                $software->fields['manufacturers_id']))));
 
       $pdf->displayLine(
-         '<b><i>'.__('Location').' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_locations', $software->fields['locations_id'])),
-         '<b><i>'.$LANG['common'][36].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_softwarecategories', $software->fields['softwarecategories_id'])));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_locations',
+                                                                $software->fields['locations_id']))),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_softwarecategories',
+                                                                $software->fields['softwarecategories_id']))));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][10].' :</i></b> '.getUserName($software->fields['users_id_tech']),
-         '<b><i>'.$LANG['software'][46].' :</i></b> ' .
-            ($software->fields['is_helpdesk_visible']?$LANG['choice'][1]:$LANG['choice'][0]));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Technician in charge of the hardware').'</i></b>',
+                          getUserName($software->fields['users_id_tech'])),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Associable to a ticket').'</i></b>',
+                          ($software->fields['is_helpdesk_visible'] ?__('Yes'):__('No'))));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['common'][109].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_groups', $software->fields['groups_id_tech'])),
-         '<b><i>'.$LANG['software'][29].' :</i></b> '.
-            ($software->fields['is_update']?$LANG['choice'][1]:$LANG['choice'][0]), $col2);
-
-      if ($software->fields['softwares_id']>0) {
-         $col2 = '<b><i> '.$LANG['pager'][2].' </i></b> '.
-                  Html::clean(Dropdown::getDropdownName('glpi_softwares',
-                                                       $software->fields['softwares_id']));
-      } else {
-         $col2 = '';
-      }
-      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group in charge of the hardware').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_groups',
+                                                                $software->fields['groups_id_tech']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                          getUserName($software->fields['users_id'])),
-         $col2);
+                          getUserName($software->fields['users_id'])));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_groups',
                                                                 $software->fields['groups_id']))));
+
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('Last update on %s'),
+                          Html::convDateTime($software->fields['date_mod'])));
+
+
+      if ($software->fields['softwares_id'] > 0) {
+         $col2 = '<b><i> '.__('from').' </i></b> '.
+                  Html::clean(Dropdown::getDropdownName('glpi_softwares',
+                                                       $software->fields['softwares_id']));
+      } else {
+         $col2 = '';
+      }
+
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Upgrade').'</i></b>',
+                          ($software->fields['is_update']?__('Yes'):__('No')), $col2));
 
 
       $pdf->setColumnsSize(100);

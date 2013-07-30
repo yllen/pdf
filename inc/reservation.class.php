@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,20 +27,19 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfReservation extends PluginPdfCommon {
 
-   function __construct(CommonGLPI $obj=NULL) {
 
+   function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new Reservation());
    }
 
-   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
-      global $DB,$LANG,$CFG_GLPI;
 
-      $ID = $item->getField('id');
+   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
+      global $DB, $CFG_GLPI;
+
+      $ID   = $item->getField('id');
       $type = get_class($item);
 
       if (!Session::haveRight("reservation_central","r")) {
@@ -64,16 +62,14 @@ class PluginPdfReservation extends PluginPdfCommon {
          $result = $DB->query($query);
 
          $pdf->setColumnsSize(100);
-         $pdf->displayTitle("<b>".$LANG["reservation"][35]."</b>");
+         $pdf->displayTitle("<b>".__('Current and future reservations')."</b>");
 
          if (!$DB->numrows($result)) {
-            $pdf->displayLine("<b>".$LANG["reservation"][37]."</b>");
+            $pdf->displayLine("<b>".__('No reservation')."</b>");
          } else {
             $pdf->setColumnsSize(14,14,26,46);
-            $pdf->displayTitle('<i>'.$LANG["search"][8].'</i>',
-                               '<i>'.$LANG["search"][9].'</i>',
-                               '<i>'.$LANG["reservation"][31].'</i>',
-                               '<i>'.$LANG["common"][25].'</i>');
+            $pdf->displayTitle('<i>'.__('Start date'), __('End date'), __('By'), __('Comments').
+                               '</i>');
 
             while ($data = $DB->fetch_assoc($result)) {
                if ($user->getFromDB($data["users_id"])) {
@@ -82,7 +78,8 @@ class PluginPdfReservation extends PluginPdfCommon {
                } else {
                   $name = "(".$data["users_id"].")";
                }
-               $pdf->displayLine(Html::convDateTime($data["begin"]), Html::convDateTime($data["end"]),
+               $pdf->displayLine(Html::convDateTime($data["begin"]),
+                                 Html::convDateTime($data["end"]),
                                  $name, str_replace(array("\r","\n")," ",$data["comment"]));
             }
          }
@@ -99,16 +96,14 @@ class PluginPdfReservation extends PluginPdfCommon {
          $result = $DB->query($query);
 
          $pdf->setColumnsSize(100);
-         $pdf->displayTitle("<b>".$LANG["reservation"][36]."</b>");
+         $pdf->displayTitle("<b>".__('Past reservations')."</b>");
 
          if (!$DB->numrows($result)) {
-            $pdf->displayLine("<b>".$LANG["reservation"][37]."</b>");
+            $pdf->displayLine("<b>".__('No reservation')."</b>");
          } else {
             $pdf->setColumnsSize(14,14,26,46);
-            $pdf->displayTitle('<i>'.$LANG["search"][8].'</i>',
-                               '<i>'.$LANG["search"][9].'</i>',
-                               '<i>'.$LANG["reservation"][31].'</i>',
-                               '<i>'.$LANG["common"][25].'</i>');
+            $pdf->displayTitle('<i>'.__('Start date'), __('End date'), __('By'), __('Comments').
+                               '</i>');
 
             while ($data = $DB->fetch_assoc($result)) {
                if ($user->getFromDB($data["users_id"])) {
@@ -117,13 +112,12 @@ class PluginPdfReservation extends PluginPdfCommon {
                } else {
                   $name = "(".$data["users_id"].")";
                }
-               $pdf->displayLine(Html::convDateTime($data["begin"]), Html::convDateTime($data["end"]),$name,
-                                              str_replace(array("\r","\n")," ",$data["comment"]));
+               $pdf->displayLine(Html::convDateTime($data["begin"]),
+                                                    Html::convDateTime($data["end"]), $name,
+                                                    str_replace(array("\r","\n")," ",$data["comment"]));
             }
          }
 
-      } else { // Not isReservable
-         //$pdf->displayTitle("<b>".$LANG["reservation"][37]."</b>");
       }
       $pdf->displaySpace();
    }

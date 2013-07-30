@@ -52,16 +52,9 @@ class PluginPdfMonitor extends PluginPdfCommon {
       PluginPdfCommon::mainLine($pdf, $item, 'location-type');
       PluginPdfCommon::mainLine($pdf, $item, 'tech-manufacturer');
       PluginPdfCommon::mainLine($pdf, $item, 'group-model');
-      PluginPdfCommon::mainLine($pdf, $item, 'usernum-serial');
-      PluginPdfCommon::mainLine($pdf, $item, 'user-otherserial');
-
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                          getUserName($item->fields['users_id'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Management type').'</i></b>',
-                          ($item->fields['is_global']?__('Global management')
-                                                     :__('Unit management'))));
+      PluginPdfCommon::mainLine($pdf, $item, 'contactnum-serial');
+      PluginPdfCommon::mainLine($pdf, $item, 'contact-otherserial');
+      PluginPdfCommon::mainLine($pdf, $item, 'user-management');
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',

@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,14 +27,11 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfPhone extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new Phone());
    }
 
@@ -49,7 +45,6 @@ class PluginPdfPhone extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Phone $item) {
-      global $LANG;
 
       PluginPdfCommon::mainTitle($pdf, $item);
 
@@ -57,34 +52,29 @@ class PluginPdfPhone extends PluginPdfCommon {
       PluginPdfCommon::mainLine($pdf, $item, 'location-type');
       PluginPdfCommon::mainLine($pdf, $item, 'tech-manufacturer');
       PluginPdfCommon::mainLine($pdf, $item, 'group-model');
-      PluginPdfCommon::mainLine($pdf, $item, 'usernum-serial');
-      PluginPdfCommon::mainLine($pdf, $item, 'user-otherserial');
+      PluginPdfCommon::mainLine($pdf, $item, 'contactnum-serial');
+      PluginPdfCommon::mainLine($pdf, $item, 'contact-otherserial');
+      PluginPdfCommon::mainLine($pdf, $item, 'user-management');
 
-
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                          getUserName($item->fields['users_id'])),
-         '<b><i>'.$LANG['peripherals'][33].' :</i></b> '.
-               ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_groups',
                                                                 $item->fields['groups_id']))),
-         '<b><i>'.$LANG['phones'][36].' :</i></b> '.Dropdown::getYesNo($item->fields['phonepowersupplies_id']));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Power supply').'</i></b>',
+                          Dropdown::getYesNo($item->fields['phonepowersupplies_id'])));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['peripherals'][18].' :</i></b> '.$item->fields['brand'],
-                        '<b><i>'.$LANG['phones'][40].' :</i></b> '.$item->fields['number_line']);
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Brand').'</i></b>', $item->fields['brand']),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), _x('quantity', 'Number of lines').'</i></b>',
+                          $item->fields['number_line']));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG['setup'][71].' :</i></b> '.$item->fields['firmware']);
+         '<b><i>'.sprintf(__('%1$s: %2$s'), _n('Firmware', 'Firmwares', 1).'</i></b>',
+                          $item->fields['firmware']));
 
-      $opts = array(
-         'have_headset' => $LANG['phones'][38],
-         'have_hp'      => $LANG['phones'][39],
-      );
+      $opts = array('have_headset' => __('Headset'),
+                    'have_hp'      => __('Speaker'));
       foreach ($opts as $key => $val) {
          if (!$item->fields[$key]) {
             unset($opts[$key]);
@@ -92,8 +82,8 @@ class PluginPdfPhone extends PluginPdfCommon {
       }
 
       $pdf->setColumnsSize(100);
-      $pdf->displayLine('<b><i>'.$LANG['monitors'][18].' : </i></b>'.
-                        (count($opts) ? implode(', ',$opts) : $LANG['job'][32]));
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Flags').'</i></b>',
+                        (count($opts) ? implode(', ',$opts) : __('None'))));
 
       PluginPdfCommon::mainLine($pdf, $item, 'comment');
 

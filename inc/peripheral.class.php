@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -35,7 +34,6 @@ class PluginPdfPeripheral extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new Peripheral());
    }
 
@@ -49,37 +47,21 @@ class PluginPdfPeripheral extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Peripheral $item) {
-      global $LANG;
 
       PluginPdfCommon::mainTitle($pdf, $item);
 
       PluginPdfCommon::mainLine($pdf, $item, 'name-status');
       PluginPdfCommon::mainLine($pdf, $item, 'location-type');
       PluginPdfCommon::mainLine($pdf, $item, 'tech-manufacturer');
-
-      $pdf->displayLine(
-         '<b><i>'.$LANG['common'][109].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id_tech'])),
-         '<b><i>'.$LANG['peripherals'][18].' :</i></b> '.$item->fields['brand']);
-
-      $pdf->displayLine(
-         '<b><i>'.$LANG['common'][21].' :</i></b> '.$item->fields['contact_num'],
-         '<b><i>'.$LANG['common'][22].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_peripheralmodels',
-                                                 $item->fields['peripheralmodels_id'])));
-
-      $pdf->displayLine('<b><i>'.$LANG['common'][18].' :</i></b> '.$item->fields['contact'],
-                        '<b><i>'.__('Serial number').' :</i></b> '.$item->fields['serial']);
-
-      PluginPdfCommon::mainLine($pdf, $item, 'user-otherserial');
-
+      PluginPdfCommon::mainLine($pdf, $item, 'group-model');
+      PluginPdfCommon::mainLine($pdf, $item, 'contactnum-serial');
+      PluginPdfCommon::mainLine($pdf, $item, 'contact-otherserial');
+      PluginPdfCommon::mainLine($pdf, $item, 'user_management');
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_groups',
-                                                                $item->fields['groups_id']))),
-         '<b><i>'.$LANG['peripherals'][33].' :</i></b> '.
-            ($item->fields['is_global']?$LANG['peripherals'][31]:$LANG['peripherals'][32]));
+                                                                $item->fields['groups_id']))));
 
       $pdf->setColumnsSize(100);
       PluginPdfCommon::mainLine($pdf, $item, 'comment');

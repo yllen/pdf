@@ -54,8 +54,8 @@ class PluginPdfComputer extends PluginPdfCommon {
       PluginPdfCommon::mainLine($pdf, $computer, 'location-type');
       PluginPdfCommon::mainLine($pdf, $computer, 'tech-manufacturer');
       PluginPdfCommon::mainLine($pdf, $computer, 'group-model');
-      PluginPdfCommon::mainLine($pdf, $computer, 'usernum-serial');
-      PluginPdfCommon::mainLine($pdf, $computer, 'user-otherserial');
+      PluginPdfCommon::mainLine($pdf, $computer, 'contactnum-serial');
+      PluginPdfCommon::mainLine($pdf, $computer, 'contact-otherserial');
 
 
       $pdf->displayLine(
