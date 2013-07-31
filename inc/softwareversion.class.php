@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,48 +27,47 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfSoftwareVersion extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new SoftwareVersion());
    }
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, SoftwareVersion $version) {
-      global $DB,$LANG;
+      global $DB;
 
       $ID = $version->getField('id');
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b><i>'.__('ID')."</i> : $ID</b>");
+      $pdf->displayTitle('<b><i>'.sprintf(__('%1$s: %2$s'), __('ID')."</i>", $ID."</b>"));
 
       $pdf->setColumnsSize(50,50);
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $version->fields['name']),
-         '<b><i>'.$LANG['help'][31].'</i></b>: '.
-            Html::clean(Dropdown::getDropdownName('glpi_softwares', $version->fields['softwares_id'])));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), _n('Software', 'Software', 2).'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_softwares',
+                                                                $version->fields['softwares_id']))));
 
       $pdf->displayLine(
-         '<b><i>'.$LANG["state"][0].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_states', $version->fields['states_id'])),
-         '<b><i>'.$LANG['computers'][9].' :</i></b> '.
-            Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
-                                                 $version->fields['operatingsystems_id'])));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Status').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_states',
+                                                                $version->fields['states_id']))),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Operating system').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
+                                                                $version->fields['operatingsystems_id']))));
 
       $pdf->setColumnsSize(100);
-      $pdf->displayText('<b><i>'.$LANG["common"][25].' :</i></b>', $version->fields['comment']);
+      PluginPdfCommon::mainLine($pdf, $version, 'comment');
       $pdf->displaySpace();
    }
 
 
    static function pdfForSoftware(PluginPdfSimplePDF $pdf, Software $item){
-      global $DB,$LANG;
+      global $DB;
 
       $sID = $item->getField('id');
 
@@ -81,34 +79,30 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
                      ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
                 LEFT JOIN `glpi_operatingsystems`
                      ON (`glpi_operatingsystems`.`id` = `glpi_softwareversions`.`operatingsystems_id`)
-                WHERE (`softwares_id` = '$sID')
+                WHERE (`softwares_id` = '".$sID."')
                 ORDER BY `name`";
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.$LANG['software'][5].'</b>');
+      $pdf->displayTitle('<b>'.SoftwareVersion::getTypeName(2).'</b>');
 
       if ($result = $DB->query($query)) {
          if ($DB->numrows($result) > 0) {
             $pdf->setColumnsSize(13,13,30,14,30);
-            $pdf->displayTitle('<b><i>'.$LANG['software'][5].'</i></b>',
-                               '<b><i>'.$LANG['state'][0].'</i></b>',
-                               '<b><i>'.$LANG['computers'][9].'</i></b>',
-                               '<b><i>'.$LANG['software'][19].'</i></b>',
-                               '<b><i>'.$LANG['common'][25].'</i></b>');
+            $pdf->displayTitle('<b><i>'.SoftwareVersion::getTypeName(2).'</i></b>',
+                               '<b><i>'.__('Status').'</i></b>',
+                               '<b><i>'.__('Operating system').'</i></b>',
+                               '<b><i>'._n('Installation', 'Installations', 2).'</i></b>',
+                               '<b><i>'.__('Comments').'</i></b>');
             $pdf->setColumnsAlign('left','left','left','right','left');
 
             for ($tot=$nb=0 ; $data=$DB->fetch_assoc($result) ; $tot+=$nb) {
                $nb = Computer_SoftwareVersion::countForVersion($data['id']);
-               $pdf->displayLine(
-                  (empty($data['name'])?"(".$data['id'].")":$data['name']),
-                  $data['sname'],
-                  $data['osname'],
-                  $nb,
-                  str_replace(array("\r","\n")," ",$data['comment'])
-               );
+               $pdf->displayLine((empty($data['name'])?"(".$data['id'].")":$data['name']),
+                                 $data['sname'], $data['osname'], $nb,
+                                 str_replace(array("\r","\n")," ",$data['comment']));
             }
             $pdf->setColumnsAlign('left','right','left', 'right','left');
-            $pdf->displayTitle('','',"<b>".$LANG['common'][33]." : </b>",$tot, '');
+            $pdf->displayTitle('','',"<b>".sprintf(__('%1$s: %2$s'), __('Total')."</b>", ''),$tot, '');
          } else {
             $pdf->displayLine(__('No item found'));
          }
