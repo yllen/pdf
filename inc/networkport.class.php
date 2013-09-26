@@ -122,14 +122,31 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                $ip     = new IPAddress();
                if ($ip->getFromDBByQuery($sqlip)) {
                   $ipname   = $ip->fields['name'];
-               }
-
-               $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('ip').'</b>',
+                  
+                  $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('ip').'</b>',
                                               $ipname));
+                  
+                  $sql = "SELECT `glpi_ipaddresses_ipnetworks`.`ipnetworks_id`
+                      FROM `glpi_ipaddresses_ipnetworks`
+                      LEFT JOIN `glpi_ipnetworks`
+                           ON (`glpi_ipaddresses_ipnetworks`.`ipnetworks_id` = `glpi_ipnetworks`.`id`)
+                      WHERE `glpi_ipaddresses_ipnetworks`.`ipaddresses_id` = '".$ip->getID()."'";
 
-
-    //TODO A compléter
-
+                  $res        = $DB->query($sql);
+                  if ($res) while ($row=$DB->fetch_assoc($res)) {
+               
+                     $ipnetwork = new IPNetwork();
+                     if ($ipnetwork->getFromDB($row['ipnetworks_id'])) {
+                        
+                        $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('IP network').'</b>',
+                                                    $ipnetwork->fields['address']));
+                        $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Subnet mask').'</b>',
+                                                    $ipnetwork->fields['netmask']));
+                        $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Gateway').'</b>',
+                                                    $ipnetwork->fields['gateway']));
+                     }
+                  }
+               }
             } // each port
 
          } // Found
