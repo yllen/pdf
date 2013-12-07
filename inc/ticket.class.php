@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,18 +27,17 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfTicket extends PluginPdfCommon {
 
-   function __construct(CommonGLPI $obj=NULL) {
 
+   function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new Ticket());
    }
 
+
    static function pdfMain(PluginPdfSimplePDF $pdf, Ticket $job) {
-      global $LANG, $CFG_GLPI, $DB;
+      global $CFG_GLPI, $DB;
 
       $ID = $job->getField('id');
       if (!$job->can($ID, 'r')) {
@@ -49,7 +47,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
 
       $pdf->displayTitle('<b>'.
-               (empty($job->fields["name"])?$LANG['reminder'][15]:$name=$job->fields["name"]).'</b>');
+               (empty($job->fields["name"])?__('Without title'):$name=$job->fields["name"]).'</b>');
 
       if (count($_SESSION['glpiactiveentities'])>1) {
          $entity = " (".Dropdown::getDropdownName("glpi_entities",$job->fields["entities_id"]).")";
@@ -60,47 +58,88 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->setColumnsSize(50,50);
       $recipient_name='';
       if ($job->fields["users_id_recipient"]) {
-         $recipient = new User();
+         $recipient      = new User();
          $recipient->getFromDB($job->fields["users_id_recipient"]);
          $recipient_name = $recipient->getName();
       }
-      $pdf->displayLine("<b><i>".$LANG['joblist'][11]."</i></b> : ".Html::convDateTime($job->fields["date"]).", ".
-                           '<b><i>'.$LANG['common'][95]."</i></b> : ".$recipient_name,
-                        sprintf(__('%1$s: %2$s'), __('Last update'),
-                                Html::convDateTime($job->fields["date_mod"])));
 
-      $status = Html::clean($job->getStatus($job->fields["status"]));
-      switch ($job->getField('status')) {
-         case 'closed':
-            $status = $LANG['joblist'][12].' : '.Html::convDateTime($job->fields['closedate']);
-            break;
-
-         case 'solved':
-            $status = $LANG['joblist'][14].' : '.Html::convDateTime($job->fields['solvedate']);
-            break;
-
-         case 'waiting':
-            $status .= ' - '.$LANG['knowbase'][27].' : '.Html::convDateTime($job->fields['begin_waiting_date']);
-            break;
-      }
-      $sla = $due = '';
-      if ($job->fields["slas_id"]>0) {
-         $sla = "<b><i>".$LANG['sla'][1]." : </b></i>".
-                  Html::clean(Dropdown::getDropdownName("glpi_slas", $job->fields["slas_id"]));
-      }
+      $sla = $due = $commentsla = '';
       if ($job->fields['due_date']) {
-         $due .= "<b><i>".$LANG['sla'][5]." : </b></i>".Html::convDateTime($job->fields['due_date']);
+         $due = "<b><i>".sprintf(__('%1$s: %2$s'), __('Due date')."</b></i>",
+                                  Html::convDateTime($job->fields['due_date']));
+      }
+      if ($job->fields["slas_id"] > 0) {
+         $sla = "<b><i>".sprintf(__('%1$s: %2$s'), __('SLA')."</b></i>",
+                                 Html::clean(Dropdown::getDropdownName("glpi_slas",
+                                                                       $job->fields["slas_id"])));
+
+         $slalevel = new SlaLevel();
+         if ($slalevel->getFromDB($job->fields['slalevels_id'])) {
+            $commentsla = "<b><i>".sprintf(__('%1$s: %2$s'), __('Escalation level')."</b></i>",
+                                           $slalevel->getName());
+         }
+
+         $nextaction = new SlaLevel_Ticket();
+         if ($nextaction->getFromDBForTicket($job->fields["id"])) {
+            $commentsla .= " <b><i>".sprintf(__('Next escalation: %s')."</b></i>",
+                                        Html::convDateTime($nextaction->fields['date']));
+            if ($slalevel->getFromDB($nextaction->fields['slalevels_id'])) {
+               $commentsla .= " <b><i>".sprintf(__('%1$s: %2$s'), __('Escalation level'),
+                                               $slalevel->getName());
+            }
+         }
       }
 
-      // status, due date
       $pdf->displayLine(
-         "<b><i>".$LANG['joblist'][0]."</i></b> : $status", $due);
+         "<b><i>".sprintf(__('%1$s: %2$s'), __('Opening date')."</i></b>",
+                          Html::convDateTime($job->fields["date"])), $due);
 
-      // Urgence, SLA
+      $pdf->displayLine($sla, $commentsla);
+
+      $lastupdate = Html::convDateTime($job->fields["date_mod"]);
+      if ($job->fields['users_id_lastupdater'] > 0) {
+         $lastupdate = sprintf(__('%1$s by %2$s'), $lastupdate,
+                               getUserName($job->fields["users_id_lastupdater"]));
+      }
+
       $pdf->displayLine(
-         "<b><i>".$LANG['joblist'][29]."</i></b> : ".
-               Html::clean($job->getUrgencyName($job->fields["urgency"])), $sla);
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('By')."</i></b>", $recipient_name),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Last update').'</i></b>', $lastupdate));
 
+      $pdf->displayLine(
+         "<b><i>".sprintf(__('%1$s: %2$s'), __('Type')."</i></b>",
+                          Html::clean(Ticket::getTicketTypeName($job->fields["type"]))),
+         "<b><i>".sprintf(__('%1$s: %2$s'), __('Category')."</i></b>",
+                          Html::clean(Dropdown::getDropdownName("glpi_itilcategories",
+                                                                $job->fields["itilcategories_id"]))));
+
+      $status = '';
+      if (in_array($job->fields["status"], $job->getSolvedStatusArray())
+          || in_array($job->fields["status"], $job->getClosedStatusArray())) {
+         $status = sprintf(__('%1$s %2$s'), '-', Html::convDateTime($job->fields["solvedate"]));
+      }
+      if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
+         $status = sprintf(__('%1$s %2$s'), '-', Html::convDateTime($job->fields["closedate"]));
+      }
+
+      if ($job->fields["status"] == Ticket::WAITING) {
+         $status = sprintf(__('%1$s %2$s'), '-',
+                           Html::convDateTime($job->fields['begin_waiting_date']));
+      }
+
+      $pdf->displayLine(
+         "<b><i>".sprintf(__('%1$s: %2$s'), __('Status')."</i></b>",
+                          Html::clean($job->getStatus($job->fields["status"])). $status),
+         "<b><i>".sprintf(__('%1$s: %2$s'), __('Request source')."</i></b>",
+                          Html::clean(Dropdown::getDropdownName('glpi_requesttypes',
+                                                                $job->fields['requesttypes_id']))));
+
+      $pdf->displayLine(
+         "<b><i>".sprintf(__('%1$s: %2$s'), __('Urgency')."</i></b>",
+                          Html::clean($job->getUrgencyName($job->fields["urgency"]))),
+         "<b><i>".sprintf(__('%1$s: %2$s'), __('Approval')."</i></b>",
+                          TicketValidation::getStatus($job->fields['global_validation'])));
+      /*
       // Impact / Type
       $pdf->displayLine(
          "<b><i>".$LANG['joblist'][30]."</i></b> : ".
@@ -380,7 +419,7 @@ class PluginPdfTicket extends PluginPdfCommon {
 
             $pdf->displayText('<b><i>'.$LANG["common"][57].' :</i></b> ',$job->fields["name"], 1);
          }
-      }
+      }*/
       $pdf->displaySpace();
    }
 
