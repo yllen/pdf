@@ -519,29 +519,6 @@ class PluginPdfTicket extends PluginPdfCommon {
    }
 
 /*
-   static function pdfCost(PluginPdfSimplePDF $pdf, Ticket $job) {
-      global $LANG, $CFG_GLPI, $DB;
-
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".$LANG['job'][47]."</b>");
-
-      $pdf->setColumnsSize(20,20,20,20,20);
-      $pdf->displayTitle($LANG['job'][20],$LANG['job'][40], $LANG['job'][41],
-                         $LANG['job'][42], $LANG['job'][43]);
-      $pdf->setColumnsAlign('center','right','right','right','right');
-
-      $total = Ticket::trackingTotalCost($job->fields["actiontime"], $job->fields["cost_time"],
-                                         $job->fields["cost_fixed"], $job->fields["cost_material"]);
-
-      $pdf->displayLine(Html::clean(Ticket::getActionTime($job->fields["actiontime"])),
-                        Html::clean(Html::formatNumber($job->fields["cost_time"])),
-                        Html::clean(Html::formatNumber($job->fields["cost_fixed"])),
-                        Html::clean(Html::formatNumber($job->fields["cost_material"])),
-                        Html::clean(Html::formatNumber($total)));
-      $pdf->displaySpace();
-   }
-
-
    static function pdfSolution(PluginPdfSimplePDF $pdf, Ticket $job) {
       global $LANG, $CFG_GLPI, $DB;
 
@@ -623,7 +600,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       return $onglets;
    }
 
-
+*/
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       $private = isset($_REQUEST['item']['_private_']);
@@ -636,7 +613,7 @@ class PluginPdfTicket extends PluginPdfCommon {
          case 'TicketFollowup$1' :
             PluginPdfTicketFollowup::pdfForTicket($pdf, $item, $private);
             break;
-
+/*
          case 'TicketTask$1' :
             PluginPdfTicketTask::pdfForTicket($pdf, $item, $private);
             break;
@@ -644,11 +621,11 @@ class PluginPdfTicket extends PluginPdfCommon {
          case 'TicketValidation$1' :
             PluginPdfTicketValidation::pdfForTicket($pdf, $item);
             break;
-
-         case 'Ticket$1' :
-            self::pdfCost($pdf, $item);
+*/
+         case 'TicketCost$1' :
+            PluginPdfTicketCost::pdfForTicket($pdf, $item);
             break;
-
+/*
          case 'Ticket$2' :
             self::pdfSolution($pdf, $item);
             break;
@@ -660,10 +637,10 @@ class PluginPdfTicket extends PluginPdfCommon {
          case 'Ticket$4' :
             self::pdfStat($pdf, $item);
             break;
-
+*/
          default :
             return false;
       }
       return true;
-   }*/
+   }
 }

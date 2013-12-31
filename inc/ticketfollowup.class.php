@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,9 +27,6 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
-
 class PluginPdfTicketFollowup extends PluginPdfCommon {
 
 
@@ -39,6 +35,7 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new TicketFollowup());
    }
 
+
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $job, $private) {
       global $LANG, $CFG_GLPI, $DB;
 
@@ -46,7 +43,7 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
 
       //////////////followups///////////
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".$LANG['plugin_pdf']['ticket'][1]."</b>");
+      $pdf->displayTitle("<b>".__('Ticket followup')."</b>");
 
       $RESTRICT = "";
       if (!$private) {
@@ -61,18 +58,18 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
       $query = "SELECT *
                 FROM `glpi_ticketfollowups`
                 WHERE `tickets_id` = '$ID'
-                $RESTRICT
+                      $RESTRICT
                 ORDER BY `date` DESC";
       $result=$DB->query($query);
 
       if (!$DB->numrows($result)) {
-         $pdf->displayLine($LANG['job'][12]);
+         $pdf->displayLine(__('No followup for this ticket.'));
       } else {
          while ($data=$DB->fetch_array($result)) {
             $pdf->setColumnsSize(44,14,42);
-            $pdf->displayTitle("<b><i>".$LANG['job'][45]."</i></b>", // Source
-                               "<b><i>".$LANG['common'][27]."</i></b>", // Date
-                               "<b><i>".$LANG['common'][37]."</i></b>"); // Author
+            $pdf->displayTitle("<b><i>".__('Source of followup')."</i></b>", // Source
+                               "<b><i>".__('Date')."</i></b>", // Date
+                               "<b><i>".__('Requester')."</i></b>"); // Author
 
             if ($data['requesttypes_id']) {
                $lib = Dropdown::getDropdownName('glpi_requesttypes', $data['requesttypes_id']);
@@ -80,12 +77,13 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
                $lib = '';
             }
             if ($data['is_private']) {
-               $lib .= ' ('.$LANG['common'][77].')';
+               $lib = sprintf(__('%1$s (%2$s)'), $lib, __('Private'));
             }
             $pdf->displayLine(Html::clean($lib),
                               Html::convDateTime($data["date"]),
                               Html::clean(getUserName($data["users_id"])));
-            $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", $data["content"]);
+            $pdf->displayText('<b><i>'.sprintf(__('%1$s: %2$s'), __('Comments').'</i></b>',
+                                               $data["content"]));
          }
       }
       $pdf->displaySpace();
