@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,25 +27,21 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfTicketTask extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new TicketTask());
    }
 
+
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $job, $private) {
-      global $LANG, $CFG_GLPI, $DB;
+      global $CFG_GLPI, $DB;
 
       $ID = $job->getField('id');
 
       //////////////Tasks///////////
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".$LANG['plugin_pdf']['ticket'][2]."</b>");
 
       $RESTRICT = "";
       if (!$private) {
@@ -61,29 +56,45 @@ class PluginPdfTicketTask extends PluginPdfCommon {
       $query = "SELECT *
                 FROM `glpi_tickettasks`
                 WHERE `tickets_id` = '$ID'
-                $RESTRICT
+                      $RESTRICT
                 ORDER BY `date` DESC";
-      $result=$DB->query($query);
+      $result = $DB->query($query);
 
       if (!$DB->numrows($result)) {
-         $pdf->displayLine($LANG['job'][50]);
+         $pdf->setColumnsSize(100);
+         $pdf->displayLine(__('No task found.'));
       } else {
+         $pdf->displayTitle("<b>".TicketTask::getTypeName($DB->numrows($result)."</b>"));
+
+         $pdf->setColumnsSize(20,20,20,20,20);
+         $pdf->displayTitle("<b><i>".__('Type')."</i></b>",
+               "<b><i>". __('Date')."</i></b>",
+               "<b><i>". __('Duration')."</i></b>",
+               "<b><i>".__('Writer')."</i></b>",
+               "<b><i>".__('Planning')."</i></b>");
+
          while ($data=$DB->fetch_array($result)) {
 
             $actiontime = Html::timestampToString($data['actiontime'], false);
-
-            if ($data['begin']) {
-               $planification = Planning::getState($data["state"])." - ".Html::convDateTime($data["begin"]).
-                                " -> ".Html::convDateTime($data["end"])." - ".getUserName($data["users_id_tech"]);
+            $planification = '';
+            if (empty($data['begin'])) {
+               if (isset($data["state"])) {
+                  $planification = Planning::getState($data["state"])."<br>";
+               }
+               $planification .= _e('None');
             } else {
-               $planification=$LANG['job'][32];
+               if (isset($data["state"])) {
+                  $planification = sprintf(__('%1$s: %2$s'), _x('item', 'State'),
+                                           Planning::getState($data["state"]));
+               }
+               $planificiation = sprintf(__('%1$s - %2$s'), $planification,
+                                         Html::convDateTime($data["begin"])." -> ".
+                                         Html::convDateTime($data["end"]));
+               $planificiation = sprintf(__('%1$s - %2$s'), $planification,
+                                         sprintf(__('%1$s  %2$s'), __('By'),
+                                                 getUserName($data["users_id_tech"])));
             }
 
-            $pdf->setColumnsSize(40,14,30,16);
-            $pdf->displayTitle("<b><i>".$LANG['common'][17]."</i></b>", // Source
-                               "<b><i>".$LANG['common'][27]."</i></b>", // Date
-                               "<b><i>".$LANG['common'][37]."</i></b>", // Author
-                               "<b><i>".$LANG['job'][31]."</i></b>"); // Durée
 
             if ($data['taskcategories_id']) {
                $lib = Dropdown::getDropdownName('glpi_taskcategories', $data['taskcategories_id']);
@@ -91,14 +102,16 @@ class PluginPdfTicketTask extends PluginPdfCommon {
                $lib = '';
             }
             if ($data['is_private']) {
-               $lib .= ' ('.$LANG['common'][77].')';
+               $lib = sprintf(__('%1$s (%2$s)'), $lib, __('Private'));
             }
+            toolbox::logdebug("lib", $data);
             $pdf->displayLine(Html::clean($lib),
                               Html::convDateTime($data["date"]),
+                              Html::timestampToString($data["actiontime"], 0),
                               Html::clean(getUserName($data["users_id"])),
-                              Html::clean($actiontime));
-            $pdf->displayText("<b><i>".$LANG['joblist'][6]."</i></b> : ", Html::clean($data["content"]),1);
-            $pdf->displayText("<b><i>".$LANG['job'][35]."</i></b> : ", Html::clean($planification),1);
+                              Html::clean($planification),1);
+            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Description')."</i></b>",
+                                               Html::clean($data["content"]),1));
          }
       }
       $pdf->displaySpace();

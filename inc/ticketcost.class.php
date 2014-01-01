@@ -59,19 +59,20 @@ class PluginPdfTicketCost extends PluginPdfCommon {
                             __('Ticket duration'),
                             CommonITILObject::getActionTime($job->fields['actiontime'])."</b>");
 
+         $pdf->setColumnsSize(20,10,10,10,10,10,10,10,10);
+         $pdf->setColumnsAlign('center','center','center','left', 'right','right','right',
+               'right','right');
+         $pdf->displayTitle("<b><i>".__('Name')."</i></b>",
+               "<b><i>".__('Begin date')."</i></b>",
+               "<b><i>".__('End date')."</i></b>",
+               "<b><i>".__('Budget')."</i></b>",
+               "<b><i>".__('Duration')."</i></b>",
+               "<b><i>".__('Time cost')."</i></b>",
+               "<b><i>".__('Fixed cost')."</i></b>",
+               "<b><i>".__('Material cost')."</i></b>",
+               "<b><i>".__('Total cost')."</i></b>");
+
          while ($data=$DB->fetch_array($result)) {
-            $pdf->setColumnsSize(20,10,10,10,10,10,10,10,10);
-            $pdf->setColumnsAlign('center','center','center','left', 'right','right','right',
-                                  'right','right');
-            $pdf->displayTitle("<b><i>".__('Name')."</i></b>",
-                               "<b><i>".__('Begin date')."</i></b>",
-                               "<b><i>".__('End date')."</i></b>",
-                               "<b><i>".__('Budget')."</i></b>",
-                               "<b><i>".__('Duration')."</i></b>",
-                               "<b><i>".__('Time cost')."</i></b>",
-                               "<b><i>".__('Fixed cost')."</i></b>",
-                               "<b><i>".__('Material cost')."</i></b>",
-                               "<b><i>".__('Total cost')."</i></b>");
 
             $cost = TicketCost::computeTotalCost($data['actiontime'], $data['cost_time'],
                                            $data['cost_fixed'], $data['cost_material']);

@@ -1,10 +1,9 @@
 <?php
-
 /*
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2012 by the pdf Development Team.
+ Copyright (C) 2003-2013 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -28,27 +27,28 @@
  --------------------------------------------------------------------------
 */
 
-// Original Author of file: Remi Collet
-// ----------------------------------------------------------------------
 
 class PluginPdfTicketValidation extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new TicketValidation());
    }
 
+
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $ticket) {
-      global $LANG, $CFG_GLPI, $DB;
+      global $CFG_GLPI, $DB;
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".$LANG['validation'][7]."</b>");
+      $pdf->displayTitle("<b>".__('Approvals for the ticket')."</b>");
 
-      if (!Session::haveRight('validate_ticket',1) && !Session::haveRight('create_validation ',1)) {
+      if (!Session::haveRight('validate_request',1)
+          && !Session::haveRight('validate_incident',1)
+          && !Session::haveRight('create_incident_validation',1)
+          && !Session::haveRight('create_request_validation',1)) {
          return false;
       }
-      $ID = $ticket->getField('id');
+     $ID = $ticket->getField('id');
 
       $query = "SELECT *
                 FROM `glpi_ticketvalidations`
@@ -59,11 +59,8 @@ class PluginPdfTicketValidation extends PluginPdfCommon {
 
       if ($number) {
          $pdf->setColumnsSize(20,19,21,19,21);
-         $pdf->displayTitle($LANG['validation'][2],
-                            $LANG['validation'][3],
-                            $LANG['validation'][18],
-                            $LANG['validation'][4],
-                            $LANG['validation'][21]);
+         $pdf->displayTitle(_x('item', 'State'), __('Request date'),
+                            __('Approval requester'), __('Approval date'), __('Approver'));
 
          while ($row = $DB->fetch_assoc($result)) {
             $pdf->setColumnsSize(20,19,21,19,21);
@@ -73,13 +70,14 @@ class PluginPdfTicketValidation extends PluginPdfCommon {
                               Html::convDateTime($row["validation_date"]),
                               getUserName($row["users_id_validate"]));
             $tmp = trim($row["comment_submission"]);
-            $pdf->displayText("<b><i>".$LANG['validation'][5]."</i></b> : ",
-               (empty($tmp) ? $LANG['common'][49] : $tmp), 1);
+            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Request comments')."</i></b>",
+                                               (empty($tmp) ? __('None') : $tmp), 1));
 
             if ($row["validation_date"]) {
                $tmp = trim($row["comment_validation"]);
-               $pdf->displayText("<b><i>".$LANG['validation'][6]."</i></b> : ",
-                  (empty($tmp) ? $LANG['common'][49] : $tmp), 1);
+               $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'),
+                                                  __('Approval comments')."</i></b>",
+                                                  (empty($tmp) ? __('None') : $tmp), 1));
             }
          }
       } else {

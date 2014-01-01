@@ -613,7 +613,7 @@ class PluginPdfTicket extends PluginPdfCommon {
          case 'TicketFollowup$1' :
             PluginPdfTicketFollowup::pdfForTicket($pdf, $item, $private);
             break;
-/*
+
          case 'TicketTask$1' :
             PluginPdfTicketTask::pdfForTicket($pdf, $item, $private);
             break;
@@ -621,7 +621,7 @@ class PluginPdfTicket extends PluginPdfCommon {
          case 'TicketValidation$1' :
             PluginPdfTicketValidation::pdfForTicket($pdf, $item);
             break;
-*/
+
          case 'TicketCost$1' :
             PluginPdfTicketCost::pdfForTicket($pdf, $item);
             break;
@@ -629,11 +629,11 @@ class PluginPdfTicket extends PluginPdfCommon {
          case 'Ticket$2' :
             self::pdfSolution($pdf, $item);
             break;
-
+*/
          case 'Ticket$3' :
             PluginPdfTicketSatisfaction::pdfForTicket($pdf, $item);
             break;
-
+/*
          case 'Ticket$4' :
             self::pdfStat($pdf, $item);
             break;
