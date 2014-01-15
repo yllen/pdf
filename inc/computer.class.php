@@ -95,28 +95,6 @@ class PluginPdfComputer extends PluginPdfCommon {
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Update source').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_autoupdatesystems',
                                                                 $computer->fields['autoupdatesystems_id']))));
-//TODO plugin OCS
-/*
-      $pdf->setColumnsSize(100);
-      if ($computer->fields['is_ocs_import'] && Session::haveRight("view_ocsng","r")) {
-         $tmp = '';
-         $query = "SELECT *
-                   FROM `glpi_ocslinks`
-                   WHERE `computers_id` = '$ID'";
-
-         $result = $DB->query($query);
-         if ($DB->numrows($result)==1) {
-            $dataocs = $DB->fetch_array($result);
-            $tmp .= '<b>'.$LANG['ocsng'][14].'</b> : '.Html::convDateTime($dataocs["last_ocs_update"]).', ';
-            $tmp .= '<b>'.$LANG['ocsng'][13].'</b> : '.Html::convDateTime($dataocs["last_update"]).', ';
-         }
-
-         $tmp .= '<b>'.$LANG['ocsng'][6].'</b> : '.
-                 ($computer->getField('use_auto_update') ? $LANG['choice'][1] : $LANG['choice'][0]);
-
-         $pdf->displayText('<b>'.$LANG['ocsng'][0].'</b> : ', $tmp);
-      }
-*/
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']));

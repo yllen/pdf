@@ -37,7 +37,7 @@ class PluginPdfTicketCost extends PluginPdfCommon {
 
 
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $job) {
-      global $LANG, $CFG_GLPI, $DB;
+      global $CFG_GLPI, $DB;
 
       $ID = $job->getField('id');
 

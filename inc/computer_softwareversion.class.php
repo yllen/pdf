@@ -161,7 +161,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
       $pdf->setColumnsSize(75,25);
       $pdf->setColumnsAlign('left', 'right');
 
-      $pdf->displayTitle('<b>'._('Entity'), _n('Installation', 'Installations', 2).'</b>');
+      $pdf->displayTitle('<b>'.__('Entity'), _n('Installation', 'Installations', 2).'</b>');
 
       $lig = $tot = 0;
       if (in_array(0, $_SESSION["glpiactiveentities"])) {

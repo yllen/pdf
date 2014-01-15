@@ -1,0 +1,149 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-01-15 15:07+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: hook.php:44 hook.php:48 setup.php:77 inc/common.class.php:118
+#: inc/preference.class.php:180 inc/profile.class.php:38
+#: inc/profile.class.php:97 inc/profile.class.php:102
+#: inc/profile.class.php:143
+msgid "Print to pdf"
+msgstr "Impression pdf"
+
+#: setup.php:90
+msgid "This plugin requires GLPI >= 0.84"
+msgstr "Ce plugin nécessite GLPI >= 0.84"
+
+#: inc/common.class.php:261
+msgid "No note found"
+msgstr "Pas de note trouvée"
+
+#: inc/computerdisk.class.php:58
+msgid "Mount point"
+msgstr "Point de montage"
+
+#: inc/computerdisk.class.php:77
+msgid "No volume found"
+msgstr "Pas de volume trouvé"
+
+#: inc/computer_item.class.php:108
+msgid "No printer"
+msgstr "Pas d'imprimante"
+
+#: inc/computer_item.class.php:112
+msgid "No monitor"
+msgstr "Pas d'écran"
+
+#: inc/computer_item.class.php:116
+msgid "No peripheral"
+msgstr ""
+
+#: inc/computer_item.class.php:120
+msgid "No phone"
+msgstr "Pas de téléphone"
+
+#: inc/computer_softwareversion.class.php:237
+msgid "Installed software"
+msgid_plural "Installed software"
+msgstr[0] "Logiciel installé"
+msgstr[1] "Logiciels installés"
+
+#: inc/computer_softwareversion.class.php:286
+msgid "No installed software"
+msgstr "Pas de logiciel installé"
+
+#: inc/document.class.php:62
+msgid "No associated documents"
+msgstr "Pas de document associé"
+
+#: inc/document.class.php:64
+msgid "Associated documents"
+msgstr "Documents associés"
+
+#: inc/document.class.php:68
+msgid "MIME type"
+msgstr "Type MIME"
+
+#: inc/group.class.php:61
+msgid "Visible in a ticket"
+msgstr "Visible dans un ticket"
+
+#: inc/group.class.php:178
+msgid "Members equipment"
+msgstr "Matériels des membres"
+
+#: inc/infocom.class.php:91
+msgid "Date of last physical inventory"
+msgstr "Date du dernier inventaire physique"
+
+#: inc/infocom.class.php:151
+msgid "No financial information"
+msgstr "Pas d'information financière"
+
+#: inc/knowbaseitem.class.php:79
+msgid "No question found"
+msgstr "Pas de question trouvée"
+
+#: inc/preference.class.php:115
+msgid "Choose the tables to print in pdf"
+msgstr "Choisir les tableaux pour l'impression pdf"
+
+#: inc/preference.class.php:154
+#, php-format
+msgid "Display %d items"
+msgstr "Afficher %d éléments"
+
+#: inc/preference.class.php:157
+msgid "Portrait"
+msgstr "Portrait"
+
+#: inc/preference.class.php:158
+msgid "Landscape"
+msgstr "Paysage"
+
+#: inc/preference.class.php:164
+msgctxt "button"
+msgid "Print"
+msgstr "Imprimer"
+
+#: inc/ticketcost.class.php:55
+msgid "No ticket cost for this ticket"
+msgstr "Pas de coûts pour ce ticket"
+
+#: inc/ticketsatisfaction.class.php:55
+msgid "1 star"
+msgstr "1 étoile"
+
+#: inc/ticketsatisfaction.class.php:56
+msgid "2 stars"
+msgstr "2 étoiles"
+
+#: inc/ticketsatisfaction.class.php:57
+msgid "3 stars"
+msgstr "3 étoiles"
+
+#: inc/ticketsatisfaction.class.php:58
+msgid "4 stars"
+msgstr "4 étoiles"
+
+#: inc/ticketsatisfaction.class.php:59
+msgid "5 stars"
+msgstr "5 étoiles"
+
+#: inc/ticketsatisfaction.class.php:75
+msgid "No answer"
+msgstr "Pas de réponse"

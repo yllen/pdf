@@ -520,7 +520,7 @@ class PluginPdfTicket extends PluginPdfCommon {
 
 
    static function pdfSolution(PluginPdfSimplePDF $pdf, Ticket $job) {
-      global $LANG, $CFG_GLPI, $DB;
+      global $CFG_GLPI, $DB;
 
       $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>".__('Solution')."</b>");
@@ -545,7 +545,6 @@ class PluginPdfTicket extends PluginPdfCommon {
 
 
    static function pdfStat(PluginPdfSimplePDF $pdf, Ticket $job) {
-      global $LANG;
 
       $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>"._n('Date', 'Dates', 2)."</b>");
@@ -595,22 +594,21 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->displaySpace();
    }
 
-/*
+
    function defineAllTabs($options=array()) {
-      global $LANG;
 
       $onglets = parent::defineAllTabs($options);
 
       if (Session::haveRight("show_full_ticket","1")) {
-         $onglets['_private_'] = $LANG['common'][77];
+         $onglets['_private_'] = __('Private');
       }
-      unset($onglets['Problem$1']); // TODO add method to print linked Problems
-      unset($onglets['Change$1']);  // TODO add method to print linked Changes
+ //     unset($onglets['Problem$1']); // TODO add method to print linked Problems
+ //     unset($onglets['Change$1']);  // TODO add method to print linked Changes
 
       return $onglets;
    }
 
-*/
+
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       $private = isset($_REQUEST['item']['_private_']);
