@@ -518,26 +518,26 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->displaySpace();
    }
 
-/*
+
    static function pdfSolution(PluginPdfSimplePDF $pdf, Ticket $job) {
       global $LANG, $CFG_GLPI, $DB;
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".$LANG['jobresolution'][1]."</b>");
+      $pdf->displayTitle("<b>".__('Solution')."</b>");
 
       if ($job->fields['solutiontypes_id'] || !empty($job->fields['solution'])) {
          if ($job->fields['solutiontypes_id']) {
             $title = Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
                                            $job->getField('solutiontypes_id')));
          } else {
-            $title = $LANG['jobresolution'][1];
+            $title = __('Solution');
          }
          $sol = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
                            html_entity_decode($job->getField('solution'),
                                               ENT_QUOTES, "UTF-8")));
          $pdf->displayText("<b><i>$title</i></b> : ", $sol);
       } else {
-         $pdf->displayLine($LANG['job'][32]);
+         $pdf->displayLine(__('None'));
       }
 
       $pdf->displaySpace();
@@ -548,44 +548,54 @@ class PluginPdfTicket extends PluginPdfCommon {
       global $LANG;
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".$LANG['common'][99]."</b>");
+      $pdf->displayTitle("<b>"._n('Date', 'Dates', 2)."</b>");
 
       $pdf->setColumnsSize(50, 50);
-      $pdf->displayLine($LANG['reports'][60].' : ', Html::convDateTime($job->fields['date']));
-      $pdf->displayLine($LANG['sla'][5].' : ', Html::convDateTime($job->fields['due_date']));
-      if ($job->fields['status']=='solved' || $job->fields['status']=='closed') {
-         $pdf->displayLine($LANG['reports'][64].' : ', Html::convDateTime($job->fields['solvedate']));
+      $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Opening date'),
+                                Html::convDateTime($job->fields['date'])));
+      $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Due date'),
+                                Html::convDateTime($job->fields['due_date'])));
+      if (in_array($job->fields["status"], $job->getSolvedStatusArray())
+          || in_array($job->fields["status"], $job->getClosedStatusArray())) {
+         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Solution date'),
+                                   Html::convDateTime($job->fields['solvedate'])));
       }
-      if ($job->fields['status']=='closed') {
-         $pdf->displayLine($LANG['reports'][61].' : ', Html::convDateTime($job->fields['closedate']));
+      if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
+         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Closing date'),
+                                   Html::convDateTime($job->fields['closedate'])));
       }
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".$LANG['common'][100]."</b>");
+      $pdf->displayTitle("<b>"._n('Time', 'Times', 2)."</b>");
 
       $pdf->setColumnsSize(50, 50);
-      if ($job->fields['takeintoaccount_delay_stat']>0) {
-         $pdf->displayLine($LANG['stats'][12].' : ', Html::clean(Html::timestampToString($job->fields['takeintoaccount_delay_stat'],0)));
+      if ($job->fields['takeintoaccount_delay_stat'] > 0) {
+         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Take into account'),
+                                   Html::clean(Html::timestampToString($job->fields['takeintoaccount_delay_stat'],0))));
       }
 
-      if ($job->fields['status']=='solved' || $job->fields['status']=='closed') {
-         if ($job->fields['solve_delay_stat']>0) {
-            $pdf->displayLine($LANG['stats'][9].' : ', Html::clean(Html::timestampToString($job->fields['solve_delay_stat'],0)));
+      if (in_array($job->fields["status"], $job->getSolvedStatusArray())
+          || in_array($job->fields["status"], $job->getClosedStatusArray())) {
+               if ($job->fields['solve_delay_stat'] > 0) {
+            $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Solution'),
+                                      Html::clean(Html::timestampToString($job->fields['solve_delay_stat'],0))));
          }
       }
-      if ($job->fields['status']=='closed') {
-         if ($job->fields['close_delay_stat']>0) {
-            $pdf->displayLine($LANG['stats'][10].' : ', Html::clean(Html::timestampToString($job->fields['close_delay_stat'],0)));
+      if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
+         if ($job->fields['close_delay_stat'] > 0) {
+            $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Closing'),
+                                      Html::clean(Html::timestampToString($job->fields['close_delay_stat'],0))));
          }
       }
-      if ($job->fields['waiting_duration']>0) {
-         $pdf->displayLine($LANG['joblist'][26].' : ', Html::clean(Html::timestampToString($job->fields['waiting_duration'],0)));
+      if ($job->fields['waiting_duration'] > 0) {
+         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Pending'),
+                                   Html::clean(Html::timestampToString($job->fields['waiting_duration'],0))));
       }
 
       $pdf->displaySpace();
    }
 
-
+/*
    function defineAllTabs($options=array()) {
       global $LANG;
 
@@ -625,19 +635,19 @@ class PluginPdfTicket extends PluginPdfCommon {
          case 'TicketCost$1' :
             PluginPdfTicketCost::pdfForTicket($pdf, $item);
             break;
-/*
+
          case 'Ticket$2' :
             self::pdfSolution($pdf, $item);
             break;
-*/
+
          case 'Ticket$3' :
             PluginPdfTicketSatisfaction::pdfForTicket($pdf, $item);
             break;
-/*
+
          case 'Ticket$4' :
             self::pdfStat($pdf, $item);
             break;
-*/
+
          default :
             return false;
       }
