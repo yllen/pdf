@@ -122,7 +122,7 @@ function plugin_pdf_install() {
                   `use` tinyint(1) default 0,
                   PRIMARY KEY (`id`)
                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-      $DB->queryOrDir($query, $DB->error());
+      $DB->queryOrDie($query, $DB->error());
    } else {
       if (FieldExists('glpi_plugin_pdf_profiles','ID')) { //< 0.7.0
          $migration->changeField('glpi_plugin_pdf_profiles', 'ID', 'id', 'autoincrement');
