@@ -402,7 +402,7 @@ abstract class PluginPdfCommon {
 
          case 'comment' :
             return $pdf->displayText('<b><i>'.sprintf(__('%1$s: %2$s'), __('Comments').'</i></b>',
-                                                      $item->fields['comment']));
+                                                      ''), $item->fields['comment']);
 
        default :
         return;

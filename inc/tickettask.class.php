@@ -110,8 +110,8 @@ class PluginPdfTicketTask extends PluginPdfCommon {
                               Html::timestampToString($data["actiontime"], 0),
                               Html::clean(getUserName($data["users_id"])),
                               Html::clean($planification),1);
-            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Description')."</i></b>",
-                                               Html::clean($data["content"]),1));
+            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Description')."</i></b>", ''),
+                                               Html::clean($data["content"]), 1);
          }
       }
       $pdf->displaySpace();

@@ -85,12 +85,12 @@ class PluginPdfGroup extends PluginPdfCommon {
          $pdf->displayTitle(__('LDAP directory link'));
 
          $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'),
-                                         __('User attribute containing its groups').'</b>',
-                                         $item->getField('ldap_field')));
-         $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Attribute value').'</b>',
-                                         $item->getField('ldap_value')));
-         $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Group DN').'</b>',
-                                         $item->getField('ldap_group_dn')));
+                                         __('User attribute containing its groups').'</b>', ''),
+                                         $item->getField('ldap_field'));
+         $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Attribute value').'</b>', ''),
+                                         $item->getField('ldap_value'));
+         $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Group DN').'</b>', ''),
+                                         $item->getField('ldap_group_dn'));
 
          $pdf->displaySpace();
       }

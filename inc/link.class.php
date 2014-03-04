@@ -87,8 +87,8 @@ class PluginPdfLink extends PluginPdfCommon {
                         // same name for all files, ex name = foo.txt
                         $file = reset($files);
                      }
-                     $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b>$name #$i - $file</b>",
-                                               trim($data), 1, 10));
+                     $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b>$name #$i - $file</b>", ''),
+                                               trim($data), 1, 10);
                      $i++;
                   }
             }

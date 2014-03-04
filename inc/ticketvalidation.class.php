@@ -71,13 +71,13 @@ class PluginPdfTicketValidation extends PluginPdfCommon {
                               getUserName($row["users_id_validate"]));
             $tmp = trim($row["comment_submission"]);
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Request comments')."</i></b>",
-                                               (empty($tmp) ? __('None') : $tmp), 1));
+                                               ''), (empty($tmp) ? __('None') : $tmp), 1);
 
             if ($row["validation_date"]) {
                $tmp = trim($row["comment_validation"]);
                $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'),
-                                                  __('Approval comments')."</i></b>",
-                                                  (empty($tmp) ? __('None') : $tmp), 1));
+                                                  __('Approval comments')."</i></b>", ''),
+                                                  (empty($tmp) ? __('None') : $tmp), 1);
             }
          }
       } else {

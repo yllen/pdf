@@ -66,8 +66,8 @@ class PluginPdfTicketSatisfaction extends PluginPdfCommon {
          $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'),
                                          __('Satisfaction with the resolution of the ticket').'</b>',
                                         $sat));
-         $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Comments').'</b>',
-                                         $survey->getField('comment')));
+         $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Comments').'</b>', ''),
+                                         $survey->getField('comment'));
 
       } else {   // No answer
          $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Creation date of the satisfaction survey'),
