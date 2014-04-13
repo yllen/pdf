@@ -1,149 +1,149 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
+# Translators:
+# Kaya Zeren <kayazeren@gmail.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: GLPI Project - Plugin PDF\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-01-15 15:07+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2014-02-10 20:15+0000\n"
+"Last-Translator: Kaya Zeren <kayazeren@gmail.com>\n"
+"Language-Team: Turkish (Turkey) (http://www.transifex.com/projects/p/glpi-project-plugin-pdf/language/tr_TR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: tr_TR\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: hook.php:44 hook.php:48 setup.php:77 inc/common.class.php:118
 #: inc/preference.class.php:180 inc/profile.class.php:38
 #: inc/profile.class.php:97 inc/profile.class.php:102
 #: inc/profile.class.php:143
 msgid "Print to pdf"
-msgstr "Pdf olarak yazdır"
+msgstr "Pdf olarak yazdırın"
 
 #: setup.php:90
 msgid "This plugin requires GLPI >= 0.84"
-msgstr ""
+msgstr "Bu uyumlu ek GLPI 0.84 ve üzerindeki sürümlerle çalışır"
 
 #: inc/common.class.php:261
 msgid "No note found"
-msgstr "Not bulunamadı"
+msgstr "Not yok"
 
 #: inc/computerdisk.class.php:58
 msgid "Mount point"
-msgstr ""
+msgstr "Takılma noktası"
 
 #: inc/computerdisk.class.php:77
 msgid "No volume found"
-msgstr ""
+msgstr "Birim yok"
 
 #: inc/computer_item.class.php:108
 msgid "No printer"
-msgstr ""
+msgstr "Yazıcı yok"
 
 #: inc/computer_item.class.php:112
 msgid "No monitor"
-msgstr ""
+msgstr "Ekran yok"
 
 #: inc/computer_item.class.php:116
 msgid "No peripheral"
-msgstr ""
+msgstr "Çevre birimi yok"
 
 #: inc/computer_item.class.php:120
 msgid "No phone"
-msgstr ""
+msgstr "Telefon yok"
 
 #: inc/computer_softwareversion.class.php:237
 msgid "Installed software"
 msgid_plural "Installed software"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Yüklenmiş yazılımlar"
 
 #: inc/computer_softwareversion.class.php:286
 msgid "No installed software"
-msgstr "Kurulu yazılım bulunamadı"
+msgstr "Yüklenmiş yazılım yok"
 
 #: inc/document.class.php:62
 msgid "No associated documents"
-msgstr "İlgili döküman bulunamadı"
+msgstr "İlişkili bir belge yok"
 
 #: inc/document.class.php:64
 msgid "Associated documents"
-msgstr ""
+msgstr "İlişkili belgeler"
 
 #: inc/document.class.php:68
 msgid "MIME type"
-msgstr ""
+msgstr "MIME tipi"
 
 #: inc/group.class.php:61
 msgid "Visible in a ticket"
-msgstr ""
+msgstr "Çağrıda görüntülensin"
 
 #: inc/group.class.php:178
 msgid "Members equipment"
-msgstr "Members equipment"
+msgstr "Üyenin aygıtı"
 
 #: inc/infocom.class.php:91
 msgid "Date of last physical inventory"
-msgstr ""
+msgstr "Son fiziksel stok tarih"
 
 #: inc/infocom.class.php:151
 msgid "No financial information"
-msgstr "Finansal bilgi bulunamadı"
+msgstr "Finansal bilgi yok"
 
 #: inc/knowbaseitem.class.php:79
 msgid "No question found"
-msgstr "No question found"
+msgstr "Soru yok"
 
 #: inc/preference.class.php:115
 msgid "Choose the tables to print in pdf"
-msgstr "PDF olarak yazdırmak için tablo seçiniz"
+msgstr "PDF olarak yazdırılacak tabloları seçin"
 
 #: inc/preference.class.php:154
 #, php-format
 msgid "Display %d items"
-msgstr ""
+msgstr "%d öge görüntülensin"
 
 #: inc/preference.class.php:157
 msgid "Portrait"
-msgstr ""
+msgstr "Dikey"
 
 #: inc/preference.class.php:158
 msgid "Landscape"
-msgstr ""
+msgstr "Yatay"
 
 #: inc/preference.class.php:164
 msgctxt "button"
 msgid "Print"
-msgstr ""
+msgstr "Yazdırın"
 
 #: inc/ticketcost.class.php:55
 msgid "No ticket cost for this ticket"
-msgstr ""
+msgstr "Bu çağrı için maliyet yok"
 
 #: inc/ticketsatisfaction.class.php:55
 msgid "1 star"
-msgstr ""
+msgstr "1 yıldız"
 
 #: inc/ticketsatisfaction.class.php:56
 msgid "2 stars"
-msgstr ""
+msgstr "2 yıldız"
 
 #: inc/ticketsatisfaction.class.php:57
 msgid "3 stars"
-msgstr ""
+msgstr "3 yıldız"
 
 #: inc/ticketsatisfaction.class.php:58
 msgid "4 stars"
-msgstr ""
+msgstr "4 yıldız"
 
 #: inc/ticketsatisfaction.class.php:59
 msgid "5 stars"
-msgstr ""
+msgstr "5 yıldız"
 
 #: inc/ticketsatisfaction.class.php:75
 msgid "No answer"
-msgstr "No answer"
+msgstr "Yanıt yok"
