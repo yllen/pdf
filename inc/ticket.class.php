@@ -367,7 +367,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       }
 
       $query = "SELECT ".Ticket::getCommonSelect()."
-                FROM glpi_tickets ".
+                FROM `glpi_tickets` ".
                 Ticket::getCommonLeftJoin()."
                 WHERE $restrict ".
                   getEntitiesRestrictRequest("AND","glpi_tickets")."
@@ -379,9 +379,10 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $pdf->setColumnsSize(100);
       if (!$number) {
-         $pdf->displayTitle('<b>'.__('Last tickets').'</b>');
+         $pdf->displayTitle('<b>'.__('No ticket found.').'</b>');
       } else {
-         $pdf->displayTitle("<b>".sprintf(__('Last %d ticket')."</b>", $number));
+         $pdf->displayTitle("<b>".sprintf(_n('Last %d ticket','Last %d tickets', $number)."</b>",
+                                          $number));
 
          $job = new Ticket();
          while ($data = $DB->fetch_assoc($result)) {
@@ -556,7 +557,7 @@ class PluginPdfTicket extends PluginPdfCommon {
                                 Html::convDateTime($job->fields['due_date'])));
       if (in_array($job->fields["status"], $job->getSolvedStatusArray())
           || in_array($job->fields["status"], $job->getClosedStatusArray())) {
-         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Solution date'),
+         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Resolution date'),
                                    Html::convDateTime($job->fields['solvedate'])));
       }
       if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
@@ -602,8 +603,6 @@ class PluginPdfTicket extends PluginPdfCommon {
       if (Session::haveRight("show_full_ticket","1")) {
          $onglets['_private_'] = __('Private');
       }
- //     unset($onglets['Problem$1']); // TODO add method to print linked Problems
- //     unset($onglets['Change$1']);  // TODO add method to print linked Changes
 
       return $onglets;
    }
@@ -640,6 +639,10 @@ class PluginPdfTicket extends PluginPdfCommon {
 
          case 'Ticket$3' :
             PluginPdfTicketSatisfaction::pdfForTicket($pdf, $item);
+            break;
+
+         case 'Problem$1' :
+            PluginPdfProblem_Ticket::pdfForTicket($pdf, $item);
             break;
 
          case 'Ticket$4' :

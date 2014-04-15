@@ -104,7 +104,7 @@ class PluginPdfTicketTask extends PluginPdfCommon {
             if ($data['is_private']) {
                $lib = sprintf(__('%1$s (%2$s)'), $lib, __('Private'));
             }
-            toolbox::logdebug("lib", $data);
+
             $pdf->displayLine(Html::clean($lib),
                               Html::convDateTime($data["date"]),
                               Html::timestampToString($data["actiontime"], 0),
