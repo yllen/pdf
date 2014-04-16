@@ -304,17 +304,16 @@ class PluginPdfTicket extends PluginPdfCommon {
       $tickets   = Ticket_Ticket::getLinkedTicketsTo($ID);
       if (is_array($tickets) && count($tickets)) {
          $ticket = new Ticket();
+         $pdf->displayLine("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>",
+                                            _n('Linked ticket', 'Linked tickets', 2), ''));
          foreach ($tickets as $linkID => $data) {
             $tmp = sprintf(__('%1$s %2$s'), Ticket_Ticket::getLinkName($data['link']),
                            sprintf(__('%1$s %2$s'), __('ID'), $data['tickets_id']));
             if ($ticket->getFromDB($data['tickets_id'])) {
                $tmp = sprintf(__('%1$s: %2$s'), $tmp, $ticket->getName());
             }
-            $jobs[] = $tmp;
-            $jobs = implode("\n", $jobs);
+            $pdf->displayText('',$tmp, 1);
          }
-         $linked = "<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Linked tickets'), '');
-         $pdf->displayText($linked, $jobs, 1);
       }
 
       $pdf->displaySpace();

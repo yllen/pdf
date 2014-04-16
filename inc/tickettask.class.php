@@ -67,23 +67,20 @@ class PluginPdfTicketTask extends PluginPdfCommon {
          $pdf->displayTitle("<b>".TicketTask::getTypeName($DB->numrows($result)."</b>"));
 
          $pdf->setColumnsSize(20,20,20,20,20);
-         $pdf->displayTitle("<b><i>".__('Type')."</i></b>",
-               "<b><i>". __('Date')."</i></b>",
-               "<b><i>". __('Duration')."</i></b>",
-               "<b><i>".__('Writer')."</i></b>",
-               "<b><i>".__('Planning')."</i></b>");
+         $pdf->displayTitle("<i>".__('Type'), __('Date'), __('Duration'), __('Writer'),
+                                  __('Planning')."</i>");
 
          while ($data=$DB->fetch_array($result)) {
-
             $actiontime = Html::timestampToString($data['actiontime'], false);
             $planification = '';
             if (empty($data['begin'])) {
-               if (isset($data["state"])) {
+               if (isset($data["state"]) && $data["state"]) {
                   $planification = Planning::getState($data["state"])."<br>";
+               } else {
+                  $planification .= _e('None');
                }
-               $planification .= _e('None');
             } else {
-               if (isset($data["state"])) {
+               if (isset($data["state"]) && $data["state"]) {
                   $planification = sprintf(__('%1$s: %2$s'), _x('item', 'State'),
                                            Planning::getState($data["state"]));
                }
@@ -105,15 +102,16 @@ class PluginPdfTicketTask extends PluginPdfCommon {
                $lib = sprintf(__('%1$s (%2$s)'), $lib, __('Private'));
             }
 
-            $pdf->displayLine(Html::clean($lib),
+            $pdf->displayLine("</b>".Html::clean($lib),
                               Html::convDateTime($data["date"]),
                               Html::timestampToString($data["actiontime"], 0),
                               Html::clean(getUserName($data["users_id"])),
                               Html::clean($planification),1);
-            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Description')."</i></b>", ''),
-                                               Html::clean($data["content"]), 1);
+            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
+                                            "</b>".Html::clean($data["content"]), 1);
          }
       }
+
       $pdf->displaySpace();
    }
 }

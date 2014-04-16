@@ -64,12 +64,12 @@ class PluginPdfProblemTask extends PluginPdfCommon {
             $actiontime = Html::timestampToString($data['actiontime'], false);
             $planification = '';
             if (empty($data['begin'])) {
-               if (isset($data["state"])) {
+               if (isset($data["state"]) && $data["state"]) {
                   $planification = Planning::getState($data["state"])."<br>";
                }
                $planification .= _e('None');
             } else {
-               if (isset($data["state"])) {
+               if (isset($data["state"]) && $data["state"]) {
                   $planification = sprintf(__('%1$s: %2$s'), _x('item', 'State'),
                                            Planning::getState($data["state"]));
                }
@@ -87,13 +87,13 @@ class PluginPdfProblemTask extends PluginPdfCommon {
             } else {
                $lib = '';
             }
-            $pdf->displayLine("<b>".Html::clean($lib),
+            $pdf->displayLine("</b>".Html::clean($lib),
                               Html::convDateTime($data["date"]),
                               Html::timestampToString($data["actiontime"], 0),
                               Html::clean(getUserName($data["users_id"])),
-                              Html::clean($planification)."</b>",1);
-            $pdf->displayText("<i>".sprintf(__('%1$s: %2$s')."</i>", __('Description'), ''),
-                                               "</b>".Html::clean($data["content"])."</b>", 1);
+                              Html::clean($planification),1);
+            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
+                                               "</b>".Html::clean($data["content"]), 1);
          }
       }
       $pdf->displaySpace();
