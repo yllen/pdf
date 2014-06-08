@@ -251,7 +251,8 @@ class PluginPdfTicket extends PluginPdfCommon {
       // Assign to
       $users = array();
       $listusers = '';
-      $assign    = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('User assigned'), $listusers);
+      $assign    = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to technicians'),
+                                    $listusers);
       foreach ($job->getUsers(CommonITILActor::ASSIGN) as $d) {
          if ($d['users_id']) {
             $tmp = Html::clean(getUserName($d['users_id']));
@@ -270,7 +271,7 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $groups     = array();
       $listgroups  = '';
-      $assigngroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Group assigned'),
+      $assigngroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to groups'),
                                          $listgroups);
       foreach ($job->getGroups(CommonITILActor::ASSIGN) as $d) {
          $groups[] = Html::clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
@@ -283,7 +284,7 @@ class PluginPdfTicket extends PluginPdfCommon {
      // Supplier
       $suppliers      = array();
       $listsuppliers  = '';
-      $assignsupplier = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Supplier assigned'),
+      $assignsupplier = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to a supplier'),
                                          $listsuppliers);
       foreach ($job->getSuppliers(CommonITILActor::ASSIGN) as $d) {
          $suppliers[] = Html::clean(Dropdown::getDropdownName("glpi_suppliers", $d['suppliers_id']));
@@ -641,7 +642,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             break;
 
          case 'Problem$1' :
-            PluginPdfProblem_Ticket::pdfForTicket($pdf, $item);
+            PluginPdfProblem::pdfForItem($pdf, $item);
             break;
 
          case 'Ticket$4' :
@@ -654,3 +655,4 @@ class PluginPdfTicket extends PluginPdfCommon {
       return true;
    }
 }
+

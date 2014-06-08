@@ -55,7 +55,7 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
          $pdf->displayTitle("<b>"._n('Volume', 'Volumes', 2)."</b>");
 
          $pdf->setColumnsSize(22,23,22,11,11,11);
-         $pdf->displayTitle('<b>'.__('Name'), __('Partition'), _('Mount point'), __('Type'),
+         $pdf->displayTitle('<b>'.__('Name'), __('Partition'), __('Mount point'), __('Type'),
                                   __('Global size'), __('Free size').'</b>');
 
          $pdf->setColumnsAlign('left','left','left','center','right','right');

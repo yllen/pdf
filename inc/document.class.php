@@ -65,7 +65,7 @@ class PluginPdfDocument extends PluginPdfCommon {
 
          $pdf->setColumnsSize(32,15,21,19,13);
          $pdf->displayTitle('<b>'.__('Name'), __('File'), __('Web link'), __('Heading'),
-                                  _('MIME type').'</b>');
+                                  __('MIME type').'</b>');
 
          while ($data = $DB->fetch_assoc($result)) {
             $pdf->displayLine($data["name"], basename($data["filename"]), $data["link"],

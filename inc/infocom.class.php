@@ -88,7 +88,7 @@ class PluginPdfInfocom extends PluginPdfCommon {
          $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Value')."</i></b>",
                              Html::clean(Html::formatNumber($ic->fields["value"]))),
-            "<b><i>".sprintf(__('%1$s: %2$s'), _('Date of last physical inventory')."</i></b>",
+            "<b><i>".sprintf(__('%1$s: %2$s'), __('Date of last physical inventory')."</i></b>",
                              Html::convDate($ic->fields["inventory_date"])));
 
          $pdf->displayLine(

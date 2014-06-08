@@ -174,10 +174,10 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
                                            $info->fields["immo_number"]));
                }
                if ($line2) {
-                  $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Computer').'/b>', ''),
+                  $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Computer').'</b>', ''),
                                                   $line1 . "\n" . $line2, 2);
                } else {
-                  $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Computer').'/b>', ''),
+                  $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Computer').'</b>', ''),
                                                   $line1, 1);
                }
             }// each device   of current type
