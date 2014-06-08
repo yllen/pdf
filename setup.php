@@ -76,7 +76,7 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return array('name'           => __('Print to pdf', 'pdf'),
-                'version'        => '0.84.2',
+                'version'        => '0.84',
                 'author'         => 'Dévi Balpe, Remi Collet, Nelly Mahu-Lasson, Walid Nouh',
                 'license'        => 'GPLv2+',
                 'homepage'       => 'https://forge.indepnet.net/projects/pdf',
