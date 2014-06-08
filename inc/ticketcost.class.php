@@ -59,7 +59,7 @@ class PluginPdfTicketCost extends PluginPdfCommon {
                             __('Ticket duration'),
                             CommonITILObject::getActionTime($job->fields['actiontime'])."</b>");
 
-         $pdf->setColumnsSize(20,10,10,10,10,10,10,10,10);
+         $pdf->setColumnsSize(19,11,10,10,10,10,10,10,10);
          $pdf->setColumnsAlign('center','center','center','left', 'right','right','right',
                'right','right');
          $pdf->displayTitle("<b><i>".__('Name')."</i></b>",
@@ -79,12 +79,13 @@ class PluginPdfTicketCost extends PluginPdfCommon {
             $pdf->displayLine($data['name'],
                               Html::convDate($data['begin_date']),
                               Html::convDate($data['end_date']),
-                              Dropdown::getDropdownName('glpi_budgets', $data['budgets_id']),
+                              Html::Clean(Dropdown::getDropdownName('glpi_budgets',
+                                                                    $data['budgets_id'])),
                               CommonITILObject::getActionTime($data['actiontime']),
-                              Html::formatNumber($data['cost_time']),
-                              Html::formatNumber($data['cost_fixed']),
-                              Html::formatNumber($data['cost_material']),
-                              Html::formatNumber($cost));
+                              Html::Clean(Html::formatNumber($data['cost_time'])),
+                              Html::Clean(Html::formatNumber($data['cost_fixed'])),
+                              Html::Clean(Html::formatNumber($data['cost_material'])),
+                              Html::Clean(Html::formatNumber($cost)));
 
             $total_time     += $data['actiontime'];
             $total_costtime += ($data['actiontime']*$data['cost_time']/HOUR_TIMESTAMP);
@@ -92,11 +93,13 @@ class PluginPdfTicketCost extends PluginPdfCommon {
             $total_material += $data['cost_material'];
             $total          += $cost;
          }
-         $pdf->setColumnsSize(50,10,10,10,10,10);
+         $pdf->setColumnsSize(51,10,10,10,10,10);
          $pdf->setColumnsAlign('right','right','right','right','right','right');
          $pdf->displayLine('<b>'.__('Total'), CommonITILObject::getActionTime($total_time),
-                           Html::formatNumber($total_costtime), Html::formatNumber($total_fixed),
-                           Html::formatNumber($total_material), Html::formatNumber($total));
+                           Html::Clean(Html::formatNumber($total_costtime)),
+                           Html::Clean(Html::formatNumber($total_fixed)),
+                           Html::Clean(Html::formatNumber($total_material)),
+                           Html::Clean(Html::formatNumber($total)));
       }
       $pdf->displaySpace();
    }
