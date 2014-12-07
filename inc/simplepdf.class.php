@@ -91,36 +91,6 @@ class PluginPdfSimplePDF {
       $this->width  = $pdf->getPageWidth() - 20;
       $this->height = $pdf->getPageHeight() - 40;
       $this->pdf    = $pdf;
-
-//      // A4 is 595.28 x 841.89
-//      $this->pdf    = new Cezpdf($format,$orient);
-//      $this->width  = $this->pdf->ez['pageWidth'];
-//      $this->height = $this->pdf->ez['pageHeight'];
-//      $this->pdf->openHere('Fit');
-//
-//      // error_log("PDF: " . $this->width . "x" . $this->height);
-//      $this->start_tab = $this->height;
-//      $this->setBackground();
-   }
-
-
-   private function setBackground() {
-
-//      $id_pdf = $this->pdf->openObject();
-//      $this->pdf->saveState();
-//      $this->pdf->ezStartPageNumbers($this->width-20,10,10,'left',
-//                                     Html::convDate(date("Y-m-d"))." - {PAGENUM}/{TOTALPAGENUM}");
-//      $this->pdf->setStrokeColor(0,0,0);
-//      $this->pdf->setLineStyle(1,'round','round');
-//      $this->pdf->rectangle(20,20,$this->width-40,$this->height-40);
-//      $this->pdf->addJpegFromFile(GLPI_ROOT."/plugins/pdf/pics/fd_logo.jpg",25,$this->height-50); // 61x25
-//      $this->pdf->selectFont(GLPI_ROOT."/plugins/pdf/fonts/Times-Roman.afm");
-//      $this->pdf->setFontFamily('Times-Roman.afm',array('b'  => 'Times-Bold.afm',
-//                                                        'i'  => 'Times-Italic.afm',
-//                                                        'bi' => 'Times-BoldItalic.afm'));
-//      $this->pdf->restoreState();
-//      $this->pdf->closeObject();
-//      $this->pdf->addObject($id_pdf, 'all');
    }
 
 
@@ -149,17 +119,6 @@ class PluginPdfSimplePDF {
    public function newPage() {
 
       $this->pdf->AddPage();
-//      if ($this->start_tab<$this->height) { // This is not the first page
-//         $this->pdf->ezText("",1000);
-//         $this->pdf->ezText("",9);
-//      }
-//
-//      $this->start_tab = $this->height-45;
-//      if (!empty($this->header)) {
-//         $this->pdf->addTextWrap(85,$this->start_tab,$this->width-110,14,
-//                                 Toolbox::decodeFromUtf8($this->header,"windows-1252"),'center');
-//         $this->start_tab -= 30;
-//      }
    }
 
 
@@ -203,17 +162,14 @@ class PluginPdfSimplePDF {
    **/
    public function displayBox($gray) {
 
-//      $this->pdf->saveState();
-//      $this->pdf->setColor($gray,$gray,$gray);
-//
-//      for ($i=0 ; $i<count($this->cols) ; $i++) {
-//         $this->pdf->filledRectangle($this->colsx[$i],$this->start_tab-5,$this->colsw[$i],15);
-//      }
-//      $this->pdf->restoreState();
+      Toolbox::displayBox("PluginPdfSimplePDF::displayBox() is deprecated");
    }
 
 
-   public function displayInternal($defalign, $msgs) {
+   private function displayInternal($gray, $padd, $defalign, $msgs) {
+
+      $this->pdf->SetFillColor($gray, $gray, $gray);
+      $this->pdf->SetCellPadding($padd);
 
       $i = 0;
       $y = $this->pdf->GetY();
@@ -244,16 +200,11 @@ class PluginPdfSimplePDF {
    }
 
    public function displayTitle() {
-      $this->pdf->SetFillColor(200, 200, 200);
-      $this->pdf->SetCellPadding(1);
-      $this->displayInternal('C', func_get_args());
+      $this->displayInternal(200, 1.0, 'C', func_get_args());
    }
 
    public function displayLine() {
-
-      $this->pdf->SetFillColor(240, 240, 240);
-      $this->pdf->SetCellPadding(0.5);
-      $this->displayInternal('L', func_get_args());
+      $this->displayInternal(240, 0.5, 'L', func_get_args());
    }
 
 
