@@ -27,6 +27,10 @@
  --------------------------------------------------------------------------
  */
 
+define ('K_PATH_IMAGES', GLPI_ROOT.'/plugins/pdf/pics/');
+
+require_once(GLPI_TCPDF_DIR.'/tcpdf.php');
+
 class PluginPdfSimplePDF {
 
    private $df;
@@ -48,37 +52,75 @@ class PluginPdfSimplePDF {
     * @param $format    (default a4)
     * @param $orient    (default portrait)
    **/
-   function __construct ($format='a4', $orient='portrait') {
+   function __construct ($format='a4', $orient='p') {
 
-      // A4 is 595.28 x 841.89
-      $this->pdf    = new Cezpdf($format,$orient);
-      $this->width  = $this->pdf->ez['pageWidth'];
-      $this->height = $this->pdf->ez['pageHeight'];
-      $this->pdf->openHere('Fit');
+      /* Compat with 0.84 */
+      if ($orient=='portrait') {
+         $orient = 'P';
+      } else if ($orient=='landscape') {
+         $orient = 'L';
+      }
+      $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
 
-      // error_log("PDF: " . $this->width . "x" . $this->height);
-      $this->start_tab = $this->height;
-      $this->setBackground();
+      $pdf->SetCreator('GLPI');
+      $pdf->SetAuthor('GLPI');
+      $font       = 'helvetica';
+      //$subsetting = true;
+      $fonsize    = 8;
+      if (isset($_SESSION['glpipdffont']) && $_SESSION['glpipdffont']) {
+         $font       = $_SESSION['glpipdffont'];
+         //$subsetting = false;
+      }
+      $pdf->setHeaderFont(Array($font, 'B', 8));
+      $pdf->setFooterFont(Array($font, 'B', 8));
+
+      //set margins
+      $pdf->SetMargins(10, 20, 10);
+      $pdf->SetHeaderMargin(10);
+      $pdf->SetFooterMargin(10);
+
+      //set auto page breaks
+      $pdf->SetAutoPageBreak(true, 15);
+
+
+      // For standard language
+      //$pdf->setFontSubsetting($subsetting);
+      // set font
+      $pdf->SetFont($font, '', 8);
+
+      $this->width  = $pdf->getPageWidth() - 20;
+      $this->height = $pdf->getPageHeight() - 40;
+      $this->pdf    = $pdf;
+
+//      // A4 is 595.28 x 841.89
+//      $this->pdf    = new Cezpdf($format,$orient);
+//      $this->width  = $this->pdf->ez['pageWidth'];
+//      $this->height = $this->pdf->ez['pageHeight'];
+//      $this->pdf->openHere('Fit');
+//
+//      // error_log("PDF: " . $this->width . "x" . $this->height);
+//      $this->start_tab = $this->height;
+//      $this->setBackground();
    }
 
 
    private function setBackground() {
 
-      $id_pdf = $this->pdf->openObject();
-      $this->pdf->saveState();
-      $this->pdf->ezStartPageNumbers($this->width-20,10,10,'left',
-                                     Html::convDate(date("Y-m-d"))." - {PAGENUM}/{TOTALPAGENUM}");
-      $this->pdf->setStrokeColor(0,0,0);
-      $this->pdf->setLineStyle(1,'round','round');
-      $this->pdf->rectangle(20,20,$this->width-40,$this->height-40);
-      $this->pdf->addJpegFromFile(GLPI_ROOT."/plugins/pdf/pics/fd_logo.jpg",25,$this->height-50); // 61x25
-      $this->pdf->selectFont(GLPI_ROOT."/plugins/pdf/fonts/Times-Roman.afm");
-      $this->pdf->setFontFamily('Times-Roman.afm',array('b'  => 'Times-Bold.afm',
-                                                        'i'  => 'Times-Italic.afm',
-                                                        'bi' => 'Times-BoldItalic.afm'));
-      $this->pdf->restoreState();
-      $this->pdf->closeObject();
-      $this->pdf->addObject($id_pdf, 'all');
+//      $id_pdf = $this->pdf->openObject();
+//      $this->pdf->saveState();
+//      $this->pdf->ezStartPageNumbers($this->width-20,10,10,'left',
+//                                     Html::convDate(date("Y-m-d"))." - {PAGENUM}/{TOTALPAGENUM}");
+//      $this->pdf->setStrokeColor(0,0,0);
+//      $this->pdf->setLineStyle(1,'round','round');
+//      $this->pdf->rectangle(20,20,$this->width-40,$this->height-40);
+//      $this->pdf->addJpegFromFile(GLPI_ROOT."/plugins/pdf/pics/fd_logo.jpg",25,$this->height-50); // 61x25
+//      $this->pdf->selectFont(GLPI_ROOT."/plugins/pdf/fonts/Times-Roman.afm");
+//      $this->pdf->setFontFamily('Times-Roman.afm',array('b'  => 'Times-Bold.afm',
+//                                                        'i'  => 'Times-Italic.afm',
+//                                                        'bi' => 'Times-BoldItalic.afm'));
+//      $this->pdf->restoreState();
+//      $this->pdf->closeObject();
+//      $this->pdf->addObject($id_pdf, 'all');
    }
 
 
@@ -87,30 +129,37 @@ class PluginPdfSimplePDF {
    **/
    public function setHeader($msg) {
       $this->header = $msg;
+      $this->pdf->SetTitle($msg);
+      $this->pdf->SetHeaderData('fd_logo.jpg', 15, $msg, '');
    }
 
 
    public function render() {
-      $this->pdf->ezStream();
+      $this->pdf->Output('glpi.pdf', 'I');
    }
 
-   public function output() {
-      return $this->pdf->output();
+   public function output($name=false) {
+
+      if (!$name) {
+         return $this->pdf->Output('glpi.pdf', 'S');
+      }
+      $this->pdf->Output($name, 'F');
    }
 
    public function newPage() {
 
-      if ($this->start_tab<$this->height) { // This is not the first page
-         $this->pdf->ezText("",1000);
-         $this->pdf->ezText("",9);
-      }
-
-      $this->start_tab = $this->height-45;
-      if (!empty($this->header)) {
-         $this->pdf->addTextWrap(85,$this->start_tab,$this->width-110,14,
-                                 Toolbox::decodeFromUtf8($this->header,"windows-1252"),'center');
-         $this->start_tab -= 30;
-      }
+      $this->pdf->AddPage();
+//      if ($this->start_tab<$this->height) { // This is not the first page
+//         $this->pdf->ezText("",1000);
+//         $this->pdf->ezText("",9);
+//      }
+//
+//      $this->start_tab = $this->height-45;
+//      if (!empty($this->header)) {
+//         $this->pdf->addTextWrap(85,$this->start_tab,$this->width-110,14,
+//                                 Toolbox::decodeFromUtf8($this->header,"windows-1252"),'center');
+//         $this->start_tab -= 30;
+//      }
    }
 
 
@@ -122,21 +171,30 @@ class PluginPdfSimplePDF {
       $this->colsw = array();
       $this->align = array();
 
-      $x=25;
-      $w=floor($this->width-45-5*count($tmp));
+      $x=10;
+      $w=floor($this->width - 2*count($tmp));
 
       while ($rel = array_shift($tmp)) {
-         $z = floor($w*$rel/100);
+         $z = $w*$rel/100;
          $this->colsx[] = $x;
          $this->colsw[] = $z;
-         $x += $z+5;
+         $x += $z+2;
       }
    }
 
 
    // Args are relative size of each column
    public function setColumnsAlign () {
+
       $this->align = func_get_args();
+      /* compat with 0.84 */
+      foreach ($this->align as $k => $v) {
+         switch($v) {
+            case 'left':   $this->align[$k] = 'L'; break;
+            case 'right':  $this->align[$k] = 'R'; break;
+            case 'center': $this->align[$k] = 'C'; break;
+         }
+      }
    }
 
 
@@ -145,65 +203,57 @@ class PluginPdfSimplePDF {
    **/
    public function displayBox($gray) {
 
-      $this->pdf->saveState();
-      $this->pdf->setColor($gray,$gray,$gray);
-
-      for ($i=0 ; $i<count($this->cols) ; $i++) {
-         $this->pdf->filledRectangle($this->colsx[$i],$this->start_tab-5,$this->colsw[$i],15);
-      }
-      $this->pdf->restoreState();
+//      $this->pdf->saveState();
+//      $this->pdf->setColor($gray,$gray,$gray);
+//
+//      for ($i=0 ; $i<count($this->cols) ; $i++) {
+//         $this->pdf->filledRectangle($this->colsx[$i],$this->start_tab-5,$this->colsw[$i],15);
+//      }
+//      $this->pdf->restoreState();
    }
 
 
-   public function displayTitle() {
-
-      $msgs = func_get_args();
-
-      // New page if less than 2 lines available
-      if ($this->start_tab < 50) {
-         $this->newPage();
-      }
-
-      $this->displayBox(0.80);
+   public function displayInternal($defalign, $msgs) {
 
       $i = 0;
+      $y = $this->pdf->GetY();
       foreach ($msgs as $msg) {
          if ($i<count($this->cols)) {
-            $this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,
-                                    Toolbox::decodeFromUtf8($msg,"windows-1252"),
-                                    (isset($this->align[$i]) ? $this->align[$i] : 'center'));
+            $this->pdf->SetX($this->colsx[$i]);
+            $align = (isset($this->align[$i]) ? $this->align[$i] : $defalign);
+            $this->pdf->writeHTMLCell(
+               $this->colsw[$i], // $w (float) Cell width. If 0, the cell extends up to the right margin.
+               1,                // $h (float) Cell minimum height. The cell extends automatically if needed.
+               '',               // $x (float) upper-left corner X coordinate
+               '',               // $y (float) upper-left corner Y coordinate
+               $msg,             // $html (string) html text to print. Default value: empty string.
+               0,                // $border (mixed) Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
+               0,                // $ln (int) Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL language)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>
+               1,                // $fill (boolean) Indicates if the cell background must be painted (true) or transparent (false).
+               true,             // $reseth (boolean) if true reset the last cell height (default true).
+               $align,           // $align (string) Allows to center or align the text. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
+               true              // $autopadding (boolean) if true, uses internal padding and automatically adjust it to account for line width.
+            );
             $i++;
          } else {
             break;
          }
       }
-      $this->start_tab -= 20;
+      $this->pdf->Ln();
+      $this->pdf->SetY($this->pdf->GetY()+2);
    }
 
+   public function displayTitle() {
+      $this->pdf->SetFillColor(200, 200, 200);
+      $this->pdf->SetCellPadding(1);
+      $this->displayInternal('C', func_get_args());
+   }
 
    public function displayLine() {
 
-      $msgs = func_get_args();
-
-      // New page if less than 1 line available
-      if ($this->start_tab < 30) {
-         $this->newPage();
-      }
-
-      $this->displayBox(0.95);
-
-      $i = 0;
-      foreach ($msgs as $msg) {
-         if ($i<count($this->cols)) {
-            $this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,
-                                    Toolbox::decodeFromUtf8($msg,"windows-1252"),
-                                    (isset($this->align[$i]) ? $this->align[$i] : 'left'));
-            $i++;
-         } else {
-            break;
-         }
-      }
-      $this->start_tab -= 20;
+      $this->pdf->SetFillColor(240, 240, 240);
+      $this->pdf->SetCellPadding(0.5);
+      $this->displayInternal('L', func_get_args());
    }
 
 
@@ -213,26 +263,26 @@ class PluginPdfSimplePDF {
    **/
    public function displayLink($name, $URL) {
 
-      // New page if less than 1 line available
-      if ($this->start_tab < 30) {
-         $this->newPage();
-      }
-
-      $this->displayBox(0.95);
-      $i = 0;
-
-      $name = Toolbox::decodeFromUtf8($name,"windows-1252");
-      $w = $this->pdf->getTextWidth(9,$name);
-      $this->pdf->addLink($URL,$this->colsx[$i]+2,$this->start_tab,$this->colsx[$i]+$w+2,
-                          $this->start_tab+10);
-      $this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,$name,
-                              (isset($this->align[$i]) ? $this->align[$i] : 'left'));
-      $this->pdf->saveState();
-      $this->pdf->setLineStyle(0.5);
-      $this->pdf->line($this->colsx[$i]+2,$this->start_tab-3,$this->colsx[$i]+$w+2,
-                       $this->start_tab-3);
-      $this->pdf->restoreState();
-      $this->start_tab -= 20;
+//      // New page if less than 1 line available
+//      if ($this->start_tab < 30) {
+//         $this->newPage();
+//      }
+//
+//      $this->displayBox(0.95);
+//      $i = 0;
+//
+//      $name = Toolbox::decodeFromUtf8($name,"windows-1252");
+//      $w = $this->pdf->getTextWidth(9,$name);
+//      $this->pdf->addLink($URL,$this->colsx[$i]+2,$this->start_tab,$this->colsx[$i]+$w+2,
+//                          $this->start_tab+10);
+//      $this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,$name,
+//                              (isset($this->align[$i]) ? $this->align[$i] : 'left'));
+//      $this->pdf->saveState();
+//      $this->pdf->setLineStyle(0.5);
+//      $this->pdf->line($this->colsx[$i]+2,$this->start_tab-3,$this->colsx[$i]+$w+2,
+//                       $this->start_tab-3);
+//      $this->pdf->restoreState();
+//      $this->start_tab -= 20;
    }
 
 
@@ -246,55 +296,55 @@ class PluginPdfSimplePDF {
    **/
    public function displayText($name, $content='', $minline=3, $maxline=100) {
 
-      // New page if less than $minline available
-      if ($this->start_tab < (20+10/$minline)) {
-         $this->newPage();
-      }
-
-      // The Box	Initial Size = $minline
-      $gray = 0.95;
-      $this->pdf->saveState();
-      $this->pdf->setColor($gray,$gray,$gray);
-      $this->pdf->filledRectangle(25, $bottom = $this->start_tab-$minline*10+5, $this->width-50,
-                                  $minline*10+5);
-      $this->pdf->restoreState();
-
-      // Title
-      $name = Toolbox::decodeFromUtf8($name,"windows-1252");
-      $x = 30 + $this->pdf->getTextWidth(9, $name);
-      $this->pdf->addText(27,$this->start_tab,9,$name);
-
-      $temp  = str_replace("\r\n","\n",$content);
-      $lines = explode("\n", Toolbox::decodeFromUtf8($temp,"windows-1252"));
-      $line  = current($lines);
-
-      // Content
-      while ($line!==false && $maxline>0) {
-         // Need a new page ?
-         if ($this->start_tab < 30) {
-            $this->newPage();
-            $bottom = $this->start_tab + 10;
-         }
-         // Extent initial box
-         if ($this->start_tab < $bottom) {
-            $newbottom = $this->start_tab-5;
-            $this->pdf->saveState();
-            $this->pdf->setColor($gray,$gray,$gray);
-            $this->pdf->filledRectangle(25, $newbottom, $this->width-50, ($bottom - $newbottom));
-            $this->pdf->restoreState();
-            $bottom = $newbottom;
-         }
-         if (!empty($line)) {
-            $line = $this->pdf->addTextWrap($x,$this->start_tab,$this->width-$x-25,9,$line);
-         }
-         if (empty($line)) {
-            $line = next($lines);
-         }
-         $this->start_tab -= 10;
-         $maxline--;
-      }
-      // Final position = behind the box
-      $this->start_tab = $bottom - 15;
+//      // New page if less than $minline available
+//      if ($this->start_tab < (20+10/$minline)) {
+//         $this->newPage();
+//      }
+//
+//      // The Box	Initial Size = $minline
+//      $gray = 0.95;
+//      $this->pdf->saveState();
+//      $this->pdf->setColor($gray,$gray,$gray);
+//      $this->pdf->filledRectangle(25, $bottom = $this->start_tab-$minline*10+5, $this->width-50,
+//                                  $minline*10+5);
+//      $this->pdf->restoreState();
+//
+//      // Title
+//      $name = Toolbox::decodeFromUtf8($name,"windows-1252");
+//      $x = 30 + $this->pdf->getTextWidth(9, $name);
+//      $this->pdf->addText(27,$this->start_tab,9,$name);
+//
+//      $temp  = str_replace("\r\n","\n",$content);
+//      $lines = explode("\n", Toolbox::decodeFromUtf8($temp,"windows-1252"));
+//      $line  = current($lines);
+//
+//      // Content
+//      while ($line!==false && $maxline>0) {
+//         // Need a new page ?
+//         if ($this->start_tab < 30) {
+//            $this->newPage();
+//            $bottom = $this->start_tab + 10;
+//         }
+//         // Extent initial box
+//         if ($this->start_tab < $bottom) {
+//            $newbottom = $this->start_tab-5;
+//            $this->pdf->saveState();
+//            $this->pdf->setColor($gray,$gray,$gray);
+//            $this->pdf->filledRectangle(25, $newbottom, $this->width-50, ($bottom - $newbottom));
+//            $this->pdf->restoreState();
+//            $bottom = $newbottom;
+//         }
+//         if (!empty($line)) {
+//            $line = $this->pdf->addTextWrap($x,$this->start_tab,$this->width-$x-25,9,$line);
+//         }
+//         if (empty($line)) {
+//            $line = next($lines);
+//         }
+//         $this->start_tab -= 10;
+//         $maxline--;
+//      }
+//      // Final position = behind the box
+//      $this->start_tab = $bottom - 15;
    }
 
 
@@ -302,7 +352,7 @@ class PluginPdfSimplePDF {
     * @param $nb     (default 1)
    **/
    public function displaySpace($nb=1) {
-      $this->start_tab -= ($nb * 20);
+      $this->pdf->SetY($this->pdf->GetY()+6);
    }
 
 
@@ -313,25 +363,25 @@ class PluginPdfSimplePDF {
    **/
    public function addPngFromFile($image,$dst_w,$dst_h) {
 
-      $size = GetImageSize($image);
-      $src_w = $size[0];
-      $src_h = $size[1];
-      // Teste les dimensions tenant dans la zone
-      $test_h = round(($dst_w / $src_w) * $src_h);
-      $test_w = round(($dst_h / $src_h) * $src_w);
-
-      // Teste quel redimensionnement tient dans la zone
-      if ($test_h > $dst_h) {
-         $pos_w = 25 + ($dst_w - $test_w) /2;
-         $dst_w = $test_w;
-      }
-      else {
-         $pos_w = 25;
-         $dst_h = $test_h;
-      }
-      $this->start_tab -= $dst_h;
-      $pos_h = $this->start_tab;
-      $this->pdf->addPngFromFile($image,$pos_w,$pos_h,$dst_w,$dst_h);
+//      $size = GetImageSize($image);
+//      $src_w = $size[0];
+//      $src_h = $size[1];
+//      // Teste les dimensions tenant dans la zone
+//      $test_h = round(($dst_w / $src_w) * $src_h);
+//      $test_w = round(($dst_h / $src_h) * $src_w);
+//
+//      // Teste quel redimensionnement tient dans la zone
+//      if ($test_h > $dst_h) {
+//         $pos_w = 25 + ($dst_w - $test_w) /2;
+//         $dst_w = $test_w;
+//      }
+//      else {
+//         $pos_w = 25;
+//         $dst_h = $test_h;
+//      }
+//      $this->start_tab -= $dst_h;
+//      $pos_h = $this->start_tab;
+//      $this->pdf->addPngFromFile($image,$pos_w,$pos_h,$dst_w,$dst_h);
    }
 
 }
