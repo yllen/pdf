@@ -55,10 +55,16 @@ $pdf->displayLine('right', 'center', 'left');
 $pdf->displaySpace();
 
 $pdf->setColumnsSize(100);
-$pdf->displayTitle("End of Page 1");
+$pdf->displayTitle("Filling page");
+for ($i=1 ; $i<40 ; $i++) {
+   $pdf->displayLine("dummy line $i");
+}
+$pdf->displayTitle("End of Part 1");
 
 $pdf->newPage();
-$pdf->displayTitle("Page 2");
+$pdf->displayTitle("Part 2");
+$pdf->addPngFromFile(GLPI_ROOT.'/pics/logo-glpi-login.png', 168, 81);
+$pdf->displayTitle("End of Part 2");
 
 if (file_put_contents('pdftest.pdf', $pdf->output())) {
    echo "pdftest.pdf saved\n";

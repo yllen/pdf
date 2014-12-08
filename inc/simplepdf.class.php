@@ -3,7 +3,7 @@
  * @version $Id$
  -------------------------------------------------------------------------
  pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2013 by the pdf Development Team.
+ Copyright (C) 2003-2014 by the pdf Development Team.
 
  https://forge.indepnet.net/projects/pdf
  -------------------------------------------------------------------------
@@ -166,7 +166,7 @@ class PluginPdfSimplePDF {
    }
 
 
-   private function displayInternal($gray, $padd, $defalign, $msgs) {
+   private function displayInternal($gray, $padd, $defalign, $miny, $msgs) {
 
       $this->pdf->SetFillColor($gray, $gray, $gray);
       $this->pdf->SetCellPadding($padd);
@@ -179,7 +179,7 @@ class PluginPdfSimplePDF {
             $align = (isset($this->align[$i]) ? $this->align[$i] : $defalign);
             $this->pdf->writeHTMLCell(
                $this->colsw[$i], // $w (float) Cell width. If 0, the cell extends up to the right margin.
-               1,                // $h (float) Cell minimum height. The cell extends automatically if needed.
+               $miny,            // $h (float) Cell minimum height. The cell extends automatically if needed.
                '',               // $x (float) upper-left corner X coordinate
                '',               // $y (float) upper-left corner Y coordinate
                $msg,             // $html (string) html text to print. Default value: empty string.
@@ -196,15 +196,21 @@ class PluginPdfSimplePDF {
          }
       }
       $this->pdf->Ln();
-      $this->pdf->SetY($this->pdf->GetY()+2);
+      if ($this->pdf->GetY()-20 > $this->height) { /* autopagebreak seems broken */
+         $this->pdf->AddPage();
+      } else {
+         $this->pdf->SetY($this->pdf->GetY()+2);
+      }
+
+//      printf("+ %d / %d\n", $this->pdf->GetY(), $this->height);
    }
 
    public function displayTitle() {
-      $this->displayInternal(200, 1.0, 'C', func_get_args());
+      $this->displayInternal(200, 1.0, 'C', 1, func_get_args());
    }
 
    public function displayLine() {
-      $this->displayInternal(240, 0.5, 'L', func_get_args());
+      $this->displayInternal(240, 0.5, 'L', 1, func_get_args());
    }
 
 
@@ -214,26 +220,7 @@ class PluginPdfSimplePDF {
    **/
    public function displayLink($name, $URL) {
 
-//      // New page if less than 1 line available
-//      if ($this->start_tab < 30) {
-//         $this->newPage();
-//      }
-//
-//      $this->displayBox(0.95);
-//      $i = 0;
-//
-//      $name = Toolbox::decodeFromUtf8($name,"windows-1252");
-//      $w = $this->pdf->getTextWidth(9,$name);
-//      $this->pdf->addLink($URL,$this->colsx[$i]+2,$this->start_tab,$this->colsx[$i]+$w+2,
-//                          $this->start_tab+10);
-//      $this->pdf->addTextWrap($this->colsx[$i]+2,$this->start_tab,$this->colsw[$i]-4,9,$name,
-//                              (isset($this->align[$i]) ? $this->align[$i] : 'left'));
-//      $this->pdf->saveState();
-//      $this->pdf->setLineStyle(0.5);
-//      $this->pdf->line($this->colsx[$i]+2,$this->start_tab-3,$this->colsx[$i]+$w+2,
-//                       $this->start_tab-3);
-//      $this->pdf->restoreState();
-//      $this->start_tab -= 20;
+      $this->displayInternal(240, 0.5, 'L', 1, array(sprintf('<a href="%s">%s</a>', $URL, $name)));
    }
 
 
@@ -247,55 +234,25 @@ class PluginPdfSimplePDF {
    **/
    public function displayText($name, $content='', $minline=3, $maxline=100) {
 
-//      // New page if less than $minline available
-//      if ($this->start_tab < (20+10/$minline)) {
-//         $this->newPage();
-//      }
-//
-//      // The Box	Initial Size = $minline
-//      $gray = 0.95;
-//      $this->pdf->saveState();
-//      $this->pdf->setColor($gray,$gray,$gray);
-//      $this->pdf->filledRectangle(25, $bottom = $this->start_tab-$minline*10+5, $this->width-50,
-//                                  $minline*10+5);
-//      $this->pdf->restoreState();
-//
-//      // Title
-//      $name = Toolbox::decodeFromUtf8($name,"windows-1252");
-//      $x = 30 + $this->pdf->getTextWidth(9, $name);
-//      $this->pdf->addText(27,$this->start_tab,9,$name);
-//
-//      $temp  = str_replace("\r\n","\n",$content);
-//      $lines = explode("\n", Toolbox::decodeFromUtf8($temp,"windows-1252"));
-//      $line  = current($lines);
-//
-//      // Content
-//      while ($line!==false && $maxline>0) {
-//         // Need a new page ?
-//         if ($this->start_tab < 30) {
-//            $this->newPage();
-//            $bottom = $this->start_tab + 10;
-//         }
-//         // Extent initial box
-//         if ($this->start_tab < $bottom) {
-//            $newbottom = $this->start_tab-5;
-//            $this->pdf->saveState();
-//            $this->pdf->setColor($gray,$gray,$gray);
-//            $this->pdf->filledRectangle(25, $newbottom, $this->width-50, ($bottom - $newbottom));
-//            $this->pdf->restoreState();
-//            $bottom = $newbottom;
-//         }
-//         if (!empty($line)) {
-//            $line = $this->pdf->addTextWrap($x,$this->start_tab,$this->width-$x-25,9,$line);
-//         }
-//         if (empty($line)) {
-//            $line = next($lines);
-//         }
-//         $this->start_tab -= 10;
-//         $maxline--;
-//      }
-//      // Final position = behind the box
-//      $this->start_tab = $bottom - 15;
+      /* Save columns */
+      $save = array(
+         $this->cols,
+         $this->colsw,
+         $this->colsw,
+         $this->align,
+      );
+
+      $this->setColumnsSize(100);
+      $this->displayInternal(240, 0.5, 'L', $minline*5, array($name.' '.$content));
+
+      /* Restore */
+      list(
+         $this->cols,
+         $this->colsw,
+         $this->colsw,
+         $this->align
+      ) = $save;
+
    }
 
 
@@ -303,7 +260,11 @@ class PluginPdfSimplePDF {
     * @param $nb     (default 1)
    **/
    public function displaySpace($nb=1) {
+
       $this->pdf->SetY($this->pdf->GetY()+6);
+      if ($this->pdf->GetY()-20 > $this->height) { /* autopagebreak seems broken */
+         $this->pdf->AddPage();
+      }
    }
 
 
@@ -314,26 +275,21 @@ class PluginPdfSimplePDF {
    **/
    public function addPngFromFile($image,$dst_w,$dst_h) {
 
-//      $size = GetImageSize($image);
-//      $src_w = $size[0];
-//      $src_h = $size[1];
-//      // Teste les dimensions tenant dans la zone
-//      $test_h = round(($dst_w / $src_w) * $src_h);
-//      $test_w = round(($dst_h / $src_h) * $src_w);
-//
-//      // Teste quel redimensionnement tient dans la zone
-//      if ($test_h > $dst_h) {
-//         $pos_w = 25 + ($dst_w - $test_w) /2;
-//         $dst_w = $test_w;
-//      }
-//      else {
-//         $pos_w = 25;
-//         $dst_h = $test_h;
-//      }
-//      $this->start_tab -= $dst_h;
-//      $pos_h = $this->start_tab;
-//      $this->pdf->addPngFromFile($image,$pos_w,$pos_h,$dst_w,$dst_h);
-   }
+      $w = $this->pdf->pixelsToUnits($dst_w);
+      $h = $this->pdf->pixelsToUnits($dst_h);
 
+      if ($this->pdf->GetY()+$h-20 > $this->height) { /* autopagebreak seems broken */
+         $this->pdf->AddPage();
+      }
+      $this->pdf->Image(
+         $image,
+         '',   // x
+         '',   // y
+         $w,   // $w
+         $h,   // $w
+         'PNG' // type
+      );
+
+      $this->pdf->SetY($this->pdf->GetY()+$h+2);
+   }
 }
-?>
