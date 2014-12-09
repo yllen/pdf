@@ -204,7 +204,10 @@ class PluginPdfSimplePDF {
             break;
          }
       }
-      // $this->pdf->Ln($max+1); <= doesn't seems to work'
+      /*
+      $this->pdf->Ln($max+1); <= doesn't seems to work'
+      Workaound for https://sourceforge.net/p/tcpdf/bugs/1004/
+      */
       $this->pdf->SetY($this->pdf->GetY() + ($max - $this->pdf->getLastH()) + 1);
    }
 
