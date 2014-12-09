@@ -173,8 +173,14 @@ class PluginPdfSimplePDF {
 
       $i = 0;
       $y = $this->pdf->GetY();
+      $max = 0;
       foreach ($msgs as $msg) {
          if ($i<count($this->cols)) {
+            if (($i+1)<count($msgs) && ($i+1)<count($this->cols)) {
+               $ln = 0; // right
+            } else {
+               $ln = 1; // down
+            }
             $this->pdf->SetX($this->colsx[$i]);
             $align = (isset($this->align[$i]) ? $this->align[$i] : $defalign);
             $this->pdf->writeHTMLCell(
@@ -184,25 +190,22 @@ class PluginPdfSimplePDF {
                '',               // $y (float) upper-left corner Y coordinate
                $msg,             // $html (string) html text to print. Default value: empty string.
                0,                // $border (mixed) Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
-               0,                // $ln (int) Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL language)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>
+               $ln,              // $ln (int) Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL language)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>
                1,                // $fill (boolean) Indicates if the cell background must be painted (true) or transparent (false).
                true,             // $reseth (boolean) if true reset the last cell height (default true).
                $align,           // $align (string) Allows to center or align the text. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
                true              // $autopadding (boolean) if true, uses internal padding and automatically adjust it to account for line width.
             );
+            if ($this->pdf->getLastH() > $max) {
+               $max = $this->pdf->getLastH();
+            }
             $i++;
          } else {
             break;
          }
       }
-      $this->pdf->Ln();
-      if ($this->pdf->GetY()-20 > $this->height) { /* autopagebreak seems broken */
-         $this->pdf->AddPage();
-      } else {
-         $this->pdf->SetY($this->pdf->GetY()+2);
-      }
-
-//      printf("+ %d / %d\n", $this->pdf->GetY(), $this->height);
+      // $this->pdf->Ln($max+1); <= doesn't seems to work'
+      $this->pdf->SetY($this->pdf->GetY() + ($max - $this->pdf->getLastH()) + 1);
    }
 
    public function displayTitle() {
@@ -261,10 +264,7 @@ class PluginPdfSimplePDF {
    **/
    public function displaySpace($nb=1) {
 
-      $this->pdf->SetY($this->pdf->GetY()+6);
-      if ($this->pdf->GetY()-20 > $this->height) { /* autopagebreak seems broken */
-         $this->pdf->AddPage();
-      }
+      $this->pdf->Ln(4);
    }
 
 

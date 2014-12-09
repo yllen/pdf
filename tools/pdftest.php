@@ -39,11 +39,19 @@ $pdf = new PluginPdfSimplePDF();
 $pdf->setHeader("PDF test header");
 $pdf->newPage();
 
+$lorem = array(
+   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut fringilla id ante id interdum.",
+   "Morbi facilisis et lacus sit amet blandit. Nam ligula erat, euismod eget condimentum in, semper eget tellus.",
+   "Cras vitae lacus fermentum, vestibulum eros sed, luctus massa. Vivamus commodo sodales interdum.",
+   "Cras accumsan, nunc sit amet facilisis hendrerit, sem tellus gravida enim, ut facilisis tellus augue at dui.",
+   "Morbi egestas nisi placerat nunc tempus mattis. ",
+);
+
 $pdf->setColumnsSize(100);
 $pdf->displayTitle("PDF <b>test</b> title");
 $pdf->setColumnsSize(60,20,20);
 $pdf->displayLine("<b>PDF <i>test</i></b> line", "one", "two");
-$pdf->displayText("<b>Comment:</b>", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut fringilla id ante id interdum. Morbi facilisis et lacus sit amet blandit. Nam ligula erat, euismod eget condimentum in, semper eget tellus. Cras vitae lacus fermentum, vestibulum eros sed, luctus massa. Vivamus commodo sodales interdum. Cras accumsan, nunc sit amet facilisis hendrerit, sem tellus gravida enim, ut facilisis tellus augue at dui. Morbi egestas nisi placerat nunc tempus mattis. ");
+$pdf->displayText("<b>Comment:</b>", implode(' ',$lorem));
 $pdf->displayLink('http://www.glpi-project.org/', 'http://www.glpi-project.org/');
 $pdf->displaySpace();
 
@@ -52,6 +60,11 @@ $pdf->displayTitle("Alignment");
 $pdf->setColumnsSize(40,20,40);
 $pdf->setColumnsAlign('right', 'center', 'left');
 $pdf->displayLine('right', 'center', 'left');
+$pdf->displayLine("1: ".$lorem[0], "2: ".$lorem[1], "3: ".$lorem[2]);
+/* 2 colums on 3 */
+$pdf->displayLine("4: ".$lorem[3], "5: ".$lorem[4]);
+/* 6 colums on 3 */
+$pdf->displayLine("1", "2", "3", "4", "5", "6");
 $pdf->displaySpace();
 
 $pdf->setColumnsSize(100);
