@@ -33,6 +33,15 @@ require_once(GLPI_TCPDF_DIR.'/tcpdf.php');
 
 class PluginPdfSimplePDF {
 
+   // Page orientation
+   const PORTRAIT  = 'P';
+   const LANDSCAPE = 'L';
+
+   // Cell alignment
+   const LEFT   = 'L';
+   const CENTER = 'C';
+   const RIGHT  = 'R';
+
    private $df;
 
    // Page management
@@ -52,15 +61,17 @@ class PluginPdfSimplePDF {
     * @param $format    (default a4)
     * @param $orient    (default portrait)
    **/
-   function __construct ($format='a4', $orient='p') {
+   function __construct ($format='A4', $orient='') {
 
       /* Compat with 0.84 */
-      if ($orient=='portrait') {
-         $orient = 'P';
+      if (empty($orient) || $orient=='portrait') {
+         $orient = self::PORTRAIT;
       } else if ($orient=='landscape') {
-         $orient = 'L';
+         $orient = self::LANDSCAPE;
       }
-      $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+      $format = strtoupper($format);
+
+      $pdf = new TCPDF($orient, 'mm', $format, true, 'UTF-8', false);
 
       $pdf->SetCreator('GLPI');
       $pdf->SetAuthor('GLPI');
@@ -149,9 +160,9 @@ class PluginPdfSimplePDF {
       /* compat with 0.84 */
       foreach ($this->align as $k => $v) {
          switch($v) {
-            case 'left':   $this->align[$k] = 'L'; break;
-            case 'right':  $this->align[$k] = 'R'; break;
-            case 'center': $this->align[$k] = 'C'; break;
+            case 'left':   $this->align[$k] = self::LEFT;   break;
+            case 'right':  $this->align[$k] = self::RIGHT;  break;
+            case 'center': $this->align[$k] = self::CENTER; break;
          }
       }
    }
@@ -188,7 +199,7 @@ class PluginPdfSimplePDF {
                0,                // $ln (int) Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL language)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>
                1,                // $fill (boolean) Indicates if the cell background must be painted (true) or transparent (false).
                true,             // $reseth (boolean) if true reset the last cell height (default true).
-               'L',              // $align (string) Allows to center or align the text. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
+               self::LEFT,       // $align (string) Allows to center or align the text. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
                true              // $autopadding (boolean) if true, uses internal padding and automatically adjust it to account for line width.
             );
             if ($this->pdf->getLastH() > $max) {
@@ -234,11 +245,11 @@ class PluginPdfSimplePDF {
    }
 
    public function displayTitle() {
-      $this->displayInternal(200, 1.0, 'C', 1, func_get_args());
+      $this->displayInternal(200, 1.0, self::CENTER, 1, func_get_args());
    }
 
    public function displayLine() {
-      $this->displayInternal(240, 0.5, 'L', 1, func_get_args());
+      $this->displayInternal(240, 0.5, self::LEFT, 1, func_get_args());
    }
 
 
@@ -248,7 +259,7 @@ class PluginPdfSimplePDF {
    **/
    public function displayLink($name, $URL) {
 
-      $this->displayInternal(240, 0.5, 'L', 1, array(sprintf('<a href="%s">%s</a>', $URL, $name)));
+      $this->displayInternal(240, 0.5, self::LEFT, 1, array(sprintf('<a href="%s">%s</a>', $URL, $name)));
    }
 
 
@@ -271,7 +282,7 @@ class PluginPdfSimplePDF {
       );
 
       $this->setColumnsSize(100);
-      $this->displayInternal(240, 0.5, 'L', $minline*5, array($name.' '.$content));
+      $this->displayInternal(240, 0.5, self::LEFT, $minline*5, array($name.' '.$content));
 
       /* Restore */
       list(
