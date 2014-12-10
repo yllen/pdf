@@ -171,9 +171,38 @@ class PluginPdfSimplePDF {
       $this->pdf->SetFillColor($gray, $gray, $gray);
       $this->pdf->SetCellPadding($padd);
 
+      $max = $miny;
+
+      /* dry run - compute max cell height */
+      $this->pdf->startTransaction();
       $i = 0;
-      $y = $this->pdf->GetY();
-      $max = 0;
+      foreach ($msgs as $msg) {
+         if ($i<count($this->cols)) {
+            $this->pdf->writeHTMLCell(
+               $this->colsw[$i], // $w (float) Cell width. If 0, the cell extends up to the right margin.
+               $miny,            // $h (float) Cell minimum height. The cell extends automatically if needed.
+               '',               // $x (float) upper-left corner X coordinate
+               '',               // $y (float) upper-left corner Y coordinate
+               $msg,             // $html (string) html text to print. Default value: empty string.
+               0,                // $border (mixed) Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
+               0,                // $ln (int) Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL language)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>
+               1,                // $fill (boolean) Indicates if the cell background must be painted (true) or transparent (false).
+               true,             // $reseth (boolean) if true reset the last cell height (default true).
+               'L',              // $align (string) Allows to center or align the text. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
+               true              // $autopadding (boolean) if true, uses internal padding and automatically adjust it to account for line width.
+            );
+            if ($this->pdf->getLastH() > $max) {
+               $max = $this->pdf->getLastH();
+            }
+            $i++;
+         } else {
+            break;
+         }
+      }
+      $this->pdf = $this->pdf->rollbackTransaction();
+
+      /* real run */
+      $i = 0;
       foreach ($msgs as $msg) {
          if ($i<count($this->cols)) {
             if (($i+1)<count($msgs) && ($i+1)<count($this->cols)) {
@@ -185,7 +214,7 @@ class PluginPdfSimplePDF {
             $align = (isset($this->align[$i]) ? $this->align[$i] : $defalign);
             $this->pdf->writeHTMLCell(
                $this->colsw[$i], // $w (float) Cell width. If 0, the cell extends up to the right margin.
-               $miny,            // $h (float) Cell minimum height. The cell extends automatically if needed.
+               $max,             // $h (float) Cell minimum height. The cell extends automatically if needed.
                '',               // $x (float) upper-left corner X coordinate
                '',               // $y (float) upper-left corner Y coordinate
                $msg,             // $html (string) html text to print. Default value: empty string.
@@ -196,19 +225,12 @@ class PluginPdfSimplePDF {
                $align,           // $align (string) Allows to center or align the text. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
                true              // $autopadding (boolean) if true, uses internal padding and automatically adjust it to account for line width.
             );
-            if ($this->pdf->getLastH() > $max) {
-               $max = $this->pdf->getLastH();
-            }
             $i++;
          } else {
             break;
          }
       }
-      /*
-      $this->pdf->Ln($max+1); <= doesn't seems to work'
-      Workaound for https://sourceforge.net/p/tcpdf/bugs/1004/
-      */
-      $this->pdf->SetY($this->pdf->GetY() + ($max - $this->pdf->getLastH()) + 1);
+      $this->pdf->SetY($this->pdf->GetY() + 1);
    }
 
    public function displayTitle() {
