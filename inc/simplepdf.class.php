@@ -42,7 +42,7 @@ class PluginPdfSimplePDF {
    const CENTER = 'C';
    const RIGHT  = 'R';
 
-   private $df;
+   private $pdf;
 
    // Page management
    private $width;
@@ -58,6 +58,8 @@ class PluginPdfSimplePDF {
 
 
    /**
+    * Create a new PDF
+    *
     * @param $format    (default a4)
     * @param $orient    (default portrait)
    **/
@@ -106,6 +108,8 @@ class PluginPdfSimplePDF {
 
 
    /**
+    * Set the title in each header
+    *
     * @param $msg
    **/
    public function setHeader($msg) {
@@ -114,11 +118,20 @@ class PluginPdfSimplePDF {
       $this->pdf->SetHeaderData('fd_logo.jpg', 15, $msg, '');
    }
 
-
+   /**
+    * Display the result in the browser
+   **/
    public function render() {
       $this->pdf->Output('glpi.pdf', 'I');
    }
 
+   /**
+    * Get/save the result in the browser
+    *
+    * @param $name String optional filename
+    *
+    * @return String with PDF content if filename not provided
+   **/
    public function output($name=false) {
 
       if (!$name) {
@@ -127,13 +140,20 @@ class PluginPdfSimplePDF {
       $this->pdf->Output($name, 'F');
    }
 
+   /**
+    * Start a new page
+   **/
    public function newPage() {
 
       $this->pdf->AddPage();
    }
 
 
-   // Args is relative size of each column
+   /**
+    * Configure the width and number of colums
+    *
+    * @param list of size in % of the page width
+   **/
    public function setColumnsSize() {
 
       $this->cols = $tmp = func_get_args();
@@ -153,7 +173,11 @@ class PluginPdfSimplePDF {
    }
 
 
-   // Args are relative size of each column
+   /**
+    * Configure the width and number of colums
+    *
+    * @param list of alignment
+   **/
    public function setColumnsAlign () {
 
       $this->align = func_get_args();
@@ -169,6 +193,10 @@ class PluginPdfSimplePDF {
 
 
    /**
+    * does nothing, just raise a warning in the php-errors.log
+    *
+    * @deprecated, no more used (should have be private)
+    *
     * @param $gray
    **/
    public function displayBox($gray) {
@@ -176,7 +204,15 @@ class PluginPdfSimplePDF {
       Toolbox::displayBox("PluginPdfSimplePDF::displayBox() is deprecated");
    }
 
-
+   /**
+    * display a row
+    *
+    * @param $gray     Integer gray level of the backkgroun of each cell
+    * @param $padd     Float   cell padding (mm)
+    * @param $defalign String  default column alignment is not set (setColumnsAlign)
+    * @param $miny     Float   minimum size of the row (mm)
+    * @param $msgs     Array   of strings to display
+   **/
    private function displayInternal($gray, $padd, $defalign, $miny, $msgs) {
 
       $this->pdf->SetFillColor($gray, $gray, $gray);
@@ -244,18 +280,32 @@ class PluginPdfSimplePDF {
       $this->pdf->SetY($this->pdf->GetY() + 1);
    }
 
+   /**
+    * display a Title row, centered with dark background
+    *
+    * @param list of strings, one string per column
+   **/
    public function displayTitle() {
       $this->displayInternal(200, 1.0, self::CENTER, 1, func_get_args());
    }
 
+   /**
+    * display a nomal row, default to left, with light background
+    *
+    * @param list of strings, one string per column
+   **/
    public function displayLine() {
       $this->displayInternal(240, 0.5, self::LEFT, 1, func_get_args());
    }
 
 
    /**
-    * @param $name
-    * @param $URL
+    * Display a single cell with a string
+    *
+    * @deprecated use displayLine with HTML
+    *
+    * @param $name String displayed text
+    * @param $URL  String link
    **/
    public function displayLink($name, $URL) {
 
@@ -269,7 +319,7 @@ class PluginPdfSimplePDF {
     * @param $name      string   display on the left, before text
     * @param $content   string   of text display on right (multi-line)
     * @param $minline   integer  for minimum box size (default 3)
-    * @param $maxline   interger for maximum box size (1 page = 80 lines) (default 100)
+    * @param $maxline   interger for maximum box size (1 page = 80 lines) (default 100) (ignored)
    **/
    public function displayText($name, $content='', $minline=3, $maxline=100) {
 
@@ -296,18 +346,22 @@ class PluginPdfSimplePDF {
 
 
    /**
+    * Display space between row
+    *
     * @param $nb     (default 1)
    **/
    public function displaySpace($nb=1) {
 
-      $this->pdf->Ln(4);
+      $this->pdf->Ln(4*$nb);
    }
 
 
    /**
-    * @param $image
-    * @param $dst_w
-    * @param $dst_h
+    * Display an image
+    *
+    * @param $image String  path of the PNF file
+    * @param $dst_w Intefer Width in Pixels
+    * @param $dst_h Integer Height in Pixels
    **/
    public function addPngFromFile($image,$dst_w,$dst_h) {
 
