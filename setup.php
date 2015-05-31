@@ -1,29 +1,32 @@
 <?php
-/*
+/**
  * @version $Id$
  -------------------------------------------------------------------------
- pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2013 by the pdf Development Team.
-
- https://forge.indepnet.net/projects/pdf
- -------------------------------------------------------------------------
-
  LICENSE
 
- This file is part of pdf.
+ This file is part of PDF plugin for GLPI.
 
- pdf is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
+ PDF is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
- pdf is distributed in the hope that it will be useful,
+ PDF is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with pdf. If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with Reports. If not, see <http://www.gnu.org/licenses/>.
+
+ @package   pdf
+ @authors   Nelly Mahu-Lasson, Remi Collet
+ @copyright Copyright (c) 2009-2015 PDF plugin team
+ @license   AGPL License 3.0 or (at your option) any later version
+            http://www.gnu.org/licenses/agpl-3.0-standalone.html
+ @link      https://forge.indepnet.net/projects/pdf
+ @link      http://www.glpi-project.org/
+ @since     2009
  --------------------------------------------------------------------------
 */
 
@@ -35,11 +38,6 @@ function plugin_init_pdf() {
    Plugin::registerClass('PluginPdfProfile',    array('addtabon' => 'Profile'));
    Plugin::registerClass('PluginPdfPreference', array('addtabon' => 'Preference'));
 
-   $PLUGIN_HOOKS['change_profile']['pdf'] = array('PluginPdfProfile','changeprofile');
-   $PLUGIN_HOOKS['pre_item_purge']['pdf'] = array('Profile' => array('PluginPdfProfile',
-                                                                     'cleanProfile'));
-   $PLUGIN_HOOKS['item_clone']['pdf']     = array('Profile' => array('PluginPdfProfile',
-                                                                     'cloneProfile'));
 
    $plugin = new Plugin();
    if ($plugin->isActivated("datainjection")) {
@@ -76,19 +74,19 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return array('name'           => __('Print to pdf', 'pdf'),
-                'version'        => '0.84',
-                'author'         => 'Dévi Balpe, Remi Collet, Nelly Mahu-Lasson, Walid Nouh',
-                'license'        => 'GPLv2+',
+                'version'        => '0.85',
+                'author'         => 'Remi Collet, Nelly Mahu-Lasson',
+                'license'        => 'GPLv3+',
                 'homepage'       => 'https://forge.indepnet.net/projects/pdf',
-                'minGlpiVersion' => '0.84');
+                'minGlpiVersion' => '0.85');
 }
 
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_pdf_check_prerequisites(){
 
-   if (version_compare(GLPI_VERSION,'0.84','lt') || version_compare(GLPI_VERSION,'0.85','ge')) {
-      _e('This plugin requires GLPI >= 0.84', 'pdf');
+   if (version_compare(GLPI_VERSION,'0.85','lt') || version_compare(GLPI_VERSION,'0.86','ge')) {
+      _e('This plugin requires GLPI >= 0.85', 'pdf');
       return false;
    }
    return true;
@@ -97,6 +95,6 @@ function plugin_pdf_check_prerequisites(){
 
 // Config process for plugin : need to return true if succeeded : may display messages or add to message after redirect
 function plugin_pdf_check_config(){
-   return TableExists("glpi_plugin_pdf_profiles");
+   return true;
 }
 ?>

@@ -1,29 +1,32 @@
 <?php
-/*
+/**
  * @version $Id$
  -------------------------------------------------------------------------
- pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2013 by the pdf Development Team.
-
- https://forge.indepnet.net/projects/pdf
- -------------------------------------------------------------------------
-
  LICENSE
 
- This file is part of pdf.
+ This file is part of PDF plugin for GLPI.
 
- pdf is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
+ PDF is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
- pdf is distributed in the hope that it will be useful,
+ PDF is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with pdf. If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with Reports. If not, see <http://www.gnu.org/licenses/>.
+
+ @package   pdf
+ @authors   Nelly Mahu-Lasson, Remi Collet
+ @copyright Copyright (c) 2009-2015 PDF plugin team
+ @license   AGPL License 3.0 or (at your option) any later version
+            http://www.gnu.org/licenses/agpl-3.0-standalone.html
+ @link      https://forge.indepnet.net/projects/pdf
+ @link      http://www.glpi-project.org/
+ @since     2009
  --------------------------------------------------------------------------
  */
 
@@ -115,8 +118,7 @@ function plugin_pdf_install() {
 
    $migration = new Migration('0.84');
    if (!TableExists('glpi_plugin_pdf_profiles')) {
-      $query= "CREATE TABLE IF NOT EXISTS
-               `glpi_plugin_pdf_profiles` (
+      $query= "CREATE TABLE IF NOT EXISTS `glpi_plugin_pdf_profiles` (
                   `id` int(11) NOT NULL,
                   `profile` varchar(255) default NULL,
                   `use` tinyint(1) default 0,
@@ -127,6 +129,22 @@ function plugin_pdf_install() {
       if (FieldExists('glpi_plugin_pdf_profiles','ID')) { //< 0.7.0
          $migration->changeField('glpi_plugin_pdf_profiles', 'ID', 'id', 'autoincrement');
       }
+      // -- SINCE 0.85 --
+      //Add new rights in glpi_profilerights table
+      $profileRight = new ProfileRight();
+      $query = "SELECT *
+                FROM `glpi_plugin_pdf_profiles`
+                WHERE `use` = 1";
+
+      foreach ($DB->request($query) as $data) {
+         $right['profiles_id']   = $data['id'];
+         $right['name']          = "plugin_pdf";
+         $right['rights']        = $data['use'];
+
+         $profileRight->add($right);
+      }
+      $DB->query("DROP TABLE `glpi_plugin_pdf_profiles`");
+
    }
 
    if (!TableExists('glpi_plugin_pdf_preference')) {
@@ -172,7 +190,7 @@ function plugin_pdf_install() {
       }
       $migration->executeMigration();
    }
-
+/*
    // Give right to current Profile
    include_once (GLPI_ROOT . '/plugins/pdf/inc/profile.class.php');
    $prof =  new PluginPdfProfile();
@@ -180,7 +198,7 @@ function plugin_pdf_install() {
       $prof->add(array('id'      => $_SESSION['glpiactiveprofile']['id'],
                        'profile' => $_SESSION['glpiactiveprofile']['name'],
                        'use'     => 1));
-   }
+   }*/
    return true;
 }
 
@@ -189,13 +207,18 @@ function plugin_pdf_uninstall() {
    global $DB;
 
    $tables = array ("glpi_plugin_pdf_preference",
-                    "glpi_plugin_pdf_preferences",
-                    "glpi_plugin_pdf_profiles");
+                    "glpi_plugin_pdf_preferences");
 
-   $migration = new Migration('0.84');
+   $migration = new Migration('0.85');
    foreach ($tables as $table) {
       $migration->dropTable($table);
    }
+
+   //Delete rights associated with the plugin
+   $query = "DELETE *
+             FROM `glpi_profilerights`
+             WHERE `name` = 'plugin_pdf'";
+   $DB->queryOrDie($query, $DB->error());
 
    return true;
 }

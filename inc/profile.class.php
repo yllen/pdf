@@ -1,34 +1,39 @@
 <?php
-/*
+/**
  * @version $Id$
  -------------------------------------------------------------------------
- pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2013 by the pdf Development Team.
-
- https://forge.indepnet.net/projects/pdf
- -------------------------------------------------------------------------
-
  LICENSE
 
- This file is part of pdf.
+ This file is part of PDF plugin for GLPI.
 
- pdf is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
+ PDF is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
- pdf is distributed in the hope that it will be useful,
+ PDF is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with pdf. If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with Reports. If not, see <http://www.gnu.org/licenses/>.
+
+ @package   pdf
+ @authors   Nelly Mahu-Lasson, Remi Collet
+ @copyright Copyright (c) 2009-2015 PDF plugin team
+ @license   AGPL License 3.0 or (at your option) any later version
+            http://www.gnu.org/licenses/agpl-3.0-standalone.html
+ @link      https://forge.indepnet.net/projects/pdf
+ @link      http://www.glpi-project.org/
+ @since     2009
  --------------------------------------------------------------------------
  */
 
 
-class PluginPdfProfile extends CommonDBTM {
+class PluginPdfProfile extends Profile {
+
+   static $rightname = 'profile';
 
 
    function getSearchOptions() {
@@ -46,94 +51,41 @@ class PluginPdfProfile extends CommonDBTM {
    }
 
 
-   function createProfile($profile) {
-
-      return $this->add(array('id'      => $profile->getField('id'),
-                              'profile' => $profile->getField('name')));
-   }
-
-
-   //if profile deleted
-   static function cleanProfile(Profile $prof) {
-
-      $plugprof = new self();
-      $plugprof->delete(array('id'=>$prof->getField("id")));
-   }
-
-
-   // if profile cloned
-   static function cloneProfile(Profile $prof) {
-
-      $plugprof = new self();
-      if ($plugprof->getFromDB($prof->input['_old_id'])) {
-         $input            = ToolBox::addslashes_deep($plugprof->fields);
-         $input['profile'] = ToolBox::addslashes_deep($prof->getName());
-         $input['id']      = $prof->getID();
-         $plugprof->add($input);
-      }
-   }
-
-
    function showForm($ID, $options=array()) {
       global $DB;
 
-      $target = $this->getFormURL();
-      if (isset($options['target'])) {
-        $target = $options['target'];
+      $profile      = new Profile();
+
+      if ($canedit = Session::haveRightsOr(self::$rightname, array(CREATE, UPDATE, PURGE))) {
+         echo "<form action='".$profile->getFormURL()."' method='post'>";
       }
+      $profile->getFromDB($ID);
 
-      if ($ID > 0) {
-         $this->check($ID,'r');
-      } else {
-         $this->check(-1,'w');
-         $this->getEmpty();
+      $real_right = ProfileRight::getProfileRights($ID, array('plugin_pdf'));
+      toolbox::logdebug("real", $real_right);
+      $checked = 0;
+      if (isset($real_right)
+          || ($real_right['plugin_pdf'] == 0)) {
+         $checked = 1;
       }
-
-      $canedit = $this->can($ID,'w');
-
-      echo "<form action='".$target."' method='post'>";
       echo "<table class='tab_cadre_fixe'>";
-      echo "<tr><th colspan='2' class='center b'>".sprintf(__('%1$s - %2$s'),
-                                                           __('Print to pdf', 'pdf'),
-                                                           $this->fields["profile"]);
+      echo "<tr><th colspan='2' class='center b'>".__('Print to pdf', 'pdf');
       echo "</th></tr>";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('Print to pdf', 'pdf')."</td><td>";
-      Dropdown::showYesNo("use",(isset($this->fields["use"])?$this->fields["use"]:''));
-      echo "</td></tr>\n";
+      Html::showCheckbox(array('name'    => '_plugin_pdf',
+                               'checked' => (isset($real_right['plugin_pdf'])
+                                             ?1:0)));
+      echo "</td></tr></table>\n";
 
       if ($canedit) {
-         echo "<tr class='tab_bg_1'>";
-         echo "<td colspan='2' class='center'>";
-         echo "<input type='hidden' name='id' value=$ID>";
-         echo "<input type='submit' name='update_user_profile' value='"._sx('button', 'Update').
-               "' class='submit'>&nbsp;";
-         echo "</td></tr>\n";
+         echo "<div class='center'>";
+         echo Html::hidden('id', array('value' => $ID));
+         echo Html::submit(_sx('button', 'Update'), array('name' => 'update'));
+         echo "</div>\n";
+         Html::closeForm();
       }
-      echo "</table>";
-      Html::closeForm();
-   }
-
-
-   static function changeprofile() {
-
-      $tmp = new self();
-       if ($tmp->getFromDB($_SESSION['glpiactiveprofile']['id'])) {
-          $_SESSION["glpi_plugin_pdf_profile"] = $tmp->fields;
-       } else {
-          unset($_SESSION["glpi_plugin_pdf_profile"]);
-       }
-   }
-
-
-   static function canView() {
-      return Session::haveRight('profile','r');
-   }
-
-
-   static function canCreate() {
-      return Session::haveRight('profile','w');
    }
 
 
@@ -151,9 +103,6 @@ class PluginPdfProfile extends CommonDBTM {
       if ($item->getType() == 'Profile') {
          $prof =  new self();
          $ID = $item->getField('id');
-         if (!$prof->GetfromDB($ID)) {
-            $prof->createProfile($item);
-         }
          $prof->showForm($ID);
       }
       return true;
