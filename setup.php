@@ -40,12 +40,12 @@ function plugin_init_pdf() {
 
 
    $plugin = new Plugin();
-   if ($plugin->isActivated("datainjection")) {
+//   if ($plugin->isActivated("datainjection")) {
       $PLUGIN_HOOKS['menu_entry']['pdf'] = 'front/preference.form.php';
-   }
+ //  }
 
-   if (isset($_SESSION["glpi_plugin_pdf_profile"])
-       && $_SESSION["glpi_plugin_pdf_profile"]["use"]) {
+   if (isset($_SESSION['glpiactiveprofile']['plugin_pdf'])
+       && ($_SESSION['glpiactiveprofile']['plugin_pdf'] == 1)){
 
       $PLUGIN_HOOKS['use_massive_action']['pdf'] = 1;
 

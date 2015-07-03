@@ -1,35 +1,40 @@
 <?php
-/*
+/**
  * @version $Id$
  -------------------------------------------------------------------------
- pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2013 by the pdf Development Team.
-
- https://forge.indepnet.net/projects/pdf
- -------------------------------------------------------------------------
-
  LICENSE
 
- This file is part of pdf.
+ This file is part of PDF plugin for GLPI.
 
- pdf is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
+ PDF is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
- pdf is distributed in the hope that it will be useful,
+ PDF is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with pdf. If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with Reports. If not, see <http://www.gnu.org/licenses/>.
+
+ @package   pdf
+ @authors   Nelly Mahu-Lasson, Remi Collet
+ @copyright Copyright (c) 2009-2015 PDF plugin team
+ @license   AGPL License 3.0 or (at your option) any later version
+            http://www.gnu.org/licenses/agpl-3.0-standalone.html
+ @link      https://forge.indepnet.net/projects/pdf
+ @link      http://www.glpi-project.org/
+ @since     2009
  --------------------------------------------------------------------------
 */
 
 abstract class PluginPdfCommon {
 
    protected $obj= NULL;
+
+   static $rightname = "plugin_pdf";
 
 
    /**
@@ -155,12 +160,16 @@ abstract class PluginPdfCommon {
             static::pdfMain($pdf, $item);
             break;
 
-         case 'Note' :
-            self::pdfNote($pdf, $item);
+         case 'Notepad$1' :
+            if (Session::haveRight($item::$rightname, READ)) {
+               self::pdfNote($pdf, $item);
+            }
             break;
 
-         case 'Document$1' :
-            PluginPdfDocument::pdfForItem($pdf, $item);
+         case 'Document_Item$1' :
+            if (Session::haveRight($item::$rightname, READ)) {
+               PluginPdfDocument::pdfForItem($pdf, $item);
+            }
             break;
 
          case 'NetworkPort$1' :
@@ -168,23 +177,33 @@ abstract class PluginPdfCommon {
             break;
 
          case 'Infocom$1' :
-            PluginPdfInfocom::pdfForItem($pdf, $item);
+            if (Session::haveRight($item::$rightname, READ)) {
+               PluginPdfInfocom::pdfForItem($pdf, $item);
+            }
             break;
 
          case 'Contract_Item$1' :
-            PluginPdfContract_Item::pdfForItem($pdf, $item);
+            if (Session::haveRight("contract", READ)) {
+               PluginPdfContract_Item::pdfForItem($pdf, $item);
+            }
             break;
 
          case 'Ticket$1' :
-            PluginPdfTicket::pdfForItem($pdf, $item);
+            if (Session::haveRight($item::$rightname, READ)) {
+               PluginPdfTicket::pdfForItem($pdf, $item);
+            }
             break;
 
          case 'Link$1' :
-            PluginPdfLink::pdfForItem($pdf, $item);
+            if (Session::haveRight($item::$rightname, READ)) {
+               PluginPdfLink::pdfForItem($pdf, $item);
+            }
             break;
 
          case 'Reservation$1' :
-            PluginPdfReservation::pdfForItem($pdf, $item);
+            if (Session::haveRight($item::$rightname, READ)) {
+               PluginPdfReservation::pdfForItem($pdf, $item);
+            }
             break;
 
          case 'Log$1' :
@@ -222,25 +241,28 @@ abstract class PluginPdfCommon {
    /**
     * Read the object and create header for all pages
     *
+    * No HTML supported in this function
+    *
     * @param $ID integer, ID of the object to print
    **/
    private function addHeader($ID) {
 
       $entity = '';
-      if ($this->obj->getFromDB($ID) && $this->obj->can($ID,'r')) {
+      if ($this->obj->getFromDB($ID) && $this->obj->can($ID, READ)) {
          if ($this->obj->getType()!='Ticket'
              && $this->obj->getType()!='KnowbaseItem'
-             && $this->obj->isField('name')) {
+             && $this->obj->getField('name')) {
             $name = $this->obj->getField('name');
          } else {
             $name = sprintf(__('%1$s %2$s'), __('ID'), $ID);
          }
+
          if (Session::isMultiEntitiesMode() && $this->obj->isEntityAssign()) {
-            $entity = ' ('.Html::clean(Dropdown::getDropdownName('glpi_entities',
-                                                                $this->obj->getEntityID())).')';
+            $entity = ' ('.Dropdown::getDropdownName('glpi_entities',
+                                                                $this->obj->getEntityID()).')';
          }
          $this->pdf->setHeader(sprintf(__('%1$s - %2$s'), $this->obj->getTypeName(),
-                                       sprintf(__('%1$s %2$s'), '<b>'.$name.'</b>', $entity)));
+                                       sprintf(__('%1$s %2$s'), $name, $entity)));
 
          return true;
       }
@@ -252,6 +274,8 @@ abstract class PluginPdfCommon {
 
       $ID   = $item->getField('id');
       $note = trim($item->getField('notepad'));
+
+
 
       $pdf->setColumnsSize(100);
       if (Toolbox::strlen($note) > 0) {

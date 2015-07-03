@@ -1,35 +1,39 @@
 <?php
-/*
+/**
  * @version $Id$
  -------------------------------------------------------------------------
- pdf - Export to PDF plugin for GLPI
- Copyright (C) 2003-2014 by the pdf Development Team.
-
- https://forge.indepnet.net/projects/pdf
- -------------------------------------------------------------------------
-
  LICENSE
 
- This file is part of pdf.
+ This file is part of PDF plugin for GLPI.
 
- pdf is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
+ PDF is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
- pdf is distributed in the hope that it will be useful,
+ PDF is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with pdf. If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with Reports. If not, see <http://www.gnu.org/licenses/>.
+
+ @package   pdf
+ @authors   Nelly Mahu-Lasson, Remi Collet
+ @copyright Copyright (c) 2009-2015 PDF plugin team
+ @license   AGPL License 3.0 or (at your option) any later version
+            http://www.gnu.org/licenses/agpl-3.0-standalone.html
+ @link      https://forge.indepnet.net/projects/pdf
+ @link      http://www.glpi-project.org/
+ @since     2009
  --------------------------------------------------------------------------
- */
+*/
 
 define ('K_PATH_IMAGES', GLPI_ROOT.'/plugins/pdf/pics/');
 
 require_once(GLPI_TCPDF_DIR.'/tcpdf.php');
+
 
 class PluginPdfSimplePDF {
 
@@ -97,7 +101,6 @@ class PluginPdfSimplePDF {
 
 
       // For standard language
-      //$pdf->setFontSubsetting($subsetting);
       // set font
       $pdf->SetFont($font, '', 8);
 
@@ -113,10 +116,12 @@ class PluginPdfSimplePDF {
     * @param $msg
    **/
    public function setHeader($msg) {
+
       $this->header = $msg;
       $this->pdf->SetTitle($msg);
       $this->pdf->SetHeaderData('fd_logo.jpg', 15, $msg, '');
    }
+
 
    /**
     * Display the result in the browser
@@ -124,6 +129,7 @@ class PluginPdfSimplePDF {
    public function render() {
       $this->pdf->Output('glpi.pdf', 'I');
    }
+
 
    /**
     * Get/save the result in the browser
@@ -140,11 +146,11 @@ class PluginPdfSimplePDF {
       $this->pdf->Output($name, 'F');
    }
 
+
    /**
     * Start a new page
    **/
    public function newPage() {
-
       $this->pdf->AddPage();
    }
 
@@ -156,19 +162,19 @@ class PluginPdfSimplePDF {
    **/
    public function setColumnsSize() {
 
-      $this->cols = $tmp = func_get_args();
+      $this->cols  = $tmp = func_get_args();
       $this->colsx = array();
       $this->colsw = array();
       $this->align = array();
 
-      $x=10;
-      $w=floor($this->width - 2*count($tmp));
+      $x           = 10;
+      $w           = floor($this->width - 2*count($tmp));
 
       while ($rel = array_shift($tmp)) {
-         $z = $w*$rel/100;
+         $z             = $w*$rel/100;
          $this->colsx[] = $x;
          $this->colsw[] = $z;
-         $x += $z+2;
+         $x             += $z+2;
       }
    }
 
@@ -200,9 +206,9 @@ class PluginPdfSimplePDF {
     * @param $gray
    **/
    public function displayBox($gray) {
-
       Toolbox::displayBox("PluginPdfSimplePDF::displayBox() is deprecated");
    }
+
 
    /**
     * display a row
@@ -280,6 +286,7 @@ class PluginPdfSimplePDF {
       $this->pdf->SetY($this->pdf->GetY() + 1);
    }
 
+
    /**
     * display a Title row, centered with dark background
     *
@@ -288,6 +295,7 @@ class PluginPdfSimplePDF {
    public function displayTitle() {
       $this->displayInternal(200, 1.0, self::CENTER, 1, func_get_args());
    }
+
 
    /**
     * display a nomal row, default to left, with light background
@@ -302,13 +310,12 @@ class PluginPdfSimplePDF {
    /**
     * Display a single cell with a string
     *
-    * @deprecated use displayLine with HTML
+    * @deprecated use displayInternal with HTML
     *
     * @param $name String displayed text
     * @param $URL  String link
    **/
    public function displayLink($name, $URL) {
-
       $this->displayInternal(240, 0.5, self::LEFT, 1, array(sprintf('<a href="%s">%s</a>', $URL, $name)));
    }
 
