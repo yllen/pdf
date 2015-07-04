@@ -239,7 +239,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
       $installed = array();
       if (count($output)) {
          $pdf->setColumnsSize(100);
-         $pdf->displayTitle('<b>'._n('Installed software', 'Installed software', 2, 'pdf').'</b>');
+         $pdf->displayTitle('<b>'.__('Installed software').'</b>');
 
          $cat = -1;
          foreach ($output as $soft) {

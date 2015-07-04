@@ -56,7 +56,7 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
 
       $pdf->setColumnsSize(100);
       if ($DB->numrows($result) > 0) {
-         $pdf->displayTitle("<b>"._n('Volume', 'Volumes', 2)."</b>");
+         $pdf->displayTitle("<b>"._n('Volume', 'Volumes', $DB->numrows($result))."</b>");
 
          $pdf->setColumnsSize(22,23,22,11,11,11);
          $pdf->displayTitle('<b>'.__('Name'), __('Partition'), __('Mount point'), __('Type'),

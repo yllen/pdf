@@ -59,7 +59,7 @@ class PluginPdfLink extends PluginPdfCommon {
 
       $pdf->setColumnsSize(100);
       if ($DB->numrows($result) > 0) {
-         $pdf->displayTitle('<b>'.__('External Links').'</b>');
+         $pdf->displayTitle('<b>'._n('External link', 'External links', $DB->numrows($result)).'</b>');
 
          while ($data = $DB->fetch_assoc($result)) {
             $name = $data["name"];

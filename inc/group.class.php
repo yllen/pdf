@@ -64,7 +64,7 @@ class PluginPdfGroup extends PluginPdfCommon {
                                                  __('Requester')).'</i></b>',
                                          Dropdown::getYesNo($item->fields['is_requester'])),
                         '<b><i>'.sprintf(__('%1$s: %2$s'),
-                                         sprintf(__('%1$s - %2$s'),_('Visible in a ticket'),
+                                         sprintf(__('%1$s - %2$s'),__('Visible in a ticket'),
                                                  __('Assigned to')).'</i></b>',
                                          Dropdown::getYesNo($item->fields['is_assign'])));
 

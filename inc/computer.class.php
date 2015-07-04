@@ -213,10 +213,6 @@ class PluginPdfComputer extends PluginPdfCommon {
             PluginPdfComputer_Item::pdfForComputer($pdf, $item);
             break;
 
-         case 'Document_Item$1' :
-            PluginPdfDocument::pdfForItem($pdf, $item);
-            break;
-
          case 'ComputerVirtualMachine$1' :
             PluginPdfComputerVirtualMachine::pdfForComputer($pdf, $item);
             break;

@@ -59,7 +59,7 @@ class PluginPdfContract_Item extends PluginPdfCommon {
 
       $pdf->setColumnsSize(100);
       if ($number > 0) {
-         $pdf->displayTitle('<b>'._N('Associated contract', 'Associated contracts', 2).'</b>');
+         $pdf->displayTitle('<b>'._N('Associated contract', 'Associated contracts', $number).'</b>');
 
          $pdf->setColumnsSize(19,19,19,16,11,16);
          $pdf->displayTitle(__('Name'), _x('phone', 'Number'), __('Contract type'),

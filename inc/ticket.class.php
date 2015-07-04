@@ -522,11 +522,11 @@ class PluginPdfTicket extends PluginPdfCommon {
                }
             }
             if ($col) {
-               $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', ('Assigned to'), '');
+               $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Assigned to'), '');
                $pdf->displayText($texte, $col, 1);
             }
 
-            $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', ('Title'), '');
+            $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Title'), '');
             $pdf->displayText($texte, $job->fields["name"], 1);
          }
       }
