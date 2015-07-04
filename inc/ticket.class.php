@@ -334,7 +334,8 @@ class PluginPdfTicket extends PluginPdfCommon {
       $ID   = $item->getField('id');
       $type = $item->getType();
 
-      if (!Session::haveRight("show_all_ticket","1")) {
+      if (!Session::haveRightsOr('ticket',
+                                 array(Ticket::READALL, Ticket::READMY, Ticket::READASSIGN))) {
          return;
       }
 
@@ -369,7 +370,14 @@ class PluginPdfTicket extends PluginPdfCommon {
 
          default :
             $restrict   = "(`items_id` = '".$item->getID()."'  AND `itemtype` = '$type')";
-            $order      = '`glpi_tickets`.`date_mod` DESC';
+            // you can only see your tickets
+            if (!Session::haveRight('ticket', Ticket::READALL)) {
+               $restrict .= " AND (`glpi_tickets`.`users_id_recipient` = '".Session::getLoginUserID()."'
+                                   OR (`glpi_tickets_users`.`tickets_id` = '".$item->getID()."'
+                                       AND `glpi_tickets_users`.`users_id`
+                                            = '".Session::getLoginUserID()."'))";
+            }
+            $order    = '`glpi_tickets`.`date_mod` DESC';
       }
 
       $query = "SELECT ".Ticket::getCommonSelect()."

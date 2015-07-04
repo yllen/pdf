@@ -46,6 +46,7 @@ class PluginPdfMonitor extends PluginPdfCommon {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['Item_Problem$1']); // TODO add method to print linked Problems
+      unset($onglets['Change_Item$1']); // TODO add method to print linked Changes
       return $onglets;
    }
 

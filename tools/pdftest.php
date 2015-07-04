@@ -56,8 +56,8 @@ $pdf->displayTitle("PDF <b>test</b> title");
 $pdf->setColumnsSize(60,20,20);
 $pdf->displayLine("<b>PDF <i>test</i></b> line", "one", "two");
 $pdf->displayText("<b>Comment:</b>", implode(' ',$lorem));
-$pdf->displayInternal(240, 0.5, 'L', 1, array(sprintf('<a href="%s">%s</a>',
-                      'http://www.glpi-project.org/', 'http://www.glpi-project.org/')));
+$pdf->displayLine(sprintf('<a href="%s">%s</a>', 'http://www.glpi-project.org/',
+                          'http://www.glpi-project.org/'));
 $pdf->displaySpace();
 
 $pdf->setColumnsSize(100);

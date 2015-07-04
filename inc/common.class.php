@@ -88,8 +88,7 @@ abstract class PluginPdfCommon {
    **/
    function defineAllTabs($options=array()) {
 
-      $onglets  = array_merge(array('_main_' => $this->obj->getTypeName(1)),
-                              $this->obj->defineTabs());
+      $onglets  = $this->obj->defineTabs();
 
       $othertabs = CommonGLPI::getOtherTabs($this->obj->getType());
 
@@ -97,7 +96,7 @@ abstract class PluginPdfCommon {
 
       // Add plugins TAB
       foreach($othertabs as $typetab) {
-         $this->addStandardTab($typetab, $onglets, $options);
+         $this->addStandardTab($typetab, $onglet, $options);
       }
 
       return $onglets;
@@ -156,7 +155,7 @@ abstract class PluginPdfCommon {
    static final function displayCommonTabForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         case '_main_' :
+         case $item->getType().'$main' :
             static::pdfMain($pdf, $item);
             break;
 
@@ -209,6 +208,8 @@ abstract class PluginPdfCommon {
          case 'Log$1' :
             PluginPdfLog::pdfForItem($pdf, $item);
             break;
+
+
 
          default :
             return false;

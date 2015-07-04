@@ -65,9 +65,7 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
          $pdf->setColumnsAlign('left','left','left','center','right','right');
 
          while ($data = $DB->fetch_assoc($result)) {
-            $pdf->displayLine('<b>'.Toolbox::decodeFromUtf8((empty($data['name'])
-                                                              ?$data['ID']:$data['name']),
-                                                            "windows-1252").'</b>',
+            $pdf->displayLine('<b>'.$data['name'].'</b>',
                               $data['device'],
                               $data['mountpoint'],
                               Html::clean(Dropdown::getDropdownName('glpi_filesystems',

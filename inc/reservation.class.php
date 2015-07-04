@@ -123,8 +123,10 @@ class PluginPdfReservation extends PluginPdfCommon {
                                                     str_replace(array("\r","\n")," ",$data["comment"]));
             }
          }
-
+      } else {
+         $pdf->displayTitle("<b>".__('Item not reservable', 'pdf')."</b>");
       }
+
       $pdf->displaySpace();
    }
 }

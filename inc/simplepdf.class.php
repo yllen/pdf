@@ -310,7 +310,7 @@ class PluginPdfSimplePDF {
    /**
     * Display a single cell with a string
     *
-    * @deprecated use displayInternal with HTML
+    * @deprecated use displayLine with HTML
     *
     * @param $name String displayed text
     * @param $URL  String link

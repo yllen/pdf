@@ -46,6 +46,8 @@ class PluginPdfComputer extends PluginPdfCommon {
       $onglets = parent::defineAllTabs($options);
       unset($onglets['OcsLink$1']); // TODO add method to print OCS
       unset($onglets['Item_Problem$1']); // TODO add method to print linked Problems
+      unset($onglets['Change_Item$1']); // TODO add method to print linked Changes
+      unset($onglets['Lock$1']); // TODO add method to print Lock fields
       return $onglets;
    }
 
