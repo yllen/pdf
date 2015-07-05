@@ -613,8 +613,10 @@ class PluginPdfTicket extends PluginPdfCommon {
    function defineAllTabs($options=array()) {
 
       $onglets = parent::defineAllTabs($options);
+      unset($onglets['Projecttask_Ticket$1']); // TODO add method to print linked Projecttask
+      unset($onglets['Change_Ticket$1']); // TODO add method to print linked Changes
 
-      if (Session::haveRight("show_full_ticket","1")) {
+      if (Session::haveRight('ticket', Ticket::READALL)) {
          $onglets['_private_'] = __('Private');
       }
 
@@ -655,7 +657,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             PluginPdfTicketSatisfaction::pdfForTicket($pdf, $item);
             break;
 
-         case 'Problem$1' :
+         case 'Problem_Ticket$1' :
             PluginPdfProblem::pdfForItem($pdf, $item);
             break;
 

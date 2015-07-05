@@ -55,26 +55,25 @@ class PluginPdfGroup extends PluginPdfCommon {
                                          $item->fields['completename']));
       $pdf->setColumnsSize(50, 50);
       $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Child entities').'</i></b>',
-                                         Dropdown::getYesNo($item->fields['is_recursive'])),
-                        '<b><i>'.sprintf(__('%1$s: %2$s'), __('Can be notified').'</i></b>',
-                                         Dropdown::getYesNo($item->fields['is_notify'])))
-                                         ;
-      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'),
-                                         sprintf(__('%1$s - %2$s'), __('Visible in a ticket'),
-                                                 __('Requester')).'</i></b>',
-                                         Dropdown::getYesNo($item->fields['is_requester'])),
-                        '<b><i>'.sprintf(__('%1$s: %2$s'),
-                                         sprintf(__('%1$s - %2$s'),__('Visible in a ticket'),
-                                                 __('Assigned to')).'</i></b>',
-                                         Dropdown::getYesNo($item->fields['is_assign'])));
+                                         Dropdown::getYesNo($item->fields['is_recursive'])));
 
-      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'),
-                                         sprintf(__('%1$s - %2$s'), __('Can contain'),
-                                                 _n('Item', 'Items', 2)).'</i></b>',
+      $pdf->setColumnsSize(34,22,22,22);
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Visible in a ticket'), ''.'</i></b>'),
+                        '<b><i>'.sprintf(__('%1$s - %2$s'),__('Requester').'</i></b>',
+                                         Dropdown::getYesNo($item->fields['is_requester'])),
+                        '<b><i>'.sprintf(__('%1$s - %2$s'), __('Assigned to').'</i></b>',
+                                         Dropdown::getYesNo($item->fields['is_assign'])),
+                        '<b><i>'.sprintf(__('%1$s: %2$s'), __('Can be notified').'</i></b>',
+                                         Dropdown::getYesNo($item->fields['is_notify'])));
+
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Visible in a project'), ''),
+                        '<b><i>'.sprintf(__('%1$s - %2$s'), __('Can be manager').'</i></b>',
+                                         Dropdown::getYesNo($item->fields['is_manager'])));
+
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Can contain'), ''),
+                        '<b><i>'.sprintf(__('%1$s - %2$s'), _n('Item', 'Items', 2).'</i></b>',
                                          Dropdown::getYesNo($item->fields['is_itemgroup'])),
-                        '<b><i>'.sprintf(__('%1$s: %2$s'),
-                                         sprintf(__('%1$s - %2$s'), __('Can contain'),
-                                                 _n('User', 'Users', 2)).'</i></b>',
+                        '<b><i>'.sprintf(__('%1$s: %2$s'), _n('User', 'Users', 2).'</i></b>',
                                          Dropdown::getYesNo($item->fields['is_usergroup'])));
 
       PluginPdfCommon::mainLine($pdf, $item, 'comment');
@@ -122,7 +121,7 @@ class PluginPdfGroup extends PluginPdfCommon {
       $nb = count($datas);
 
       if ($nb < $max) {
-         $title = sprintf(__('%1$s (%2$s)'), $title, $nb/$max);
+         $title = sprintf(__('%1$s (%2$s)'), $title, $nb."/".$max);
       } else {
          $title = sprintf(__('%1$s (%2$s)'), $title, $nb);
       }
@@ -179,9 +178,8 @@ class PluginPdfGroup extends PluginPdfCommon {
       $onglets = parent::defineAllTabs($options);
 
       unset($onglets['NotificationTarget$1']);  // TODO Notifications
-
-      $onglets['_tree'] = __('Child groups');
-      $onglets['_user'] = __('Members equipment', 'pdf');
+      unset($onglets['Item_Problem$1']); // TODO add method to print linked Problems
+      unset($onglets['Change_Item$1']); // TODO add method to print linked Changes
 
       return $onglets;
    }
@@ -246,10 +244,6 @@ class PluginPdfGroup extends PluginPdfCommon {
             self::pdfItems($pdf, $item, false, $tree, $user);
             break;
 
-         case 'Group$2' :
-            self::pdfItems($pdf, $item, true, $tree, $user);
-            break;
-
          case 'Group$3' :
             self::pdfLdapForm($pdf, $item);
             break;
@@ -264,11 +258,6 @@ class PluginPdfGroup extends PluginPdfCommon {
 
          case 'Ticket$1' :
             PluginPdfTicket::pdfForItem($pdf, $item, $tree);
-            break;
-
-         // Igone tabs which are export options
-         case '_tree' :
-         case '_user' :
             break;
 
          default :

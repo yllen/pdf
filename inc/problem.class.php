@@ -250,7 +250,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       $ID   = $item->getField('id');
       $type = $item->getType();
 
-      if (!Session::haveRight("show_all_problem","1")) {
+      if (!Session::haveRight('problem', Problem::READALL)) {
          return;
       }
 
