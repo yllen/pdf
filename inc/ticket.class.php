@@ -162,7 +162,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $name        = "<b><i>".sprintf(__('%1$s: %2$s'), __('Associated element')."</i></b>", '');
       $commentitem = '';
       $pdf->setColumnsSize(100);
-      if ($job->fields['itemtype']
+      if (isset($job->fields['itemtype']) && $job->fields['itemtype']
           && ($item = getItemForItemtype($job->fields['itemtype']))) {
          if ($item->getFromDB($job->fields["items_id"])) {
             $name = "<b><i>".sprintf(__('%1$s: %2$s'), __('Associated element')."</i></b>",

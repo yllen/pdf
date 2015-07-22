@@ -48,10 +48,7 @@ class PluginPdfTicketValidation extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>".__('Approvals for the ticket')."</b>");
 
-      if (!Session::haveRight('validate_request',1)
-          && !Session::haveRight('validate_incident',1)
-          && !Session::haveRight('create_incident_validation',1)
-          && !Session::haveRight('create_request_validation',1)) {
+      if (!Session::haveRightsOr('ticketvalidation', TicketValidation::getValidateRights())) {
          return false;
       }
      $ID = $ticket->getField('id');

@@ -53,7 +53,7 @@ class PluginPdfTicketTask extends PluginPdfCommon {
       if (!$private) {
          // Don't show private'
          $RESTRICT=" AND `is_private` = '0' ";
-      } else if (!Session::haveRight("show_full_ticket","1")) {
+      } else if (!Session::haveRight('task', TicketTask::SEEPRIVATE)) {
          // No right, only show connected user private one
          $RESTRICT=" AND (`is_private` = '0'
                           OR `users_id` ='".Session::getLoginUserID()."' ) ";
@@ -70,7 +70,7 @@ class PluginPdfTicketTask extends PluginPdfCommon {
          $pdf->setColumnsSize(100);
          $pdf->displayLine(__('No task found.'));
       } else {
-         $pdf->displayTitle("<b>".TicketTask::getTypeName($DB->numrows($result)."</b>"));
+         $pdf->displayTitle("<b>".TicketTask::getTypeName($DB->numrows($result))."</b>");
 
          $pdf->setColumnsSize(20,20,20,20,20);
          $pdf->displayTitle("<i>".__('Type'), __('Date'), __('Duration'), __('Writer'),
@@ -97,7 +97,6 @@ class PluginPdfTicketTask extends PluginPdfCommon {
                                          sprintf(__('%1$s  %2$s'), __('By'),
                                                  getUserName($data["users_id_tech"])));
             }
-
 
             if ($data['taskcategories_id']) {
                $lib = Dropdown::getDropdownName('glpi_taskcategories', $data['taskcategories_id']);
