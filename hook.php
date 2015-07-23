@@ -118,13 +118,7 @@ function plugin_pdf_install() {
 
    $migration = new Migration('0.84');
    if (!TableExists('glpi_plugin_pdf_profiles')) {
-      $query= "CREATE TABLE IF NOT EXISTS `glpi_plugin_pdf_profiles` (
-                  `id` int(11) NOT NULL,
-                  `profile` varchar(255) default NULL,
-                  `use` tinyint(1) default 0,
-                  PRIMARY KEY (`id`)
-               ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-      $DB->queryOrDie($query, $DB->error());
+      ProfileRight::addProfileRights(array('plugin_pdf'));
    } else {
       if (FieldExists('glpi_plugin_pdf_profiles','ID')) { //< 0.7.0
          $migration->changeField('glpi_plugin_pdf_profiles', 'ID', 'id', 'autoincrement');
@@ -207,6 +201,7 @@ function plugin_pdf_uninstall() {
    global $DB;
 
    $tables = array ("glpi_plugin_pdf_preference",
+                    "glpi_plugin_pdf_profiles",
                     "glpi_plugin_pdf_preferences");
 
    $migration = new Migration('0.85');
