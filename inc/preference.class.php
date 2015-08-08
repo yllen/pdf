@@ -110,9 +110,10 @@ class PluginPdfPreference extends CommonDBTM {
          }
       }
       // Always export, at least, main part.
-      if (!count($values) && isset($options['_main_'])) {
-         $values['_main_'] = 1;
+      if (!count($values) && isset($options[$type.'$main'])) {
+         $values[$type.'$main'] = 1;
       }
+      Toolbox::logDebug($options, $values);
       echo "<tr><th colspan='6'>".sprintf(__('%1$s: %2$s'),
                                           __('Choose the tables to print in pdf', 'pdf'),
                                           $item->getTypeName());

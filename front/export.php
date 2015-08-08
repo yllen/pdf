@@ -60,7 +60,10 @@ if (isset($_POST["plugin_pdf_inventory_type"])
          $tab[] = $_SESSION["plugin_pdf"][$type][] = $key;
       }
    }
-
+   if (empty($tab)) {
+      $tab[] = $type.'$main';
+   }
+   
    if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])
        && class_exists($PLUGIN_HOOKS['plugin_pdf'][$type])) {
 
