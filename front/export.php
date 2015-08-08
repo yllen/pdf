@@ -55,6 +55,10 @@ if (isset($_POST["plugin_pdf_inventory_type"])
    }
 
    $tab = array();
+   if (method_exists('CommonGLPI', 'isLayoutWithMain') && CommonGLPI::isLayoutWithMain()) {
+      // 0.90 'main' always displayed in classic/vsplit mode, so not in the defined tabs
+      $tab[] = $type.'$main';
+   }
    if (isset($_POST['item'])) {
       foreach ($_POST['item'] as $key => $val) {
          $tab[] = $_SESSION["plugin_pdf"][$type][] = $key;
