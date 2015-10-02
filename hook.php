@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -43,80 +43,19 @@ function plugin_pdf_MassiveActions($type) {
    global $PLUGIN_HOOKS;
 
    switch ($type) {
-      case 'Profile' :
-         return array("plugin_pdf_allow" => __('Print to pdf', 'pdf'));
-
       default :
          if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
-            return array("plugin_pdf_DoIt" => __('Print to pdf', 'pdf'));
+            return array('PluginPdfCommon'.MassiveAction::CLASS_ACTION_SEPARATOR.'DoIt' => __('Print to pdf', 'pdf'));
          }
    }
    return array();
 }
 
 
-function plugin_pdf_MassiveActionsDisplay($options=array()) {
-   global $PLUGIN_HOOKS;
-
-   switch ($options['itemtype']) {
-      case 'Profile' :
-         switch ($options['action']) {
-            case "plugin_pdf_allow":
-               Dropdown::showYesNo('use');
-               echo "<input type='submit' name='massiveaction' class='submit' value='".
-                     _sx('button', 'Post')."'>";
-               break;
-         }
-         break;
-
-      default :
-         if (isset($PLUGIN_HOOKS['plugin_pdf'][$options['itemtype']]) && $options['action']=='plugin_pdf_DoIt') {
-            echo "<input type='submit' name='massiveaction' class='submit' value='".
-                   _sx('button', 'Post')."'>";
-         }
-   }
-   return "";
-}
-
-
-function plugin_pdf_MassiveActionsProcess($data){
-
-   switch ($data["action"]) {
-      case "plugin_pdf_DoIt" :
-         foreach ($data['item'] as $key => $val) {
-            if ($val) {
-               $tab_id[]=$key;
-            }
-         }
-         $_SESSION["plugin_pdf"]["type"]   = $data["itemtype"];
-         $_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
-         echo "<script type='text/javascript'>
-               location.href='../plugins/pdf/front/export.massive.php'</script>";
-         break;
-
-      case "plugin_pdf_allow" :
-         $profglpi = new Profile();
-         $prof     = new PluginPdfProfile();
-         foreach ($data['item'] as $key => $val) {
-            if ($profglpi->getFromDB($key) && $profglpi->fields['interface']!='helpdesk') {
-               if ($prof->getFromDB($key)) {
-                  $prof->update(array('id'  => $key,
-                                      'use' => $data['use']));
-               } else if ($data['use']) {
-                  $prof->add(array('id' => $key,
-                                   'use' => $data['use']));
-               }
-            }
-         }
-         break;
-   }
-}
-
-
 function plugin_pdf_install() {
    global $DB;
 
-   $migration = new Migration('0.84');
+   $migration = new Migration('0.85');
    if (!TableExists('glpi_plugin_pdf_profiles')) {
       ProfileRight::addProfileRights(array('plugin_pdf'));
    } else {
@@ -141,7 +80,8 @@ function plugin_pdf_install() {
 
    }
 
-   if (!TableExists('glpi_plugin_pdf_preference')) {
+   if (!TableExists('glpi_plugin_pdf_preference')
+       && !TableExists('glpi_plugin_pdf_preferences')) {
       $query= "CREATE TABLE IF NOT EXISTS
                `glpi_plugin_pdf_preferences` (
                   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -152,8 +92,9 @@ function plugin_pdf_install() {
                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
       $DB->query($query) or die($DB->error());
    } else {
-      $migration->renameTable('glpi_plugin_pdf_preference', 'glpi_plugin_pdf_preferences');
-
+      if (TableExists('glpi_plugin_pdf_preference')) {
+         $migration->renameTable('glpi_plugin_pdf_preference', 'glpi_plugin_pdf_preferences');
+      }
       // 0.6.0
       if (FieldExists('glpi_plugin_pdf_preferences','user_id')) {
          $migration->changeField('glpi_plugin_pdf_preferences', 'user_id', 'users_id', 'integer',
@@ -184,15 +125,7 @@ function plugin_pdf_install() {
       }
       $migration->executeMigration();
    }
-/*
-   // Give right to current Profile
-   include_once (GLPI_ROOT . '/plugins/pdf/inc/profile.class.php');
-   $prof =  new PluginPdfProfile();
-   if (!$prof->getFromDB($_SESSION['glpiactiveprofile']['id'])) {
-      $prof->add(array('id'      => $_SESSION['glpiactiveprofile']['id'],
-                       'profile' => $_SESSION['glpiactiveprofile']['name'],
-                       'use'     => 1));
-   }*/
+
    return true;
 }
 
@@ -217,4 +150,3 @@ function plugin_pdf_uninstall() {
 
    return true;
 }
-?>

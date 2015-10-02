@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -113,7 +113,7 @@ class PluginPdfPreference extends CommonDBTM {
       if (!count($values) && isset($options[$type.'$main'])) {
          $values[$type.'$main'] = 1;
       }
-      Toolbox::logDebug($options, $values);
+
       echo "<tr><th colspan='6'>".sprintf(__('%1$s: %2$s'),
                                           __('Choose the tables to print in pdf', 'pdf'),
                                           $item->getTypeName());
@@ -192,4 +192,3 @@ class PluginPdfPreference extends CommonDBTM {
       return true;
    }
 }
-?>

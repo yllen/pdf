@@ -40,17 +40,15 @@ function plugin_init_pdf() {
       Plugin::registerClass('PluginPdfPreference', array('addtabon' => 'Preference'));
    }
 
+   if (Session::getLoginUserID()
+       && Session::haveRight('plugin_pdf', READ)) {
+      $PLUGIN_HOOKS['use_massive_action']['pdf'] = 1;
+   }
 
    $plugin = new Plugin();
-//   if ($plugin->isActivated("datainjection")) {
+   if ($plugin->isActivated("datainjection")) {
       $PLUGIN_HOOKS['menu_entry']['pdf'] = 'front/preference.form.php';
- //  }
-
-   if (isset($_SESSION['glpiactiveprofile']['plugin_pdf'])
-       && ($_SESSION['glpiactiveprofile']['plugin_pdf'] == 1)){
-
-      $PLUGIN_HOOKS['use_massive_action']['pdf'] = 1;
-
+   }
 
       // Define the type for which we know how to generate PDF :
       $PLUGIN_HOOKS['plugin_pdf']['Computer']         = 'PluginPdfComputer';
@@ -69,7 +67,6 @@ function plugin_init_pdf() {
 
       // End init, when all types are registered by all plugins
       $PLUGIN_HOOKS['post_init']['pdf'] = 'plugin_pdf_postinit';
-   }
 }
 
 
@@ -87,7 +84,7 @@ function plugin_version_pdf() {
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_pdf_check_prerequisites(){
 
-   if (version_compare(GLPI_VERSION,'0.85','lt') || version_compare(GLPI_VERSION,'0.85.3','ge')) {
+   if (version_compare(GLPI_VERSION,'0.85','lt') || version_compare(GLPI_VERSION,'0.90','ge')) {
       _e('This plugin requires GLPI >= 0.85', 'pdf');
       return false;
    }

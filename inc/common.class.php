@@ -210,7 +210,6 @@ abstract class PluginPdfCommon {
             break;
 
 
-
          default :
             return false;
       }
@@ -431,6 +430,38 @@ abstract class PluginPdfCommon {
 
        default :
         return;
+      }
+   }
+
+
+   static function showMassiveActionsSubForm(MassiveAction $ma) {
+
+      switch ($ma->getAction()) {
+         case 'DoIt':
+            echo "&nbsp;<input type='submit' name='massiveaction' class='submit' value='".
+                          _sx('button', 'Post')."'>";
+            return true;
+      }
+      return parent::showMassiveActionsSubForm($ma);
+   }
+
+
+   static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
+                                                       array $ids) {
+      global $DB;
+
+      switch ($ma->getAction()) {
+         case 'DoIt' :
+            foreach ($ids as $key => $val) {
+               if ($val) {
+                  $tab_id[]=$key;
+                }
+             }
+             $_SESSION["plugin_pdf"]["type"]   = $item->getType();
+             $_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
+             echo "<script type='text/javascript'>
+                      location.href='../plugins/pdf/front/export.massive.php'</script>";
+             break;
       }
    }
 
