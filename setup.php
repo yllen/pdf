@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -36,7 +36,9 @@ function plugin_init_pdf() {
    $PLUGIN_HOOKS['csrf_compliant']['pdf'] = true;
 
    Plugin::registerClass('PluginPdfProfile',    array('addtabon' => 'Profile'));
-   Plugin::registerClass('PluginPdfPreference', array('addtabon' => 'Preference'));
+   if (Session::haveRight('plugin_pdf', READ)) {
+      Plugin::registerClass('PluginPdfPreference', array('addtabon' => 'Preference'));
+   }
 
 
    $plugin = new Plugin();
@@ -85,7 +87,7 @@ function plugin_version_pdf() {
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_pdf_check_prerequisites(){
 
-   if (version_compare(GLPI_VERSION,'0.85','lt') || version_compare(GLPI_VERSION,'0.91','ge')) {
+   if (version_compare(GLPI_VERSION,'0.85','lt') || version_compare(GLPI_VERSION,'0.85.3','ge')) {
       _e('This plugin requires GLPI >= 0.85', 'pdf');
       return false;
    }

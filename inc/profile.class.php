@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -74,7 +74,7 @@ class PluginPdfProfile extends Profile {
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('Print to pdf', 'pdf')."</td><td>";
       Html::showCheckbox(array('name'    => '_plugin_pdf',
-                               'checked' => ($real_right['plugin_pdf'] ? 1 : 0)));
+                               'checked' => isset($realright['plugin_pdf']) ? 1 : 0));
       echo "</td></tr></table>\n";
 
       if ($canedit) {
@@ -106,4 +106,3 @@ class PluginPdfProfile extends Profile {
       return true;
    }
 }
-?>
