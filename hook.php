@@ -123,6 +123,12 @@ function plugin_pdf_install() {
                                  'string',
                                  array('comment' => 'ref of tab to display, or plugname_#, or option name'));
       }
+      //0.85
+      $query = "UPDATE `glpi_plugin_pdf_preferences`
+                SET `tabref`= CONCAT(`itemtype`,'$main')
+                WHERE `tabref`='_main_'";
+      $DB->queryOrDie($query, "update tabref for main");
+
       $migration->executeMigration();
    }
 
