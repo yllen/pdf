@@ -56,7 +56,7 @@ while ($data = $DB->fetch_array($result)) {
    }
 }
    if (empty($tab)) {
-      $tab[] = '_main_';
+      $tab[] = $type.'$main';
    }
 
 if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
