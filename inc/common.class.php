@@ -438,8 +438,10 @@ abstract class PluginPdfCommon {
 
       switch ($ma->getAction()) {
          case 'DoIt':
+            $cont = $ma->POST['container'];
             $opt = array(
                // 'onclick' => '$("#'.$cont.'").attr("target","_blank");'
+               'id' => 'pdfmassubmit'
             );
             echo Html::submit(_sx('button', 'Post'), $opt);
             return true;
