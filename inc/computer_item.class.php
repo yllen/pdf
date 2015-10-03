@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -63,10 +63,22 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
          if (!$item->canView()) {
             continue;
          }
-         $query = "SELECT *
-                   FROM `glpi_computers_items`
-                   WHERE `computers_id` = '".$ID."'
-                         AND `itemtype` = '".$type."'";
+         $query = "SELECT `glpi_computers_items`.`id` AS assoc_id,
+                      `glpi_computers_items`.`computers_id` AS assoc_computers_id,
+                      `glpi_computers_items`.`itemtype`,
+                      `glpi_computers_items`.`items_id`,
+                      `glpi_computers_items`.`is_dynamic` AS assoc_is_dynamic,
+                      ".getTableForItemType($type).".*
+                      FROM `glpi_computers_items`
+                      LEFT JOIN `".getTableForItemType($type)."`
+                        ON (`".getTableForItemType($type)."`.`id`
+                              = `glpi_computers_items`.`items_id`)
+                      WHERE `computers_id` = '$ID'
+                            AND `itemtype` = '".$type."'
+                            AND `glpi_computers_items`.`is_deleted` = '0'";
+         if ($item->maybetemplate()) {
+            $query.= " AND NOT `".getTableForItemType($type)."`.`is_template` ";
+         }
 
          if ($result = $DB->query($query)) {
             $resultnum = $DB->numrows($result);

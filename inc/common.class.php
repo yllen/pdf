@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -160,7 +160,7 @@ abstract class PluginPdfCommon {
             break;
 
          case 'Notepad$1' :
-            if (Session::haveRight($item::$rightname, READ)) {
+            if (Session::haveRight($item::$rightname, READNOTE)) {
                self::pdfNote($pdf, $item);
             }
             break;
@@ -272,19 +272,27 @@ abstract class PluginPdfCommon {
 
    static function pdfNote(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
 
-      $ID   = $item->getField('id');
-      $note = trim($item->getField('notepad'));
-
-
+      $ID    = $item->getField('id');
+      $notes = Notepad::getAllForItem($item);
+      $rand  = mt_rand();
 
       $pdf->setColumnsSize(100);
-      if (Toolbox::strlen($note) > 0) {
-         $pdf->displayTitle('<b>'.__('Notes').'</b>');
-         $pdf->displayText('', $note, 5);
+      $pdf->displayTitle('<b>'.__('Notes').'</b>');
+
+      if (count($notes)) {
+         foreach ($notes as $note) {
+            $id      = 'note'.$note['id'].$rand;
+            $content = nl2br($note['content']);
+            if (empty($content)) {
+               $content = NOT_AVAILABLE;
+            }
+            $pdf->displayText('', $content, 5);
+         }
       } else {
          $pdf->displayTitle('<b>'.__('No note found', 'pdf').'</b>');
       }
       $pdf->displaySpace();
+
    }
 
 
@@ -434,6 +442,9 @@ abstract class PluginPdfCommon {
    }
 
 
+   /**
+    * @since version 0.85
+   **/
    static function showMassiveActionsSubForm(MassiveAction $ma) {
 
       switch ($ma->getAction()) {
@@ -450,6 +461,9 @@ abstract class PluginPdfCommon {
    }
 
 
+   /**
+    * @since version 0.85
+   **/
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
                                                        array $ids) {
       global $DB;
