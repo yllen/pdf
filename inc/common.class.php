@@ -438,8 +438,10 @@ abstract class PluginPdfCommon {
 
       switch ($ma->getAction()) {
          case 'DoIt':
-            echo "&nbsp;<input type='submit' name='massiveaction' class='submit' value='".
-                          _sx('button', 'Post')."'>";
+            $opt = array(
+               // 'onclick' => '$("#'.$cont.'").attr("target","_blank");'
+            );
+            echo Html::submit(_sx('button', 'Post'), $opt);
             return true;
       }
       return parent::showMassiveActionsSubForm($ma);
