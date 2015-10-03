@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -50,7 +50,8 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
                 FROM `glpi_computerdisks`
                 LEFT JOIN `glpi_filesystems`
                   ON (`glpi_computerdisks`.`filesystems_id` = `glpi_filesystems`.`id`)
-                WHERE (`computers_id` = '".$ID."')";
+                WHERE (`computers_id` = '".$ID."'
+                       AND `is_deleted` = '0')";
 
       $result = $DB->query($query);
 
@@ -58,22 +59,26 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
       if ($DB->numrows($result) > 0) {
          $pdf->displayTitle("<b>"._n('Volume', 'Volumes', $DB->numrows($result))."</b>");
 
-         $pdf->setColumnsSize(22,23,22,11,11,11);
-         $pdf->displayTitle('<b>'.__('Name'), __('Partition'), __('Mount point'), __('Type'),
-                                  __('Global size'), __('Free size').'</b>');
+         $pdf->setColumnsSize(21,21,20,9,9,9,11);
+         $pdf->displayTitle('<b>'.__('Name'), __('Partition'), __('Mount point'), __('File system'),
+                                   __('Global size'), __('Free size'), __('Free percentage').'</b>');
 
-         $pdf->setColumnsAlign('left','left','left','center','right','right');
+         $pdf->setColumnsAlign('left','left','left','left','center','right','right');
 
          while ($data = $DB->fetch_assoc($result)) {
+            $percent = 0;
+            if ($data['totalsize'] > 0) {
+               $percent = round(100*$data['freesize']/$data['totalsize']);
+            }
             $pdf->displayLine('<b>'.$data['name'].'</b>',
                               $data['device'],
                               $data['mountpoint'],
-                              Html::clean(Dropdown::getDropdownName('glpi_filesystems',
-                                                                    $data["filesystems_id"])),
+                              $data['fsname'],
                               sprintf(__('%s Mio'),
                                       Html::clean(Html::formatNumber($data['totalsize'], false, 0))),
                               sprintf(__('%s Mio'),
-                                      Html::clean(Html::formatNumber($data['freesize'], false, 0))));
+                                      Html::clean(Html::formatNumber($data['freesize'], false, 0))),
+                              sprintf(__('%s %s'),Html::clean(Html::formatNumber($percent, false, 0)), '%'));
          }
       } else {
          $pdf->displayTitle("<b>".__('No volume found', 'pdf')."</b>");

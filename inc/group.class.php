@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -53,9 +53,6 @@ class PluginPdfGroup extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Complete name').'</i></b>',
                                          $item->fields['completename']));
-      $pdf->setColumnsSize(50, 50);
-      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Child entities').'</i></b>',
-                                         Dropdown::getYesNo($item->fields['is_recursive'])));
 
       $pdf->setColumnsSize(34,22,22,22);
       $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Visible in a ticket'), ''.'</i></b>'),

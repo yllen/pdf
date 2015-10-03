@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -48,10 +48,14 @@ class PluginPdfDocument extends PluginPdfCommon {
       $type = get_class($item);
 
       $query = "SELECT `glpi_documents_items`.`id` AS assocID,
-                       `glpi_documents`.*
+                       `glpi_documents_items`.`date_mod` AS assocdate,
+                       `glpi_documents`.*,
+                       `glpi_entities`.`id` AS entityID,
+                       `glpi_entities`.`completename` AS entity
                 FROM `glpi_documents_items`
                 LEFT JOIN `glpi_documents`
                      ON (`glpi_documents_items`.`documents_id` = `glpi_documents`.`id`)
+                LEFT JOIN `glpi_entities` ON (`glpi_documents`.`entities_id`=`glpi_entities`.`id`)
                 WHERE `glpi_documents_items`.`items_id` = '".$ID."'
                       AND `glpi_documents_items`.`itemtype` = '".$type."'";
 
@@ -64,15 +68,15 @@ class PluginPdfDocument extends PluginPdfCommon {
       } else {
          $pdf->displayTitle('<b>'.__('Associated documents', 'pdf').'</b>');
 
-         $pdf->setColumnsSize(32,15,21,19,13);
-         $pdf->displayTitle('<b>'.__('Name'), __('File'), __('Web link'), __('Heading'),
-                                  __('MIME type').'</b>');
+         $pdf->setColumnsSize(32,15,14,11,8,8,9);
+         $pdf->displayTitle('<b>'.__('Name'), __('Entity'), __('File'), __('Web link'), __('Heading'),
+                                  __('MIME type'), __('Date').'</b>');
 
          while ($data = $DB->fetch_assoc($result)) {
-            $pdf->displayLine($data["name"], basename($data["filename"]), $data["link"],
+            $pdf->displayLine($data["name"], $data['entity'], basename($data["filename"]), $data["link"],
                               Html::clean(Dropdown::getDropdownName("glpi_documentcategories",
                                                                     $data["documentcategories_id"])),
-                              $data["mime"]);
+                              $data["mime"], Html::convDateTime($data["assocdate"]));
          }
       }
       $pdf->displaySpace();

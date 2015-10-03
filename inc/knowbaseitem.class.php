@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -45,7 +45,8 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
    function defineAllTabs($options=array()) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['KnowbaseItem$1']);
+      unset($onglets['KnowbaseItem$2']);
+      unset($onglets['KnowbaseItem$3']);
       return $onglets;
    }
 
@@ -55,7 +56,8 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
 
       $ID = $item->getField('id');
 
-      if (!Session::haveRightsOr('knowbase', array(READ, READFAQ))) {
+      if (!Session::haveRightsOr('knowbase', array(READ, KnowbaseItem::READFAQ,
+                                                   KnowbaseItem::KNOWBASEADMIN))) {
          return false;
       }
 
@@ -69,7 +71,6 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
 
       $answer = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
                   html_entity_decode($item->getField('answer'), ENT_QUOTES, "UTF-8")));
-
 
       $pdf->setColumnsSize(100);
 
@@ -108,6 +109,14 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
+         case 'KnowbaseItem$1' :
+            self::pdfMain($pdf, $item);
+            break;
+
+         case 'KnowbaseItem$2' :
+            self::pdfCible($pdf, $item);
+            break;
+
          case 'Document$1' :
             PluginPdfDocument::pdfForItem($pdf, $item);
             break;
@@ -116,5 +125,25 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
             return false;
       }
       return true;
+   }
+
+   /**
+    * @since version 0.85
+   **/
+   static function pdfCible(PluginPdfSimplePDF $pdf, KnowbaseItem $item) {
+      global $DB;
+
+      $ID = $item->getField('id');
+
+      if (!Session::haveRightsOr('knowbase', array(READ, KnowbaseItem::READFAQ,
+            KnowbaseItem::KNOWBASEADMIN))) {
+         return false;
+      }
+      $entities = countElementsInTable('glpi_entities_knowbaseitems',"`knowbaseitems_id`= $ID");
+      $groups   = countElementsInTable('glpi_groups_knowbaseitems',"`knowbaseitems_id`= $ID");
+      $profiles = countElementsInTable('glpi_knowbaseitems_profiles',"`knowbaseitems_id`= $ID");
+      $users    = countElementsInTable('glpi_knowbaseitems_users',"`knowbaseitems_id`= $ID");
+
+
    }
 }
