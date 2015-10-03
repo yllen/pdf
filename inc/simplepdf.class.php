@@ -118,6 +118,7 @@ class PluginPdfSimplePDF {
    public function setHeader($msg) {
 
       $this->header = $msg;
+      $this->pdf->resetHeaderTemplate();
       $this->pdf->SetTitle($msg);
       $this->pdf->SetHeaderData('fd_logo.jpg', 15, $msg, '');
    }
