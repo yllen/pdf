@@ -44,7 +44,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
 
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $ticket) {
       global $DB;
-toolbox::logdebug("ticket", $ticket);
+
       $instID = $ticket->fields['id'];
 
       if (!$ticket->can($instID, READ)) {

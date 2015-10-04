@@ -158,36 +158,6 @@ class PluginPdfTicket extends PluginPdfCommon {
                              Html::clean(Dropdown::getDropdownName("glpi_locations",
                                                                    $job->fields["locations_id"]))));
 
-      // Item
-      $name        = "<b><i>".sprintf(__('%1$s: %2$s'), __('Associated element')."</i></b>", '');
-      $commentitem = '';
-      $pdf->setColumnsSize(100);
-      if (isset($job->fields['itemtype']) && $job->fields['itemtype']
-          && ($item = getItemForItemtype($job->fields['itemtype']))) {
-         if ($item->getFromDB($job->fields["items_id"])) {
-            $name = "<b><i>".sprintf(__('%1$s: %2$s'), __('Associated element')."</i></b>",
-                                     $item->getNameID());
-            if (isset($item->fields["serial"])) {
-               $commentitem =
-                  ", <b><i>".sprintf(__('%1$s: %2$s'),__('Serial number')."</i></b>",
-                                     Html::clean($item->fields["serial"]));
-               Html::clean($item->fields["serial"]);
-            }
-            if (isset($item->fields["otherserial"])) {
-                $commentitem .=
-                  ", <b><i>".sprintf(__('%1$s: %2$s'),__('Inventory number')."</i></b>",
-                                     Html::clean($item->fields["otherserial"]));
-            }
-            if (isset($item->fields["locations_id"])) {
-                $commentitem .=
-                  ", <b><i>".sprintf(__('%1$s: %2$s'),__('Location')."</i></b>",
-                                     Html::clean(Dropdown::getDropdownName("glpi_locations",
-                                                                           $item->fields["locations_id"])));
-            }
-         }
-      }
-      $pdf->displayText($name, $commentitem, 1);
-
       $pdf->setColumnsSize(50,50);
 
       // Requester
@@ -342,6 +312,7 @@ class PluginPdfTicket extends PluginPdfCommon {
          return;
       }
 
+      $leftjoin = Ticket::getCommonLeftJoin();
       switch ($item->getType()) {
          case 'User' :
             $restrict   = "(`glpi_tickets_users`.`users_id` = '".$item->getID()."'
@@ -371,6 +342,13 @@ class PluginPdfTicket extends PluginPdfCommon {
             $order      = '`glpi_tickets`.`date_mod` DESC';
             break;
 
+         case 'Change' :
+            $leftjoin .= "LEFT JOIN `glpi_changes_tickets`
+                            ON `glpi_changes_tickets`.`tickets_id` =  `glpi_tickets`.`id` ";
+            $restrict  = "`glpi_changes_tickets`.`changes_id` = '".$item->getID()."'";
+            $order     = '`glpi_tickets`.`date_mod` DESC';
+            break;
+
          default :
             $restrict   = "(`items_id` = '".$item->getID()."'  AND `itemtype` = '$type')";
             // you can only see your tickets
@@ -385,7 +363,7 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $query = "SELECT ".Ticket::getCommonSelect()."
                 FROM `glpi_tickets` ".
-                Ticket::getCommonLeftJoin()."
+                $leftjoin."
                 WHERE $restrict ".
                   getEntitiesRestrictRequest("AND","glpi_tickets")."
                 ORDER BY $order
@@ -459,6 +437,15 @@ class PluginPdfTicket extends PluginPdfCommon {
             }
             $pdf->displayLine($col);
 
+            $lastupdate = Html::convDateTime($job->fields["date_mod"]);
+            if ($job->fields['users_id_lastupdater'] > 0) {
+               $lastupdate = sprintf(__('%1$s by %2$s'), $lastupdate,
+                                     getUserName($job->fields["users_id_lastupdater"]));
+            }
+
+            $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Last update').'</i></b>',
+                  $lastupdate));
+
             $col   = '';
             $users = $job->getUsers(CommonITILActor::REQUESTER);
             if (count($users)) {
@@ -528,6 +515,10 @@ class PluginPdfTicket extends PluginPdfCommon {
                $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Assigned to'), '');
                $pdf->displayText($texte, $col, 1);
             }
+
+            $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Associated items'), '');
+            toolbox::logdebug("job", $job);
+     //       $pdf->displayText($texte, $job->fields["name"], 1);
 
             $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Title'), '');
             $pdf->displayText($texte, $job->fields["name"], 1);

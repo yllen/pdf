@@ -55,9 +55,11 @@ function plugin_pdf_MassiveActions($type) {
 function plugin_pdf_install() {
    global $DB;
 
-   $migration = new Migration('0.85');
+   $migration = new Migration('0.86');
    if (!TableExists('glpi_plugin_pdf_profiles')) {
-      ProfileRight::addProfileRights(array('plugin_pdf'));
+      if (Session::haveRight('plugin_pdf', READ)) {
+         ProfileRight::addProfileRights(array('plugin_pdf'));
+      }
    } else {
       if (FieldExists('glpi_plugin_pdf_profiles','ID')) { //< 0.7.0
          $migration->changeField('glpi_plugin_pdf_profiles', 'ID', 'id', 'autoincrement');
@@ -124,10 +126,12 @@ function plugin_pdf_install() {
                                  array('comment' => 'ref of tab to display, or plugname_#, or option name'));
       }
       //0.85
-      $query = "UPDATE `glpi_plugin_pdf_preferences`
-                SET `tabref`= CONCAT(`itemtype`,'$main')
-                WHERE `tabref`='_main_'";
-      $DB->queryOrDie($query, "update tabref for main");
+      if (isset($main)) {
+         $query = "UPDATE `glpi_plugin_pdf_preferences`
+                   SET `tabref`= CONCAT(`itemtype`,'$main')
+                   WHERE `tabref`='_main_'";
+         $DB->queryOrDie($query, "update tabref for main");
+      }
 
       $migration->executeMigration();
    }
