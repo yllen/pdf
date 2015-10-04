@@ -668,6 +668,10 @@ class PluginPdfTicket extends PluginPdfCommon {
             self::pdfStat($pdf, $item);
             break;
 
+         case 'Item_Ticket$1' :
+            PluginPdfItem_Ticket::pdfForTicket($pdf, $item);
+            break;
+
          default :
             return false;
       }

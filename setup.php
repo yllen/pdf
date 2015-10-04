@@ -73,19 +73,19 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return array('name'           => __('Print to pdf', 'pdf'),
-                'version'        => '0.85',
+                'version'        => '0.86',
                 'author'         => 'Remi Collet, Nelly Mahu-Lasson',
                 'license'        => 'GPLv3+',
                 'homepage'       => 'https://forge.indepnet.net/projects/pdf',
-                'minGlpiVersion' => '0.85');
+                'minGlpiVersion' => '0.85.3');
 }
 
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_pdf_check_prerequisites(){
 
-   if (version_compare(GLPI_VERSION,'0.85','lt') || version_compare(GLPI_VERSION,'0.85.3','ge')) {
-      echo "This plugin requires GLPI >= 0.85";
+   if (version_compare(GLPI_VERSION,'0.85.3','lt') || version_compare(GLPI_VERSION,'0.91','ge')) {
+      echo "This plugin requires GLPI >= 0.85.3";
       return false;
    }
    return true;
