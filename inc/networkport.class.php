@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -133,23 +133,21 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                                               $ipname));
 
                   $sql = "SELECT `glpi_ipaddresses_ipnetworks`.`ipnetworks_id`
-                      FROM `glpi_ipaddresses_ipnetworks`
-                      LEFT JOIN `glpi_ipnetworks`
+                          FROM `glpi_ipaddresses_ipnetworks`
+                          LEFT JOIN `glpi_ipnetworks`
                            ON (`glpi_ipaddresses_ipnetworks`.`ipnetworks_id` = `glpi_ipnetworks`.`id`)
-                      WHERE `glpi_ipaddresses_ipnetworks`.`ipaddresses_id` = '".$ip->getID()."'";
+                          WHERE `glpi_ipaddresses_ipnetworks`.`ipaddresses_id` = '".$ip->getID()."'" .
+                                getEntitiesRestrictRequest(' AND', 'glpi_ipnetworks');
 
                   $res        = $DB->query($sql);
-                  if ($res) while ($row=$DB->fetch_assoc($res)) {
+                  if ($res) {
+                     $row = $DB->fetch_assoc($res);
 
                      $ipnetwork = new IPNetwork();
                      if ($ipnetwork->getFromDB($row['ipnetworks_id'])) {
 
                         $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('IP network').'</b>',
-                                                    $ipnetwork->fields['address']));
-                        $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Subnet mask').'</b>',
-                                                    $ipnetwork->fields['netmask']));
-                        $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('Gateway').'</b>',
-                                                    $ipnetwork->fields['gateway']));
+                                                    $ipnetwork->fields['completename']));
                      }
                   }
                }
