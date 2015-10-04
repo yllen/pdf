@@ -45,7 +45,6 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
    function defineAllTabs($options=array()) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['KnowbaseItem$2']);
       unset($onglets['KnowbaseItem$3']);
       return $onglets;
    }
@@ -139,11 +138,84 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
             KnowbaseItem::KNOWBASEADMIN))) {
          return false;
       }
-      $entities = countElementsInTable('glpi_entities_knowbaseitems',"`knowbaseitems_id`= $ID");
-      $groups   = countElementsInTable('glpi_groups_knowbaseitems',"`knowbaseitems_id`= $ID");
-      $profiles = countElementsInTable('glpi_knowbaseitems_profiles',"`knowbaseitems_id`= $ID");
-      $users    = countElementsInTable('glpi_knowbaseitems_users',"`knowbaseitems_id`= $ID");
 
+      $users    = KnowbaseItem_User::getUsers($ID);
+      $entities = Entity_KnowbaseItem::getEntities($ID);
+      $groups   = Group_KnowbaseItem::getGroups($ID);
+      $profiles = KnowbaseItem_Profile::getProfiles($ID);
 
+      $nb = $item->countVisibilities();
+      if ($nb) {
+         $pdf->setColumnsSize(100);
+         $pdf->displayTitle(_n('Target','Targets',$nb));
+
+         $pdf->setColumnsSize(30,70);
+         $pdf->displayTitle(__('Type'),__('Name'));
+
+         $recursive = '';
+         if (count($entities)) {
+            foreach ($entities as $key => $val) {
+               foreach ($val as $data) {
+                  if ($data['is_recursive']) {
+                     $recursive = "(". __('R').")";
+                  }
+                  $pdf->displayLine(__('Entity'),
+                                    sprintf(__('%1s %2s'),
+                                            Dropdown::getDropdownName("glpi_entities",
+                                                                      $data["entities_id"]),
+                                            $recursive));
+               }
+            }
+         }
+
+         if (count($profiles)) {
+            foreach ($profiles as $key => $val) {
+               foreach ($val as $data) {
+                  if ($data['is_recursive']) {
+                     $recursive = "(". __('R').")";
+                  }
+                  $names       = Dropdown::getDropdownName('glpi_profiles', $data['profiles_id']);
+                  if ($data['entities_id'] >= 0) {
+                     $profilename = sprintf(__('%1$s / %2$s'), $names,
+                                            Dropdown::getDropdownName('glpi_entities',
+                                                                        $data['entities_id']));
+                     if ($data['is_recursive']) {
+                        $profilename = sprintf(__('%1$s %2$s'), $profilename, $recursive);
+                     }
+                  }
+                  $pdf->displayLine(__('Profile'), $profilename);
+               }
+            }
+         }
+
+         if (count($groups)) {
+            foreach ($groups as $key => $val) {
+               foreach ($val as $data) {
+                  if ($data['is_recursive']) {
+                     $recursive = "(". __('R').")";
+                  }
+                  $names       = Dropdown::getDropdownName('glpi_groups', $data['groups_id']);
+                  if ($data['entities_id'] >= 0) {
+                     $groupname = sprintf(__('%1$s / %2$s'), $names,
+                                          Dropdown::getDropdownName('glpi_entities',
+                                                                     $data['entities_id']));
+                     if ($data['is_recursive']) {
+                        $groupname = sprintf(__('%1$s %2$s'), $groupname, $recursive);
+                     }
+                  }
+                  $pdf->displayLine(__('Group'), $groupname);
+               }
+            }
+         }
+
+         if (count($users)) {
+            foreach ($users as $key => $val) {
+               foreach ($val as $data) {
+                  $pdf->displayLine(__('User'), getUserName($data['users_id']));
+               }
+            }
+         }
+
+      }
    }
 }
