@@ -3,19 +3,19 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Le Rohellec Benoit <blerohellec@hotmail.com>, 2015
+# Jens Hyllegaard <jens.hyllegaard@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - Plugin PDF\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-01-15 15:07+0100\n"
-"PO-Revision-Date: 2015-06-05 12:36+0000\n"
-"Last-Translator: Le Rohellec Benoit <blerohellec@hotmail.com>\n"
-"Language-Team: Spanish (Spain) (http://www.transifex.com/yllen/glpi-project-plugin-pdf/language/es_ES/)\n"
+"PO-Revision-Date: 2015-07-09 07:40+0000\n"
+"Last-Translator: Jens Hyllegaard <jens.hyllegaard@gmail.com>\n"
+"Language-Team: Danish (http://www.transifex.com/yllen/glpi-project-plugin-pdf/language/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_ES\n"
+"Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: hook.php:44 hook.php:48 setup.php:77 inc/common.class.php:118
@@ -23,128 +23,128 @@ msgstr ""
 #: inc/profile.class.php:97 inc/profile.class.php:102
 #: inc/profile.class.php:143
 msgid "Print to pdf"
-msgstr "Impresión a pdf"
+msgstr "Udskriv til pdf"
 
 #: setup.php:90
 msgid "This plugin requires GLPI >= 0.84"
-msgstr "Este plugin requiere GLPI >= 0.84"
+msgstr "Denne udvidelse kræver GLPI >= 0.84"
 
 #: inc/common.class.php:261
 msgid "No note found"
-msgstr "Ninguna nota encontrada"
+msgstr "Ingen note fundet"
 
 #: inc/computerdisk.class.php:58
 msgid "Mount point"
-msgstr "Punto de montaje"
+msgstr "Monteringspunkt"
 
 #: inc/computerdisk.class.php:77
 msgid "No volume found"
-msgstr "Ningún volumen encontrado"
+msgstr "Ingen volumen fundet"
 
 #: inc/computer_item.class.php:108
 msgid "No printer"
-msgstr "Ninguna impresora encontrada"
+msgstr "Ingen printer"
 
 #: inc/computer_item.class.php:112
 msgid "No monitor"
-msgstr "Ningún monitor encontrado"
+msgstr "Ingen skærm"
 
 #: inc/computer_item.class.php:116
 msgid "No peripheral"
-msgstr "Ningún dispositivo encontrado"
+msgstr "Intet tilbehør"
 
 #: inc/computer_item.class.php:120
 msgid "No phone"
-msgstr "Ningún teléfono encontrado"
+msgstr "Ingen telefon"
 
 #: inc/computer_softwareversion.class.php:237
 msgid "Installed software"
 msgid_plural "Installed software"
-msgstr[0] "Software instalado"
-msgstr[1] "Softwares instalados"
+msgstr[0] "Installeret software"
+msgstr[1] "Installeret software"
 
 #: inc/computer_softwareversion.class.php:286
 msgid "No installed software"
-msgstr "Ningún software instalado"
+msgstr "Ingen installeret software"
 
 #: inc/document.class.php:62
 msgid "No associated documents"
-msgstr "Ningún documento asociado"
+msgstr "Ingen tilknyttede dokumenter"
 
 #: inc/document.class.php:64
 msgid "Associated documents"
-msgstr "Documentos asociados"
+msgstr "Tilknyttede dokumenter"
 
 #: inc/document.class.php:68
 msgid "MIME type"
-msgstr "Tipo MIME"
+msgstr "MIME type"
 
 #: inc/group.class.php:61
 msgid "Visible in a ticket"
-msgstr "Asociable a una incidencia"
+msgstr "Synlig i en sag"
 
 #: inc/group.class.php:178
 msgid "Members equipment"
-msgstr "Equipamiento de los miembros"
+msgstr "Medlemmers udstyr"
 
 #: inc/infocom.class.php:91
 msgid "Date of last physical inventory"
-msgstr "Fecha del último inventario"
+msgstr "Dato for sidste fysiske inventering"
 
 #: inc/infocom.class.php:151
 msgid "No financial information"
-msgstr "Ninguna información financiera"
+msgstr "Ingen finansielle oplysninger"
 
 #: inc/knowbaseitem.class.php:79
 msgid "No question found"
-msgstr "Ninguna pregunta encontrada"
+msgstr "Ingen spørgsmål fundet"
 
 #: inc/preference.class.php:115
 msgid "Choose the tables to print in pdf"
-msgstr "Elegir las tablas a imprimir a pdf"
+msgstr "Vælg de tabeller der skal udskrive til pdf"
 
 #: inc/preference.class.php:154
 #, php-format
 msgid "Display %d items"
-msgstr "Muestra %d elementos"
+msgstr "Vis %d emner"
 
 #: inc/preference.class.php:157
 msgid "Portrait"
-msgstr "Vertical"
+msgstr "Portræt"
 
 #: inc/preference.class.php:158
 msgid "Landscape"
-msgstr "Apaisado"
+msgstr "Landskab"
 
 #: inc/preference.class.php:164
 msgctxt "button"
 msgid "Print"
-msgstr "Imprimir"
+msgstr "Udskriv"
 
 #: inc/ticketcost.class.php:55
 msgid "No ticket cost for this ticket"
-msgstr "Ningún coste para esta incidencia"
+msgstr "Ingen sagspris for denne sag"
 
 #: inc/ticketsatisfaction.class.php:55
 msgid "1 star"
-msgstr "1 estrella"
+msgstr "1 stjerne"
 
 #: inc/ticketsatisfaction.class.php:56
 msgid "2 stars"
-msgstr "2 estrellas"
+msgstr "2 stjerner"
 
 #: inc/ticketsatisfaction.class.php:57
 msgid "3 stars"
-msgstr "3 estrellas"
+msgstr "3 stjerner"
 
 #: inc/ticketsatisfaction.class.php:58
 msgid "4 stars"
-msgstr "4 estrellas"
+msgstr "4 stjerner"
 
 #: inc/ticketsatisfaction.class.php:59
 msgid "5 stars"
-msgstr "5 estrellas"
+msgstr "5 stjerner"
 
 #: inc/ticketsatisfaction.class.php:75
 msgid "No answer"
-msgstr "Ninguna respuesta"
+msgstr "Intet svar"

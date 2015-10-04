@@ -550,6 +550,7 @@ class PluginPdfProblem extends PluginPdfCommon {
    function defineAllTabs($options=array()) {
 
       $onglets = parent::defineAllTabs($options);
+      unset($onglets['Change_Problem$1']);
       return $onglets;
    }
 
@@ -565,7 +566,7 @@ class PluginPdfProblem extends PluginPdfCommon {
             self::pdfAnalysis($pdf, $item);
             break;
 
-         case 'Ticket$1' :
+         case 'Problem_Ticket$1' :
             PluginPdfProblem_Ticket::pdfForProblem($pdf, $item);
             break;
 
@@ -576,7 +577,6 @@ class PluginPdfProblem extends PluginPdfCommon {
          case 'Item_Problem$1' :
             PluginPdfItem_Problem::pdfForProblem($pdf, $item);
             break;
-
 
          case 'Problem$2' :
             self::pdfSolution($pdf, $item);

@@ -24,7 +24,7 @@
  @copyright Copyright (c) 2009-2015 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://forge.indepnet.net/projects/pdf
+ @link      https://forge.glpi-project.org/projects/pdf
  @link      http://www.glpi-project.org/
  @since     2009
  --------------------------------------------------------------------------
@@ -304,7 +304,6 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Title')."</i></b>", $job->fields["name"]));
 
-      //$html = Toolbox::unclean_cross_side_scripting_deep($job->fields['content']);
       $html = Html::entity_decode_deep($job->fields['content']);
       if (!preg_match("/<br\s?\/?>/", $html) && !preg_match("/<p>/", $html)) {
          $html = nl2br($html);
@@ -674,5 +673,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       }
       return true;
    }
+
+
 }
 
