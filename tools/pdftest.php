@@ -70,6 +70,9 @@ $pdf->displayLine("1: ".$lorem[0], "2: ".$lorem[1], "3: ".$lorem[2]);
 $pdf->displayLine("4: ".$lorem[3], "5: ".$lorem[4]);
 /* 6 colums on 3 */
 $pdf->displayLine("1", "2", "3", "4", "5", "6");
+$pdf->displayText("out of tab:", "check if column are preserved", 1);
+$pdf->displayLine("1", "2", "3");
+
 $pdf->displaySpace();
 
 $pdf->setColumnsSize(100);
