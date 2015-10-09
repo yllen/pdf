@@ -334,7 +334,7 @@ class PluginPdfSimplePDF {
       /* Save columns */
       $save = array(
          $this->cols,
-         $this->colsw,
+         $this->colsx,
          $this->colsw,
          $this->align,
       );
@@ -345,7 +345,7 @@ class PluginPdfSimplePDF {
       /* Restore */
       list(
          $this->cols,
-         $this->colsw,
+         $this->colsx,
          $this->colsw,
          $this->align
       ) = $save;
