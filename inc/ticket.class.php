@@ -627,15 +627,22 @@ class PluginPdfTicket extends PluginPdfCommon {
             // nothing to export, just a flag
             break;
 
-         case 'TicketFollowup$1' :
+         case 'Ticket$1' : // 0.90+
+            PluginPdfTicketFollowup::pdfForTicket($pdf, $item, $private);
+            PluginPdfTicketTask::pdfForTicket($pdf, $item, $private);
+            PluginPdfTicketValidation::pdfForTicket($pdf, $item);
+            self::pdfSolution($pdf, $item);
+            break;
+
+         case 'TicketFollowup$1' : // 0.85
             PluginPdfTicketFollowup::pdfForTicket($pdf, $item, $private);
             break;
 
-         case 'TicketTask$1' :
+         case 'TicketTask$1' : // 0.85
             PluginPdfTicketTask::pdfForTicket($pdf, $item, $private);
             break;
 
-         case 'TicketValidation$1' :
+         case 'TicketValidation$1' : // 0.85
             PluginPdfTicketValidation::pdfForTicket($pdf, $item);
             break;
 
@@ -643,7 +650,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             PluginPdfTicketCost::pdfForTicket($pdf, $item);
             break;
 
-         case 'Ticket$2' :
+         case 'Ticket$2' : // 0.85
             self::pdfSolution($pdf, $item);
             break;
 
