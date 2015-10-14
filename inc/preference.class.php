@@ -154,7 +154,8 @@ class PluginPdfPreference extends CommonDBTM {
       echo "<input type='hidden' name='indice' value='".count($options)."'>";
 
       if ($ID) {
-         printf(__('Display %d items', 'pdf'), Dropdown::showListLimit());
+        echo __('Display (number of items)')."&nbsp;";
+        Dropdown::showListLimit();
       }
       echo "<select name='page'>\n";
       echo "<option value='0'>".__('Portrait', 'pdf')."</option>\n"; // Portrait
