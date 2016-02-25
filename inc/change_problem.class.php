@@ -66,7 +66,7 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
 
       $pdf->setColumnsSize(100);
       if (!$number) {
-         $pdf->displayTitle('<b>'.__('No problem found.').'</b>');
+         $pdf->displayTitle('<b>'.__('No problem found.', 'pdf').'</b>');
       } else {
          $pdf->displayTitle("<b>".Problem::getTypeName($number)."</b>");
 

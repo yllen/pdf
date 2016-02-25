@@ -384,12 +384,6 @@ class PluginPdfChange extends PluginPdfCommon {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['Change_Project$1']); // projet
-      unset($onglets['Change_Item$1']); // elements
-
-
-      if (Session::haveRight('change', Change::READALL)) {
-         $onglets['_private_'] = __('Private');
-      }
 
       return $onglets;
    }
@@ -397,13 +391,7 @@ class PluginPdfChange extends PluginPdfCommon {
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
-      $private = isset($_REQUEST['item']['_private_']);
-
       switch ($tab) {
-         case '_private_' :
-            // nothing to export, just a flag
-            break;
-
          case 'Change$1' :
             self::pdfAnalysis($pdf, $item);
             break;
@@ -432,11 +420,11 @@ class PluginPdfChange extends PluginPdfCommon {
             PluginPdfChangeCost::pdfForChange($pdf, $item);
             break;
 
-         case 'Change_project$1' :
+         case 'Change_Project$1' :
             // projet
             break;
 
-         case 'Change_problem$1' :
+         case 'Change_Problem$1' :
             PluginPdfChange_Problem::pdfForChange($pdf, $item);
             break;
 
@@ -445,7 +433,7 @@ class PluginPdfChange extends PluginPdfCommon {
             break;
 
          case 'Change_Item$1' :
-            // elements
+            PluginPdfChange_Item::pdfForChange($pdf, $item);
             break;
 
          default :
