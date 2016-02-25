@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - Plugin PDF\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-15 15:07+0100\n"
-"PO-Revision-Date: 2015-06-05 12:36+0000\n"
-"Last-Translator: Le Rohellec Benoit <blerohellec@hotmail.com>\n"
+"POT-Creation-Date: 2015-10-04 13:07+0200\n"
+"PO-Revision-Date: 2015-10-04 11:06+0000\n"
+"Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>\n"
 "Language-Team: Spanish (Spain) (http://www.transifex.com/yllen/glpi-project-plugin-pdf/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,133 +18,106 @@ msgstr ""
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: hook.php:44 hook.php:48 setup.php:77 inc/common.class.php:118
-#: inc/preference.class.php:180 inc/profile.class.php:38
-#: inc/profile.class.php:97 inc/profile.class.php:102
-#: inc/profile.class.php:143
+#: hook.php:48 setup.php:75 inc/common.class.php:122
+#: inc/preference.class.php:181 inc/profile.class.php:43
+#: inc/profile.class.php:71 inc/profile.class.php:75 inc/profile.class.php:93
 msgid "Print to pdf"
 msgstr "Impresión a pdf"
 
-#: setup.php:90
-msgid "This plugin requires GLPI >= 0.84"
-msgstr "Este plugin requiere GLPI >= 0.84"
-
-#: inc/common.class.php:261
+#: inc/common.class.php:292
 msgid "No note found"
 msgstr "Ninguna nota encontrada"
 
-#: inc/computerdisk.class.php:58
-msgid "Mount point"
-msgstr "Punto de montaje"
-
-#: inc/computerdisk.class.php:77
+#: inc/computerdisk.class.php:84
 msgid "No volume found"
 msgstr "Ningún volumen encontrado"
 
-#: inc/computer_item.class.php:108
+#: inc/computer_item.class.php:125
 msgid "No printer"
 msgstr "Ninguna impresora encontrada"
 
-#: inc/computer_item.class.php:112
+#: inc/computer_item.class.php:129
 msgid "No monitor"
 msgstr "Ningún monitor encontrado"
 
-#: inc/computer_item.class.php:116
+#: inc/computer_item.class.php:133
 msgid "No peripheral"
 msgstr "Ningún dispositivo encontrado"
 
-#: inc/computer_item.class.php:120
+#: inc/computer_item.class.php:137
 msgid "No phone"
 msgstr "Ningún teléfono encontrado"
 
-#: inc/computer_softwareversion.class.php:237
-msgid "Installed software"
-msgid_plural "Installed software"
-msgstr[0] "Software instalado"
-msgstr[1] "Softwares instalados"
-
-#: inc/computer_softwareversion.class.php:286
+#: inc/computer_softwareversion.class.php:291
 msgid "No installed software"
 msgstr "Ningún software instalado"
 
-#: inc/document.class.php:62
+#: inc/document.class.php:67
 msgid "No associated documents"
 msgstr "Ningún documento asociado"
 
-#: inc/document.class.php:64
+#: inc/document.class.php:69
 msgid "Associated documents"
 msgstr "Documentos asociados"
 
-#: inc/document.class.php:68
-msgid "MIME type"
-msgstr "Tipo MIME"
-
-#: inc/group.class.php:61
-msgid "Visible in a ticket"
-msgstr "Asociable a una incidencia"
-
-#: inc/group.class.php:178
-msgid "Members equipment"
-msgstr "Equipamiento de los miembros"
-
-#: inc/infocom.class.php:91
-msgid "Date of last physical inventory"
-msgstr "Fecha del último inventario"
-
-#: inc/infocom.class.php:151
+#: inc/infocom.class.php:157
 msgid "No financial information"
 msgstr "Ninguna información financiera"
 
-#: inc/knowbaseitem.class.php:79
+#: inc/knowbaseitem.class.php:85
 msgid "No question found"
 msgstr "Ninguna pregunta encontrada"
 
-#: inc/preference.class.php:115
+#: inc/preference.class.php:118
 msgid "Choose the tables to print in pdf"
 msgstr "Elegir las tablas a imprimir a pdf"
 
-#: inc/preference.class.php:154
+#: inc/preference.class.php:157
 #, php-format
 msgid "Display %d items"
 msgstr "Muestra %d elementos"
 
-#: inc/preference.class.php:157
+#: inc/preference.class.php:160
 msgid "Portrait"
 msgstr "Vertical"
 
-#: inc/preference.class.php:158
+#: inc/preference.class.php:161
 msgid "Landscape"
 msgstr "Apaisado"
 
-#: inc/preference.class.php:164
+#: inc/preference.class.php:167
 msgctxt "button"
 msgid "Print"
 msgstr "Imprimir"
 
-#: inc/ticketcost.class.php:55
+#: inc/reservation.class.php:127
+msgid "Item not reservable"
+msgstr ""
+
+#: inc/ticketcost.class.php:61
 msgid "No ticket cost for this ticket"
 msgstr "Ningún coste para esta incidencia"
 
-#: inc/ticketsatisfaction.class.php:55
+#: inc/ticketsatisfaction.class.php:61
 msgid "1 star"
 msgstr "1 estrella"
 
-#: inc/ticketsatisfaction.class.php:56
+#: inc/ticketsatisfaction.class.php:62
 msgid "2 stars"
 msgstr "2 estrellas"
 
-#: inc/ticketsatisfaction.class.php:57
+#: inc/ticketsatisfaction.class.php:63
 msgid "3 stars"
 msgstr "3 estrellas"
 
-#: inc/ticketsatisfaction.class.php:58
+#: inc/ticketsatisfaction.class.php:64
 msgid "4 stars"
 msgstr "4 estrellas"
 
-#: inc/ticketsatisfaction.class.php:59
+#: inc/ticketsatisfaction.class.php:65
 msgid "5 stars"
 msgstr "5 estrellas"
 
-#: inc/ticketsatisfaction.class.php:75
+#: inc/ticketsatisfaction.class.php:81
 msgid "No answer"
 msgstr "Ninguna respuesta"

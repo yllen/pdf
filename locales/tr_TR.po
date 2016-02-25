@@ -3,13 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Kaya Zeren <kayazeren@gmail.com>, 2014-2015
+# Kaya Zeren <kayazeren@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - Plugin PDF\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-15 15:07+0100\n"
-"PO-Revision-Date: 2015-07-31 07:28+0000\n"
+"POT-Creation-Date: 2015-10-04 13:07+0200\n"
+"PO-Revision-Date: 2015-10-05 04:45+0000\n"
 "Last-Translator: Kaya Zeren <kayazeren@gmail.com>\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/yllen/glpi-project-plugin-pdf/language/tr_TR/)\n"
 "MIME-Version: 1.0\n"
@@ -18,132 +18,106 @@ msgstr ""
 "Language: tr_TR\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: hook.php:44 hook.php:48 setup.php:77 inc/common.class.php:118
-#: inc/preference.class.php:180 inc/profile.class.php:38
-#: inc/profile.class.php:97 inc/profile.class.php:102
-#: inc/profile.class.php:143
+#: hook.php:48 setup.php:75 inc/common.class.php:122
+#: inc/preference.class.php:181 inc/profile.class.php:43
+#: inc/profile.class.php:71 inc/profile.class.php:75 inc/profile.class.php:93
 msgid "Print to pdf"
 msgstr "Pdf olarak yazdırın"
 
-#: setup.php:90
-msgid "This plugin requires GLPI >= 0.84"
-msgstr "Bu uygulama eki GLPI 0.84 ve üzerindeki sürümlerle çalışır"
-
-#: inc/common.class.php:261
+#: inc/common.class.php:292
 msgid "No note found"
 msgstr "Not yok"
 
-#: inc/computerdisk.class.php:58
-msgid "Mount point"
-msgstr "Takılma noktası"
-
-#: inc/computerdisk.class.php:77
+#: inc/computerdisk.class.php:84
 msgid "No volume found"
 msgstr "Birim yok"
 
-#: inc/computer_item.class.php:108
+#: inc/computer_item.class.php:125
 msgid "No printer"
 msgstr "Yazıcı yok"
 
-#: inc/computer_item.class.php:112
+#: inc/computer_item.class.php:129
 msgid "No monitor"
 msgstr "Ekran yok"
 
-#: inc/computer_item.class.php:116
+#: inc/computer_item.class.php:133
 msgid "No peripheral"
 msgstr "Çevre birimi yok"
 
-#: inc/computer_item.class.php:120
+#: inc/computer_item.class.php:137
 msgid "No phone"
 msgstr "Telefon yok"
 
-#: inc/computer_softwareversion.class.php:237
-msgid "Installed software"
-msgid_plural "Installed software"
-msgstr[0] "Yüklenmiş yazılımlar"
-
-#: inc/computer_softwareversion.class.php:286
+#: inc/computer_softwareversion.class.php:291
 msgid "No installed software"
 msgstr "Yüklenmiş yazılım yok"
 
-#: inc/document.class.php:62
+#: inc/document.class.php:67
 msgid "No associated documents"
 msgstr "İlişkili bir belge yok"
 
-#: inc/document.class.php:64
+#: inc/document.class.php:69
 msgid "Associated documents"
 msgstr "İlişkili belgeler"
 
-#: inc/document.class.php:68
-msgid "MIME type"
-msgstr "MIME tipi"
-
-#: inc/group.class.php:61
-msgid "Visible in a ticket"
-msgstr "Çağrıda görüntülensin"
-
-#: inc/group.class.php:178
-msgid "Members equipment"
-msgstr "Üyenin aygıtı"
-
-#: inc/infocom.class.php:91
-msgid "Date of last physical inventory"
-msgstr "Son fiziksel stok tarih"
-
-#: inc/infocom.class.php:151
+#: inc/infocom.class.php:157
 msgid "No financial information"
 msgstr "Finansal bilgi yok"
 
-#: inc/knowbaseitem.class.php:79
+#: inc/knowbaseitem.class.php:85
 msgid "No question found"
 msgstr "Soru yok"
 
-#: inc/preference.class.php:115
+#: inc/preference.class.php:118
 msgid "Choose the tables to print in pdf"
 msgstr "PDF olarak yazdırılacak tabloları seçin"
 
-#: inc/preference.class.php:154
+#: inc/preference.class.php:157
 #, php-format
 msgid "Display %d items"
 msgstr "%d öge görüntülensin"
 
-#: inc/preference.class.php:157
+#: inc/preference.class.php:160
 msgid "Portrait"
 msgstr "Dikey"
 
-#: inc/preference.class.php:158
+#: inc/preference.class.php:161
 msgid "Landscape"
 msgstr "Yatay"
 
-#: inc/preference.class.php:164
+#: inc/preference.class.php:167
 msgctxt "button"
 msgid "Print"
 msgstr "Yazdırın"
 
-#: inc/ticketcost.class.php:55
+#: inc/reservation.class.php:127
+msgid "Item not reservable"
+msgstr "Bu öge ayırtılamaz"
+
+#: inc/ticketcost.class.php:61
 msgid "No ticket cost for this ticket"
 msgstr "Bu çağrı için maliyet yok"
 
-#: inc/ticketsatisfaction.class.php:55
+#: inc/ticketsatisfaction.class.php:61
 msgid "1 star"
 msgstr "1 yıldız"
 
-#: inc/ticketsatisfaction.class.php:56
+#: inc/ticketsatisfaction.class.php:62
 msgid "2 stars"
 msgstr "2 yıldız"
 
-#: inc/ticketsatisfaction.class.php:57
+#: inc/ticketsatisfaction.class.php:63
 msgid "3 stars"
 msgstr "3 yıldız"
 
-#: inc/ticketsatisfaction.class.php:58
+#: inc/ticketsatisfaction.class.php:64
 msgid "4 stars"
 msgstr "4 yıldız"
 
-#: inc/ticketsatisfaction.class.php:59
+#: inc/ticketsatisfaction.class.php:65
 msgid "5 stars"
 msgstr "5 yıldız"
 
-#: inc/ticketsatisfaction.class.php:75
+#: inc/ticketsatisfaction.class.php:81
 msgid "No answer"
 msgstr "Yanıt yok"

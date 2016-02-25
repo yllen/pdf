@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - Plugin PDF\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-15 15:07+0100\n"
-"PO-Revision-Date: 2015-07-09 07:40+0000\n"
+"POT-Creation-Date: 2015-10-04 13:07+0200\n"
+"PO-Revision-Date: 2015-10-14 07:16+0000\n"
 "Last-Translator: Jens Hyllegaard <jens.hyllegaard@gmail.com>\n"
 "Language-Team: Danish (http://www.transifex.com/yllen/glpi-project-plugin-pdf/language/da/)\n"
 "MIME-Version: 1.0\n"
@@ -18,133 +18,106 @@ msgstr ""
 "Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: hook.php:44 hook.php:48 setup.php:77 inc/common.class.php:118
-#: inc/preference.class.php:180 inc/profile.class.php:38
-#: inc/profile.class.php:97 inc/profile.class.php:102
-#: inc/profile.class.php:143
+#: hook.php:48 setup.php:75 inc/common.class.php:122
+#: inc/preference.class.php:181 inc/profile.class.php:43
+#: inc/profile.class.php:71 inc/profile.class.php:75 inc/profile.class.php:93
 msgid "Print to pdf"
 msgstr "Udskriv til pdf"
 
-#: setup.php:90
-msgid "This plugin requires GLPI >= 0.84"
-msgstr "Denne udvidelse kræver GLPI >= 0.84"
-
-#: inc/common.class.php:261
+#: inc/common.class.php:292
 msgid "No note found"
 msgstr "Ingen note fundet"
 
-#: inc/computerdisk.class.php:58
-msgid "Mount point"
-msgstr "Monteringspunkt"
-
-#: inc/computerdisk.class.php:77
+#: inc/computerdisk.class.php:84
 msgid "No volume found"
 msgstr "Ingen volumen fundet"
 
-#: inc/computer_item.class.php:108
+#: inc/computer_item.class.php:125
 msgid "No printer"
 msgstr "Ingen printer"
 
-#: inc/computer_item.class.php:112
+#: inc/computer_item.class.php:129
 msgid "No monitor"
 msgstr "Ingen skærm"
 
-#: inc/computer_item.class.php:116
+#: inc/computer_item.class.php:133
 msgid "No peripheral"
 msgstr "Intet tilbehør"
 
-#: inc/computer_item.class.php:120
+#: inc/computer_item.class.php:137
 msgid "No phone"
 msgstr "Ingen telefon"
 
-#: inc/computer_softwareversion.class.php:237
-msgid "Installed software"
-msgid_plural "Installed software"
-msgstr[0] "Installeret software"
-msgstr[1] "Installeret software"
-
-#: inc/computer_softwareversion.class.php:286
+#: inc/computer_softwareversion.class.php:291
 msgid "No installed software"
 msgstr "Ingen installeret software"
 
-#: inc/document.class.php:62
+#: inc/document.class.php:67
 msgid "No associated documents"
 msgstr "Ingen tilknyttede dokumenter"
 
-#: inc/document.class.php:64
+#: inc/document.class.php:69
 msgid "Associated documents"
 msgstr "Tilknyttede dokumenter"
 
-#: inc/document.class.php:68
-msgid "MIME type"
-msgstr "MIME type"
-
-#: inc/group.class.php:61
-msgid "Visible in a ticket"
-msgstr "Synlig i en sag"
-
-#: inc/group.class.php:178
-msgid "Members equipment"
-msgstr "Medlemmers udstyr"
-
-#: inc/infocom.class.php:91
-msgid "Date of last physical inventory"
-msgstr "Dato for sidste fysiske inventering"
-
-#: inc/infocom.class.php:151
+#: inc/infocom.class.php:157
 msgid "No financial information"
 msgstr "Ingen finansielle oplysninger"
 
-#: inc/knowbaseitem.class.php:79
+#: inc/knowbaseitem.class.php:85
 msgid "No question found"
 msgstr "Ingen spørgsmål fundet"
 
-#: inc/preference.class.php:115
+#: inc/preference.class.php:118
 msgid "Choose the tables to print in pdf"
 msgstr "Vælg de tabeller der skal udskrive til pdf"
 
-#: inc/preference.class.php:154
+#: inc/preference.class.php:157
 #, php-format
 msgid "Display %d items"
 msgstr "Vis %d emner"
 
-#: inc/preference.class.php:157
+#: inc/preference.class.php:160
 msgid "Portrait"
 msgstr "Portræt"
 
-#: inc/preference.class.php:158
+#: inc/preference.class.php:161
 msgid "Landscape"
 msgstr "Landskab"
 
-#: inc/preference.class.php:164
+#: inc/preference.class.php:167
 msgctxt "button"
 msgid "Print"
 msgstr "Udskriv"
 
-#: inc/ticketcost.class.php:55
+#: inc/reservation.class.php:127
+msgid "Item not reservable"
+msgstr "Emne kan ikke reserveres"
+
+#: inc/ticketcost.class.php:61
 msgid "No ticket cost for this ticket"
 msgstr "Ingen sagspris for denne sag"
 
-#: inc/ticketsatisfaction.class.php:55
+#: inc/ticketsatisfaction.class.php:61
 msgid "1 star"
 msgstr "1 stjerne"
 
-#: inc/ticketsatisfaction.class.php:56
+#: inc/ticketsatisfaction.class.php:62
 msgid "2 stars"
 msgstr "2 stjerner"
 
-#: inc/ticketsatisfaction.class.php:57
+#: inc/ticketsatisfaction.class.php:63
 msgid "3 stars"
 msgstr "3 stjerner"
 
-#: inc/ticketsatisfaction.class.php:58
+#: inc/ticketsatisfaction.class.php:64
 msgid "4 stars"
 msgstr "4 stjerner"
 
-#: inc/ticketsatisfaction.class.php:59
+#: inc/ticketsatisfaction.class.php:65
 msgid "5 stars"
 msgstr "5 stjerner"
 
-#: inc/ticketsatisfaction.class.php:75
+#: inc/ticketsatisfaction.class.php:81
 msgid "No answer"
 msgstr "Intet svar"

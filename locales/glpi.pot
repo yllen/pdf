@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-04 13:07+0200\n"
+"POT-Creation-Date: 2016-02-25 20:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,10 +16,26 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: hook.php:48 setup.php:75 inc/common.class.php:122
-#: inc/preference.class.php:181 inc/profile.class.php:43
+#: hook.php:48 setup.php:76 inc/common.class.php:122
+#: inc/preference.class.php:182 inc/profile.class.php:43
 #: inc/profile.class.php:71 inc/profile.class.php:75 inc/profile.class.php:93
 msgid "Print to pdf"
+msgstr ""
+
+#: inc/changecost.class.php:58
+msgid "No cost for this change"
+msgstr ""
+
+#: inc/change_problem.class.php:69
+msgid "No problem found."
+msgstr ""
+
+#: inc/change_problem.class.php:242
+msgid "No change found."
+msgstr ""
+
+#: inc/changevalidation.class.php:49
+msgid "Approvals for the change"
 msgstr ""
 
 #: inc/common.class.php:292
@@ -70,30 +86,37 @@ msgstr ""
 msgid "Choose the tables to print in pdf"
 msgstr ""
 
-#: inc/preference.class.php:157
-#, php-format
-msgid "Display %d items"
-msgstr ""
-
-#: inc/preference.class.php:160
+#: inc/preference.class.php:161
 msgid "Portrait"
 msgstr ""
 
-#: inc/preference.class.php:161
+#: inc/preference.class.php:162
 msgid "Landscape"
 msgstr ""
 
-#: inc/preference.class.php:167
+#: inc/preference.class.php:168
 msgctxt "button"
 msgid "Print"
+msgstr ""
+
+#: inc/problem_ticket.class.php:243
+msgid "No ticket found."
 msgstr ""
 
 #: inc/reservation.class.php:127
 msgid "Item not reservable"
 msgstr ""
 
-#: inc/ticketcost.class.php:61
-msgid "No ticket cost for this ticket"
+#: inc/ticketcost.class.php:58
+msgid "No cost for this ticket"
+msgstr ""
+
+#: inc/ticketfollowup.class.php:70
+msgid "No followup for this ticket."
+msgstr ""
+
+#: inc/ticketfollowup.class.php:77
+msgid "Source of followup"
 msgstr ""
 
 #: inc/ticketsatisfaction.class.php:61
@@ -118,4 +141,8 @@ msgstr ""
 
 #: inc/ticketsatisfaction.class.php:81
 msgid "No answer"
+msgstr ""
+
+#: inc/ticketvalidation.class.php:49
+msgid "Approvals for the ticket"
 msgstr ""

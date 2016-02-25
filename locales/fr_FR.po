@@ -3,13 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2014-2015
+# Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - Plugin PDF\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-04 13:07+0200\n"
-"PO-Revision-Date: 2015-10-04 11:07+0000\n"
+"POT-Creation-Date: 2016-02-25 20:07+0100\n"
+"PO-Revision-Date: 2016-02-25 19:19+0000\n"
 "Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>\n"
 "Language-Team: French (France) (http://www.transifex.com/yllen/glpi-project-plugin-pdf/language/fr_FR/)\n"
 "MIME-Version: 1.0\n"
@@ -18,11 +18,27 @@ msgstr ""
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: hook.php:48 setup.php:75 inc/common.class.php:122
-#: inc/preference.class.php:181 inc/profile.class.php:43
+#: hook.php:48 setup.php:76 inc/common.class.php:122
+#: inc/preference.class.php:182 inc/profile.class.php:43
 #: inc/profile.class.php:71 inc/profile.class.php:75 inc/profile.class.php:93
 msgid "Print to pdf"
 msgstr "Impression pdf"
+
+#: inc/changecost.class.php:58
+msgid "No cost for this change"
+msgstr "Pas de coût pour ce changement"
+
+#: inc/change_problem.class.php:69
+msgid "No problem found."
+msgstr "Aucun problème"
+
+#: inc/change_problem.class.php:242
+msgid "No change found."
+msgstr "Aucun changement"
+
+#: inc/changevalidation.class.php:49
+msgid "Approvals for the change"
+msgstr "Validations pour ce changement"
 
 #: inc/common.class.php:292
 msgid "No note found"
@@ -72,31 +88,38 @@ msgstr "Pas de question trouvée"
 msgid "Choose the tables to print in pdf"
 msgstr "Choisir les tableaux pour l'impression pdf"
 
-#: inc/preference.class.php:157
-#, php-format
-msgid "Display %d items"
-msgstr "Afficher %d éléments"
-
-#: inc/preference.class.php:160
+#: inc/preference.class.php:161
 msgid "Portrait"
 msgstr "Portrait"
 
-#: inc/preference.class.php:161
+#: inc/preference.class.php:162
 msgid "Landscape"
 msgstr "Paysage"
 
-#: inc/preference.class.php:167
+#: inc/preference.class.php:168
 msgctxt "button"
 msgid "Print"
 msgstr "Imprimer"
+
+#: inc/problem_ticket.class.php:243
+msgid "No ticket found."
+msgstr "Aucun ticket"
 
 #: inc/reservation.class.php:127
 msgid "Item not reservable"
 msgstr "Eléments non réservable"
 
-#: inc/ticketcost.class.php:61
-msgid "No ticket cost for this ticket"
-msgstr "Pas de coûts pour ce ticket"
+#: inc/ticketcost.class.php:58
+msgid "No cost for this ticket"
+msgstr "Pas de coût pour ce ticket"
+
+#: inc/ticketfollowup.class.php:70
+msgid "No followup for this ticket."
+msgstr "Pas de suivi pour ce ticket"
+
+#: inc/ticketfollowup.class.php:77
+msgid "Source of followup"
+msgstr "Source du suivi"
 
 #: inc/ticketsatisfaction.class.php:61
 msgid "1 star"
@@ -121,3 +144,7 @@ msgstr "5 étoiles"
 #: inc/ticketsatisfaction.class.php:81
 msgid "No answer"
 msgstr "Pas de réponse"
+
+#: inc/ticketvalidation.class.php:49
+msgid "Approvals for the ticket"
+msgstr "Validations pour ce tickets"
