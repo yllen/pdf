@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2015 PDF plugin team
+ @copyright Copyright (c) 2009-2016 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -74,7 +74,7 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return array('name'           => __('Print to pdf', 'pdf'),
-                'version'        => '0.86',
+                'version'        => '1.0',
                 'author'         => 'Remi Collet, Nelly Mahu-Lasson',
                 'license'        => 'GPLv3+',
                 'homepage'       => 'https://forge.indepnet.net/projects/pdf',
@@ -82,7 +82,6 @@ function plugin_version_pdf() {
 }
 
 
-// Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_pdf_check_prerequisites(){
 
    if (version_compare(GLPI_VERSION,'0.85.3','lt') || version_compare(GLPI_VERSION,'0.91','ge')) {
@@ -93,8 +92,6 @@ function plugin_pdf_check_prerequisites(){
 }
 
 
-// Config process for plugin : need to return true if succeeded : may display messages or add to message after redirect
 function plugin_pdf_check_config(){
    return true;
 }
-?>
