@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2015 PDF plugin team
+ @copyright Copyright (c) 2009-2016 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -67,16 +67,16 @@ class PluginPdfTicketTask extends PluginPdfCommon {
       $result = $DB->query($query);
 
       if (!$DB->numrows($result)) {
-         $pdf->setColumnsSize(100);
          $pdf->displayLine(__('No task found.'));
       } else {
+         $pdf->setColumnsSize(100);
          $pdf->displayTitle("<b>".TicketTask::getTypeName($DB->numrows($result))."</b>");
 
-         $pdf->setColumnsSize(20,20,20,20,20);
-         $pdf->displayTitle("<i>".__('Type'), __('Date'), __('Duration'), __('Writer'),
-                                  __('Planning')."</i>");
-
          while ($data=$DB->fetch_array($result)) {
+            $pdf->setColumnsSize(20,20,20,20,20);
+            $pdf->displayTitle("<i>".__('Type'), __('Date'), __('Duration'), __('Writer'),
+                                     __('Planning')."</i>");
+
             $actiontime = Html::timestampToString($data['actiontime'], false);
             $planification = '';
             if (empty($data['begin'])) {
