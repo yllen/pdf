@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2015 PDF plugin team
+ @copyright Copyright (c) 2009-2016 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -249,6 +249,56 @@ class PluginPdfChange extends PluginPdfCommon {
    }
 
 
+   static function pdfAnalysis(PluginPdfSimplePDF $pdf, Change $job) {
+
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle("<b>".__('Analysis')."</b>");
+
+      $pdf->setColumnsSize(10, 90);
+
+      $impact  = Html::entity_decode_deep($job->fields['impactcontent']);
+      if (!preg_match("/<br\s?\/?>/", $impact) && !preg_match("/<p>/", $impact)) {
+         $impact = nl2br($impact);
+      }
+      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Impacts')."</i></b>", $impact));
+
+      $control = Html::entity_decode_deep($job->fields['controlistcontent']);
+      if (!preg_match("/<br\s?\/?>/", $control) && !preg_match("/<p>/", $control)) {
+         $control = nl2br($control);
+      }
+      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Control list')."</i></b>",
+                                $control));
+   }
+
+
+   static function pdfPlan(PluginPdfSimplePDF $pdf, Change $job) {
+
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle("<b>".__('Analysis')."</b>");
+
+      $pdf->setColumnsSize(10, 90);
+
+      $depl = Html::entity_decode_deep($job->fields['rolloutplancontent']);
+      if (!preg_match("/<br\s?\/?>/", $depl) && !preg_match("/<p>/", $depl)) {
+         $depl = nl2br($depl);
+      }
+      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Deployment plan')."</i></b>",
+            $depl));
+
+      $bckup = Html::entity_decode_deep($job->fields['backoutplancontent']);
+      if (!preg_match("/<br\s?\/?>/", $bckup) && !preg_match("/<p>/", $bckup)) {
+         $bckup = nl2br($bckup);
+      }
+      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Backup plan')."</i></b>", $bckup));
+
+      $check  = Html::entity_decode_deep($job->fields['checklistcontent']);
+      if (!preg_match("/<br\s?\/?>/", $check) && !preg_match("/<p>/", $check)) {
+         $check = nl2br($check);
+      }
+      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Checklist')."</i></b>", $check));
+   }
+
+
    static function pdfSolution(PluginPdfSimplePDF $pdf, Change $job) {
       global $CFG_GLPI, $DB;
 
@@ -262,9 +312,10 @@ class PluginPdfChange extends PluginPdfCommon {
          } else {
             $title = __('Solution');
          }
-         $sol = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
-                           html_entity_decode($job->getField('solution'),
-                                              ENT_QUOTES, "UTF-8")));
+         $sol = Html::entity_decode_deep($job->fields['solution']);
+         if (!preg_match("/<br\s?\/?>/", $sol) && !preg_match("/<p>/", $sol)) {
+            $sol = nl2br($sol);
+         }
          $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol);
       } else {
          $pdf->displayLine(__('None'));
@@ -332,13 +383,7 @@ class PluginPdfChange extends PluginPdfCommon {
    function defineAllTabs($options=array()) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['Change$1']); // analyse
-      unset($onglets['Change$3']); // plan
-      unset($onglets['ChangeValidation$1']); // validation
-      unset($onglets['ChangeTask$1']); // taches
-      unset($onglets['ChangeCost$1']); // couts
       unset($onglets['Change_Project$1']); // projet
-      unset($onglets['Change_Problem$1']); // probleme
       unset($onglets['Change_Item$1']); // elements
 
 
@@ -360,11 +405,11 @@ class PluginPdfChange extends PluginPdfCommon {
             break;
 
          case 'Change$1' :
-               // analyse
+            self::pdfAnalysis($pdf, $item);
             break;
 
          case 'Change$3' :
-               // plan
+            self::pdfPlan($pdf, $item);
             break;
 
          case 'Change$2' :
@@ -376,15 +421,15 @@ class PluginPdfChange extends PluginPdfCommon {
             break;
 
          case 'ChangeValidation$1' :
-            // validation
+            PluginPdfChangeValidation::pdfForChange($pdf, $item);
             break;
 
          case 'ChangeTask$1' :
-            // tache
+            PluginPdfChangeTask::pdfForChange($pdf, $item);
             break;
 
          case 'ChangeCost$1' :
-            // couts
+            PluginPdfChangeCost::pdfForChange($pdf, $item);
             break;
 
          case 'Change_project$1' :
@@ -392,7 +437,7 @@ class PluginPdfChange extends PluginPdfCommon {
             break;
 
          case 'Change_problem$1' :
-            // projet
+            PluginPdfChange_Problem::pdfForChange($pdf, $item);
             break;
 
          case 'Change_Ticket$1' :
@@ -406,6 +451,7 @@ class PluginPdfChange extends PluginPdfCommon {
          default :
             return false;
       }
+
       return true;
    }
 
