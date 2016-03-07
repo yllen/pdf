@@ -282,7 +282,6 @@ abstract class PluginPdfCommon {
       if (count($notes)) {
          foreach ($notes as $note) {
             $id      = 'note'.$note['id'].$rand;
-            $content = nl2br($note['content']);
             if (empty($content)) {
                $content = NOT_AVAILABLE;
             }

@@ -340,8 +340,12 @@ class PluginPdfSimplePDF {
       );
 
       $this->setColumnsSize(100);
-      $this->displayInternal(240, 0.5, self::LEFT, $minline*5, array($name.' '.$content));
-
+      $text = $name.' '.$content;
+      $content  = Html::entity_decode_deep($text);
+      if (!preg_match("/<br\s?\/?>/", $content) && !preg_match("/<p>/", $content)) {
+         $content = nl2br($content);
+      }
+      $this->displayInternal(240, 0.5, self::LEFT, $minline*5, array($content));
       /* Restore */
       list(
          $this->cols,

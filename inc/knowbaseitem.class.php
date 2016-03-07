@@ -80,10 +80,6 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
 
       if (Toolbox::strlen($question) > 0) {
          $pdf->displayTitle('<b>'.__('Subject').'</b>');
-         $question = Html::entity_decode_deep($question);
-         if (!preg_match("/<br\s?\/?>/", $question) && !preg_match("/<p>/", $question)) {
-            $question = nl2br($question);
-         }
          $pdf->displayText('', $question, 5);
       } else {
          $pdf->displayTitle('<b>'.__('No question found', 'pdf').'</b>');
@@ -91,10 +87,6 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
 
       if (Toolbox::strlen($answer) > 0) {
          $pdf->displayTitle('<b>'.__('Content').'</b>');
-         $answer  = Html::entity_decode_deep($answer);
-         if (!preg_match("/<br\s?\/?>/", $answer) && !preg_match("/<p>/", $answer)) {
-            $answer = nl2br($answer);
-         }
          $pdf->displayText('', $answer, 5);
       } else {
          $pdf->displayTitle('<b>'.__('No answer found').'</b>');

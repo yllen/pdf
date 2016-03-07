@@ -239,11 +239,8 @@ class PluginPdfChange extends PluginPdfCommon {
       $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Title')."</i></b>", $job->fields["name"]));
 
-      $html = Html::entity_decode_deep($job->fields['content']);
-      if (!preg_match("/<br\s?\/?>/", $html) && !preg_match("/<p>/", $html)) {
-         $html = nl2br($html);
-      }
-      $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Description')."</i></b>", ''), $html);
+      $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Description')."</i></b>",
+                                         $job->fields['content']));
 
       $pdf->displaySpace();
    }
@@ -256,18 +253,11 @@ class PluginPdfChange extends PluginPdfCommon {
 
       $pdf->setColumnsSize(10, 90);
 
-      $impact  = Html::entity_decode_deep($job->fields['impactcontent']);
-      if (!preg_match("/<br\s?\/?>/", $impact) && !preg_match("/<p>/", $impact)) {
-         $impact = nl2br($impact);
-      }
-      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Impacts')."</i></b>", $impact));
+      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Impacts')."</i></b>",
+                                $job->fields['impactcontent']));
 
-      $control = Html::entity_decode_deep($job->fields['controlistcontent']);
-      if (!preg_match("/<br\s?\/?>/", $control) && !preg_match("/<p>/", $control)) {
-         $control = nl2br($control);
-      }
       $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Control list')."</i></b>",
-                                $control));
+                                $job->fields['controlistcontent']));
    }
 
 
@@ -278,24 +268,14 @@ class PluginPdfChange extends PluginPdfCommon {
 
       $pdf->setColumnsSize(10, 90);
 
-      $depl = Html::entity_decode_deep($job->fields['rolloutplancontent']);
-      if (!preg_match("/<br\s?\/?>/", $depl) && !preg_match("/<p>/", $depl)) {
-         $depl = nl2br($depl);
-      }
       $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Deployment plan')."</i></b>",
-            $depl));
+                                $job->fields['rolloutplancontent']));
 
-      $bckup = Html::entity_decode_deep($job->fields['backoutplancontent']);
-      if (!preg_match("/<br\s?\/?>/", $bckup) && !preg_match("/<p>/", $bckup)) {
-         $bckup = nl2br($bckup);
-      }
-      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Backup plan')."</i></b>", $bckup));
+      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Backup plan')."</i></b>",
+                                $job->fields['backoutplancontent']));
 
-      $check  = Html::entity_decode_deep($job->fields['checklistcontent']);
-      if (!preg_match("/<br\s?\/?>/", $check) && !preg_match("/<p>/", $check)) {
-         $check = nl2br($check);
-      }
-      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Checklist')."</i></b>", $check));
+      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Checklist')."</i></b>",
+                                $job->fields['checklistcontent']));
    }
 
 
@@ -312,11 +292,8 @@ class PluginPdfChange extends PluginPdfCommon {
          } else {
             $title = __('Solution');
          }
-         $sol = Html::entity_decode_deep($job->fields['solution']);
-         if (!preg_match("/<br\s?\/?>/", $sol) && !preg_match("/<p>/", $sol)) {
-            $sol = nl2br($sol);
-         }
-         $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol);
+         $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>",
+                                    $job->fields['solution']));
       } else {
          $pdf->displayLine(__('None'));
       }
