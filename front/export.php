@@ -59,9 +59,12 @@ if (isset($_POST["plugin_pdf_inventory_type"])
       // 0.90 'main' always displayed in classic/vsplit mode, so not in the defined tabs
       $tab[] = $type.'$main';
    }
+
    if (isset($_POST['item'])) {
       foreach ($_POST['item'] as $key => $val) {
-         $tab[] = $_SESSION["plugin_pdf"][$type][] = $key;
+         if (!in_array($key, $tab)) {
+            $tab[] = $_SESSION["plugin_pdf"][$type][] = $key;
+         }
       }
    }
    if (empty($tab)) {
