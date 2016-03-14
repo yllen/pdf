@@ -80,24 +80,23 @@ class PluginPdfTicketTask extends PluginPdfCommon {
             $actiontime = Html::timestampToString($data['actiontime'], false);
             $planification = '';
             if (empty($data['begin'])) {
-               if (isset($data["state"]) && $data["state"]) {
+               if (isset($data["state"])) {
                   $planification = Planning::getState($data["state"])."<br>";
                } else {
                   $planification .= _e('None');
                }
             } else {
-               if (isset($data["state"]) && $data["state"]) {
+               if (isset($data["state"])) {
                   $planification = sprintf(__('%1$s: %2$s'), _x('item', 'State'),
                                            Planning::getState($data["state"]));
                }
-               $planificiation = sprintf(__('%1$s - %2$s'), $planification,
-                                         Html::convDateTime($data["begin"])." -> ".
-                                         Html::convDateTime($data["end"]));
-               $planificiation = sprintf(__('%1$s - %2$s'), $planification,
-                                         sprintf(__('%1$s  %2$s'), __('By'),
-                                                 getUserName($data["users_id_tech"])));
+               $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('Begin'),
+                                                Html::convDateTime($data["begin"]));
+               $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('End'),
+                                                Html::convDateTime($data["end"]));
+               $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('By'),
+                                                getUserName($data["users_id_tech"]));
             }
-
             if ($data['taskcategories_id']) {
                $lib = Dropdown::getDropdownName('glpi_taskcategories', $data['taskcategories_id']);
             } else {
@@ -111,7 +110,7 @@ class PluginPdfTicketTask extends PluginPdfCommon {
                               Html::convDateTime($data["date"]),
                               Html::timestampToString($data["actiontime"], 0),
                               Html::clean(getUserName($data["users_id"])),
-                              Html::clean($planification),1);
+                              $planification);
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
                                             "</b>".Html::clean($data["content"]), 1);
          }

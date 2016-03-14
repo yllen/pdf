@@ -79,13 +79,13 @@ class PluginPdfProblemTask extends PluginPdfCommon {
                   $planification = sprintf(__('%1$s: %2$s'), _x('item', 'State'),
                                            Planning::getState($data["state"]));
                }
-               $planificiation = sprintf(__('%1$s - %2$s'), $planification,
-                                         Html::convDateTime($data["begin"])." -> ".
-                                         Html::convDateTime($data["end"]));
-               $planificiation = sprintf(__('%1$s - %2$s'), $planification,
-                                         sprintf(__('%1$s  %2$s'), __('By'),
-                                                 getUserName($data["users_id_tech"])));
-            }
+               $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('Begin'),
+                                                Html::convDateTime($data["begin"]));
+               $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('End'),
+                                                Html::convDateTime($data["end"]));
+               $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('By'),
+                                                getUserName($data["users_id_tech"]));
+                           }
 
 
             if ($data['taskcategories_id']) {
