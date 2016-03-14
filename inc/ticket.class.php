@@ -627,7 +627,9 @@ class PluginPdfTicket extends PluginPdfCommon {
          case 'Ticket$1' : // 0.90+
             PluginPdfTicketFollowup::pdfForTicket($pdf, $item, $private);
             PluginPdfTicketTask::pdfForTicket($pdf, $item, $private);
-            PluginPdfTicketValidation::pdfForTicket($pdf, $item);
+            if (Session::haveRight('document', READ)) {
+               PluginPdfDocument::pdfForItem($pdf, $item);
+            }
             self::pdfSolution($pdf, $item);
             break;
 
