@@ -120,7 +120,18 @@ class PluginPdfSimplePDF {
       $this->header = $msg;
       $this->pdf->resetHeaderTemplate();
       $this->pdf->SetTitle($msg);
-      $this->pdf->SetHeaderData('fd_logo.jpg', 15, $msg, '');
+      $configurationValues = Config::getConfigurationValues('core', array('version'));
+      $current_version     = $configurationValues['version'];
+      switch ($current_version) {
+         case "0.85.3" :
+         case "0.85.4" :
+         case "0.85.5" :
+            $this->pdf->SetHeaderData('fd_logo.jpg', 15, $msg, '');
+            break;
+
+         default :
+            $this->pdf->SetHeaderData('fd_logo.png', 15, $msg, '');
+      }
    }
 
 
