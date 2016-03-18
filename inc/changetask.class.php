@@ -67,10 +67,8 @@ class PluginPdfChangeTask extends PluginPdfCommon {
             $actiontime = Html::timestampToString($data['actiontime'], false);
             $planification = '';
             if (empty($data['begin'])) {
-               if (isset($data["state"]) && $data["state"]) {
+               if (isset($data["state"])) {
                   $planification = Planning::getState($data["state"])."<br>";
-               } else {
-                  $planification .= _e('None');
                }
             } else {
                if (isset($data["state"]) && $data["state"]) {

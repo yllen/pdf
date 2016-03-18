@@ -70,10 +70,9 @@ class PluginPdfProblemTask extends PluginPdfCommon {
             $actiontime = Html::timestampToString($data['actiontime'], false);
             $planification = '';
             if (empty($data['begin'])) {
-               if (isset($data["state"]) && $data["state"]) {
+               if (isset($data["state"])) {
                   $planification = Planning::getState($data["state"])."<br>";
                }
-               $planification .= _e('None');
             } else {
                if (isset($data["state"]) && $data["state"]) {
                   $planification = sprintf(__('%1$s: %2$s'), _x('item', 'State'),

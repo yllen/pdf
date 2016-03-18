@@ -82,8 +82,6 @@ class PluginPdfTicketTask extends PluginPdfCommon {
             if (empty($data['begin'])) {
                if (isset($data["state"])) {
                   $planification = Planning::getState($data["state"])."<br>";
-               } else {
-                  $planification .= _e('None');
                }
             } else {
                if (isset($data["state"])) {
