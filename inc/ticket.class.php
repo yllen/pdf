@@ -607,7 +607,9 @@ class PluginPdfTicket extends PluginPdfCommon {
       unset($onglets['Projecttask_Ticket$1']); // TODO add method to print linked Projecttask
       unset($onglets['Change_Ticket$1']); // TODO add method to print linked Changes
 
-      if (Session::haveRight('ticket', Ticket::READALL)) {
+      if (Session::haveRight('ticket', Ticket::READALL) // for technician
+          || Session::haveRight('followup', TicketFollowup::SEEPRIVATE)
+          || Session::haveRight('task', TicketTask::SEEPRIVATE)) {
          $onglets['_private_'] = __('Private');
       }
 
