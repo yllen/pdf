@@ -68,6 +68,9 @@ function plugin_init_pdf() {
 
       // End init, when all types are registered by all plugins
       $PLUGIN_HOOKS['post_init']['pdf'] = 'plugin_pdf_postinit';
+
+      // Integration with WebService plugin
+      $PLUGIN_HOOKS['webservices']['pdf'] = 'plugin_pdf_registerMethods';
 }
 
 

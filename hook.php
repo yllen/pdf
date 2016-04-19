@@ -160,3 +160,12 @@ function plugin_pdf_uninstall() {
 
    return true;
 }
+
+
+function plugin_pdf_registerMethods() {
+   global $WEBSERVICES_METHOD;
+
+   $WEBSERVICES_METHOD['pdf.getTabs']  = array('PluginPdfRemote', 'methodGetTabs');
+   $WEBSERVICES_METHOD['pdf.getPdf']   = array('PluginPdfRemote', 'methodGetPdf');
+}
+
