@@ -99,9 +99,7 @@ class PluginPdfRemote  {
       }
 
       if (isset($params['tabs'])) {
-         toolbox::logdebug($params);
          $tabs = explode(',', $params['tabs']);
-         toolbox::logdebug($tabs);
       } else {
          $tabs = array($type.'$main');
       }
