@@ -71,6 +71,7 @@ class PluginPdfRemote  {
                          'id'        => 'integer', 
                          'landscape' => 'bool,optional', 
                          'tabs'      => 'string,optional',
+                         'alltabs'   => 'bool,optional',
             );
       }
 
@@ -99,12 +100,19 @@ class PluginPdfRemote  {
       }
 
       if (isset($params['tabs'])) {
+         if (isset($params['alltabs'])) {
+            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'tabs+alltabs');
+         }
          $tabs = explode(',', $params['tabs']);
       } else {
          $tabs = array($type.'$main');
       }
       if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])  && class_exists($PLUGIN_HOOKS['plugin_pdf'][$type])) {
          $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$type]($item);
+         if (isset($params['alltabs'])) {
+            $tabs = $itempdf->defineAllTabs();
+            $tabs = array_keys($tabs);
+         }
          $out = $itempdf->generatePDF(array($id), $tabs, $landscape, false);
          return array('name'   => "$type-$id.pdf",
                       'base64' => base64_encode($out));
