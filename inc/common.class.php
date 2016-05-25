@@ -118,8 +118,10 @@ abstract class PluginPdfCommon {
    **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
-      if(!isset($withtemplate) || empty($withtemplate)) {
-         return __('Print to pdf', 'pdf');
+      if (Session::haveRight('plugin_pdf', READ)) {
+         if(!isset($withtemplate) || empty($withtemplate)) {
+            return __('Print to pdf', 'pdf');
+         }
       }
    }
 
