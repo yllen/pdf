@@ -77,7 +77,7 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return array('name'           => __('Print to pdf', 'pdf'),
-                'version'        => '1.0.1',
+                'version'        => '1.0.2',
                 'author'         => 'Remi Collet, Nelly Mahu-Lasson',
                 'license'        => 'GPLv3+',
                 'homepage'       => 'https://forge.indepnet.net/projects/pdf',
