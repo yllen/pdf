@@ -162,6 +162,9 @@ function plugin_pdf_uninstall() {
 }
 
 
+/**
+ * @since version 1.0.2
+**/
 function plugin_pdf_registerMethods() {
    global $WEBSERVICES_METHOD;
 
