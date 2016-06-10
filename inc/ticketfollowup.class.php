@@ -90,8 +90,8 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
                               Html::convDateTime($data["date"]),
                               Html::clean(getUserName($data["users_id"])));
 
-            $pdf->displayText(sprintf(__('%1$s: %2$s'), '<b><i>'.__('Comments').'</i></b>',
-                                      $data['content']));
+            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>",__('Comments'), ''),
+                                               Html::clean($data["content"]), 1);
          }
       }
       $pdf->displaySpace();
