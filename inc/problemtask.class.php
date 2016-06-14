@@ -98,7 +98,7 @@ class PluginPdfProblemTask extends PluginPdfCommon {
                               Html::clean(getUserName($data["users_id"])),
                               Html::clean($planification),1);
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
-                                               "</b>".Html::clean($data["content"]), 1);
+                                               Html::clean($data["content"]), 1);
          }
       }
       $pdf->displaySpace();

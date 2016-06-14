@@ -239,8 +239,8 @@ class PluginPdfChange extends PluginPdfCommon {
       $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Title')."</i></b>", $job->fields["name"]));
 
-      $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Description')."</i></b>",
-                                         $job->fields['content']));
+      $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
+                                         Html::clean($job["content"]), 1);
 
       $pdf->displaySpace();
    }
