@@ -166,17 +166,60 @@ class PluginPdfTicket extends PluginPdfCommon {
       $requester = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester'), $listusers);
       foreach ($job->getUsers(CommonITILActor::REQUESTER) as $d) {
          if ($d['users_id']) {
-            $tmp = Html::clean(getUserName($d['users_id']));
-            if ($d['alternative_email']) {
-               $tmp .= ' ('.$d['alternative_email'].')';
-            }
+            $tmp = "<i>".Html::clean(getUserName($d['users_id']))."</i>";
          } else {
             $tmp = $d['alternative_email'];
+         }
+
+         $user = new User();
+         if ($info = $user->getFromDB($d['users_id'])) {
+            if ($d['alternative_email'] || $user->fields['phone'] || $user->fields['mobile']
+                || $user->fields['usercategories_id'] || $user->fields['locations_id']) {
+
+               $tmp .= " (";
+               $first = false;
+               if ($d['alternative_email']) {
+                  $tmp .= sprintf(__('%1$s: %2$s'), __('Email'), $d['alternative_email']);
+                  $first = false;
+               }
+               if ($user->fields['phone']) {
+                  if (!$first) {
+                     $tmp .= " - ";
+                  }
+                  $tmp .= sprintf(__('%1$s: %2$s'), __('Phone'), $user->fields['phone']);
+                  $first = false;
+               }
+               if ($user->fields['mobile']) {
+                  if (!$first) {
+                     $tmp .= " - ";
+                  }
+                  $tmp .= sprintf(__('%1$s: %2$s'), __('Mobile phone'), $user->fields['mobile']);
+                  $first = false;
+               }
+               if ($user->fields['usercategories_id']) {
+                  if (!$first) {
+                     $tmp .= " - ";
+                  }
+                  $tmp .= sprintf(__('%1$s: %2$s'), __('Category'),
+                                  Dropdown::getDropdownName('glpi_usercategories',
+                                                            $user->fields['usercategories_id']));
+                  $first = false;
+               }
+               if ($user->fields['locations_id']) {
+                  if (!$first) {
+                     $tmp .= " - ";
+                  }
+                  $tmp .= sprintf(__('%1$s: %2$s'), __('Location'),
+                                  Dropdown::getDropdownName('glpi_locations',
+                                                            $user->fields['locations_id']));
+               }
+               $tmp .= ")";
+            }
          }
          $users[] = $tmp;
       }
       if (count($users)) {
-         $listusers = implode(', ', $users);
+         $listusers = implode('<br /> ', $users);
       }
       $pdf->displayText($requester, $listusers, 1);
 
@@ -613,6 +656,10 @@ class PluginPdfTicket extends PluginPdfCommon {
          $onglets['_private_'] = __('Private');
       }
 
+      if (Session::haveRight('user', READ)) {
+         $onglets['_inforequester_'] = __('Requester information', 'pdf');
+      }
+
       return $onglets;
    }
 
@@ -624,6 +671,9 @@ class PluginPdfTicket extends PluginPdfCommon {
       switch ($tab) {
          case '_private_' :
             // nothing to export, just a flag
+            break;
+
+         case '_inforequester_' :
             break;
 
          case 'Ticket$1' : // 0.90+
