@@ -240,7 +240,7 @@ class PluginPdfChange extends PluginPdfCommon {
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Title')."</i></b>", $job->fields["name"]));
 
       $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
-                                         Html::clean($job["content"]), 1);
+                                         Html::clean($job->fields["content"]), 1);
 
       $pdf->displaySpace();
    }
