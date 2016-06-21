@@ -54,11 +54,11 @@ class PluginPdfSoftware extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_locations',
-                                                                $software->fields['locations_id']))),
+                          Dropdown::getDropdownName('glpi_locations',
+                                                    $software->fields['locations_id'])),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwarecategories',
-                                                                $software->fields['softwarecategories_id']))));
+                          Dropdown::getDropdownName('glpi_softwarecategories',
+                                                    $software->fields['softwarecategories_id'])));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Technician in charge of the hardware').'</i></b>',
@@ -68,15 +68,14 @@ class PluginPdfSoftware extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group in charge of the hardware').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_groups',
-                                                                $software->fields['groups_id_tech']))),
+                          Dropdown::getDropdownName('glpi_groups',
+                                                    $software->fields['groups_id_tech'])),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
                           getUserName($software->fields['users_id'])));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_groups',
-                                                                $software->fields['groups_id']))));
+                          Dropdown::getDropdownName('glpi_groups', $software->fields['groups_id'])));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('Last update on %s'),

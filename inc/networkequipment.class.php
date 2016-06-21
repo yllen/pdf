@@ -76,8 +76,7 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_groups',
-                                                                $item->fields['groups_id']))),
+                          Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Domain').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_domains',
                                                                 $item->fields['domains_id']))));

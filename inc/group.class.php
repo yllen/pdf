@@ -159,12 +159,9 @@ class PluginPdfGroup extends PluginPdfCommon {
             }
 
          }
-         $pdf->displayLine(
-            $item->getTypeName(1),
-            $item->getName(),
-            Html::clean(Dropdown::getDropdownName("glpi_entities", $item->getEntityID())),
-            $col4
-         );
+         $pdf->displayLine($item->getTypeName(1), $item->getName(),
+                           Dropdown::getDropdownName("glpi_entities", $item->getEntityID()),
+                           $col4);
       }
       $pdf->displaySpace();
    }
@@ -216,8 +213,7 @@ class PluginPdfGroup extends PluginPdfCommon {
          foreach ($DB->request($item->getTable(), $crit) as $data) {
             if ($entity_assign) {
                $pdf->displayLine($data['name'],
-                                 Html::clean(Dropdown::getDropdownName("glpi_entities",
-                                                                       $data["entities_id"])),
+                                 Dropdown::getDropdownName("glpi_entities", $data["entities_id"]),
                                  $data['comment']);
             } else {
                $pdf->displayLine($data['name'], $data['comment']);

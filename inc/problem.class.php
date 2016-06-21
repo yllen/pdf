@@ -56,7 +56,7 @@ class PluginPdfProblem extends PluginPdfCommon {
                (empty($job->fields["name"])?__('Without title'):$name=$job->fields["name"]).'</b>');
 
       if (count($_SESSION['glpiactiveentities'])>1) {
-         $entity = " (".Dropdown::getDropdownName("glpi_entities",$job->fields["entities_id"]).")";
+         $entity = " (".Dropdown::getDropdownName("glpi_entities", $job->fields["entities_id"]).")";
       } else {
          $entity = '';
       }
@@ -110,8 +110,8 @@ class PluginPdfProblem extends PluginPdfCommon {
 
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Category')."</i></b>",
-                          Html::clean(Dropdown::getDropdownName("glpi_itilcategories",
-                                                                $job->fields["itilcategories_id"]))),
+                          Dropdown::getDropdownName("glpi_itilcategories",
+                                                    $job->fields["itilcategories_id"])),
          "<b><i>". sprintf(__('%1$s: %2$s'), __('Impact')."</i></b>",
                   Html::clean($job->getImpactName($job->fields["impact"]))));
 
@@ -147,7 +147,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       $requestergroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester group'),
                                          $listgroups);
       foreach ($job->getGroups(CommonITILActor::REQUESTER) as $d) {
-         $groups[] = Html::clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+         $groups[] = Dropdown::getDropdownName("glpi_groups", $d['groups_id']);
       }
       if (count($groups)) {
       $listgroups = implode(', ', $groups);
@@ -179,7 +179,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       $watchergroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher group'),
                                          $listgroups);
       foreach ($job->getGroups(CommonITILActor::OBSERVER) as $d) {
-         $groups[] = Html::clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+         $groups[] = Dropdown::getDropdownName("glpi_groups", $d['groups_id']);
       }
       if (count($groups)) {
          $listgroups = implode(', ', $groups);
@@ -212,7 +212,8 @@ class PluginPdfProblem extends PluginPdfCommon {
       $assigngroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Technician group'),
                                          $listgroups);
       foreach ($job->getGroups(CommonITILActor::ASSIGN) as $d) {
-         $groups[] = Html::clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+         $groups[] = Html::clean(Toolbox::clean_cross_side_scripting_deep(Dropdown::getDropdownName("glpi_groups",
+                                                                              $d['groups_id'])));
       }
       if (count($groups)) {
          $listgroups = implode(', ', $groups);

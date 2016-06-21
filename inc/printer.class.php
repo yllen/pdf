@@ -64,8 +64,7 @@ class PluginPdfPrinter extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_groups',
-                                                                 $printer->fields['groups_id']))),
+                          Dropdown::getDropdownName('glpi_groups', $printer->fields['groups_id'])),
         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
                          Html::clean(Dropdown::getDropdownName('glpi_networks',
                                                                 $printer->fields['networks_id']))));

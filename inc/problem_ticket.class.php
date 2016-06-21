@@ -195,7 +195,7 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
                foreach ($grps as $d) {
                   if ($first) {
                      $col = sprintf(__('%1$s  %2$s'), $col,
-                                    Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+                                   Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
                   } else {
                      $col = sprintf(__('%1$s, %2$s'), $col,
                                     Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
@@ -301,7 +301,7 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
             if ($job->fields["itilcategories_id"]) {
                $pdf->displayLine(
                   '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
-                                   Dropdown::getDropdownName('glpi_itilcategories',
+                                  Dropdown::getDropdownName('glpi_itilcategories',
                                                              $job->fields["itilcategories_id"])));
             }
 
@@ -330,7 +330,7 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
                                     Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
                   } else {
                      $col = sprintf(__('%1$s, %2$s'), $col,
-                           Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+                                    Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
                   }
                   $first = false;
                }

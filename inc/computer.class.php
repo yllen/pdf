@@ -74,8 +74,8 @@ class PluginPdfComputer extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_groups',
-                                                                $computer->fields['groups_id']))),
+                          Dropdown::getDropdownName('glpi_groups',
+                                                    $computer->fields['groups_id'])),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Service pack').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_operatingsystemservicepacks',
                                                                 $computer->fields['operatingsystemservicepacks_id']))));

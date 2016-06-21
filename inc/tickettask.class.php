@@ -96,7 +96,7 @@ class PluginPdfTicketTask extends PluginPdfCommon {
                                                 getUserName($data["users_id_tech"]));
             }
             if ($data['taskcategories_id']) {
-               $lib = Dropdown::getDropdownName('glpi_taskcategories', $data['taskcategories_id']);
+               $lib = Dropdown::getDropdownName('glpi_taskcategories',  $data['taskcategories_id']);
             } else {
                $lib = '';
             }

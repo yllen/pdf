@@ -74,8 +74,8 @@ class PluginPdfDocument extends PluginPdfCommon {
 
          while ($data = $DB->fetch_assoc($result)) {
             $pdf->displayLine($data["name"], $data['entity'], basename($data["filename"]), $data["link"],
-                              Html::clean(Dropdown::getDropdownName("glpi_documentcategories",
-                                                                    $data["documentcategories_id"])),
+                              Dropdown::getDropdownName("glpi_documentcategories",
+                                                        $data["documentcategories_id"]),
                               $data["mime"], Html::convDateTime($data["assocdate"]));
          }
       }

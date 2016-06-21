@@ -260,8 +260,7 @@ abstract class PluginPdfCommon {
          }
 
          if (Session::isMultiEntitiesMode() && $this->obj->isEntityAssign()) {
-            $entity = ' ('.Dropdown::getDropdownName('glpi_entities',
-                                                                $this->obj->getEntityID()).')';
+            $entity = ' ('.Dropdown::getDropdownName('glpi_entities', $this->obj->getEntityID()).')';
          }
          $this->pdf->setHeader(sprintf(__('%1$s - %2$s'), $this->obj->getTypeName(),
                                        sprintf(__('%1$s %2$s'), $name, $entity)));
@@ -387,8 +386,8 @@ abstract class PluginPdfCommon {
          case 'location-type' :
             return $pdf->displayLine(
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
-                                      Html::clean(Dropdown::getDropdownName('glpi_locations',
-                                                                            $item->fields['locations_id']))),
+                                      Dropdown::getDropdownName('glpi_locations',
+                                                                $item->fields['locations_id'])),
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Type').'</i></b>',
                                       Html::clean(Dropdown::getDropdownName('glpi_'.$type.'types',
                                                                             $item->fields[$type.'types_id']))));
@@ -405,8 +404,8 @@ abstract class PluginPdfCommon {
             return $pdf->displayLine(
                      '<b><i>'.sprintf(__('%1$s: %2$s'),
                                       __('Group in charge of the hardware').'</i></b>',
-                                      Html::clean(Dropdown::getDropdownName('glpi_groups',
-                                                                            $item->fields['groups_id_tech']))),
+                                      Dropdown::getDropdownName('glpi_groups',
+                                                                $item->fields['groups_id_tech'])),
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Model').'</i></b>',
                                       Html::clean(Dropdown::getDropdownName('glpi_'.$type.'models',
                                                                             $item->fields[$type.'models_id']))));

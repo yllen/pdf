@@ -105,9 +105,7 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
                      $computer->getName(),
                      Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
                                                            $computer->getField('operatingsystems_id'))),
-                     Html::clean(Dropdown::getDropdownName('glpi_entities',
-                                                           $computer->getEntityID()))
-                  );
+                     Dropdown::getDropdownName('glpi_entities', $computer->getEntityID()));
                }
             }
          }

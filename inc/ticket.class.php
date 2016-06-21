@@ -56,7 +56,8 @@ class PluginPdfTicket extends PluginPdfCommon {
                (empty($job->fields["name"])?__('Without title'):$name=$job->fields["name"]).'</b>');
 
       if (count($_SESSION['glpiactiveentities'])>1) {
-         $entity = " (".Dropdown::getDropdownName("glpi_entities",$job->fields["entities_id"]).")";
+         $entity = " (".Dropdown::getDropdownName("glpi_entities",
+                                                   $job->fields["entities_id"]).")";
       } else {
          $entity = '';
       }
@@ -117,8 +118,8 @@ class PluginPdfTicket extends PluginPdfCommon {
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Type')."</i></b>",
                           Html::clean(Ticket::getTicketTypeName($job->fields["type"]))),
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Category')."</i></b>",
-                          Html::clean(Dropdown::getDropdownName("glpi_itilcategories",
-                                                                $job->fields["itilcategories_id"]))));
+                          Dropdown::getDropdownName("glpi_itilcategories",
+                                                    $job->fields["itilcategories_id"])));
 
       $status = '';
       if (in_array($job->fields["status"], $job->getSolvedStatusArray())
@@ -155,8 +156,8 @@ class PluginPdfTicket extends PluginPdfCommon {
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Priority')."</i></b>",
                              Html::clean($job->getPriorityName($job->fields["priority"]))),
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Location')."</i></b>",
-                             Html::clean(Dropdown::getDropdownName("glpi_locations",
-                                                                   $job->fields["locations_id"]))));
+                             Dropdown::getDropdownName("glpi_locations",
+                                                       $job->fields["locations_id"])));
 
       $pdf->setColumnsSize(50,50);
 
@@ -228,7 +229,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $requestergroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester group'),
                                          $listgroups);
       foreach ($job->getGroups(CommonITILActor::REQUESTER) as $d) {
-         $groups[] = Html::clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+         $groups[] = Dropdown::getDropdownName("glpi_groups", $d['groups_id']);
       }
       if (count($groups)) {
       $listgroups = implode(', ', $groups);
@@ -260,7 +261,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $watchergroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher group'),
                                          $listgroups);
       foreach ($job->getGroups(CommonITILActor::OBSERVER) as $d) {
-         $groups[] = Html::clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+         $groups[] = Dropdown::getDropdownName("glpi_groups", $d['groups_id']);
       }
       if (count($groups)) {
          $listgroups = implode(', ', $groups);
@@ -293,7 +294,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $assigngroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to groups'),
                                          $listgroups);
       foreach ($job->getGroups(CommonITILActor::ASSIGN) as $d) {
-         $groups[] = Html::clean(Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+         $groups[] = Dropdown::getDropdownName("glpi_groups", $d['groups_id']);
       }
       if (count($groups)) {
          $listgroups = implode(', ', $groups);

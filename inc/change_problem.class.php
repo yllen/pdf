@@ -329,7 +329,7 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
                                     Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
                   } else {
                      $col = sprintf(__('%1$s, %2$s'), $col,
-                           Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+                                    Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
                   }
                   $first = false;
                }

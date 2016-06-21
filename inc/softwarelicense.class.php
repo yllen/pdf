@@ -50,8 +50,7 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       $entity = '';
       if (Session::isMultiEntitiesMode() && !$main) {
-         $entity = ' ('.Html::clean(Dropdown::getDropdownName('glpi_entities',
-                                                             $license->fields['entities_id'])).')';
+         $entity = ' ('.Dropdown::getDropdownName('glpi_entities', $license->fields['entities_id']).')';
       }
       $pdf->displayTitle('<b><i>'.sprintf(__('%1$s: %2$s'), __('ID')."</i>", $ID."</b>".$entity));
 
