@@ -32,8 +32,6 @@
 
 define ('K_PATH_IMAGES', GLPI_ROOT.'/plugins/pdf/pics/');
 
-require_once(GLPI_TCPDF_DIR.'/tcpdf.php');
-
 
 class PluginPdfSimplePDF {
 

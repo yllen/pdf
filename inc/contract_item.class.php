@@ -91,7 +91,7 @@ class PluginPdfContract_Item extends PluginPdfCommon {
             $j++;
          }
       } else {
-         $pdf->displayTitle("<b>".__('No contract found')."</b>");
+         $pdf->displayTitle("<b>".__('No associated contract')."</b>");
       }
       $pdf->displaySpace();
    }

@@ -61,7 +61,8 @@ function plugin_pdf_install() {
        && !TableExists('glpi_plugin_pdf_preferences')) {
          ProfileRight::addProfileRights(array('plugin_pdf'));
    } else {
-      if (FieldExists('glpi_plugin_pdf_profiles','ID')) { //< 0.7.0
+      if (TableExists('glpi_plugin_pdf_profiles')
+          && FieldExists('glpi_plugin_pdf_profiles','ID')) { //< 0.7.0
          $migration->changeField('glpi_plugin_pdf_profiles', 'ID', 'id', 'autoincrement');
       }
       // -- SINCE 0.85 --

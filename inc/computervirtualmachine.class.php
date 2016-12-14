@@ -83,7 +83,7 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
             );
          }
       } else {
-         $pdf->displayTitle("<b>".__('No virtual machine associated with the computer')."</b>");
+         $pdf->displayTitle("<b>".__('No associated virtual machine')."</b>");
       }
 
       // From ComputerVirtualMachine::showForVirtualMachine()

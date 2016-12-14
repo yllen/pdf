@@ -249,10 +249,6 @@ class PluginPdfGroup extends PluginPdfCommon {
             PluginPdfGroup_User::pdfForGroup($pdf, $item, $tree);
             break;
 
-         case 'Ticket$1' :
-            PluginPdfTicket::pdfForItem($pdf, $item, $tree);
-            break;
-
          default :
             return false;
       }

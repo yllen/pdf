@@ -81,7 +81,7 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
                               sprintf(__('%s %s'),Html::clean(Html::formatNumber($percent, false, 0)), '%'));
          }
       } else {
-         $pdf->displayTitle("<b>".__('No volume found', 'pdf')."</b>");
+         $pdf->displayTitle("<b>".__('No associated volume', 'pdf')."</b>");
       }
       $pdf->displaySpace();
    }

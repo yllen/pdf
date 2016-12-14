@@ -48,7 +48,10 @@ function plugin_init_pdf() {
    $plugin = new Plugin();
    if ($plugin->isActivated("datainjection")) {
       $PLUGIN_HOOKS['menu_entry']['pdf'] = 'front/preference.form.php';
+   } elseif ($plugin->isActivated("geststock")) {
+      $PLUGIN_HOOKS['menu_entry']['pdf'] = 'front/preference.form.php';
    }
+
 
       // Define the type for which we know how to generate PDF :
       $PLUGIN_HOOKS['plugin_pdf']['Computer']         = 'PluginPdfComputer';
@@ -77,7 +80,7 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return array('name'           => __('Print to pdf', 'pdf'),
-                'version'        => '1.0.2',
+                'version'        => '1.1',
                 'author'         => 'Remi Collet, Nelly Mahu-Lasson',
                 'license'        => 'GPLv3+',
                 'homepage'       => 'https://forge.indepnet.net/projects/pdf',
@@ -87,8 +90,8 @@ function plugin_version_pdf() {
 
 function plugin_pdf_check_prerequisites(){
 
-   if (version_compare(GLPI_VERSION,'0.85.3','lt') || version_compare(GLPI_VERSION,'9.1','ge')) {
-      echo "This plugin requires GLPI >= 0.85.3";
+   if (version_compare(GLPI_VERSION,'9.1','lt') || version_compare(GLPI_VERSION,'9.2','ge')) {
+      echo "This plugin requires GLPI >= 9.1";
       return false;
    }
    return true;

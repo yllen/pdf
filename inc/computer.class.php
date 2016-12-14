@@ -53,7 +53,6 @@ class PluginPdfComputer extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Computer $computer){
-      global $DB;
 
       PluginPdfCommon::mainTitle($pdf, $computer);
 
@@ -76,35 +75,12 @@ class PluginPdfComputer extends PluginPdfCommon {
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
                           Dropdown::getDropdownName('glpi_groups',
                                                     $computer->fields['groups_id'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Service pack').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystemservicepacks',
-                                                                $computer->fields['operatingsystemservicepacks_id']))));
-
-      $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Domain').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_domains',
-                                                                $computer->fields['domains_id']))),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Version of the operating system').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystemversions',
-                                                                $computer->fields['operatingsystemversions_id']))));
+                                                                $computer->fields['domains_id']))));
 
       $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Operating system').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
-                                                                $computer->fields['operatingsystems_id']))),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Serial of the operating system').'</i></b>',
-                          $computer->fields['os_license_number']));
-
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Product ID of the operating system').'</i></b>',
-                          $computer->fields['os_licenseid']),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Update source').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_autoupdatesystems',
-                                                                $computer->fields['autoupdatesystems_id']))));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']));
+            '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']));
 
       PluginPdfCommon::mainLine($pdf, $computer, 'comment');
 
@@ -194,9 +170,52 @@ class PluginPdfComputer extends PluginPdfCommon {
    }
 
 
+   static function pdfOperatingSystem(PluginPdfSimplePDF $pdf, Computer $computer) {
+
+      $ID = $computer->getField('id');
+      if (!$computer->can($ID, READ)) {
+         return false;
+      }
+
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle('<b>'.Toolbox::ucfirst(OperatingSystem::getTypeName(2)).'</b>');
+
+      $pdf->setColumnsSize(50,50);
+
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
+                                                                $computer->fields['operatingsystems_id']))),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Version').'</i></b>',
+                           Html::clean(Dropdown::getDropdownName('glpi_operatingsystemversions',
+                                                                 $computer->fields['operatingsystemversions_id']))));
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Architecture').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystemarchitectures',
+                                                                $computer->fields['operatingsystemarchitectures_id']))),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Service pack').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystemservicepacks',
+                                                                $computer->fields['operatingsystemservicepacks_id']))));
+
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Kernel version').'</i></b>',
+                          $computer->fields['os_kernel_version']),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Product ID').'</i></b>',
+                          $computer->fields['os_licenseid']));
+
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Serial number').'</i></b>',
+                          $computer->fields['os_license_number']));
+   }
+
+
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
+         case 'Computer$1' :
+            self::pdfOperatingSystem($pdf, $item);
+            break;
+
          case 'Item_Devices$1' :
             self::pdfDevice($pdf, $item);
             break;
@@ -215,6 +234,10 @@ class PluginPdfComputer extends PluginPdfCommon {
 
          case 'ComputerVirtualMachine$1' :
             PluginPdfComputerVirtualMachine::pdfForComputer($pdf, $item);
+            break;
+
+         case 'ComputerAntivirus$1' :
+            PluginPdfComputerAntivirus::pdfForComputer($pdf, $item);
             break;
 
          case 'RegistryKey$1' :

@@ -61,7 +61,7 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
 
       if (!$number) {
          $pdf->setColumnsSize(100);
-         $pdf->displayLine(__('No item found.'));
+         $pdf->displayLine(__('No associated problem', 'pdf'));
       } else {
          $pdf->displayTitle('<b>'._n('Item', 'Items', $number).'</b>');
 

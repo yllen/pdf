@@ -191,7 +191,7 @@ abstract class PluginPdfCommon {
 
          case 'Ticket$1' :
             if (Session::haveRight($item::$rightname, READ)) {
-               PluginPdfTicket::pdfForItem($pdf, $item);
+               PluginPdfItem_Ticket::pdfForItem($pdf, $item);
             }
             break;
 
