@@ -63,7 +63,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
          $pdf->setColumnsSize(100);
          $pdf->displayLine(__('No item found.'));
       } else {
-         $pdf->displayTitle('<b>'._n('Item', 'Items', Session::getPluralNumber()).'</b>');
+         $pdf->displayTitle('<b>'._n('Item', 'Items', $number).'</b>');
 
          $pdf->setColumnsSize(20,30,25,25);
          $pdf->displayTitle("<b><i>".__('Type'), __('Name'), __('Serial number'),
