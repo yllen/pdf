@@ -96,7 +96,7 @@ abstract class PluginPdfCommon {
 
       // Add plugins TAB
       foreach($othertabs as $typetab) {
-         $this->addStandardTab($typetab, $onglet, $options);
+         $this->addStandardTab($typetab, $onglets, $options);
       }
 
       return $onglets;
