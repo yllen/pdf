@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2016 PDF plugin team
+ @copyright Copyright (c) 2009-2017 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -138,11 +138,13 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
       $type = $item->getType();
 
       if (!Session::haveRightsOr('ticket',
-            array(Ticket::READALL, Ticket::READMY, Ticket::READASSIGN))) {
-         return;
+            array(Ticket::READALL, Ticket::READMY, Ticket::READASSIGN, CREATE))) {
+         return false;
       }
 
-      $leftjoin = Ticket::getCommonLeftJoin();
+      $restrict  = '';
+      $order     = '';
+      $leftjoin  = Ticket::getCommonLeftJoin();
       switch ($item->getType()) {
          case 'User' :
             $restrict   = "(`glpi_tickets_users`.`users_id` = '".$item->getID()."'
@@ -180,7 +182,8 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
             break;
 
          default :
-            $restrict   = "(`items_id` = '".$item->getID()."'  AND `itemtype` = '$type')";
+            $restrict = "(`glpi_items_tickets`.`items_id` = '".$item->getID()."' ".
+                        " AND `glpi_items_tickets`.`itemtype` = '".$item->getType()."')";
             // you can only see your tickets
             if (!Session::haveRight('ticket', Ticket::READALL)) {
                $restrict .= " AND (`glpi_tickets`.`users_id_recipient` = '".Session::getLoginUserID()."'
@@ -199,7 +202,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                 ORDER BY $order
                 LIMIT ".intval($_SESSION['glpilist_limit']);
 
-                   $result = $DB->query($query);
+      $result = $DB->query($query);
       $number = $DB->numrows($result);
 
       $pdf->setColumnsSize(100);

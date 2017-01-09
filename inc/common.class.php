@@ -195,6 +195,18 @@ abstract class PluginPdfCommon {
             }
             break;
 
+         case 'Item_Problem$1' :
+            if (Session::haveRight($item::$rightname, READ)) {
+               PluginPdfItem_Problem::pdfForItem($pdf, $item);
+            }
+            break;
+
+         case 'Change_Item$1' :
+            if (Session::haveRight($item::$rightname, READ)) {
+               PluginPdfChange_Item::pdfForItem($pdf, $item);
+            }
+            break;
+
          case 'Link$1' :
             if (Session::haveRight($item::$rightname, READ)) {
                PluginPdfLink::pdfForItem($pdf, $item);

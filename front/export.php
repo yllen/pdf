@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2016 PDF plugin team
+ @copyright Copyright (c) 2009-2017 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -55,10 +55,6 @@ if (isset($_POST["plugin_pdf_inventory_type"])
    }
 
    $tab = array();
-   if (method_exists('CommonGLPI', 'isLayoutWithMain') && CommonGLPI::isLayoutWithMain()) {
-      // 0.90 'main' always displayed in classic/vsplit mode, so not in the defined tabs
-      $tab[] = $type.'$main';
-   }
 
    if (isset($_POST['item'])) {
       foreach ($_POST['item'] as $key => $val) {

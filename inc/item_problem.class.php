@@ -130,4 +130,201 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
    }
 
 
+   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item, $tree=false) {
+      global $DB,$CFG_GLPI;
+
+      $restrict         = '';
+      $order            = '';
+      switch ($item->getType()) {
+         case 'User' :
+            $restrict   = "(`glpi_problems_users`.`users_id` = '".$item->getID()."')";
+            $order      = '`glpi_problems`.`date_mod` DESC';
+            break;
+
+         case 'Supplier' :
+            $restrict   = "(`glpi_problems_suppliers`.`suppliers_id` = '".$item->getID()."')";
+            $order      = '`glpi_problems`.`date_mod` DESC';
+            break;
+
+         case 'Group' :
+            if ($tree) {
+               $restrict = "IN (".implode(',', getSonsOf('glpi_groups', $item->getID())).")";
+            } else {
+               $restrict = "='".$item->getID()."'";
+            }
+            $restrict   = "(`glpi_groups_problems`.`groups_id` $restrict)";
+            $order      = '`glpi_problems`.`date_mod` DESC';
+            break;
+
+         default :
+            $restrict   = "(`items_id` = '".$item->getID()."'
+                            AND `itemtype` = '".$item->getType()."')";
+            $order      = '`glpi_problems`.`date_mod` DESC';
+            break;
+      }
+
+      $query = "SELECT ".Problem::getCommonSelect()."
+                FROM `glpi_problems`
+                LEFT JOIN `glpi_items_problems`
+                  ON (`glpi_problems`.`id` = `glpi_items_problems`.`problems_id`) ".
+                        Problem::getCommonLeftJoin()."
+                WHERE $restrict ".
+                      getEntitiesRestrictRequest("AND","glpi_problems")."
+                ORDER BY $order
+                LIMIT ".intval($_SESSION['glpilist_limit']);
+
+      $result = $DB->query($query);
+      $number = $DB->numrows($result);
+
+      $pdf->setColumnsSize(100);
+      if (!$number) {
+         $pdf->displayTitle('<b>'.__('No associated problem', 'pdf').'</b>');
+      } else {
+         $pdf->displayTitle("<b>".sprintf(_n('Last %d problem','Last %d problems', $number)."</b>",
+                                          $number));
+      }
+
+      $job = new Problem();
+      while ($data = $DB->fetch_assoc($result)) {
+         if (!$job->getFromDB($data["id"])) {
+            continue;
+         }
+         $pdf->setColumnsAlign('center');
+         $col = '<b><i>ID '.$job->fields["id"].'</i></b>, '.
+                       sprintf(__('%1$s: %2$s'), __('Status'),Problem::getStatus($job->fields["status"]));
+
+         if (count($_SESSION["glpiactiveentities"]) > 1) {
+            if ($job->fields['entities_id'] == 0) {
+               $col = sprintf(__('%1$s (%2$s)'), $col, __('Root entity'));
+            } else {
+               $col = sprintf(__('%1$s (%2$s)'), $col,
+                              Dropdown::getDropdownName("glpi_entities", $job->fields['entities_id']));
+            }
+         }
+         $pdf->displayLine($col);
+
+         $pdf->setColumnsAlign('left');
+
+         $col = '<b><i>'.sprintf(__('Opened on %s').'</i></b>',
+                                 Html::convDateTime($job->fields['date']));
+         if ($job->fields['begin_waiting_date']) {
+            $col = sprintf(__('%1$s, %2$s'), $col,
+                           '<b><i>'.sprintf(__('Put on hold on %s').'</i></b>',
+                                            Html::convDateTime($job->fields['begin_waiting_date'])));
+         }
+         if (in_array($job->fields["status"], $job->getSolvedStatusArray())
+             || in_array($job->fields["status"], $job->getClosedStatusArray())) {
+
+            $col = sprintf(__('%1$s, %2$s'), $col,
+                           '<b><i>'.sprintf(__('Solved on %s').'</i></b>',
+                                            Html::convDateTime($job->fields['solvedate'])));
+         }
+         if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
+            $col = sprintf(__('%1$s, %2$s'), $col,
+                           '<b><i>'.sprintf(__('Closed on %s').'</i></b>',
+                                            Html::convDateTime($job->fields['closedate'])));
+         }
+         if ($job->fields['due_date']) {
+            $col = sprintf(__('%1$s, %2$s'), $col,
+                           '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Due date'),
+                                            Html::convDateTime($job->fields['due_date'])));
+         }
+         $pdf->displayLine($col);
+
+         $col = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Priority').'</i></b>',
+                                 Problem::getPriorityName($job->fields["priority"]));
+         if ($job->fields["itilcategories_id"]) {
+            $cat = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
+                                    Dropdown::getDropdownName('glpi_itilcategories',
+                                                              $job->fields["itilcategories_id"]));
+            $col = sprintf(__('%1$s - %2$s'), $col, $cat);
+         }
+         $pdf->displayLine($col);
+
+         $lastupdate = Html::convDateTime($job->fields["date_mod"]);
+         if ($job->fields['users_id_lastupdater'] > 0) {
+            $lastupdate = sprintf(__('%1$s by %2$s'), $lastupdate,
+                                  getUserName($job->fields["users_id_lastupdater"]));
+         }
+
+         $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Last update').'</i></b>',
+               $lastupdate));
+
+         $col   = '';
+         $users = $job->getUsers(CommonITILActor::REQUESTER);
+         if (count($users)) {
+            foreach ($users as $d) {
+               if (empty($col)) {
+                  $col = getUserName($d['users_id']);
+               } else {
+                  $col = sprintf(__('%1$s, %2$s'), $col, getUserName($d['users_id']));
+               }
+            }
+         }
+         $grps = $job->getGroups(CommonITILActor::REQUESTER);
+         if (count($grps)) {
+            if (empty($col)) {
+               $col = sprintf(__('%1$s %2$s'), $col, _n('Group', 'Groups', 2).' </i></b>');
+            } else {
+               $col = sprintf(__('%1$s - %2$s'), $col, _n('Group', 'Groups', 2).' </i></b>');
+            }
+            $first = true;
+            foreach ($grps as $d) {
+               if ($first) {
+                  $col = sprintf(__('%1$s  %2$s'), $col,
+                        Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+               } else {
+                  $col = sprintf(__('%1$s, %2$s'), $col,
+                        Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+               }
+               $first = false;
+            }
+         }
+         if ($col) {
+            $texte = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Requester').'</i></b>', '');
+            $pdf->displayText($texte, $col, 1);
+         }
+
+         $col   = '';
+         $users = $job->getUsers(CommonITILActor::ASSIGN);
+         if (count($users)) {
+            foreach ($users as $d) {
+               if (empty($col)) {
+                  $col = getUserName($d['users_id']);
+               } else {
+                  $col = sprintf(__('%1$s, %2$s'), $col, getUserName($d['users_id']));
+               }
+            }
+         }
+         $grps = $job->getGroups(CommonITILActor::ASSIGN);
+         if (count($grps)) {
+            if (empty($col)) {
+               $col = sprintf(__('%1$s %2$s'), $col, _n('Group', 'Groups', 2).' </i></b>');
+            } else {
+               $col = sprintf(__('%1$s - %2$s'), $col, _n('Group', 'Groups', 2).' </i></b>');
+            }
+            $first = true;
+            foreach ($grps as $d) {
+               if ($first) {
+                  $col = sprintf(__('%1$s  %2$s'), $col,
+                        Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+               } else {
+                  $col = sprintf(__('%1$s, %2$s'), $col,
+                        Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+               }
+               $first = false;
+            }
+         }
+         if ($col) {
+            $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Assigned to'), '');
+            $pdf->displayText($texte, $col, 1);
+         }
+
+         $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Associated items'), '');
+
+         $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Title'), '');
+         $pdf->displayText($texte, $job->fields["name"], 1);
+      }
+      $pdf->displaySpace();
+   }
 }
