@@ -49,7 +49,8 @@ class PluginPdfComputerAntivirus extends PluginPdfCommon {
       $result = $DB->request('glpi_computerantiviruses', array('computers_id' => $ID,
                                                                'is_deleted'   => 0));
       $pdf->setColumnsSize(100);
-      if ($result) {
+
+      if ($result->numrows() != 0) {
          $pdf->displayTitle("<b>".__('Antivirus')."</b>");
          $pdf->setColumnsSize(25,20,15,15,5,5,15);
          $pdf->displayTitle(__('Name'), __('Manufacturer'), __('Antivirus version'),
@@ -68,7 +69,7 @@ class PluginPdfComputerAntivirus extends PluginPdfCommon {
                               Html::clean(Html::convDate($data['date_expiration'])));
          }
       } else {
-         $pdf->displayTitle("<b>".__('No item found')."</b>");
+         $pdf->displayTitle("<b>".__('No Antivirus', 'pdf')."</b>");
       }
 
    }

@@ -42,11 +42,11 @@ msgstr "Validations pour ce changement"
 
 #: inc/common.class.php:292
 msgid "No note found"
-msgstr "Pas de note trouvée"
+msgstr "Pas de note"
 
 #: inc/computerdisk.class.php:84
 msgid "No volume found"
-msgstr "Pas de volume trouvé"
+msgstr "Pas de volume"
 
 #: inc/computer_item.class.php:125
 msgid "No printer"
@@ -58,7 +58,7 @@ msgstr "Pas d'écran"
 
 #: inc/computer_item.class.php:133
 msgid "No peripheral"
-msgstr "Aucun périphérique"
+msgstr "Pas de périphérique"
 
 #: inc/computer_item.class.php:137
 msgid "No phone"

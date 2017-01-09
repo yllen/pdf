@@ -278,9 +278,9 @@ abstract class PluginPdfCommon {
       $rand  = mt_rand();
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.__('Notes').'</b>');
 
       if (count($notes)) {
+         $pdf->displayTitle('<b>'.__('Notes').'</b>');
          foreach ($notes as $note) {
             $id      = 'note'.$note['id'].$rand;
             if (empty($content)) {

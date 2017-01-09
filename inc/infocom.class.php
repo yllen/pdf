@@ -55,6 +55,31 @@ class PluginPdfInfocom extends PluginPdfCommon {
 
       $pdf->setColumnsSize(100);
       if ($ic->getFromDBforDevice(get_class($item),$ID)) {
+
+         $pdf->setColumnsSize(100);
+         $pdf->displayTitle("<b>".__('Asset lifecycle')."</b>");
+
+         $pdf->setColumnsSize(50,50);
+
+         $pdf->displayLine(
+               "<b><i>".sprintf(__('%1$s: %2$s'), __('Order date')."</i></b>",
+                               Html::convDate($ic->fields["order_date"])),
+               "<b><i>".sprintf(__('%1$s: %2$s'), __('Date of purchase')."</i></b>",
+                                Html::convDate($ic->fields["buy_date"])));
+
+         $pdf->displayLine(
+               "<b><i>".sprintf(__('%1$s: %2$s'), __('Delivery date')."</i></b>",
+                                Html::convDate($ic->fields["delivery_date"])),
+               "<b><i>".sprintf(__('%1$s: %2$s'), __('Startup date')."</i></b>",
+                                Html::convDate($ic->fields["use_date"])));
+
+         $pdf->displayLine(
+               "<b><i>".sprintf(__('%1$s: %2$s'), __('Date of last physical inventory')."</i></b>",
+                                Html::convDate($ic->fields["inventory_date"])),
+               "<b><i>".sprintf(__('%1$s: %2$s'), __('Decommission date')."</i></b>",
+                                Html::convDate($ic->fields["decommission_date"])));
+
+         $pdf->setColumnsSize(100);
          $pdf->displayTitle("<b>".__('Financial and administrative information')."</b>");
 
          $pdf->setColumnsSize(50,50);

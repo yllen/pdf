@@ -42,7 +42,7 @@ class PluginPdfDocument extends PluginPdfCommon {
 
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-      global $DB;
+      global $DB, $CFG_GLPI;
 
       $ID   = $item->getField('id');
       $type = get_class($item);
@@ -68,16 +68,30 @@ class PluginPdfDocument extends PluginPdfCommon {
       } else {
          $pdf->displayTitle('<b>'.__('Associated documents', 'pdf').'</b>');
 
-         $pdf->setColumnsSize(32,15,14,11,8,8,9);
-         $pdf->displayTitle('<b>'.__('Name'), __('Entity'), __('File'), __('Web link'), __('Heading'),
-                                  __('MIME type'), __('Date').'</b>');
-
-         while ($data = $DB->fetch_assoc($result)) {
-            $pdf->displayLine($data["name"], $data['entity'], basename($data["filename"]), $data["link"],
-                              Dropdown::getDropdownName("glpi_documentcategories",
-                                                        $data["documentcategories_id"]),
-                              $data["mime"], Html::convDateTime($data["assocdate"]));
+         if ($CFG_GLPI['use_rich_text']) {
+            $pdf->setColumnsSize(31,15,12,11,8,8,6,9);
+            $pdf->displayTitle('<b>'.__('Name'), __('Entity'), __('File'), __('Web link'), __('Heading'),
+                  __('MIME type'), __('Tag'), __('Date').'</b>');
+            while ($data = $DB->fetch_assoc($result)) {
+               $pdf->displayLine($data["name"], $data['entity'], basename($data["filename"]), $data["link"],
+                     Dropdown::getDropdownName("glpi_documentcategories",
+                           $data["documentcategories_id"]),
+                     $data["mime"], !empty($data["tag"]) ? Document::getImageTag($data["tag"]) : '',
+                      Html::convDateTime($data["assocdate"]));
+            }
+         } else {
+            $pdf->setColumnsSize(32,15,14,11,8,8,12);
+            $pdf->displayTitle('<b>'.__('Name'), __('Entity'), __('File'), __('Web link'), __('Heading'),
+                  __('MIME type'), __('Date').'</b>');
+            while ($data = $DB->fetch_assoc($result)) {
+               $pdf->displayLine($data["name"], $data['entity'], basename($data["filename"]), $data["link"],
+                     Dropdown::getDropdownName("glpi_documentcategories",
+                           $data["documentcategories_id"]),
+                     $data["mime"], Html::convDateTime($data["assocdate"]));
+            }
          }
+
+
       }
       $pdf->displaySpace();
    }

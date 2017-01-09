@@ -68,11 +68,11 @@ class PluginPdfReservation extends PluginPdfCommon {
          $result = $DB->query($query);
 
          $pdf->setColumnsSize(100);
-         $pdf->displayTitle("<b>".__('Current and future reservations')."</b>");
 
          if (!$DB->numrows($result)) {
-            $pdf->displayLine("<b>".__('No reservation')."</b>");
+            $pdf->displayTitle("<b>".__('No current and future reservations', 'pdf')."</b>");
          } else {
+            $pdf->displayTitle("<b>".__('Current and future reservations')."</b>");
             $pdf->setColumnsSize(14,14,26,46);
             $pdf->displayTitle('<i>'.__('Start date'), __('End date'), __('By'), __('Comments').
                                '</i>');
@@ -102,11 +102,11 @@ class PluginPdfReservation extends PluginPdfCommon {
          $result = $DB->query($query);
 
          $pdf->setColumnsSize(100);
-         $pdf->displayTitle("<b>".__('Past reservations')."</b>");
 
          if (!$DB->numrows($result)) {
-            $pdf->displayLine("<b>".__('No reservation')."</b>");
+            $pdf->displayTitle("<b>".__('No past reservations', 'pdf')."</b>");
          } else {
+            $pdf->displayTitle("<b>".__('Past reservations')."</b>");
             $pdf->setColumnsSize(14,14,26,46);
             $pdf->displayTitle('<i>'.__('Start date'), __('End date'), __('By'), __('Comments').
                                '</i>');

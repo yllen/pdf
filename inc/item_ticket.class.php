@@ -261,10 +261,10 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
             $col = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Priority').'</i></b>',
                                     Ticket::getPriorityName($job->fields["priority"]));
             if ($job->fields["itilcategories_id"]) {
-               $col = sprintf(__('%1$s - %2$s'), $col,
-                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Category'),
-                                               Dropdown::getDropdownName('glpi_itilcategories',
-                                                               $job->fields["itilcategories_id"])));
+               $cat = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
+                                       Dropdown::getDropdownName('glpi_itilcategories',
+                                                                 $job->fields["itilcategories_id"]));
+               $col = sprintf(__('%1$s - %2$s'), $col, $cat);
             }
             $pdf->displayLine($col);
 
