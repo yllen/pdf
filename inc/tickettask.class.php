@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2016 PDF plugin team
+ @copyright Copyright (c) 2009-2017 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -79,21 +79,24 @@ class PluginPdfTicketTask extends PluginPdfCommon {
 
             $actiontime = Html::timestampToString($data['actiontime'], false);
             $planification = '';
-            if (empty($data['begin'])) {
-               if (isset($data["state"])) {
-                  $planification = Planning::getState($data["state"])."<br>";
-               }
-            } else {
-               if (isset($data["state"])) {
-                  $planification = sprintf(__('%1$s: %2$s'), _x('item', 'State'),
+            if (isset($data["state"])) {
+               $planification = sprintf(__('%1$s: %2$s'), _x('item', 'State'),
                                            Planning::getState($data["state"]));
-               }
+            }
+            if (!empty($data['begin'])) {
                $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('Begin'),
                                                 Html::convDateTime($data["begin"]));
                $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('End'),
                                                 Html::convDateTime($data["end"]));
-               $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('By'),
+            }
+            if ($data['users_id_tech'] > 0) {
+               $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('By user', 'pdf'),
                                                 getUserName($data["users_id_tech"]));
+            }
+            if ($data['groups_id_tech'] > 0) {
+               $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('By group', 'pdf'),
+                                                Dropdown::getDropdownName('glpi_groups',
+                                                                            $data["groups_id_tech"]));
             }
             if ($data['taskcategories_id']) {
                $lib = Dropdown::getDropdownName('glpi_taskcategories',  $data['taskcategories_id']);
