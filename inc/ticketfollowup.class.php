@@ -53,7 +53,7 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
       if (!$private) {
          // Don't show private'
          $RESTRICT=" AND `is_private` = '0' ";
-      } else if (!Session::haveRight("show_full_ticket","1")) {
+      } else if (!Session::haveRight('followup', TicketFollowup::SEEPRIVATE)) {
          // No right, only show connected user private one
          $RESTRICT=" AND (`is_private` = '0'
                           OR `users_id` ='".Session::getLoginUserID()."' ) ";
@@ -67,7 +67,7 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
       $result=$DB->query($query);
 
       if (!$DB->numrows($result)) {
-         $pdf->displayLine(__('No followup for this ticket.', 'pdf'));
+         $pdf->displayTitle(__('No followup for this ticket.', 'pdf'));
       } else {
          $pdf->setColumnsSize(100);
          $pdf->displayTitle("<b>".TicketFollowup::getTypeName($DB->numrows($result))."</b>");
