@@ -66,10 +66,10 @@ class PluginPdfTicketTask extends PluginPdfCommon {
                 ORDER BY `date` DESC";
       $result = $DB->query($query);
 
+      $pdf->setColumnsSize(100);
       if (!$DB->numrows($result)) {
-         $pdf->displayLine(__('No task found.'));
+         $pdf->displayTitle('<b>'.__('No task for this ticket.', 'pdf').'</b>');
       } else {
-         $pdf->setColumnsSize(100);
          $pdf->displayTitle("<b>".TicketTask::getTypeName($DB->numrows($result))."</b>");
 
          while ($data=$DB->fetch_array($result)) {

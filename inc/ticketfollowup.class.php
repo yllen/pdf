@@ -66,10 +66,10 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
                 ORDER BY `date` DESC";
       $result=$DB->query($query);
 
+      $pdf->setColumnsSize(100);
       if (!$DB->numrows($result)) {
-         $pdf->displayTitle(__('No followup for this ticket.', 'pdf'));
+         $pdf->displayTitle('<b>'.__('No followup for this ticket.', 'pdf').'</b>');
       } else {
-         $pdf->setColumnsSize(100);
          $pdf->displayTitle("<b>".TicketFollowup::getTypeName($DB->numrows($result))."</b>");
 
          while ($data=$DB->fetch_array($result)) {
