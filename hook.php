@@ -55,11 +55,13 @@ function plugin_pdf_MassiveActions($type) {
 function plugin_pdf_install() {
    global $DB;
 
-   $migration = new Migration('1.0.2');
+   $migration = new Migration('1.2');
    //new install
    if (!TableExists('glpi_plugin_pdf_profiles')
        && !TableExists('glpi_plugin_pdf_preferences')) {
-         ProfileRight::addProfileRights(array('plugin_pdf'));
+      include_once(GLPI_ROOT."/plugins/pdf/inc/profile.class.php");
+      PluginPdfProfile::install($migration);
+
    } else {
       if (TableExists('glpi_plugin_pdf_profiles')
           && FieldExists('glpi_plugin_pdf_profiles','ID')) { //< 0.7.0

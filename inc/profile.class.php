@@ -106,4 +106,84 @@ class PluginPdfProfile extends Profile {
       return true;
    }
 
+
+   static function addDefaultProfileInfos($profiles_id, $rights, $drop_existing=false) {
+
+      $profileRight = new ProfileRight();
+      foreach ($rights as $right => $value) {
+         if (countElementsInTable('glpi_profilerights',
+               "`profiles_id`='$profiles_id' AND `name`='$right'")
+               && $drop_existing) {
+
+            $profileRight->deleteByCriteria(array('profiles_id' => $profiles_id,
+                  'name' => $right));
+         }
+
+         if (!countElementsInTable('glpi_profilerights',
+               "`profiles_id`='$profiles_id' AND `name`='$right'")) {
+               $myright['profiles_id'] = $profiles_id;
+               $myright['name']        = $right;
+               $myright['rights']      = $value;
+               $profileRight->add($myright);
+
+               //Add right to the current session
+               $_SESSION['glpiactiveprofile'][$right] = $value;
+         }
+      }
+   }
+
+
+   static function createFirstAccess($ID) {
+      self::addDefaultProfileInfos($ID, array('plugin_pdf' => 1), true);
+   }
+
+
+   static function getAllRights($all=false) {
+
+      $rights = array(array('itemtype'  => 'PluginPdf',
+                            'label'     => __('Print to pdf', 'pdf'),
+                            'field'     => 'plugin_pdf'));
+
+      return $rights;
+   }
+
+
+   static function initProfile() {
+      global $DB;
+
+      $profile = new self();
+
+      //Add new rights in glpi_profilerights table
+      foreach ($profile->getAllRights() as $data) {
+         if (countElementsInTable("glpi_profilerights",
+                                  "`name` = '".$data['field']."'") == 0) {
+            ProfileRight::addProfileRights(array($data['field']));
+         }
+      }
+
+      foreach ($DB->request("SELECT *
+                             FROM `glpi_profilerights`
+                             WHERE `profiles_id`='".$_SESSION['glpiactiveprofile']['id']."'
+                                   AND `name` LIKE '%plugin_pdf%'") as $prof) {
+         $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
+      }
+   }
+
+
+   static function removeRightsFromSession() {
+
+      foreach (self::getAllRights(true) as $right) {
+         if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
+            unset($_SESSION['glpiactiveprofile'][$right['field']]);
+         }
+      }
+   }
+
+
+   static function install() {
+
+      self::initProfile();
+      self::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+   }
+
 }

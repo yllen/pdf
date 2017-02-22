@@ -36,6 +36,8 @@ function plugin_init_pdf() {
    $PLUGIN_HOOKS['csrf_compliant']['pdf'] = true;
 
    Plugin::registerClass('PluginPdfProfile',    array('addtabon' => 'Profile'));
+   $PLUGIN_HOOKS['change_profile']['pdf']   = array('PluginPdfProfile','initProfile');
+
    if (Session::haveRight('plugin_pdf', READ)) {
       Plugin::registerClass('PluginPdfPreference', array('addtabon' => 'Preference'));
    }
@@ -80,7 +82,7 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return array('name'           => __('Print to pdf', 'pdf'),
-                'version'        => '1.1',
+                'version'        => '1.2',
                 'author'         => 'Remi Collet, Nelly Mahu-Lasson',
                 'license'        => 'GPLv3+',
                 'homepage'       => 'https://forge.indepnet.net/projects/pdf',
