@@ -295,6 +295,7 @@ abstract class PluginPdfCommon {
          $pdf->displayTitle('<b>'.__('Notes').'</b>');
          foreach ($notes as $note) {
             $id      = 'note'.$note['id'].$rand;
+            $content = $note['content'];
             if (empty($content)) {
                $content = NOT_AVAILABLE;
             }
