@@ -147,7 +147,7 @@ class PluginPdfInfocom extends PluginPdfCommon {
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Monthly TCO')."</i></b>",
                              Html::clean(Infocom::showTco($item->getField('ticket_tco'),
                                                           $ic->fields["value"],
-                                                          $ic->fields["warranty_date"]))));
+                                                          $ic->fields["buy_date"]))));
 
          PluginPdfCommon::mainLine($pdf, $ic, 'comment');
 

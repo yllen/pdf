@@ -1,36 +1,57 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
-# Translators:
-# Kaya Zeren <kayazeren@gmail.com>, 2015
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GLPI Project - Plugin PDF\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-04 13:07+0200\n"
-"PO-Revision-Date: 2015-10-05 04:45+0000\n"
-"Last-Translator: Kaya Zeren <kayazeren@gmail.com>\n"
-"Language-Team: Turkish (Turkey) (http://www.transifex.com/yllen/glpi-project-plugin-pdf/language/tr_TR/)\n"
+"POT-Creation-Date: 2017-01-09 16:46+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Kaya Zeren <kayazeren@gmail.com>, 2017\n"
+"Language-Team: Turkish (Turkey) (https://www.transifex.com/yllen/teams/7201/tr_TR/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: tr_TR\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: hook.php:48 setup.php:75 inc/common.class.php:122
-#: inc/preference.class.php:181 inc/profile.class.php:43
+#: hook.php:48 setup.php:82 inc/common.class.php:123
+#: inc/preference.class.php:182 inc/profile.class.php:43
 #: inc/profile.class.php:71 inc/profile.class.php:75 inc/profile.class.php:93
 msgid "Print to pdf"
 msgstr "Pdf olarak yazdırın"
 
-#: inc/common.class.php:292
+#: inc/changecost.class.php:58
+msgid "No cost for this change"
+msgstr "Bu değişikliğin bir maliyeti yok"
+
+#: inc/change_item.class.php:185 inc/change_problem.class.php:242
+msgid "No associated change"
+msgstr "İlişkili bir değişiklik yok"
+
+#: inc/change_problem.class.php:69 inc/item_problem.class.php:64
+#: inc/item_problem.class.php:181
+msgid "No associated problem"
+msgstr "İlişkili bir sorun yok"
+
+#: inc/changevalidation.class.php:49
+msgid "Approvals for the change"
+msgstr "Değişiklik onayları"
+
+#: inc/common.class.php:304
 msgid "No note found"
 msgstr "Not yok"
 
+#: inc/computerantivirus.class.php:72
+msgid "No Antivirus"
+msgstr "Antivirus yok"
+
 #: inc/computerdisk.class.php:84
-msgid "No volume found"
-msgstr "Birim yok"
+msgid "No associated volume"
+msgstr "İlişkili bir birim yok"
 
 #: inc/computer_item.class.php:125
 msgid "No printer"
@@ -60,9 +81,13 @@ msgstr "İlişkili bir belge yok"
 msgid "Associated documents"
 msgstr "İlişkili belgeler"
 
-#: inc/infocom.class.php:157
+#: inc/infocom.class.php:182
 msgid "No financial information"
 msgstr "Finansal bilgi yok"
+
+#: inc/item_ticket.class.php:210
+msgid "No associated ticket"
+msgstr "İlişkili bir çağrı yok"
 
 #: inc/knowbaseitem.class.php:85
 msgid "No question found"
@@ -72,31 +97,50 @@ msgstr "Soru yok"
 msgid "Choose the tables to print in pdf"
 msgstr "PDF olarak yazdırılacak tabloları seçin"
 
-#: inc/preference.class.php:157
-#, php-format
-msgid "Display %d items"
-msgstr "%d öge görüntülensin"
-
-#: inc/preference.class.php:160
+#: inc/preference.class.php:161
 msgid "Portrait"
 msgstr "Dikey"
 
-#: inc/preference.class.php:161
+#: inc/preference.class.php:162
 msgid "Landscape"
 msgstr "Yatay"
 
-#: inc/preference.class.php:167
+#: inc/preference.class.php:168
 msgctxt "button"
 msgid "Print"
 msgstr "Yazdırın"
+
+#: inc/problem_ticket.class.php:243
+msgid "No ticket found."
+msgstr "Herhangi bir çağrı yok."
+
+#: inc/reservation.class.php:73
+msgid "No current and future reservations"
+msgstr "Bugün ve gelecekte bir ayırtma yok"
+
+#: inc/reservation.class.php:107
+msgid "No past reservations"
+msgstr "Geçmişte bir ayırtma yok"
 
 #: inc/reservation.class.php:127
 msgid "Item not reservable"
 msgstr "Bu öge ayırtılamaz"
 
-#: inc/ticketcost.class.php:61
-msgid "No ticket cost for this ticket"
-msgstr "Bu çağrı için maliyet yok"
+#: inc/ticket.class.php:458
+msgid "Requester information"
+msgstr "İstekte bulunan bilgileri"
+
+#: inc/ticketcost.class.php:58
+msgid "No cost for this ticket"
+msgstr "Bu çağrının bir maliyeti yok"
+
+#: inc/ticketfollowup.class.php:70
+msgid "No followup for this ticket."
+msgstr "Bu çağrı için izleme yok."
+
+#: inc/ticketfollowup.class.php:77
+msgid "Source of followup"
+msgstr "İzleme kaynağı"
 
 #: inc/ticketsatisfaction.class.php:61
 msgid "1 star"
@@ -121,3 +165,15 @@ msgstr "5 yıldız"
 #: inc/ticketsatisfaction.class.php:81
 msgid "No answer"
 msgstr "Yanıt yok"
+
+#: inc/tickettask.class.php:93
+msgid "By user"
+msgstr "Kullanıcı tarafından"
+
+#: inc/tickettask.class.php:97
+msgid "By group"
+msgstr "Grup tarafından"
+
+#: inc/ticketvalidation.class.php:49
+msgid "Approvals for the ticket"
+msgstr "Çağrı onayları"
