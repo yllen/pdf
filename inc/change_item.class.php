@@ -56,8 +56,11 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                 WHERE `glpi_changes_items`.`changes_id` = '$instID'
                 ORDER BY `itemtype`";
 
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
+      $result = $DB->request(['SELECT DISTINCT' => 'itemtype',
+                              'FROM'            => 'glpi_changes_items',
+                              'WHERE'           => ['changes_id' => $instID],
+                              'ORDER'           => 'itemtype']);
+      $number = count($result);
 
       if (!$number) {
          $pdf->setColumnsSize(100);
@@ -69,62 +72,64 @@ class PluginPdfChange_Item extends PluginPdfCommon {
          $pdf->displayTitle("<b><i>".__('Type'), __('Name'), __('Entity'), __('Serial number'),
                                   __('Inventory number')."</b></i>");
 
-                                        $totalnb = 0;
+         $totalnb = 0;
          for ($i=0 ; $i<$number ; $i++) {
-            $itemtype = $DB->result($result, $i, "itemtype");
+            $row = $result->next();
+            $itemtype = $row['itemtype'];
             if (!($item = getItemForItemtype($itemtype))) {
                continue;
             }
 
             if ($item->canView()) {
                $itemtable = getTableForItemType($itemtype);
-            $query = "SELECT `$itemtable`.*,
+
+               $query = "SELECT `$itemtable`.*,
                              `glpi_changes_items`.`id` AS IDD,
                              `glpi_entities`.`id` AS entity
-                      FROM `glpi_changes_items`,
+                         FROM `glpi_changes_items`,
                            `$itemtable`";
 
-            if ($itemtype != 'Entity') {
-               $query .= " LEFT JOIN `glpi_entities`
+               if ($itemtype != 'Entity') {
+                  $query .= " LEFT JOIN `glpi_entities`
                                  ON (`$itemtable`.`entities_id`=`glpi_entities`.`id`) ";
-            }
-
-            $query .= " WHERE `$itemtable`.`id` = `glpi_changes_items`.`items_id`
-                              AND `glpi_changes_items`.`itemtype` = '$itemtype'
-                              AND `glpi_changes_items`.`changes_id` = '$instID'";
-
-            if ($item->maybeTemplate()) {
-               $query .= " AND `$itemtable`.`is_template` = '0'";
-            }
-
-            $query .= getEntitiesRestrictRequest(" AND", $itemtable, '', '',
-                                                 $item->maybeRecursive())."
-                      ORDER BY `glpi_entities`.`completename`, `$itemtable`.`name`";
-
-            $result_linked = $DB->query($query);
-            $nb            = $DB->numrows($result_linked);
-
-            for ($prem=true ; $data=$DB->fetch_assoc($result_linked) ; $prem=false) {
-               $name = $data["name"];
-               if (empty($data["name"])) {
-                  $name = "(".$data["id"].")";
                }
-               if ($prem) {
-                  $typename = $item->getTypeName($nb);
-                  $pdf->displayLine(Html::clean(sprintf(__('%1$s: %2$s'), $typename, $nb)),
-                                    Html::clean($name),
-                                    Dropdown::getDropdownName("glpi_entities", $data['entity']),
-                                    Html::clean($data["serial"]),
-                                    Html::clean($data["otherserial"]),$nb);
-               } else {
-                  $pdf->displayLine('',
-                                    Html::clean($name),
-                                    Html::clean($data["serial"]),
-                                    Html::clean($data["otherserial"]),$nb);
+
+               $query .= " WHERE `$itemtable`.`id` = `glpi_changes_items`.`items_id`
+                                 AND `glpi_changes_items`.`itemtype` = '$itemtype'
+                                 AND `glpi_changes_items`.`changes_id` = '$instID'";
+
+               if ($item->maybeTemplate()) {
+                  $query .= " AND `$itemtable`.`is_template` = '0'";
                }
+
+               $query .= getEntitiesRestrictRequest(" AND", $itemtable, '', '',
+                                                   $item->maybeRecursive())."
+                         ORDER BY `glpi_entities`.`completename`, `$itemtable`.`name`";
+
+               $result_linked = $DB->request($query);
+               $nb            = count($result_linked);
+
+               for ($prem=true ; $data=$result_linked->next() ; $prem=false) {
+                  $name = $data["name"];
+                  if (empty($data["name"])) {
+                     $name = "(".$data["id"].")";
+                  }
+                  if ($prem) {
+                     $typename = $item->getTypeName($nb);
+                     $pdf->displayLine(Html::clean(sprintf(__('%1$s: %2$s'), $typename, $nb)),
+                                       Html::clean($name),
+                                       Dropdown::getDropdownName("glpi_entities", $data['entity']),
+                                       Html::clean($data["serial"]),
+                                       Html::clean($data["otherserial"]),$nb);
+                  } else {
+                     $pdf->displayLine('',
+                                       Html::clean($name),
+                                       Html::clean($data["serial"]),
+                                       Html::clean($data["otherserial"]),$nb);
+                  }
+               }
+               $totalnb += $nb;
             }
-            $totalnb += $nb;
-         }
          }
       }
       $pdf->displayLine("<b><i>".sprintf(__('%1$s = %2$s')."</b></i>", __('Total'), $totalnb));
@@ -166,7 +171,6 @@ class PluginPdfChange_Item extends PluginPdfCommon {
             break;
       }
 
-
       $query = "SELECT ".Change::getCommonSelect()."
                 FROM `glpi_changes`
                 LEFT JOIN `glpi_changes_items`
@@ -177,8 +181,8 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                 ORDER BY $order
                 LIMIT ".intval($_SESSION['glpilist_limit']);
 
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
+      $result = $DB->request($query);
+      $number = count($result);
 
       $pdf->setColumnsSize(100);
       if (!$number) {
@@ -189,7 +193,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
       }
 
       $job = new Change();
-      while ($data = $DB->fetch_assoc($result)) {
+      while ($data = $result->next()) {
          if (!$job->getFromDB($data["id"])) {
             continue;
          }
@@ -228,10 +232,10 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                            '<b><i>'.sprintf(__('Closed on %s').'</i></b>',
                                             Html::convDateTime($job->fields['closedate'])));
          }
-         if ($job->fields['due_date']) {
+         if ($job->fields['time_to_resolve']) {
             $col = sprintf(__('%1$s, %2$s'), $col,
                            '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Due date'),
-                                            Html::convDateTime($job->fields['due_date'])));
+                                            Html::convDateTime($job->fields['time_to_resolve'])));
          }
          $pdf->displayLine($col);
 

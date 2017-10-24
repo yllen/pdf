@@ -173,7 +173,6 @@ class PluginPdfGroup extends PluginPdfCommon {
 
       unset($onglets['NotificationTarget$1']);  // TODO Notifications
       unset($onglets['Item_Problem$1']); // TODO add method to print linked Problems
-      unset($onglets['Change_Item$1']); // TODO add method to print linked Changes
 
       return $onglets;
    }
@@ -247,6 +246,10 @@ class PluginPdfGroup extends PluginPdfCommon {
 
          case 'Group_User$1' :
             PluginPdfGroup_User::pdfForGroup($pdf, $item, $tree);
+            break;
+
+         case 'Change_Item$1' :
+            PluginPdfChange_Item::pdfForItem($pdf, $item, $tree);
             break;
 
          default :

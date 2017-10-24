@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2016 PDF plugin team
+ @copyright Copyright (c) 2009-2017 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -67,7 +67,7 @@ abstract class PluginPdfCommon {
 
             $titles = $obj->getTabNameForItem($this->obj, $withtemplate);
             if (!is_array($titles)) {
-               $titles = array(1 => $titles);
+               $titles = [1 => $titles];
             }
 
             foreach ($titles as $key => $val) {
@@ -119,7 +119,7 @@ abstract class PluginPdfCommon {
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
       if (Session::haveRight('plugin_pdf', READ)) {
-         if(!isset($withtemplate) || empty($withtemplate)) {
+         if (!isset($withtemplate) || empty($withtemplate)) {
             return __('Print to pdf', 'pdf');
          }
       }
@@ -463,10 +463,7 @@ abstract class PluginPdfCommon {
       switch ($ma->getAction()) {
          case 'DoIt':
             $cont = $ma->POST['container'];
-            $opt = array(
-               // 'onclick' => '$("#'.$cont.'").attr("target","_blank");'
-               'id' => 'pdfmassubmit'
-            );
+            $opt = ['id' => 'pdfmassubmit'];
             echo Html::submit(_sx('button', 'Post'), $opt);
             return true;
       }

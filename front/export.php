@@ -71,7 +71,7 @@ if (isset($_POST["plugin_pdf_inventory_type"])
        && class_exists($PLUGIN_HOOKS['plugin_pdf'][$type])) {
 
       $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$type]($item);
-      $itempdf->generatePDF(array($_POST["itemID"]), $tab, (isset($_POST["page"]) ? $_POST["page"] : 0));
+      $itempdf->generatePDF([$_POST["itemID"]], $tab, (isset($_POST["page"]) ? $_POST["page"] : 0));
    } else {
       die("Missing hook");
    }
