@@ -86,7 +86,7 @@ abstract class PluginPdfCommon {
     *
     * @param $options Array of options
    **/
-   function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets  = $this->obj->defineTabs();
 

@@ -38,7 +38,7 @@ class PluginPdfProfile extends Profile {
 
    function getSearchOptions() {
 
-      $tab = array();
+      $tab = [];
 
       $tab['common'] = __('Print to pdf', 'pdf');
 
@@ -51,17 +51,17 @@ class PluginPdfProfile extends Profile {
    }
 
 
-   function showForm($ID, $options=array()) {
+   function showForm($ID, $options=[]) {
       global $DB;
 
       $profile      = new Profile();
 
-      if ($canedit = Session::haveRightsOr(self::$rightname, array(CREATE, UPDATE, PURGE))) {
+      if ($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE])) {
          echo "<form action='".$profile->getFormURL()."' method='post'>";
       }
       $profile->getFromDB($ID);
 
-      $real_right = ProfileRight::getProfileRights($ID, array('plugin_pdf'));
+      $real_right = ProfileRight::getProfileRights($ID, ['plugin_pdf']);
       $checked = 0;
       if (isset($real_right)
           && ($real_right['plugin_pdf'] == 1)) {
@@ -73,14 +73,14 @@ class PluginPdfProfile extends Profile {
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('Print to pdf', 'pdf')."</td><td>";
-      Html::showCheckbox(array('name'    => '_plugin_pdf',
-                               'checked' => $checked));
+      Html::showCheckbox(['name'    => '_plugin_pdf',
+                          'checked' => $checked]);
       echo "</td></tr></table>\n";
 
       if ($canedit) {
          echo "<div class='center'>";
-         echo Html::hidden('id', array('value' => $ID));
-         echo Html::submit(_sx('button', 'Update'), array('name' => 'update'));
+         echo Html::hidden('id', ['value' => $ID]);
+         echo Html::submit(_sx('button', 'Update'), ['name' => 'update']);
          echo "</div>\n";
          Html::closeForm();
       }
@@ -110,17 +110,20 @@ class PluginPdfProfile extends Profile {
    static function addDefaultProfileInfos($profiles_id, $rights, $drop_existing=false) {
 
       $profileRight = new ProfileRight();
+      $dbu          = new DbUtils();
       foreach ($rights as $right => $value) {
-         if (countElementsInTable('glpi_profilerights',
-               "`profiles_id`='$profiles_id' AND `name`='$right'")
-               && $drop_existing) {
+         if ($dbu->countElementsInTable('glpi_profilerights',
+                                        ['profiles_id' => $profiles_id,
+                                         'name'        => $right])
+             && $drop_existing) {
 
-            $profileRight->deleteByCriteria(array('profiles_id' => $profiles_id,
-                  'name' => $right));
+            $profileRight->deleteByCriteria(['profiles_id' => $profiles_id,
+                                             'name'        => $right]);
          }
 
-         if (!countElementsInTable('glpi_profilerights',
-               "`profiles_id`='$profiles_id' AND `name`='$right'")) {
+         if (!$dbu->countElementsInTable('glpi_profilerights',
+                                         ['profiles_id' => $profiles_id,
+                                          'name'        => $right])) {
                $myright['profiles_id'] = $profiles_id;
                $myright['name']        = $right;
                $myright['rights']      = $value;
@@ -134,15 +137,15 @@ class PluginPdfProfile extends Profile {
 
 
    static function createFirstAccess($ID) {
-      self::addDefaultProfileInfos($ID, array('plugin_pdf' => 1), true);
+      self::addDefaultProfileInfos($ID, ['plugin_pdf' => 1], true);
    }
 
 
    static function getAllRights($all=false) {
 
-      $rights = array(array('itemtype'  => 'PluginPdf',
-                            'label'     => __('Print to pdf', 'pdf'),
-                            'field'     => 'plugin_pdf'));
+      $rights = [['itemtype'  => 'PluginPdf',
+                  'label'     => __('Print to pdf', 'pdf'),
+                  'field'     => 'plugin_pdf']];
 
       return $rights;
    }
@@ -152,23 +155,22 @@ class PluginPdfProfile extends Profile {
       global $DB;
 
       $profile = new self();
+      $dbu     = new DbUtils();
 
       //Add new rights in glpi_profilerights table
       foreach ($profile->getAllRights() as $data) {
-         if (countElementsInTable("glpi_profilerights",
-                                  "`name` = '".$data['field']."'") == 0) {
-            ProfileRight::addProfileRights(array($data['field']));
+         if ($dbu->countElementsInTable("glpi_profilerights",
+                                        ['name' => $data['field']]) == 0) {
+            ProfileRight::addProfileRights([$data['field']]);
          }
       }
 
-      foreach ($DB->request("SELECT *
-                             FROM `glpi_profilerights`
-                             WHERE `profiles_id`='".$_SESSION['glpiactiveprofile']['id']."'
-                                   AND `name` LIKE '%plugin_pdf%'") as $prof) {
+      foreach ($DB->request(['FROM'  => 'glpi_profilerights',
+                             'WHERE' => ['profiles_id' => $_SESSION['glpiactiveprofile']['id'],
+                                         'name' => ['LIKE', '%plugin_pdf%']]]) as $prof) {
          $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
       }
    }
-
 
    static function removeRightsFromSession() {
 

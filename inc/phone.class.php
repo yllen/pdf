@@ -46,6 +46,7 @@ class PluginPdfPhone extends PluginPdfCommon {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['Item_Devices$1']); // TODO add method to print linked Devices
+      unset($onglets['KnowbaseItem_Item$1']);
       return $onglets;
    }
 

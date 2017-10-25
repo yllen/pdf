@@ -37,7 +37,6 @@ class PluginPdfChangeCost extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-
       $this->obj = ($obj ? $obj : new ChangeCost());
    }
 
@@ -47,18 +46,16 @@ class PluginPdfChangeCost extends PluginPdfCommon {
 
       $ID = $job->getField('id');
 
-      $query = "SELECT *
-                FROM `glpi_changecosts`
-                WHERE `changes_id` = '$ID'
-                ORDER BY `begin_date`";
-      $result=$DB->query($query);
+      $result = $DB->request(['FROM'  => 'glpi_changecosts',
+                              'WHERE' => ['changes_id' => $ID],
+                              'ORDER' => 'begin_date']);
 
-      if (!$DB->numrows($result)) {
+      if (!count($result)) {
          $pdf->setColumnsSize(100);
          $pdf->displayLine(__('No cost for this change', 'pdf'));
       } else {
          $pdf->setColumnsSize(60,20,20);
-         $pdf->displayTitle("<b>".ChangeCost::getTypeName($DB->numrows($result)),
+         $pdf->displayTitle("<b>".ChangeCost::getTypeName(count($result)),
                             __('Change duration'),
                             CommonITILObject::getActionTime($job->fields['actiontime'])."</b>");
 
@@ -81,7 +78,7 @@ class PluginPdfChangeCost extends PluginPdfCommon {
          $total_fixed    = 0;
          $total_material = 0;
 
-         while ($data=$DB->fetch_array($result)) {
+         while ($data = $result->next()) {
             $cost = ChangeCost::computeTotalCost($data['actiontime'], $data['cost_time'],
                                            $data['cost_fixed'], $data['cost_material']);
             $pdf->displayLine($data['name'],

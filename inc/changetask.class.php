@@ -47,19 +47,17 @@ class PluginPdfChangeTask extends PluginPdfCommon {
 
       $ID = $job->getField('id');
 
-      $query = "SELECT *
-                FROM `glpi_changetasks`
-                WHERE `changes_id` = '$ID'
-                ORDER BY `date` DESC";
-      $result = $DB->query($query);
+      $result = $DB->request(['FROM'   => 'glpi_changetasks',
+                              'WHERE'  => ['changes_id' => $ID],
+                              'ORDER'  => 'date DESC']);
 
-      if (!$DB->numrows($result)) {
+      if (!count($result)) {
          $pdf->displayLine(__('No task found.'));
       } else {
          $pdf->setColumnsSize(100);
-         $pdf->displayTitle("<b>".ChangeTask::getTypeName($DB->numrows($result))."</b>");
+         $pdf->displayTitle("<b>".ChangeTask::getTypeName(count($result))."</b>");
 
-         while ($data=$DB->fetch_array($result)) {
+         while ($data = $result->next()) {
             $pdf->setColumnsSize(20,20,20,20,20);
             $pdf->displayTitle("<i>".__('Type'), __('Date'), __('Duration'), __('Writer'),
                                      __('Planning')."</i>");

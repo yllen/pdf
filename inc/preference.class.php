@@ -96,7 +96,7 @@ class PluginPdfPreference extends CommonDBTM {
              ($ID ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
 
       $landscape = false;
-      $values    = array();
+      $values    = [];
 
       foreach ($DB->request(['SELECT' => 'tabref',
                              'FROM'   => $this->getTable(),

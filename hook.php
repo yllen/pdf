@@ -119,7 +119,7 @@ function plugin_pdf_install() {
       if ($DB->fieldExists('glpi_plugin_pdf_preferences','device_type')) {
          $migration->changeField('glpi_plugin_pdf_preferences', 'device_type', 'itemtype',
                                  'VARCHAR(100) NOT NULL',
-                                 array('comment' => 'see define.php *_TYPE constant'));
+                                 ['comment' => 'see define.php *_TYPE constant']);
       }
       // 0.6.0
       if ($DB->fieldExists('glpi_plugin_pdf_preferences','table_num')) {

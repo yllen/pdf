@@ -44,6 +44,8 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
    static function pdfForLicenseByEntity(PluginPdfSimplePDF $pdf, SoftwareLicense $license) {
       global $DB;
 
+      $dbu = new DbUtils();
+
       $ID = $license->getField('id');
 
       $pdf->setColumnsSize(65,35);
@@ -88,18 +90,18 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
 
       $ID = $license->getField('id');
 
-      $query_number = "SELECT COUNT(*) AS cpt
-                       FROM `glpi_computers_softwarelicenses`
-                       INNER JOIN `glpi_computers`
-                           ON (`glpi_computers_softwarelicenses`.`computers_id` = `glpi_computers`.`id`)
-                       WHERE `glpi_computers_softwarelicenses`.`softwarelicenses_id` = '".$ID."'" .
-                             getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
-                             AND `glpi_computers`.`is_deleted` = '0'
-                             AND `glpi_computers`.`is_template` = '0'";
+      $query = "SELECT COUNT(*) AS cpt
+                FROM `glpi_computers_softwarelicenses`
+                INNER JOIN `glpi_computers`
+                   ON (`glpi_computers_softwarelicenses`.`computers_id` = `glpi_computers`.`id`)
+                WHERE `glpi_computers_softwarelicenses`.`softwarelicenses_id` = '".$ID."'" .
+                      getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
+                      AND `glpi_computers`.`is_deleted` = '0'
+                      AND `glpi_computers`.`is_template` = '0'";
 
       $number = 0;
-      if ($result =$DB->query($query_number)) {
-         $number  = $DB->result($result,0,0);
+      if ($result = $DB->request($query)) {
+         $number  = count($result);
       }
 
       $pdf->setColumnsSize(100);
@@ -148,41 +150,42 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
                          AND `glpi_computers`.`is_template` = '0'
                    ORDER BY `entity`, `compname`
                    LIMIT 0," . intval($_SESSION['glpilist_limit']);
-            $result = $DB->query($query);
 
-            $showEntity = ($license->isRecursive());
-            if ($showEntity) {
-               $pdf->setColumnsSize(12,12,12,12,16,12,12,12);
-               $pdf->displayTitle('<b><i>'.__('Entity'), __('Name'), __('Serial number'),
-                                           __('Inventory number'), __('Location'), __('Status'),
-                                           __('Group'), __('User').
-                                  '</i></b>');
-            } else {
-               $pdf->setColumnsSize(14,14,14,18,14,13,13);
-               $pdf->displayTitle('<b><i>'.__('Name'), __('Serial number'), __('Inventory number'),
-                                           __('Location'), __('Status'), __('Group'), __('User').
-                                  '</i></b>');
-            }
-            while ($data = $DB->fetch_assoc($result)) {
-               $compname = $data['compname'];
-               if (empty($compname) || $_SESSION['glpiis_ids_visible']) {
-                  $compname = sprintf(__('%1$s (%2$s)'), $compname, $data['cID']);
-               }
-               $entname = (empty($data['entity']) ? __('Root entity') : $data['entity']);
+         $result = $DB->request($query);
 
-               if ($showEntity) {
-                  $pdf->displayLine($entname, $compname, $data['serial'],
-                                    $data['otherserial'], $data['location'], $data['state'],
-                                    $data['groupe'], $data['username']);
-               } else {
-                  $pdf->displayLine($compname, $data['serial'], $data['otherserial'],
-                                    $data['location'], $data['state'], $data['groupe'],
-                                    $data['username']);
-               }
-            }
+         $showEntity = ($license->isRecursive());
+         if ($showEntity) {
+            $pdf->setColumnsSize(12,12,12,12,18,10,12,12);
+            $pdf->displayTitle('<b><i>'.__('Entity'), __('Name'), __('Serial number'),
+                                        __('Inventory number'), __('Location'), __('Status'),
+                                        __('Group'), __('User').
+                               '</i></b>');
          } else {
-            $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item found')));
+            $pdf->setColumnsSize(14,14,14,18,14,13,13);
+            $pdf->displayTitle('<b><i>'.__('Name'), __('Serial number'), __('Inventory number'),
+                                        __('Location'), __('Status'), __('Group'), __('User').
+                               '</i></b>');
          }
-         $pdf->displaySpace();
+         while ($data = $result->next()) {
+            $compname = $data['compname'];
+            if (empty($compname) || $_SESSION['glpiis_ids_visible']) {
+               $compname = sprintf(__('%1$s (%2$s)'), $compname, $data['cID']);
+            }
+            $entname = (empty($data['entity']) ? __('Root entity') : $data['entity']);
+
+            if ($showEntity) {
+               $pdf->displayLine($entname, $compname, $data['serial'],
+                                 $data['otherserial'], $data['location'], $data['state'],
+                                 $data['groupe'], $data['username']);
+            } else {
+               $pdf->displayLine($compname, $data['serial'], $data['otherserial'],
+                                 $data['location'], $data['state'], $data['groupe'],
+                                 $data['username']);
+            }
+         }
+      } else {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item found')));
+      }
+      $pdf->displaySpace();
    }
 }

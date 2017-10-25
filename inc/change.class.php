@@ -70,9 +70,9 @@ class PluginPdfChange extends PluginPdfCommon {
       }
 
       $sla = $due = $commentsla = '';
-      if ($job->fields['due_date']) {
-         $due = "<b><i>".sprintf(__('%1$s: %2$s'), __('Due date')."</b></i>",
-                                 Html::convDateTime($job->fields['due_date']));
+      if ($job->fields['time_to_resolve']) {
+         $due = "<b><i>".sprintf(__('%1$s: %2$s'), __('Time to resolve')."</b></i>",
+                                 Html::convDateTime($job->fields['time_to_resolve']));
       }
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Opening date')."</i></b>",
@@ -126,7 +126,7 @@ class PluginPdfChange extends PluginPdfCommon {
       $pdf->setColumnsSize(50,50);
 
       // Requester
-      $users     = array();
+      $users     = [];
       $listusers = '';
       $requester = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester'), $listusers);
       foreach ($job->getUsers(CommonITILActor::REQUESTER) as $d) {
@@ -145,7 +145,7 @@ class PluginPdfChange extends PluginPdfCommon {
       }
       $pdf->displayText($requester, $listusers, 1);
 
-      $groups         = array();
+      $groups         = [];
       $listgroups     = '';
       $requestergroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester group'),
                                          $listgroups);
@@ -158,7 +158,7 @@ class PluginPdfChange extends PluginPdfCommon {
       $pdf->displayText($requestergroup, $listgroups, 1);
 
       // Observer
-      $users     = array();
+      $users     = [];
       $listusers = '';
       $watcher   = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher'), $listusers);
       foreach ($job->getUsers(CommonITILActor::OBSERVER) as $d) {
@@ -177,7 +177,7 @@ class PluginPdfChange extends PluginPdfCommon {
       }
       $pdf->displayText($watcher, $listusers, 1);
 
-      $groups       = array();
+      $groups       = [];
       $listgroups   = '';
       $watchergroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher group'),
                                          $listgroups);
@@ -190,7 +190,7 @@ class PluginPdfChange extends PluginPdfCommon {
       $pdf->displayText($watchergroup, $listgroups, 1);
 
       // Assign to
-      $users = array();
+      $users     = [];
       $listusers = '';
       $assign    = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to technicians'),
                                     $listusers);
@@ -210,7 +210,7 @@ class PluginPdfChange extends PluginPdfCommon {
       }
       $pdf->displayText($assign, $listusers, 1);
 
-      $groups     = array();
+      $groups      = [];
       $listgroups  = '';
       $assigngroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to groups'),
                                          $listgroups);
@@ -223,7 +223,7 @@ class PluginPdfChange extends PluginPdfCommon {
       $pdf->displayText($assigngroup, $listgroups, 1);
 
      // Supplier
-      $suppliers      = array();
+      $suppliers      = [];
       $listsuppliers  = '';
       $assignsupplier = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to a supplier'),
                                          $listsuppliers);
@@ -310,8 +310,8 @@ class PluginPdfChange extends PluginPdfCommon {
       $pdf->setColumnsSize(50, 50);
       $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Opening date'),
                                 Html::convDateTime($job->fields['date'])));
-      $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Due date'),
-                                Html::convDateTime($job->fields['due_date'])));
+      $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Time to resolve'),
+                                Html::convDateTime($job->fields['time_to_resolve'])));
 
       if (in_array($job->fields["status"], $job->getSolvedStatusArray())
           || in_array($job->fields["status"], $job->getClosedStatusArray())) {
@@ -357,10 +357,11 @@ class PluginPdfChange extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['Change_Project$1']); // projet
+      unset($onglets['KnowbaseItem_Item$1']);
 
       return $onglets;
    }

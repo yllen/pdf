@@ -60,8 +60,10 @@ class PluginPdfChangeValidation extends PluginPdfCommon {
                 FROM `glpi_changevalidations`
                 WHERE `changes_id` = '".$change->getField('id')."'
                 ORDER BY submission_date DESC";
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
+      $result = $DB->request(['FROM'   => 'glpi_changevalidations',
+                              'WHERE'  => ['changes_id' => $change->getField('id')],
+                              'ORDER'  => 'submission_date DESC']);
+      $number = count($result);
 
       if ($number) {
          $pdf->setColumnsSize(10,10,15,20,10,15,20);
@@ -69,7 +71,7 @@ class PluginPdfChangeValidation extends PluginPdfCommon {
                             __('Request comments'), __('Approval status'), __('Approver'),
                             __('Approval comments'));
 
-         while ($row = $DB->fetch_assoc($result)) {
+         while ($row = $result->next()) {
             $pdf->displayLine(TicketValidation::getStatus($row['status']),
                               Html::convDateTime($row["submission_date"]),
                               getUserName($row["users_id"]),

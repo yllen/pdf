@@ -43,13 +43,13 @@ $pdf = new PluginPdfSimplePDF();
 $pdf->setHeader("PDF test header");
 $pdf->newPage();
 
-$lorem = array(
+$lorem = [
    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut fringilla id ante id interdum.",
    "Morbi facilisis et lacus sit amet blandit. Nam ligula erat, euismod eget condimentum in, semper eget tellus.",
    "Cras vitae lacus fermentum, vestibulum eros sed, luctus massa. Vivamus commodo sodales interdum.",
    "Cras accumsan, nunc sit amet facilisis hendrerit, sem tellus gravida enim, ut facilisis tellus augue at dui.",
    "Morbi egestas nisi placerat nunc tempus mattis. ",
-);
+];
 
 $pdf->setColumnsSize(100);
 $pdf->displayTitle("PDF <b>test</b> title");

@@ -54,7 +54,7 @@ if (isset($_POST["plugin_pdf_inventory_type"])
       unset($_SESSION["plugin_pdf"][$type]);
    }
 
-   $tab = array();
+   $tab = [];
 
    if (isset($_POST['item'])) {
       foreach ($_POST['item'] as $key => $val) {

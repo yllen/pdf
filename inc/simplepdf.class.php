@@ -53,10 +53,10 @@ class PluginPdfSimplePDF {
    private $header='';
 
    // Columns management
-   private $cols  = array();
-   private $colsx = array();
-   private $colsw = array();
-   private $align = array();
+   private $cols  = [];
+   private $colsx = [];
+   private $colsw = [];
+   private $align = [];
 
 
    /**
@@ -118,7 +118,7 @@ class PluginPdfSimplePDF {
       $this->header = $msg;
       $this->pdf->resetHeaderTemplate();
       $this->pdf->SetTitle($msg);
-      $configurationValues = Config::getConfigurationValues('core', array('version'));
+      $configurationValues = Config::getConfigurationValues('core', ['version']);
       $current_version     = $configurationValues['version'];
       switch ($current_version) {
          case "0.85.3" :
@@ -173,9 +173,9 @@ class PluginPdfSimplePDF {
    public function setColumnsSize() {
 
       $this->cols  = $tmp = func_get_args();
-      $this->colsx = array();
-      $this->colsw = array();
-      $this->align = array();
+      $this->colsx = [];
+      $this->colsw = [];
+      $this->align = [];
 
       $x           = 10;
       $w           = floor($this->width - 2*count($tmp));
@@ -326,7 +326,7 @@ class PluginPdfSimplePDF {
     * @param $URL  String link
    **/
    public function displayLink($name, $URL) {
-      $this->displayInternal(240, 0.5, self::LEFT, 1, array(sprintf('<a href="%s">%s</a>', $URL, $name)));
+      $this->displayInternal(240, 0.5, self::LEFT, 1, [sprintf('<a href="%s">%s</a>', $URL, $name)]);
    }
 
 
@@ -341,12 +341,7 @@ class PluginPdfSimplePDF {
    public function displayText($name, $content='', $minline=3, $maxline=100) {
 
       /* Save columns */
-      $save = array(
-         $this->cols,
-         $this->colsx,
-         $this->colsw,
-         $this->align,
-      );
+      $save = [$this->cols, $this->colsx, $this->colsw, $this->align];
 
       $this->setColumnsSize(100);
       $text = $name.' '.$content;
@@ -354,7 +349,7 @@ class PluginPdfSimplePDF {
       if (!preg_match("/<br\s?\/?>/", $content) && !preg_match("/<p>/", $content)) {
          $content = nl2br($content);
       }
-      $this->displayInternal(240, 0.5, self::LEFT, $minline*5, array($content));
+      $this->displayInternal(240, 0.5, self::LEFT, $minline*5, [$content]);
       /* Restore */
       list(
          $this->cols,

@@ -149,12 +149,12 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
          case 'User' :
             $restrict   = "(`glpi_tickets_users`.`users_id` = '".$item->getID()."'
                             AND `glpi_tickets_users`.`type` = ".CommonITILActor::REQUESTER.")";
-            $order      = '`glpi_tickets`.`date_mod` DESC';
+            $order      = '`glpi_tickets`.`time_to_resolve` DESC';
             break;
 
          case 'SLA' :
             $restrict  = "(`slas_id` = '".$item->getID()."')";
-            $order     = '`glpi_tickets`.`due_date` DESC';
+            $order     = '`glpi_tickets`.`time_to_resolve` DESC';
             break;
 
          case 'Supplier' :
@@ -254,10 +254,10 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                               '<b><i>'.sprintf(__('Closed on %s').'</i></b>',
                                                Html::convDateTime($job->fields['closedate'])));
             }
-            if ($job->fields['due_date']) {
+            if ($job->fields['time_to_resolve']) {
                $col = sprintf(__('%1$s, %2$s'), $col,
-                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Due date'),
-                                               Html::convDateTime($job->fields['due_date'])));
+                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Time to resolve'),
+                                               Html::convDateTime($job->fields['time_to_resolve'])));
             }
             $pdf->displayLine($col);
 

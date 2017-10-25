@@ -51,18 +51,17 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
          return false;
       }
 
-      $query = "SELECT DISTINCT `glpi_changes_problems`.`id` AS linkID,
-                                `glpi_problems`.*
-                FROM `glpi_changes_problems`
-                LEFT JOIN `glpi_problems`
-                     ON (`glpi_changes_problems`.`problems_id` = `glpi_problems`.`id`)
-                WHERE `glpi_changes_problems`.`changes_id` = '$ID'
-                ORDER BY `glpi_problems`.`name`";
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
+      $result = $DB->request(['SELECT DISTINCT' => ['glpi_changes_problems.id', 'glpi_problems.*', 'name'],
+                              'FROM'            => 'glpi_changes_problems',
+                              'LEFT JOIN'       => ['glpi_problems'
+                                                    => ['FKEY' => ['glpi_changes_problems' => 'problems_id',
+                                                                   'glpi_problems'         => 'id']]],
+                              'WHERE'           => ['changes_id' => $ID],
+                              'ORDER'           => 'name']);
+      $number = count($result);
 
-      $problems = array();
-      $used     = array();
+      $problems = [];
+      $used     = [];
 
       $pdf->setColumnsSize(100);
       if (!$number) {
@@ -71,7 +70,7 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
          $pdf->displayTitle("<b>".Problem::getTypeName($number)."</b>");
 
          $job = new Problem();
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $result->next()) {
             if (!$job->getFromDB($data["id"])) {
                continue;
             }
@@ -111,10 +110,10 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
                               '<b><i>'.sprintf(__('Closed on %s').'</i></b>',
                                                Html::convDateTime($job->fields['closedate'])));
             }
-            if ($job->fields['due_date']) {
+            if ($job->fields['time_to_resolve']) {
                $col = sprintf(__('%1$s, %2$s'), $col,
-                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Due date'),
-                                               Html::convDateTime($job->fields['due_date'])));
+                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Time to resolve'),
+                                               Html::convDateTime($job->fields['time_to_resolve'])));
             }
             $pdf->displayLine($col);
 
@@ -224,18 +223,17 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
          return false;
       }
 
-      $query = "SELECT DISTINCT `glpi_changes_problems`.`id` AS linkID,
-                                `glpi_changes`.*
-                FROM `glpi_changes_problems`
-                LEFT JOIN `glpi_changes`
-                     ON (`glpi_changes_problems`.`changes_id` = `glpi_changes`.`id`)
-                WHERE `glpi_changes_problems`.`problems_id` = '$ID'
-                ORDER BY `glpi_changes`.`name`";
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
+      $result = $DB->request(['SELECT DISTINCT' => ['glpi_changes_problems.id', 'glpi_changes.*', 'name'],
+                              'FROM'            => 'glpi_changes_problems',
+                              'LEFT JOIN'       => ['glpi_changes'
+                                                    => ['FKEY' => ['glpi_changes_problems' => 'changes_id',
+                                                                   'glpi_changes'          => 'id']]],
+                              'WHERE'           => ['problems_id' => $ID],
+                              'ORDER'           => 'name']);
+      $number = count($result);
 
-      $problems = array();
-      $used     = array();
+      $problems = [];
+      $used     = [];
 
       $pdf->setColumnsSize(100);
       if (!$number) {
@@ -244,7 +242,7 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
          $pdf->displayTitle("<b>".Change::getTypeName($number)."</b>");
 
          $job = new Change();
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $result->next()) {
             if (!$job->getFromDB($data["id"])) {
                continue;
             }
@@ -279,10 +277,10 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
                               '<b><i>'.sprintf(__('Closed on %s').'</i></b>',
                                                Html::convDateTime($job->fields['closedate'])));
             }
-            if ($job->fields['due_date']) {
+            if ($job->fields['time_to_resolve']) {
                $col = sprintf(__('%1$s, %2$s'), $col,
-                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Due date'),
-                                               Html::convDateTime($job->fields['due_date'])));
+                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Time to resolve'),
+                                               Html::convDateTime($job->fields['time_to_resolve'])));
             }
             $pdf->displayLine($col);
 

@@ -234,7 +234,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
          }
          if ($job->fields['time_to_resolve']) {
             $col = sprintf(__('%1$s, %2$s'), $col,
-                           '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Due date'),
+                           '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Time_to_resolve'),
                                             Html::convDateTime($job->fields['time_to_resolve'])));
          }
          $pdf->displayLine($col);

@@ -39,8 +39,8 @@ class PluginPdfRemote  {
       global $PLUGIN_HOOKS;
 
       if (isset ($params['help'])) {
-         return array('help'   => 'bool,optional',
-                      'type'   => 'string');
+         return ['help'   => 'bool,optional',
+                 'type'   => 'string'];
       }
 
       if (!Session::getLoginUserID()) {
@@ -66,13 +66,12 @@ class PluginPdfRemote  {
       global $PLUGIN_HOOKS;
 
       if (isset ($params['help'])) {
-            return array('help'      => 'bool,optional',
-                         'type'      => 'string',
-                         'id'        => 'integer',
-                         'landscape' => 'bool,optional',
-                         'tabs'      => 'string,optional',
-                         'alltabs'   => 'bool,optional',
-            );
+            return ['help'      => 'bool,optional',
+                    'type'      => 'string',
+                    'id'        => 'integer',
+                    'landscape' => 'bool,optional',
+                    'tabs'      => 'string,optional',
+                    'alltabs'   => 'bool,optional'];
       }
 
       if (!Session::getLoginUserID()) {
@@ -105,7 +104,7 @@ class PluginPdfRemote  {
          }
          $tabs = explode(',', $params['tabs']);
       } else {
-         $tabs = array($type.'$main');
+         $tabs = [$type.'$main'];
       }
       if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])  && class_exists($PLUGIN_HOOKS['plugin_pdf'][$type])) {
          $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$type]($item);
@@ -113,9 +112,9 @@ class PluginPdfRemote  {
             $tabs = $itempdf->defineAllTabs();
             $tabs = array_keys($tabs);
          }
-         $out = $itempdf->generatePDF(array($id), $tabs, $landscape, false);
-         return array('name'   => "$type-$id.pdf",
-                      'base64' => base64_encode($out));
+         $out = $itempdf->generatePDF([$id], $tabs, $landscape, false);
+         return ['name'   => "$type-$id.pdf",
+                 'base64' => base64_encode($out)];
       }
       return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_FAILED);
    }

@@ -46,10 +46,10 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
 
       $ID = $comp->getField('id');
 
-      $items = array('Printer'    => _n('Printer', 'Printers', 2),
-                     'Monitor'    => _n('Monitor', 'Monitors', 2),
-                     'Peripheral' => _n('Device', 'Devices', 2),
-                     'Phone'      => _n('Phone', 'Phones', 2));
+      $items = ['Printer'    => _n('Printer', 'Printers', 2),
+                'Monitor'    => _n('Monitor', 'Monitors', 2),
+                'Peripheral' => _n('Device', 'Devices', 2),
+                'Phone'      => _n('Phone', 'Phones', 2)];
 
       $info = new InfoCom();
 
@@ -80,12 +80,13 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
             $query.= " AND NOT `".getTableForItemType($type)."`.`is_template` ";
          }
 
-         if ($result = $DB->query($query)) {
-            $resultnum = $DB->numrows($result);
+         if ($result = $DB->request($query)) {
+            $resultnum = count($result);
             if ($resultnum > 0) {
                for ($j=0 ; $j < $resultnum ; $j++) {
-                  $tID    = $DB->result($result, $j, "items_id");
-                  $connID = $DB->result($result, $j, "id");
+                  $row = $result->next();
+                  $tID    = $row['items_id'];
+                  $connID = $row['id'];
                   $item->getFromDB($tID);
                   $info->getFromDBforDevice($type,$tID) || $info->getEmpty();
 
@@ -161,24 +162,29 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
                 WHERE `items_id` = '".$ID."'
                       AND `itemtype` = '".$type."'";
 
-      if ($result = $DB->query($query)) {
-         $resultnum = $DB->numrows($result);
+      if ($result = $DB->request(['FROM'  => 'glpi_computers_items',
+                                  'WHERE' => ['items_id' => $ID,
+                                              'itemtype' => $type]])) {
+         $resultnum = count($result);
          if ($resultnum > 0) {
             for ($j=0 ; $j < $resultnum ; $j++) {
-               $tID    = $DB->result($result, $j, "computers_id");
-               $connID = $DB->result($result, $j, "id");
+               $row = $result->next();
+               $tID    = $row["computers_id"];
+               $connID = $row["id"];
                $comp->getFromDB($tID);
                $info->getFromDBforDevice('Computer',$tID) || $info->getEmpty();
 
                $line1 = ($comp->fields['name']?$comp->fields['name']:"(".$comp->fields['id'].")");
+               $line1 = sprintf(__('%1$s - %2$s'), $line1,
+                                sprintf(__('%1$s: %2$s'), __('Status'),
+                                        Html::clean(Dropdown::getDropdownName("glpi_states",
+                                                                              $comp->fields['states_id']))));
                if ($comp->fields['serial']) {
                   $line1 = sprintf(__('%1$s - %2$s'), $line1,
                                    sprintf(__('%1$s: %2$s'), __('Serial number'),
                                            $comp->fields['serial']));
                }
-               $line1 = sprintf(__('%1$s - %2$s'), $line1,
-                                Html::clean(Dropdown::getDropdownName("glpi_states",
-                                                                      $comp->fields['states_id'])));
+
 
                $line2 = "";
                if ($comp->fields['otherserial']) {
