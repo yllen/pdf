@@ -113,7 +113,7 @@ class PluginPdfGroup extends PluginPdfCommon {
          $title = __('Used items');
       }
 
-      $datas  = array();
+      $datas  = [];
       $max = $group->getDataItems($types, $field, $tree, $user, 0, $datas);
       $nb = count($datas);
 
@@ -167,7 +167,7 @@ class PluginPdfGroup extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
 
@@ -187,8 +187,8 @@ class PluginPdfGroup extends PluginPdfCommon {
       $entity_assign = $item->isEntityAssign();
 
       $fk            = $item->getForeignKeyField();
-      $crit          = array($fk     => $item->getID(),
-                             'ORDER' => 'name');
+      $crit          = [$fk     => $item->getID(),
+                        'ORDER' => 'name'];
 
       $pdf->setColumnsSize(100);
       $pdf->displayTitle(sprintf(__('Sons of %s'), '<b>'.$item->getNameID().'</b>'));

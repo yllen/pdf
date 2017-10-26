@@ -40,7 +40,7 @@ class PluginPdfPrinter extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['Item_Devices$1']); // TODO add method to print linked Devices
@@ -82,11 +82,11 @@ class PluginPdfPrinter extends PluginPdfCommon {
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Current counter of pages').'</i></b>',
                           $printer->fields['last_pages_counter']));
 
-      $opts = array('have_serial'   => __('Serial'),
-                    'have_parallel' => __('Parallel'),
-                    'have_usb'      => __('USB'),
-                    'have_ethernet' => __('Ethernet'),
-                    'have_wifi'     => __('Wifi'));
+      $opts = ['have_serial'   => __('Serial'),
+               'have_parallel' => __('Parallel'),
+               'have_usb'      => __('USB'),
+               'have_ethernet' => __('Ethernet'),
+               'have_wifi'     => __('Wifi')];
 
       foreach ($opts as $key => $val) {
          if (!$printer->fields[$key]) {

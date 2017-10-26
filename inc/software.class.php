@@ -102,7 +102,7 @@ class PluginPdfSoftware extends PluginPdfCommon {
    }
 
 
-    function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['Software$1']); // Merge tab can't be exported

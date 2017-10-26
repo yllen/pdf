@@ -106,13 +106,14 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
    static function pdfForSoftware(PluginPdfSimplePDF $pdf, Software $software, $infocom=false) {
       global $DB;
 
-      $sID = $software->getField('id');
+      $sID     = $software->getField('id');
       $license = new SoftwareLicense();
+      $dbu     = new DbUtils();
 
       $query = "SELECT `id`
                 FROM `glpi_softwarelicenses`
                 WHERE `softwares_id` = '".$sID."' " .
-                getEntitiesRestrictRequest('AND', 'glpi_softwarelicenses', '', '', true) . "
+                      $dbu->getEntitiesRestrictRequest('AND', 'glpi_softwarelicenses', '', '', true) . "
                 ORDER BY `name`";
 
       $pdf->setColumnsSize(100);

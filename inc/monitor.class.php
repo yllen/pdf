@@ -42,7 +42,7 @@ class PluginPdfMonitor extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['KnowbaseItem_Item$1']);
@@ -68,14 +68,14 @@ class PluginPdfMonitor extends PluginPdfCommon {
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Size').'</i></b>',
                           sprintf(__('%1$s %2$s'), $item->fields['size'], '"')));
 
-      $opts = array('have_micro'         => __('Microphone'),
-                    'have_speaker'       => __('Speakers'),
-                    'have_subd'          => __('Sub-D'),
-                    'have_bnc'           => __('BNC'),
-                    'have_dvi'           => __('DVI'),
-                    'have_pivot'         => __('Pivot'),
-                    'have_hdmi'          => __('HDMI'),
-                    'have_displayport'   => __('DisplayPort'));
+      $opts = ['have_micro'         => __('Microphone'),
+               'have_speaker'       => __('Speakers'),
+               'have_subd'          => __('Sub-D'),
+               'have_bnc'           => __('BNC'),
+               'have_dvi'           => __('DVI'),
+               'have_pivot'         => __('Pivot'),
+               'have_hdmi'          => __('HDMI'),
+               'have_displayport'   => __('DisplayPort')];
       foreach ($opts as $key => $val) {
          if (!$item->fields[$key]) {
             unset($opts[$key]);

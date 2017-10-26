@@ -42,7 +42,7 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['KnowbaseItem$3']);
@@ -55,8 +55,8 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
 
       $ID = $item->getField('id');
 
-      if (!Session::haveRightsOr('knowbase', array(READ, KnowbaseItem::READFAQ,
-                                                   KnowbaseItem::KNOWBASEADMIN))) {
+      if (!Session::haveRightsOr('knowbase',
+                                 [READ, KnowbaseItem::READFAQ, KnowbaseItem::KNOWBASEADMIN])) {
          return false;
       }
 
@@ -134,8 +134,8 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
 
       $ID = $item->getField('id');
 
-      if (!Session::haveRightsOr('knowbase', array(READ, KnowbaseItem::READFAQ,
-            KnowbaseItem::KNOWBASEADMIN))) {
+      if (!Session::haveRightsOr('knowbase',
+                                 [READ, KnowbaseItem::READFAQ, KnowbaseItem::KNOWBASEADMIN])) {
          return false;
       }
 

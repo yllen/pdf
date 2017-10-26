@@ -45,6 +45,8 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $ticket) {
       global $DB;
 
+      $dbu = new DbUtils();
+
       $instID = $ticket->fields['id'];
 
       if (!$ticket->can($instID, READ)) {
@@ -77,7 +79,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
             }
 
             if ($item->canView()) {
-               $itemtable = getTableForItemType($itemtype);
+               $itemtable = $dbu->getTableForItemType($itemtype);
             $query = "SELECT `$itemtable`.*,
                              `glpi_items_tickets`.`id` AS IDD,
                              `glpi_entities`.`id` AS entity
@@ -97,8 +99,8 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                $query .= " AND `$itemtable`.`is_template` = '0'";
             }
 
-            $query .= getEntitiesRestrictRequest(" AND", $itemtable, '', '',
-                                                 $item->maybeRecursive())."
+            $query .= $dbu->getEntitiesRestrictRequest(" AND", $itemtable, '', '',
+                                                       $item->maybeRecursive())."
                       ORDER BY `glpi_entities`.`completename`, `$itemtable`.`name`";
 
             $result_linked = $DB->query($query);
@@ -134,11 +136,13 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item, $tree=false) {
       global $DB,$CFG_GLPI;
 
+      $dbu  = new DbUtils();
+
       $ID   = $item->getField('id');
       $type = $item->getType();
 
       if (!Session::haveRightsOr('ticket',
-            array(Ticket::READALL, Ticket::READMY, Ticket::READASSIGN, CREATE))) {
+                                 [Ticket::READALL, Ticket::READMY, Ticket::READASSIGN, CREATE])) {
          return false;
       }
 
@@ -198,7 +202,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                 FROM `glpi_tickets` ".
                 $leftjoin."
                 WHERE $restrict ".
-                      getEntitiesRestrictRequest("AND","glpi_tickets")."
+                      $dbu->getEntitiesRestrictRequest("AND","glpi_tickets")."
                 ORDER BY $order
                 LIMIT ".intval($_SESSION['glpilist_limit']);
 

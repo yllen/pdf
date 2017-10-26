@@ -62,8 +62,8 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
       $result = $DB->query($query);
       $number = $DB->numrows($result);
 
-      $problems = array();
-      $used     = array();
+      $problems = [];
+      $used     = [];
 
       $pdf->setColumnsSize(100);
       if (!$number) {
@@ -235,8 +235,8 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
       $result = $DB->query($query);
       $number = $DB->numrows($result);
 
-      $problems = array();
-      $used     = array();
+      $problems = [];
+      $used     = [];
 
       $pdf->setColumnsSize(100);
       if (!$number) {

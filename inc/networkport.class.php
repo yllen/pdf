@@ -45,6 +45,7 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
       global $DB;
 
+      $dbu  = new DbUtils();
       $ID       = $item->getField('id');
       $type     = get_class($item);
 
@@ -68,7 +69,7 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                $netport = new NetworkPort;
                $netport->getfromDB(current($devid));
                $instantiation_type = $netport->fields["instantiation_type"];
-               $instname = call_user_func(array($instantiation_type, 'getTypeName'));
+               $instname = call_user_func([$instantiation_type, 'getTypeName']);
                $pdf->displayTitle('<b>'.$instname.'</b>');
 
                $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), '#</b>',
@@ -137,7 +138,7 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                           LEFT JOIN `glpi_ipnetworks`
                            ON (`glpi_ipaddresses_ipnetworks`.`ipnetworks_id` = `glpi_ipnetworks`.`id`)
                           WHERE `glpi_ipaddresses_ipnetworks`.`ipaddresses_id` = '".$ip->getID()."'" .
-                                getEntitiesRestrictRequest(' AND', 'glpi_ipnetworks');
+                                $dbu->getEntitiesRestrictRequest(' AND', 'glpi_ipnetworks');
 
                   $res        = $DB->query($sql);
                   if ($res) {

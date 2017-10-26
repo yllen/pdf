@@ -57,12 +57,12 @@ class PluginPdfTicketSatisfaction extends PluginPdfCommon {
 
       } else if ($survey->getField('date_answered')){
          $sat = $survey->getField('satisfaction');
-         $tabsat = array(0 => __('None'),
-                      1 => __('1 star', 'pdf'),
-                      2 => __('2 stars', 'pdf'),
-                      3 => __('3 stars', 'pdf'),
-                      4 => __('4 stars', 'pdf'),
-                      5 => __('5 stars', 'pdf'));
+         $tabsat = [0 => __('None'),
+                    1 => __('1 star', 'pdf'),
+                    2 => __('2 stars', 'pdf'),
+                    3 => __('3 stars', 'pdf'),
+                    4 => __('4 stars', 'pdf'),
+                    5 => __('5 stars', 'pdf')];
          if (isset($tabsat[$sat])) {
             $sat = $tabsat[$sat]. "  ($sat/5)";
          }

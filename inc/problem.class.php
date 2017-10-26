@@ -123,7 +123,7 @@ class PluginPdfProblem extends PluginPdfCommon {
 
 
       // Requester
-      $users     = array();
+      $users     = [];
       $listusers = '';
       $requester = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester'), $listusers);
       foreach ($job->getUsers(CommonITILActor::REQUESTER) as $d) {
@@ -142,7 +142,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       }
       $pdf->displayText($requester, $listusers, 1);
 
-      $groups         = array();
+      $groups         = [];
       $listgroups     = '';
       $requestergroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester group'),
                                          $listgroups);
@@ -155,7 +155,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       $pdf->displayText($requestergroup, $listgroups, 1);
 
       // Observer
-      $users     = array();
+      $users     = [];
       $listusers = '';
       $watcher   = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher'), $listusers);
       foreach ($job->getUsers(CommonITILActor::OBSERVER) as $d) {
@@ -174,7 +174,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       }
       $pdf->displayText($watcher, $listusers, 1);
 
-      $groups       = array();
+      $groups       = [];
       $listgroups   = '';
       $watchergroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher group'),
                                          $listgroups);
@@ -187,7 +187,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       $pdf->displayText($watchergroup, $listgroups, 1);
 
       // Assign to
-      $users = array();
+      $users = [];
       $listusers = '';
       $assign    = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Technician as assigned'),
                                     $listusers);
@@ -207,7 +207,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       }
       $pdf->displayText($assign, $listusers, 1);
 
-      $groups     = array();
+      $groups     = [];
       $listgroups  = '';
       $assigngroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Technician group'),
                                          $listgroups);
@@ -221,7 +221,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       $pdf->displayText($assigngroup, $listgroups, 1);
 
      // Supplier
-      $suppliers      = array();
+      $suppliers      = [];
       $listsuppliers  = '';
       $assignsupplier = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Supplier'),
                                          $listsuppliers);
@@ -248,6 +248,7 @@ class PluginPdfProblem extends PluginPdfCommon {
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item, $tree=false) {
       global $DB,$CFG_GLPI;
 
+      $dbu  = new DbUtils();
       $ID   = $item->getField('id');
       $type = $item->getType();
 
@@ -287,7 +288,7 @@ class PluginPdfProblem extends PluginPdfCommon {
                   ON (`glpi_problems`.`id` = `glpi_items_problems`.`problems_id`) ".
                 Problem::getCommonLeftJoin()."
                 WHERE $restrict ".
-                      getEntitiesRestrictRequest("AND","glpi_problems")."
+                      $dbu->getEntitiesRestrictRequest("AND","glpi_problems")."
                 ORDER BY $order
                 LIMIT ".intval($_SESSION['glpilist_limit']);
 
@@ -548,7 +549,7 @@ class PluginPdfProblem extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
       return $onglets;

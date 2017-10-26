@@ -47,6 +47,7 @@ class PluginPdfContract_Item extends PluginPdfCommon {
       $type = $item->getType();
       $ID   = $item->getField('id');
       $con  = new Contract();
+      $dbu  = new DbUtils();
 
       $query = "SELECT `glpi_contracts_items`.*
                 FROM `glpi_contracts_items`,
@@ -55,7 +56,7 @@ class PluginPdfContract_Item extends PluginPdfCommon {
                 WHERE `glpi_contracts`.`id`=`glpi_contracts_items`.`contracts_id`
                       AND `glpi_contracts_items`.`items_id` = '".$ID."'
                       AND `glpi_contracts_items`.`itemtype` = '".$type."'".
-                      getEntitiesRestrictRequest(" AND","glpi_contracts",'','',true)."
+                      $dbu->getEntitiesRestrictRequest(" AND","glpi_contracts",'','',true)."
                 ORDER BY `glpi_contracts`.`name`";
 
       $result = $DB->query($query);

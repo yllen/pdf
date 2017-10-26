@@ -63,7 +63,7 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
       }
       $sql = "SELECT `id`, `completename`
               FROM `glpi_entities` " .
-              getEntitiesRestrictRequest('WHERE', 'glpi_entities') ."
+              $dbu->getEntitiesRestrictRequest('WHERE', 'glpi_entities') ."
               ORDER BY `completename`";
 
       foreach ($DB->request($sql) as $entity => $data) {
@@ -88,6 +88,8 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
    static function pdfForLicenseByComputer(PluginPdfSimplePDF $pdf, SoftwareLicense $license) {
       global $DB;
 
+      $dbu = new DbUtils();
+
       $ID = $license->getField('id');
 
       $query = "SELECT COUNT(*) AS cpt
@@ -95,7 +97,7 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
                 INNER JOIN `glpi_computers`
                    ON (`glpi_computers_softwarelicenses`.`computers_id` = `glpi_computers`.`id`)
                 WHERE `glpi_computers_softwarelicenses`.`softwarelicenses_id` = '".$ID."'" .
-                      getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
+                      $dbu->getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
                       AND `glpi_computers`.`is_deleted` = '0'
                       AND `glpi_computers`.`is_template` = '0'";
 
@@ -145,7 +147,7 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
                    LEFT JOIN `glpi_groups` ON (`glpi_computers`.`groups_id` = `glpi_groups`.`id`)
                    LEFT JOIN `glpi_users` ON (`glpi_computers`.`users_id` = `glpi_users`.`id`)
                    WHERE (`glpi_softwarelicenses`.`id` = '".$ID."') " .
-                         getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
+                         $dbu->getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
                          AND `glpi_computers`.`is_deleted` = '0'
                          AND `glpi_computers`.`is_template` = '0'
                    ORDER BY `entity`, `compname`

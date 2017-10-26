@@ -45,16 +45,13 @@ class PluginPdfChange_Item extends PluginPdfCommon {
    static function pdfForChange(PluginPdfSimplePDF $pdf, Change $change) {
       global $DB;
 
+      $dbu = new DbUtils();
+
       $instID = $change->fields['id'];
 
       if (!$change->can($instID, READ)) {
          return false;
       }
-
-      $query = "SELECT DISTINCT `itemtype`
-                FROM `glpi_changes_items`
-                WHERE `glpi_changes_items`.`changes_id` = '$instID'
-                ORDER BY `itemtype`";
 
       $result = $DB->request(['SELECT DISTINCT' => 'itemtype',
                               'FROM'            => 'glpi_changes_items',
@@ -62,26 +59,26 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                               'ORDER'           => 'itemtype']);
       $number = count($result);
 
+      $pdf->setColumnsSize(100);
       if (!$number) {
-         $pdf->setColumnsSize(100);
          $pdf->displayLine(__('No item found.'));
       } else {
          $pdf->displayTitle('<b>'._n('Item', 'Items', $number).'</b>');
 
          $pdf->setColumnsSize(20,20,26,17,17);
          $pdf->displayTitle("<b><i>".__('Type'), __('Name'), __('Entity'), __('Serial number'),
-                                  __('Inventory number')."</b></i>");
+                                  __('Inventory number')."</i></b>");
 
          $totalnb = 0;
          for ($i=0 ; $i<$number ; $i++) {
             $row = $result->next();
             $itemtype = $row['itemtype'];
-            if (!($item = getItemForItemtype($itemtype))) {
+            if (!($item = $dbu->getItemForItemtype($itemtype))) {
                continue;
             }
 
             if ($item->canView()) {
-               $itemtable = getTableForItemType($itemtype);
+               $itemtable = $dbu->getTableForItemType($itemtype);
 
                $query = "SELECT `$itemtable`.*,
                              `glpi_changes_items`.`id` AS IDD,
@@ -102,8 +99,8 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                   $query .= " AND `$itemtable`.`is_template` = '0'";
                }
 
-               $query .= getEntitiesRestrictRequest(" AND", $itemtable, '', '',
-                                                   $item->maybeRecursive())."
+               $query .= $dbu->getEntitiesRestrictRequest(" AND", $itemtable, '', '',
+                                                          $item->maybeRecursive())."
                          ORDER BY `glpi_entities`.`completename`, `$itemtable`.`name`";
 
                $result_linked = $DB->request($query);
@@ -138,6 +135,8 @@ class PluginPdfChange_Item extends PluginPdfCommon {
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item, $tree=false) {
       global $DB,$CFG_GLPI;
+
+      $dbu = new DbUtils();
 
       $restrict = '';
       $order    = '';
@@ -177,7 +176,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                   ON (`glpi_changes`.`id` = `glpi_changes_items`.`changes_id`) ".
                       Change::getCommonLeftJoin()."
                 WHERE $restrict ".
-                      getEntitiesRestrictRequest("AND","glpi_changes")."
+                      $dbu->getEntitiesRestrictRequest("AND","glpi_changes")."
                 ORDER BY $order
                 LIMIT ".intval($_SESSION['glpilist_limit']);
 

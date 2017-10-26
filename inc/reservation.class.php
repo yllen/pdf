@@ -86,7 +86,7 @@ class PluginPdfReservation extends PluginPdfCommon {
                }
                $pdf->displayLine(Html::convDateTime($data["begin"]),
                                  Html::convDateTime($data["end"]),
-                                 $name, str_replace(array("\r","\n")," ",$data["comment"]));
+                                 $name, str_replace(["\r","\n"]," ",$data["comment"]));
             }
          }
 
@@ -120,7 +120,7 @@ class PluginPdfReservation extends PluginPdfCommon {
                }
                $pdf->displayLine(Html::convDateTime($data["begin"]),
                                                     Html::convDateTime($data["end"]), $name,
-                                                    str_replace(array("\r","\n")," ",$data["comment"]));
+                                                    str_replace(["\r","\n"]," ",$data["comment"]));
             }
          }
       } else {

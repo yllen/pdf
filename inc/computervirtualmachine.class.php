@@ -47,7 +47,7 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
 
       // From ComputerVirtualMachine::showForComputer()
       $virtualmachines = getAllDatasFromTable('glpi_computervirtualmachines',
-                                              "`computers_id` = '$ID'");
+                                              ['computers_id' => $ID]);
       $pdf->setColumnsSize(100);
       if (count($virtualmachines)) {
          $pdf->displayTitle("<b>".__('List of virtual machines')."</b>");

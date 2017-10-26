@@ -45,6 +45,8 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
    static function pdfForProblem(PluginPdfSimplePDF $pdf, Problem $problem) {
       global $DB;
 
+      $dbu = new DbUtils();
+
       $instID = $problem->fields['id'];
 
       if (!$problem->can($instID, READ)) {
@@ -72,12 +74,12 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
                                         $totalnb = 0;
          for ($i=0 ; $i<$number ; $i++) {
             $itemtype = $DB->result($result, $i, "itemtype");
-            if (!($item = getItemForItemtype($itemtype))) {
+            if (!($item = $dbu->getItemForItemtype($itemtype))) {
                continue;
             }
 
             if ($item->canView()) {
-               $itemtable = getTableForItemType($itemtype);
+               $itemtable = $dbu->getTableForItemType($itemtype);
             $query = "SELECT `$itemtable`.*,
                              `glpi_items_problems`.`id` AS IDD,
                              `glpi_entities`.`id` AS entity
@@ -97,7 +99,7 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
                $query .= " AND `$itemtable`.`is_template` = '0'";
             }
 
-            $query .= getEntitiesRestrictRequest(" AND", $itemtable, '', '',
+            $query .= $dbu->getEntitiesRestrictRequest(" AND", $itemtable, '', '',
                                                  $item->maybeRecursive())."
                       ORDER BY `glpi_entities`.`completename`, `$itemtable`.`name`";
 
@@ -132,6 +134,8 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item, $tree=false) {
       global $DB,$CFG_GLPI;
+
+      $dbu = new DbUtils();
 
       $restrict         = '';
       $order            = '';
@@ -169,7 +173,7 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
                   ON (`glpi_problems`.`id` = `glpi_items_problems`.`problems_id`) ".
                         Problem::getCommonLeftJoin()."
                 WHERE $restrict ".
-                      getEntitiesRestrictRequest("AND","glpi_problems")."
+                      $dbu->getEntitiesRestrictRequest("AND","glpi_problems")."
                 ORDER BY $order
                 LIMIT ".intval($_SESSION['glpilist_limit']);
 

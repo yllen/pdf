@@ -105,7 +105,7 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
                $nb = Computer_SoftwareVersion::countForVersion($data['id']);
                $pdf->displayLine((empty($data['name'])?"(".$data['id'].")":$data['name']),
                                  $data['sname'], $data['osname'], $nb,
-                                 str_replace(array("\r","\n")," ",$data['comment']));
+                                 str_replace(["\r","\n"]," ",$data['comment']));
             }
             $pdf->setColumnsAlign('left','right','left', 'right','left');
             $pdf->displayTitle('','',"<b>".sprintf(__('%1$s: %2$s'), __('Total')."</b>", ''),$tot, '');

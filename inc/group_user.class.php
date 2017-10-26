@@ -45,8 +45,8 @@ class PluginPdfGroup_User extends PluginPdfCommon {
    static function pdfForGroup(PluginPdfSimplePDF $pdf, Group $group, $tree) {
       global $DB,$CFG_GLPI;
 
-      $used        = array();
-      $ids         = array();
+      $used        = [];
+      $ids         = [];
 
       // Retrieve member list
       $entityrestrict = Group_User::getDataForGroup($group, $used, $ids, '', $tree);

@@ -41,7 +41,7 @@ class PluginPdfComputer extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['OcsLink$1']); // TODO add method to print OCS
@@ -91,6 +91,8 @@ class PluginPdfComputer extends PluginPdfCommon {
    static function pdfDevice(PluginPdfSimplePDF $pdf, Computer $computer) {
       global $DB;
 
+      $dbu      = new DbUtils();
+
       $devtypes = Item_Devices::getDeviceTypes();
 
       $ID = $computer->getField('id');
@@ -109,12 +111,13 @@ class PluginPdfComputer extends PluginPdfCommon {
          $specificities = $devicetypes->getSpecificities();
          $specif_fields = array_keys($specificities);
          $specif_text   = implode(',',$specif_fields);
+
          if (!empty($specif_text)) {
             $specif_text=" ,".$specif_text." ";
          }
          $associated_type  = str_replace('Item_', '', $itemtype);
-         $linktable        = getTableForItemType($itemtype);
-         $fk               = getForeignKeyFieldForTable(getTableForItemType($associated_type));
+         $linktable        = $dbu->getTableForItemType($itemtype);
+         $fk               = $dbu->getForeignKeyFieldForTable($dbu->getTableForItemType($associated_type));
 
          $query = "SELECT count(*) AS NB, `id`, `".$fk."`".$specif_text."
                    FROM `".$linktable."`
@@ -123,27 +126,35 @@ class PluginPdfComputer extends PluginPdfCommon {
                    GROUP BY `".$fk."`".$specif_text;
 
          $device = new $associated_type();
+         $itemdevice = new $itemtype();
          foreach ($DB->request($query) as $data) {
-
+            $itemdevice->getFromDB($data['id']);
             if ($device->getFromDB($data[$fk])) {
-
                $spec = $device->getAdditionalFields();
                $col4 = '';
                if (count($spec)) {
                   $colspan = (60/count($spec));
                   foreach ($spec as $i => $label) {
+                     $toto = substr($label['name'], 0, strpos($label['name'], '_'));
+                     $value = '';
+                     if (isset($itemdevice->fields[$toto]) && !empty($itemdevice->fields[$toto])) {
+                        $value = $itemdevice->fields[$toto];
+                     }
                      if (isset($device->fields[$label["name"]])
                          && !empty($device->fields[$label["name"]])) {
-
                         if (($label["type"] == "dropdownValue")
                             && ($device->fields[$label["name"]] != 0)) {
-                           $table = getTableNameForForeignKeyField($label["name"]);
-                           $value = Dropdown::getDropdownName($table,
-                                                              $device->fields[$label["name"]]);
+                           if (!isset($value) || empty($value)) {
+                              $table = getTableNameForForeignKeyField($label["name"]);
+                              $value = Dropdown::getDropdownName($table,
+                                                                 $device->fields[$label["name"]]);
+                            }
                             $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $label["label"].'</i></b>',
                                                      Html::clean($value)." ");
                         } else {
-                           $value = $device->fields[$label["name"]];
+                           if (!isset($value) || empty($value)) {
+                              $value = $device->fields[$label["name"]];
+                           }
                            if ($label["type"] == "bool") {
                                if ($value == 1) {
                                   $value = __('Yes');
@@ -156,6 +167,7 @@ class PluginPdfComputer extends PluginPdfCommon {
                         }
                      } else if (isset($device->fields[$label["name"]."_default"])
                                 && !empty($device->fields[$label["name"]."_default"])) {
+                                   toolbox::logdebug("value", $value);
                         $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $label["label"].'</i></b>',
                                                   $device->fields[$label["name"]."_default"]." ");
                      }
@@ -212,8 +224,8 @@ class PluginPdfComputer extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         case 'Computer$1' :
-            self::pdfOperatingSystem($pdf, $item);
+         case 'Item_OperatingSystem$1' :
+            PluginPdfItem_OperatingSystem::pdfForItem($pdf, $item);
             break;
 
          case 'Item_Devices$1' :

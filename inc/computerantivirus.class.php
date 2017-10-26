@@ -46,8 +46,8 @@ class PluginPdfComputerAntivirus extends PluginPdfCommon {
 
       $ID = $item->getField('id');
 
-      $result = $DB->request('glpi_computerantiviruses', array('computers_id' => $ID,
-                                                               'is_deleted'   => 0));
+      $result = $DB->request('glpi_computerantiviruses', ['computers_id' => $ID,
+                                                          'is_deleted'   => 0]);
       $pdf->setColumnsSize(100);
 
       if ($result->numrows() != 0) {

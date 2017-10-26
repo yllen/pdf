@@ -42,7 +42,7 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['Item_Devices$1']); // TODO add method to print linked Devices

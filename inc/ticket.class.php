@@ -184,7 +184,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->setColumnsSize(50,50);
 
       // Requester
-      $users     = array();
+      $users     = [];
       $listusers = '';
       $requester = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester'), $listusers);
       foreach ($job->getUsers(CommonITILActor::REQUESTER) as $d) {
@@ -246,7 +246,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       }
       $pdf->displayText($requester, $listusers, 1);
 
-      $groups         = array();
+      $groups         = [];
       $listgroups     = '';
       $requestergroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester group'),
                                          $listgroups);
@@ -259,7 +259,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->displayText($requestergroup, $listgroups, 1);
 
       // Observer
-      $users     = array();
+      $users     = [];
       $listusers = '';
       $watcher   = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher'), $listusers);
       foreach ($job->getUsers(CommonITILActor::OBSERVER) as $d) {
@@ -278,7 +278,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       }
       $pdf->displayText($watcher, $listusers, 1);
 
-      $groups       = array();
+      $groups       = [];
       $listgroups   = '';
       $watchergroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher group'),
                                          $listgroups);
@@ -291,7 +291,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->displayText($watchergroup, $listgroups, 1);
 
       // Assign to
-      $users = array();
+      $users = [];
       $listusers = '';
       $assign    = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to technicians'),
                                     $listusers);
@@ -311,7 +311,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       }
       $pdf->displayText($assign, $listusers, 1);
 
-      $groups     = array();
+      $groups     = [];
       $listgroups  = '';
       $assigngroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to groups'),
                                          $listgroups);
@@ -324,7 +324,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->displayText($assigngroup, $listgroups, 1);
 
      // Supplier
-      $suppliers      = array();
+      $suppliers      = [];
       $listsuppliers  = '';
       $assignsupplier = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to a supplier'),
                                          $listsuppliers);
@@ -442,7 +442,7 @@ class PluginPdfTicket extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['Projecttask_Ticket$1']); // TODO add method to print linked Projecttask

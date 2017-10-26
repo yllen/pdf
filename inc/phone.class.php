@@ -42,7 +42,7 @@ class PluginPdfPhone extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=array()) {
+   function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['Item_Devices$1']); // TODO add method to print linked Devices
@@ -79,8 +79,8 @@ class PluginPdfPhone extends PluginPdfCommon {
          '<b><i>'.sprintf(__('%1$s: %2$s'), _n('Firmware', 'Firmwares', 1).'</i></b>',
                           $item->fields['firmware']));
 
-      $opts = array('have_headset' => __('Headset'),
-                    'have_hp'      => __('Speaker'));
+      $opts = ['have_headset' => __('Headset'),
+               'have_hp'      => __('Speaker')];
       foreach ($opts as $key => $val) {
          if (!$item->fields[$key]) {
             unset($opts[$key]);

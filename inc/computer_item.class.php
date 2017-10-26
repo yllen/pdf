@@ -44,7 +44,9 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
    static function pdfForComputer(PluginPdfSimplePDF $pdf, Computer $comp) {
       global $DB;
 
-      $ID = $comp->getField('id');
+      $dbu = new DbUtils();
+
+      $ID  = $comp->getField('id');
 
       $items = ['Printer'    => _n('Printer', 'Printers', 2),
                 'Monitor'    => _n('Monitor', 'Monitors', 2),
@@ -57,7 +59,7 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
       $pdf->displayTitle('<b>'.__('Direct connections').'</b>');
 
       foreach ($items as $type => $title) {
-         if (!($item = getItemForItemtype($type))) {
+         if (!($item = $dbu->getItemForItemtype($type))) {
             continue;
          }
          if (!$item->canView()) {
@@ -68,16 +70,16 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
                       `glpi_computers_items`.`itemtype`,
                       `glpi_computers_items`.`items_id`,
                       `glpi_computers_items`.`is_dynamic` AS assoc_is_dynamic,
-                      ".getTableForItemType($type).".*
+                      ".$dbu->getTableForItemType($type).".*
                       FROM `glpi_computers_items`
-                      LEFT JOIN `".getTableForItemType($type)."`
-                        ON (`".getTableForItemType($type)."`.`id`
+                      LEFT JOIN `".$dbu->getTableForItemType($type)."`
+                        ON (`".$dbu->getTableForItemType($type)."`.`id`
                               = `glpi_computers_items`.`items_id`)
                       WHERE `computers_id` = '$ID'
                             AND `itemtype` = '".$type."'
                             AND `glpi_computers_items`.`is_deleted` = '0'";
          if ($item->maybetemplate()) {
-            $query.= " AND NOT `".getTableForItemType($type)."`.`is_template` ";
+            $query.= " AND NOT `".$dbu->getTableForItemType($type)."`.`is_template` ";
          }
 
          if ($result = $DB->request($query)) {
