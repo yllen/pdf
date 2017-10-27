@@ -45,9 +45,11 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $ticket) {
       global $DB;
 
-      $ID = $ticket->getField('id');
+      $dbu = new DbUtils();
 
-      if (!Session::haveRight("show_all_problem", 1)
+      $ID  = $ticket->getField('id');
+
+      if (!Session::haveRight('problem', Problem::READALL)
           || !$ticket->can($ID, READ)) {
          return false;
       }
@@ -59,8 +61,9 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
                      ON (`glpi_problems_tickets`.`problems_id` = `glpi_problems`.`id`)
                 WHERE `glpi_problems_tickets`.`tickets_id` = '$ID'
                 ORDER BY `glpi_problems`.`name`";
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
+
+      $result = $DB->request($query, true);
+      $number = count($result);
 
       $problems = [];
       $used     = [];
@@ -72,7 +75,7 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
          $pdf->displayTitle("<b>".sprintf(_n('Problem','Problems',$number)."</b>"));
 
          $job = new Problem();
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $result->next()) {
             if (!$job->getFromDB($data["id"])) {
                continue;
             }
@@ -112,17 +115,17 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
                               '<b><i>'.sprintf(__('Closed on %s').'</i></b>',
                                                Html::convDateTime($job->fields['closedate'])));
             }
-            if ($job->fields['due_date']) {
+            if ($job->fields['time_to_resolve']) {
                $col = sprintf(__('%1$s, %2$s'), $col,
-                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Due date'),
-                                               Html::convDateTime($job->fields['due_date'])));
+                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Time to resolve'),
+                                               Html::convDateTime($job->fields['time_to_resolve'])));
             }
             $pdf->displayLine($col);
 
             $lastupdate = Html::convDateTime($job->fields["date_mod"]);
             if ($job->fields['users_id_lastupdater'] > 0) {
                $lastupdate = sprintf(__('%1$s by %2$s'), $lastupdate,
-                                     getUserName($job->fields["users_id_lastupdater"]));
+                                     $dbu->getUserName($job->fields["users_id_lastupdater"]));
             }
 
             $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Last update').'</i></b>',
@@ -143,9 +146,9 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
             if (count($users)) {
                foreach ($users as $d) {
                   if (empty($col)) {
-                     $col = getUserName($d['users_id']);
+                     $col = $dbu->getUserName($d['users_id']);
                   } else {
-                     $col = sprintf(__('%1$s, %2$s'), $col, getUserName($d['users_id']));
+                     $col = sprintf(__('%1$s, %2$s'), $col, $dbu->getUserName($d['users_id']));
                   }
                }
             }
@@ -178,9 +181,9 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
             if (count($users)) {
                foreach ($users as $d) {
                   if (empty($col)) {
-                     $col = getUserName($d['users_id']);
+                     $col = $dbu->getUserName($d['users_id']);
                   } else {
-                     $col = sprintf(__('%1$s, %2$s'), $col, getUserName($d['users_id']));
+                     $col = sprintf(__('%1$s, %2$s'), $col, $dbu->getUserName($d['users_id']));
                   }
                }
             }
@@ -219,7 +222,9 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
    static function pdfForProblem(PluginPdfSimplePDF $pdf, Problem $problem) {
       global $DB;
 
-      $ID = $problem->getField('id');
+      $dbu = new DbUtils();
+
+      $ID  = $problem->getField('id');
 
       if (!$problem->can($ID, READ)) {
          return false;
@@ -232,8 +237,8 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
                      ON (`glpi_problems_tickets`.`tickets_id` = `glpi_tickets`.`id`)
                 WHERE `glpi_problems_tickets`.`problems_id` = '$ID'
                 ORDER BY `glpi_tickets`.`name`";
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
+      $result = $DB->request($query);
+      $number = count($result);
 
       $problems = [];
       $used     = [];
@@ -245,7 +250,7 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
          $pdf->displayTitle("<b>".Ticket::getTypeName($number)."</b>");
 
          $job = new Ticket();
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $result->next()) {
             if (!$job->getFromDB($data["id"])) {
                continue;
             }
@@ -280,17 +285,17 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
                               '<b><i>'.sprintf(__('Closed on %s').'</i></b>',
                                                Html::convDateTime($job->fields['closedate'])));
             }
-            if ($job->fields['due_date']) {
+            if ($job->fields['time_to_resolve']) {
                $col = sprintf(__('%1$s, %2$s'), $col,
-                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Due date'),
-                                               Html::convDateTime($job->fields['due_date'])));
+                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Time to resolve'),
+                                               Html::convDateTime($job->fields['time_to_resolve'])));
             }
             $pdf->displayLine($col);
 
             $lastupdate = Html::convDateTime($job->fields["date_mod"]);
             if ($job->fields['users_id_lastupdater'] > 0) {
                $lastupdate = sprintf(__('%1$s by %2$s'), $lastupdate,
-                                     getUserName($job->fields["users_id_lastupdater"]));
+                                     $dbu->getUserName($job->fields["users_id_lastupdater"]));
             }
 
             $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Last update').'</i></b>',
@@ -310,9 +315,9 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
             if (count($users)) {
                foreach ($users as $d) {
                   if (empty($col)) {
-                     $col = getUserName($d['users_id']);
+                     $col = $dbu->getUserName($d['users_id']);
                   } else {
-                     $col = sprintf(__('%1$s, %2$s'), $col, getUserName($d['users_id']));
+                     $col = sprintf(__('%1$s, %2$s'), $col, $dbu->getUserName($d['users_id']));
                   }
                }
             }
@@ -345,9 +350,9 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
             if (count($users)) {
                foreach ($users as $d) {
                   if (empty($col)) {
-                     $col = getUserName($d['users_id']);
+                     $col = $dbu->getUserName($d['users_id']);
                   } else {
-                     $col = sprintf(__('%1$s, %2$s'), $col, getUserName($d['users_id']));
+                     $col = sprintf(__('%1$s, %2$s'), $col, $dbu->getUserName($d['users_id']));
                   }
                }
             }
@@ -377,8 +382,26 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
 
             $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', ('Title'), '');
             $pdf->displayText($texte, $job->fields["name"], 1);
+
+            $item_col = '';
+            $item_ticket = new Item_Ticket();
+            $data = $item_ticket->find("`tickets_id` = ".$job->fields['id']);
+            foreach ($data as $val) {
+               if (!empty($val["itemtype"]) && ($val["items_id"] > 0)) {
+                  if ($object = getItemForItemtype($val["itemtype"])) {
+                     if ($object->getFromDB($val["items_id"])) {
+                        $item_col .= $object->getTypeName();
+                        $item_col .= " - ".$object->getNameID()."<br />";
+                     }
+                  }
+               }
+            }
+            $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>',
+                                      __('Items of the ticket', 'behaviors'), '');
+            $pdf->displayText($texte, $item_col, 1);
          }
       }
       $pdf->displaySpace();
+
    }
 }

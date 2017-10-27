@@ -49,15 +49,13 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
       $ID       = $item->getField('id');
       $type     = get_class($item);
 
-      $query = "SELECT `glpi_networkports`.`id`
-                FROM `glpi_networkports`
-                WHERE `items_id` = '".$ID."'
-                      AND `itemtype` = '".$type."'
-                ORDER BY `name`, `logical_number`";
-
       $pdf->setColumnsSize(100);
-      if ($result = $DB->query($query)) {
-         $nb_connect = $DB->numrows($result);
+      if ($result = $DB->request(['SELECT' => ['id', 'name', 'logical_number'],
+                                  'FROM'   => 'glpi_networkports',
+                                  'WHERE'  => ['items_id' => $ID,
+                                               'itemtype' => $type],
+                                  'ORDER'  => ['name', 'logical_number']])) {
+         $nb_connect = count($result);
          if (!$nb_connect) {
             $pdf->displayTitle('<b>0 '.__('No network port found').'</b>');
          } else {
@@ -65,7 +63,7 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                                              _n('Network port', 'Network ports',$nb_connect),
                                              $nb_connect."</b>"));
 
-            while ($devid = $DB->fetch_row($result)) {
+            while ($devid = $result->next()) {
                $netport = new NetworkPort;
                $netport->getfromDB(current($devid));
                $instantiation_type = $netport->fields["instantiation_type"];
@@ -140,9 +138,9 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                           WHERE `glpi_ipaddresses_ipnetworks`.`ipaddresses_id` = '".$ip->getID()."'" .
                                 $dbu->getEntitiesRestrictRequest(' AND', 'glpi_ipnetworks');
 
-                  $res        = $DB->query($sql);
+                  $res        = $DB->request($sql);
                   if ($res) {
-                     $row = $DB->fetch_assoc($res);
+                     $row = $res->next();
 
                      $ipnetwork = new IPNetwork();
                      if ($ipnetwork->getFromDB($row['ipnetworks_id'])) {

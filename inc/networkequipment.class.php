@@ -55,6 +55,8 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
 
    static function pdfMain(PluginPdfSimplePDF $pdf, NetworkEquipment $item) {
 
+      $dbu = new DbUtils();
+
       PluginPdfCommon::mainTitle($pdf, $item);
 
       PluginPdfCommon::mainLine($pdf, $item, 'name-status');
@@ -68,7 +70,7 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                          getUserName($item->fields['users_id'])),
+                          $dbu->getUserName($item->fields['users_id'])),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
                           Html::clean(Dropdown::getDropdownName('glpi_networks',
                                                                 $item->fields['networks_id']))));

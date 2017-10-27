@@ -251,7 +251,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
          $lastupdate = Html::convDateTime($job->fields["date_mod"]);
          if ($job->fields['users_id_lastupdater'] > 0) {
             $lastupdate = sprintf(__('%1$s by %2$s'), $lastupdate,
-                                  getUserName($job->fields["users_id_lastupdater"]));
+                                  $dbu->getUserName($job->fields["users_id_lastupdater"]));
          }
 
          $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Last update').'</i></b>',
@@ -262,9 +262,9 @@ class PluginPdfChange_Item extends PluginPdfCommon {
          if (count($users)) {
             foreach ($users as $d) {
                if (empty($col)) {
-                  $col = getUserName($d['users_id']);
+                  $col = $dbu->getUserName($d['users_id']);
                } else {
-                  $col = sprintf(__('%1$s, %2$s'), $col, getUserName($d['users_id']));
+                  $col = sprintf(__('%1$s, %2$s'), $col, $dbu->getUserName($d['users_id']));
                }
             }
          }
@@ -297,9 +297,9 @@ class PluginPdfChange_Item extends PluginPdfCommon {
          if (count($users)) {
             foreach ($users as $d) {
                if (empty($col)) {
-                  $col = getUserName($d['users_id']);
+                  $col = $dbu->getUserName($d['users_id']);
                } else {
-                  $col = sprintf(__('%1$s, %2$s'), $col, getUserName($d['users_id']));
+                  $col = sprintf(__('%1$s, %2$s'), $col, $dbu->getUserName($d['users_id']));
                }
             }
          }

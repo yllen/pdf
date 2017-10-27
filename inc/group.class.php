@@ -84,7 +84,7 @@ class PluginPdfGroup extends PluginPdfCommon {
 
       if (Session::haveRight("config", READ) && AuthLdap::useAuthLdap()) {
          $pdf->setColumnsSize(100);
-         $pdf->displayTitle(__('LDAP directory link'));
+         $pdf->displayTitle('<b>'.__('LDAP directory link').'</b>');
 
          $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'),
                                          __('User attribute containing its groups').'</b>', ''),
@@ -102,6 +102,8 @@ class PluginPdfGroup extends PluginPdfCommon {
    // From Group::showItems()
    static function pdfItems(PluginPdfSimplePDF $pdf, Group $group, $tech, $tree, $user) {
       global $CFG_GLPI;
+
+      $dbu = new DbUtils();
 
       if ($tech) {
          $types = $CFG_GLPI['linkgroup_tech_types'];
@@ -123,7 +125,7 @@ class PluginPdfGroup extends PluginPdfCommon {
          $title = sprintf(__('%1$s (%2$s)'), $title, $nb);
       }
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle($title);
+      $pdf->displayTitle('<b>'.$title.'</b>');
 
       if ($nb) {
          if ($tree || $user) {
@@ -155,7 +157,7 @@ class PluginPdfGroup extends PluginPdfCommon {
                }
 
             } else if ($usr = $item->getField(str_replace('groups', 'users', $field))) {
-               $col4 = Html::clean(getUserName($usr));
+               $col4 = Html::clean($dbu->getUserName($usr));
             }
 
          }
@@ -190,10 +192,10 @@ class PluginPdfGroup extends PluginPdfCommon {
       $crit          = [$fk     => $item->getID(),
                         'ORDER' => 'name'];
 
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle(sprintf(__('Sons of %s'), '<b>'.$item->getNameID().'</b>'));
-
       if ($item->haveChildren()) {
+         $pdf->setColumnsSize(100);
+         $pdf->displayTitle(sprintf(__('Sons of %s'), '<b>'.$item->getNameID().'</b>'));
+
          if ($entity_assign) {
             if ($fk == 'entities_id') {
                $crit['id']  = $_SESSION['glpiactiveentities'];
@@ -219,7 +221,9 @@ class PluginPdfGroup extends PluginPdfCommon {
             }
          }
       } else {
-         $pdf->displayLine(__('No item found'));
+         $pdf->setColumnsSize(100);
+         $pdf->displayTitle('<b>'.sprintf(__('No sons of %s', 'behaviors'), $item->getNameID().'</b>'));
+
       }
 
       $pdf->displaySpace();
@@ -234,6 +238,10 @@ class PluginPdfGroup extends PluginPdfCommon {
       switch ($tab) {
          case 'Group$1' :
             self::pdfItems($pdf, $item, false, $tree, $user);
+            break;
+
+         case 'Group$2' :
+            self::pdfItems($pdf, $item, true, $tree, $user);
             break;
 
          case 'Group$3' :

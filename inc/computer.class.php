@@ -54,6 +54,8 @@ class PluginPdfComputer extends PluginPdfCommon {
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Computer $computer){
 
+      $dbu = new DbUtils();
+
       PluginPdfCommon::mainTitle($pdf, $computer);
 
       PluginPdfCommon::mainLine($pdf, $computer, 'name-status');
@@ -66,7 +68,7 @@ class PluginPdfComputer extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                          getUserName($computer->fields['users_id'])),
+                          $dbu->getUserName($computer->fields['users_id'])),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
                            Html::clean(Dropdown::getDropdownName('glpi_networks',
                                                                  $computer->fields['networks_id']))));

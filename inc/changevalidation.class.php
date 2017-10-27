@@ -45,6 +45,8 @@ class PluginPdfChangeValidation extends PluginPdfCommon {
    static function pdfForChange(PluginPdfSimplePDF $pdf, Change $change) {
       global $CFG_GLPI, $DB;
 
+      $dbu = new DbUtils();
+
       $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>".__('Approvals for the change', 'pdf')."</b>");
 
@@ -54,12 +56,8 @@ class PluginPdfChangeValidation extends PluginPdfCommon {
                                              CommonITILValidation::getPurgeRights()))) {
          return false;
       }
-     $ID = $change->getField('id');
+      $ID = $change->getField('id');
 
-      $query = "SELECT *
-                FROM `glpi_changevalidations`
-                WHERE `changes_id` = '".$change->getField('id')."'
-                ORDER BY submission_date DESC";
       $result = $DB->request(['FROM'   => 'glpi_changevalidations',
                               'WHERE'  => ['changes_id' => $change->getField('id')],
                               'ORDER'  => 'submission_date DESC']);
@@ -74,10 +72,10 @@ class PluginPdfChangeValidation extends PluginPdfCommon {
          while ($row = $result->next()) {
             $pdf->displayLine(TicketValidation::getStatus($row['status']),
                               Html::convDateTime($row["submission_date"]),
-                              getUserName($row["users_id"]),
+                              $dbu->getUserName($row["users_id"]),
                               trim($row["comment_submission"]),
                               Html::convDateTime($row["validation_date"]),
-                              getUserName($row["users_id_validate"]),
+                              $dbu->getUserName($row["users_id_validate"]),
                               trim($row["comment_validation"]));
          }
       } else {

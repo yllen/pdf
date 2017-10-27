@@ -43,10 +43,12 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
    static function pdfForComputer(PluginPdfSimplePDF $pdf, Computer $item) {
       global $DB;
 
+      $dbu = new DbUtils();
+
       $ID = $item->getField('id');
 
       // From ComputerVirtualMachine::showForComputer()
-      $virtualmachines = getAllDatasFromTable('glpi_computervirtualmachines',
+      $virtualmachines = $dbu->getAllDataFromTable('glpi_computervirtualmachines',
                                               ['computers_id' => $ID]);
       $pdf->setColumnsSize(100);
       if (count($virtualmachines)) {
@@ -89,7 +91,7 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
       // From ComputerVirtualMachine::showForVirtualMachine()
       if ($item->fields['uuid']) {
          $where = "`uuid`".ComputerVirtualMachine::getUUIDRestrictRequest($item->fields['uuid']);
-         $hosts = getAllDatasFromTable('glpi_computervirtualmachines', $where);
+         $hosts = $dbu->getAllDataFromTable('glpi_computervirtualmachines', $where);
 
          if (count($hosts)) {
             $pdf->setColumnsSize(100);

@@ -35,6 +35,7 @@ class PluginPdfRemote  {
 
    static $rightname = "plugin_pdf";
 
+
    static function methodGetTabs($params, $protocol) {
       global $PLUGIN_HOOKS;
 
@@ -48,12 +49,13 @@ class PluginPdfRemote  {
       }
 
       if (!isset($params['type'])) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER, '', 'type');
+         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER,
+                                                     '', 'type');
       }
       $type = $params['type'];
 
       if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])
-            && class_exists($PLUGIN_HOOKS['plugin_pdf'][$type])) {
+          && class_exists($PLUGIN_HOOKS['plugin_pdf'][$type])) {
 
          $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$type]($item);
          return $itempdf->defineAllTabs();
@@ -61,6 +63,7 @@ class PluginPdfRemote  {
 
       return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_FAILED);
    }
+
 
    static function methodGetPdf($params, $protocol) {
       global $PLUGIN_HOOKS;
@@ -78,17 +81,21 @@ class PluginPdfRemote  {
          return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
       }
       if (!isset($params['type'])) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER, '', 'type');
+         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER,
+                                                     '', 'type');
       }
       $type = $params['type'];
       if (!$item = getItemForItemtype($type)) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'type');
+         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '',
+                                                     'type');
       }
       if (!isset($params['id'])) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER, '', 'id');
+         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER,
+                                                     '', 'id');
       }
       if (!is_numeric($params['id'])) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'id');
+         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '',
+                                                     'id');
       }
       $id = intval($params['id']);
 
@@ -100,7 +107,8 @@ class PluginPdfRemote  {
 
       if (isset($params['tabs'])) {
          if (isset($params['alltabs'])) {
-            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'tabs+alltabs');
+            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER,
+                                                        '', 'tabs+alltabs');
          }
          $tabs = explode(',', $params['tabs']);
       } else {

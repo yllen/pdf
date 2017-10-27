@@ -44,45 +44,15 @@ class PluginPdfItem_OperatingSystem extends PluginPdfCommon {
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, $item) {
       global $DB;
-toolbox::logdebug('ops',$item);
-      $dbu = new DbUtils();
+
 
       $instID = $item->fields['id'];
       $type   = $item->getType();
-   //   $item = $dbu->getItemForItemtype($type))) {
+
       if (!$item->can($instID, READ)) {
          return false;
       }
-/*
- *  $query = "SELECT `glpi_items_operatingsystems`.*,
-                       `glpi_operatingsystemversions`.`name` AS version,
-                       `glpi_operatingsystemarchitectures`.`name` AS architecture,
-                       `glpi_operatingsystemservicepacks`.`name` AS servicepack,
-                       `glpi_operatingsystemkernelversions`.`name` AS kernel,
-                       `glpi_operatingsystemeditions`.`name` AS edition
-                FROM `glpi_items_operatingsystems`
-                LEFT JOIN `glpi_operatingsystems`
-                  ON (`glpi_items_operatingsystems`.`operatingsystems_id` = `glpi_operatingsystems`.`id`)
-                LEFT JOIN `glpi_operatingsystemservicepacks`
-                  ON (`glpi_items_operatingsystems`.`operatingsystemservicepacks_id`
-                      = `glpi_operatingsystemservicepacks`.`id`)
-                LEFT JOIN `glpi_operatingsystemarchitectures`
-                  ON (`glpi_items_operatingsystems`.`operatingsystemarchitectures_id`
-                      = `glpi_operatingsystemarchitectures`.`id`)
-                LEFT JOIN `glpi_operatingsystemversions`
-                  ON (`glpi_items_operatingsystems`.`operatingsystemversions_id`
-                      = `glpi_operatingsystemversions`.`id`)
-                LEFT JOIN `glpi_operatingsystemkernelversions`
-                  ON (`glpi_items_operatingsystems`.`operatingsystemkernelversions_id`
-                      = `glpi_operatingsystemkernelversions`.`id`)
-                LEFT JOIN `glpi_operatingsystemeditions`
-                  ON (`glpi_items_operatingsystems`.`operatingsystemeditions_id`
-                      = `glpi_operatingsystemeditions`.`id`)
-                WHERE `glpi_items_operatingsystems`.`items_id` = '".$instID."'
-                      AND `glpi_items_operatingsystems`.`itemtype` = '".$type."'
-                ORDER BY `glpi_items_operatingsystems`.`id`";
 
- */
       $query = ['SELECT'    => ['glpi_items_operatingsystems.*',
                                 'glpi_operatingsystemversions.name',
                                 'glpi_operatingsystemarchitectures.name',
@@ -122,11 +92,8 @@ toolbox::logdebug('ops',$item);
          $pdf->displayTitle('<b>'.__('Operating system').'</b>');
 
          $pdf->setColumnsSize(17,10,14,15,10,10,12,12);
-         $pdf->displayTitle("<b><i>".__('Name')."</i></b>", "<b><i>".__('Version')."</i></b>",
-                            "<b><i>".__('Architecture')."</i></b>",
-                            "<b><i>".__('Service pack')."</i></b>", "<b><i>".__('Kernel')."</i></b>",
-                            "<b><i>".__('Edition')."</i></b>","<b><i>".__('Product ID')."</i></b>",
-                            "<b><i>".__('Serial number')."</i></b>");
+         $pdf->displayTitle(__('Name'), __('Version'), __('Architecture'), __('Service pack'),
+                            __('Kernel'), __('Edition'), __('Product ID'), __('Serial number'));
 
       }
 

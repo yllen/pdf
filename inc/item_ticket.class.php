@@ -42,7 +42,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
    }
 
 
-   static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $ticket) {
+   static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $ticket, $sub=false) {
       global $DB;
 
       $dbu = new DbUtils();
@@ -61,11 +61,12 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
       $result = $DB->query($query);
       $number = $DB->numrows($result);
 
+      $pdf->setColumnsSize(100);
       if (!$number) {
-         $pdf->setColumnsSize(100);
          $pdf->displayLine(__('No item found.'));
       } else {
          $pdf->displayTitle('<b>'._n('Item', 'Items', $number).'</b>');
+      }
 
          $pdf->setColumnsSize(20,30,25,25);
          $pdf->displayTitle("<b><i>".__('Type'), __('Name'), __('Serial number'),
@@ -126,7 +127,6 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                }
             }
             $totalnb += $nb;
-         }
          }
       }
       $pdf->displayLine("<b><i>".sprintf(__('%1$s = %2$s')."</b></i>", __('Total'), $totalnb));
@@ -206,8 +206,8 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                 ORDER BY $order
                 LIMIT ".intval($_SESSION['glpilist_limit']);
 
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
+      $result = $DB->request($query);
+      $number = count($result);
 
       $pdf->setColumnsSize(100);
       if (!$number) {
@@ -217,7 +217,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                                           $number));
 
          $job = new Ticket();
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $result->next()) {
             if (!$job->getFromDB($data["id"])) {
                continue;
             }
@@ -278,7 +278,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
             $lastupdate = Html::convDateTime($job->fields["date_mod"]);
             if ($job->fields['users_id_lastupdater'] > 0) {
                $lastupdate = sprintf(__('%1$s by %2$s'), $lastupdate,
-                                     getUserName($job->fields["users_id_lastupdater"]));
+                                     $dbu->getUserName($job->fields["users_id_lastupdater"]));
             }
 
             $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Last update').'</i></b>',
@@ -289,9 +289,9 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
             if (count($users)) {
                foreach ($users as $d) {
                   if (empty($col)) {
-                     $col = getUserName($d['users_id']);
+                     $col = $dbu->getUserName($d['users_id']);
                   } else {
-                     $col = sprintf(__('%1$s, %2$s'), $col, getUserName($d['users_id']));
+                     $col = sprintf(__('%1$s, %2$s'), $col, $dbu->getUserName($d['users_id']));
                   }
                }
             }
@@ -324,9 +324,9 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
             if (count($users)) {
                foreach ($users as $d) {
                   if (empty($col)) {
-                      $col = getUserName($d['users_id']);
+                      $col = $dbu->getUserName($d['users_id']);
                   } else {
-                     $col = sprintf(__('%1$s, %2$s'), $col, getUserName($d['users_id']));
+                     $col = sprintf(__('%1$s, %2$s'), $col, $dbu->getUserName($d['users_id']));
                   }
                }
             }

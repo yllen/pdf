@@ -95,41 +95,20 @@ class PluginPdfInfocom extends PluginPdfCommon {
          $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Order number')."</i></b>",
                              $ic->fields["order_number"]),
-            "<b><i>".sprintf(__('%1$s: %2$s'), __('Order date')."</i></b>",
-                             Html::convDate($ic->fields["order_date"])));
-
-         $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Immobilization number')."</i></b>",
-                             $ic->fields["immo_number"]),
-            "<b><i>".sprintf(__('%1$s: %2$s'), __('Date of purchase')."</i></b>",
-                             Html::convDate($ic->fields["buy_date"])));
+                             $ic->fields["immo_number"]));
 
          $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Invoice number')."</i></b>",
                              $ic->fields["bill"]),
-            "<b><i>".sprintf(__('%1$s: %2$s'), __('Delivery date')."</i></b>",
-                             Html::convDate($ic->fields["delivery_date"])));
-
-         $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Delivery form')."</i></b>",
-                             $ic->fields["delivery_number"]),
-            "<b><i>".sprintf(__('%1$s: %2$s'), __('Startup date')."</i></b>",
-                             Html::convDate($ic->fields["use_date"])));
+                             $ic->fields["delivery_number"]));
 
          $pdf->displayLine(
-            "<b><i>".sprintf(__('%1$s: %2$s'), __('Value')."</i></b>",
+            "<b><i>".sprintf(__('%1$s: %2$s'), _x('price', 'Value')."</i></b>",
                              Html::clean(Html::formatNumber($ic->fields["value"]))),
-            "<b><i>".sprintf(__('%1$s: %2$s'), __('Date of last physical inventory')."</i></b>",
-                             Html::convDate($ic->fields["inventory_date"])));
-
-         $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Warranty extension value')."</i></b>",
-                             Html::clean(Html::formatNumber($ic->fields["warranty_value"]))),
-            "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization duration')."</i></b>",
-                             sprintf(__('%1$s (%2$s)'),
-                                     sprintf(_n('%d year', '%d years', $ic->fields["sink_time"]),
-                                             $ic->fields["sink_time"]),
-                                     Infocom::getAmortTypeName($ic->fields["sink_type"]))));
+                             Html::clean(Html::formatNumber($ic->fields["warranty_value"]))));
 
          $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Account net value')."</i></b>",
@@ -137,6 +116,15 @@ class PluginPdfInfocom extends PluginPdfCommon {
                                             $ic->fields["sink_time"], $ic->fields["sink_coeff"],
                                             $ic->fields["warranty_date"], $ic->fields["use_date"],
                                             $CFG_GLPI['date_tax'],"n")),
+               "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization duration')."</i></b>",
+                     sprintf(__('%1$s (%2$s)'),
+                           sprintf(_n('%d year', '%d years', $ic->fields["sink_time"]),
+                                 $ic->fields["sink_time"]),
+                           Infocom::getAmortTypeName($ic->fields["sink_type"]))));
+
+         $pdf->displayLine(
+            "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization type')."</i></b>",
+                             Infocom::getAmortTypeName($ic->fields["sink_type"])),
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization coefficient')."</i></b>",
                              $ic->fields["sink_coeff"]));
 
@@ -148,6 +136,11 @@ class PluginPdfInfocom extends PluginPdfCommon {
                              Html::clean(Infocom::showTco($item->getField('ticket_tco'),
                                                           $ic->fields["value"],
                                                           $ic->fields["buy_date"]))));
+
+         $pdf->displayLine(
+               "<b><i>".sprintf(__('%1$s: %2$s'), __('Business criticity')."</i></b>",
+                                Dropdown::getDropdownName('glpi_businesscriticities',
+                                                          $ic->fields['businesscriticities_id'])));
 
          PluginPdfCommon::mainLine($pdf, $ic, 'comment');
 

@@ -59,8 +59,8 @@ class PluginPdfContract_Item extends PluginPdfCommon {
                       $dbu->getEntitiesRestrictRequest(" AND","glpi_contracts",'','',true)."
                 ORDER BY `glpi_contracts`.`name`";
 
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
+      $result = $DB->request($query);
+      $number = count($result);
       $i = $j = 0;
 
       $pdf->setColumnsSize(100);
@@ -74,8 +74,9 @@ class PluginPdfContract_Item extends PluginPdfCommon {
          $i++;
 
          while ($j < $number) {
-            $cID     = $DB->result($result, $j, "contracts_id");
-            $assocID = $DB->result($result, $j, "id");
+            $row     = $result->next();
+            $cID     = $row['contracts_id'];
+            $assocID = $row['id'];
 
             if ($con->getFromDB($cID)) {
                $pdf->displayLine(
@@ -86,8 +87,12 @@ class PluginPdfContract_Item extends PluginPdfCommon {
                                                        $con->fields["contracttypes_id"])),
                   str_replace("<br>", " ", $con->getSuppliersNames()),
                   Html::convDate($con->fields["begin_date"]),
-                  sprintf(_n('%d month', '%d months', $con->fields["duration"]),
-                          $con->fields["duration"]));
+                  sprintf(__('%1$s - %2$s'),
+                          sprintf(_n('%d month', '%d months', $con->fields["duration"]),
+                                  $con->fields["duration"]),
+                          sprintf(__('Valid to %s'),
+                                  Infocom::getWarrantyExpir($con->fields["begin_date"],
+                                                            $con->fields["duration"]))));
             }
             $j++;
          }

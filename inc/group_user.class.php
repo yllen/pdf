@@ -45,50 +45,53 @@ class PluginPdfGroup_User extends PluginPdfCommon {
    static function pdfForGroup(PluginPdfSimplePDF $pdf, Group $group, $tree) {
       global $DB,$CFG_GLPI;
 
-      $used        = [];
-      $ids         = [];
+      $dbu  = new DbUtils();
+      $used = [];
+      $ids  = [];
 
       // Retrieve member list
       $entityrestrict = Group_User::getDataForGroup($group, $used, $ids, '', $tree);
 
-      $title  = "<b>".sprintf(__('%1$s (%2$s)'), _n('User', 'Users', 2)."</b>",
-                              __('D=Dynamic'));
       $number = count($used);
       if ($number > $_SESSION['glpilist_limit']) {
          $title = sprintf(__('%1$s (%2$s)'), $title, $_SESSION['glpilist_limit']."/".$number);
       } else {
-         $title = sprintf(__('%1$s (%2$s)'), $title, $number);
+         $title = sprintf(__('%1$s: %2$s'), _n('User', 'Users', 2), $number);
       }
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle($title);
+      $pdf->displayTitle('<b>'.$title.'</b>');
 
       if ($number) {
          $user  = new User();
          $group = new Group();
 
          if ($tree) {
-            $pdf->setColumnsSize(35,45,10,10);
-            $pdf->displayTitle(User::getTypeName(1), Group::getTypeName(1), __('Manager'),
-                               __('Delegatee'));
+            $pdf->setColumnsSize(35,25,10,10,10,10);
+            $pdf->displayTitle(User::getTypeName(1), Group::getTypeName(1), __('Dynamic'),
+                               __('Manager'), _('Delegatee'), __('Active'));
          } else {
-            $pdf->setColumnsSize(60,20,20);
-            $pdf->displayTitle(User::getTypeName(1), __('Manager'), __('Delegatee'));
+            $pdf->setColumnsSize(40,15,15,15,15);
+            $pdf->displayTitle(User::getTypeName(1), __('Dynamic'),__('Manager'), __('Delegatee'),
+                                __('Active'));
          }
 
+         $user = new User();
          for ($i=0 ; $i<$number && $i<$_SESSION['glpilist_limit'] ; $i++) {
             $data = $used[$i];
-            $name = Html::clean(getUserName($data["id"]));
-            if ($data["is_dynamic"]) {
-               $name = sprintf(__('%1$s (%2$s)'), $name, '<b>'.__('D').'</b>');
-            }
+            $user->getFromDB($data["id"]);
+            $name = Html::clean($dbu->getUserName($data["id"]));
 
             if ($tree) {
                $group->getFromDB($data["groups_id"]);
-               $pdf->displayLine($name, $group->getName(), Dropdown::getYesNo($data['is_manager']),
-                                 Dropdown::getYesNo($data['is_userdelegate']));
+               $pdf->displayLine($name, $group->getName(), Dropdown::getYesNo($data['is_dynamic']),
+                                 Dropdown::getYesNo($data['is_manager']),
+                                 Dropdown::getYesNo($data['is_userdelegate']),
+                                 Dropdown::getYesNo($user->fields['is_active']));
             } else {
-                $pdf->displayLine($name, Dropdown::getYesNo($data['is_manager']),
-                                  Dropdown::getYesNo($data['is_userdelegate']));
+               $pdf->displayLine($name, Dropdown::getYesNo($data['is_dynamic']),
+                                 Dropdown::getYesNo($data['is_manager']),
+                                 Dropdown::getYesNo($data['is_userdelegate']),
+                                 Dropdown::getYesNo($user->fields['is_active']));
             }
          }
       } else {

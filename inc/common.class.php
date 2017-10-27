@@ -386,6 +386,8 @@ abstract class PluginPdfCommon {
 
    static function mainLine(PluginPdfSimplePDF $pdf, $item, $field) {
 
+      $dbu  = new DbUtils();
+
       $type = Toolbox::strtolower($item->getType());
       switch($field) {
          case 'name-status' :
@@ -409,7 +411,7 @@ abstract class PluginPdfCommon {
             return $pdf->displayLine(
                      '<b><i>'.sprintf(__('%1$s: %2$s'),
                                       __('Technician in charge of the hardware').'</i></b>',
-                                      getUserName($item->fields['users_id_tech'])),
+                                      $dbu->getUserName($item->fields['users_id_tech'])),
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Manufacturer').'</i></b>',
                                       Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
                                                                             $item->fields['manufacturers_id']))));
@@ -440,7 +442,7 @@ abstract class PluginPdfCommon {
          case 'user-management' :
             return $pdf->displayLine(
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                                      getUserName($item->fields['users_id'])),
+                                      $dbu->getUserName($item->fields['users_id'])),
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Management type').'</i></b>',
                                       ($item->fields['is_global']?__('Global management')
                                                                  :__('Unit management'))));
