@@ -45,6 +45,8 @@ class PluginPdfTicketValidation extends PluginPdfCommon {
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $ticket) {
       global $CFG_GLPI, $DB;
 
+      $dbu = new DbUtils();
+
       $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>".__('Approvals for the ticket','pdf')."</b>");
 
@@ -69,9 +71,9 @@ class PluginPdfTicketValidation extends PluginPdfCommon {
             $pdf->setColumnsSize(20,19,21,19,21);
             $pdf->displayLine(TicketValidation::getStatus($row['status']),
                               Html::convDateTime($row["submission_date"]),
-                              getUserName($row["users_id"]),
+                              $dbu->getUserName($row["users_id"]),
                               Html::convDateTime($row["validation_date"]),
-                              getUserName($row["users_id_validate"]));
+                              $dbu->getUserName($row["users_id_validate"]));
             $tmp = trim($row["comment_submission"]);
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Request comments')."</i></b>",
                                                ''), (empty($tmp) ? __('None') : $tmp), 1);

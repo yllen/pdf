@@ -88,11 +88,15 @@ class PluginPdfCartridge extends PluginPdfCommon {
       $pages  = $p->fields['init_pages_counter'];
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".($old ? __('Worn cartridges') : __('Used cartridges') )."</b>");
+      $title = "<b>".($old ? __('Worn cartridges') : __('Used cartridges') )."</b>";
 
       if (!$number) {
-         $pdf->displayLine(__('No item found'));
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+
+         $pdf->displayTitle($title);
+
          if (!$old) {
             $pdf->setColumnsSize(5,35,30,15,15);
             $pdf->displayTitle('<b><i>'.__('ID'), __('Cartridge model'), __('Cartridge type'),

@@ -44,6 +44,8 @@ class PluginPdfSoftware extends PluginPdfCommon {
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Software $software) {
 
+      $dbu = new DbUtils();
+
       PluginPdfCommon::mainTitle($pdf, $software);
 
       $pdf->displayLine(
@@ -62,7 +64,7 @@ class PluginPdfSoftware extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Technician in charge of the hardware').'</i></b>',
-                          getUserName($software->fields['users_id_tech'])),
+                          $dbu->getUserName($software->fields['users_id_tech'])),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Associable to a ticket').'</i></b>',
                           ($software->fields['is_helpdesk_visible'] ?__('Yes'):__('No'))));
 
@@ -71,7 +73,7 @@ class PluginPdfSoftware extends PluginPdfCommon {
                           Dropdown::getDropdownName('glpi_groups',
                                                     $software->fields['groups_id_tech'])),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                          getUserName($software->fields['users_id'])));
+                          $dbu->getUserName($software->fields['users_id'])));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',

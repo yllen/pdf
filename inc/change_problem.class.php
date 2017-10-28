@@ -66,10 +66,13 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
       $used     = [];
 
       $pdf->setColumnsSize(100);
+      $title = "<b>".Problem::getTypeName(2)."</b>";
+
       if (!$number) {
-         $pdf->displayTitle('<b>'.__('No associated problem', 'pdf').'</b>');
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $pdf->displayTitle("<b>".Problem::getTypeName($number)."</b>");
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
 
          $job = new Problem();
          while ($data = $result->next()) {
@@ -240,10 +243,12 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
       $used     = [];
 
       $pdf->setColumnsSize(100);
+      $title = '<b>'.Change::getTypeName(2).'</b>';
       if (!$number) {
-         $pdf->displayTitle('<b>'.__('No associated change', 'pdf').'</b>');
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $pdf->displayTitle("<b>".Change::getTypeName($number)."</b>");
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
 
          $job = new Change();
          while ($data = $result->next()) {

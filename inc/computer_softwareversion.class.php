@@ -43,7 +43,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
       global $DB;
-toolbox::logdebug("item", $item);
+
       $dbu = new DbUtils();
 
       $ID   = $item->getField('id');
@@ -213,7 +213,8 @@ toolbox::logdebug("item", $item);
          }
       } else {
          $pdf->setColumnsSize(100);
-         $pdf->displayLine(__('No item found'));
+         $pdf->setColumnsAlign('center');
+         $pdf->displayLine(__('No item to display'));
       }
       $pdf->displaySpace();
    }
@@ -256,9 +257,14 @@ toolbox::logdebug("item", $item);
       }
 
       $installed = [];
-      if (count($output)) {
-         $pdf->setColumnsSize(100);
-         $pdf->displayTitle('<b>'.__('Installed software').'</b>');
+      $pdf->setColumnsSize(100);
+      $title = '<b>'.__('Installed software').'</b>';
+
+      if (!count($output)) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         $title = sprintf(__('%1$s: %2$s'), $title, count($output));
+         $pdf->displayTitle($title);
 
          $cat = -1;
          foreach ($output as $soft) {
@@ -306,9 +312,6 @@ toolbox::logdebug("item", $item);
             $pdf->displayLine($soft['softname'], $soft['state'], $soft['version'], $lic,
                               $soft['dateinstall'], $soft['softvalid']);
          } // Each version
-
-      } else {
-         $pdf->displayTitle('<b>'.__('No installed software', 'pdf').'</b>');
       }
 
       // Affected licenses NOT installed
@@ -339,7 +342,7 @@ toolbox::logdebug("item", $item);
       $req = $DB->request($query);
       if ($req->numrows()) {
          $pdf->setColumnsSize(100);
-         $pdf->displayTitle('<b>'.__('Affected licenses of not installed software').'</b>');
+         $pdf->displayTitle('<b>'.__('Affected licenses of not installed software', 'pdf').'</b>');
 
          $pdf->setColumnsSize(50,13,13,24);
          $pdf->displayTitle('<b>'.__('Name'), __('Status'), __('Version'), __('License').'</b>');

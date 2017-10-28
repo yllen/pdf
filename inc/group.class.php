@@ -174,7 +174,6 @@ class PluginPdfGroup extends PluginPdfCommon {
       $onglets = parent::defineAllTabs($options);
 
       unset($onglets['NotificationTarget$1']);  // TODO Notifications
-      unset($onglets['Item_Problem$1']); // TODO add method to print linked Problems
 
       return $onglets;
    }
@@ -259,6 +258,11 @@ class PluginPdfGroup extends PluginPdfCommon {
          case 'Change_Item$1' :
             PluginPdfChange_Item::pdfForItem($pdf, $item, $tree);
             break;
+
+         case 'Item_Problem$1' :
+            PluginPdfItem_Problem::pdfForItem($pdf, $item, $tree);
+               break;
+
 
          default :
             return false;

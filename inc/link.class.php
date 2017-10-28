@@ -48,21 +48,25 @@ class PluginPdfLink extends PluginPdfCommon {
       $ID   = $item->getField('id');
       $type = get_class($item);
 
-      $query = "SELECT `glpi_links`.`id` AS ID, `glpi_links`.`link`, `glpi_links`.`name`,
-                       `glpi_links`.`data`
-                FROM `glpi_links`
-                INNER JOIN `glpi_links_itemtypes`
-                     ON `glpi_links`.`id` = `glpi_links_itemtypes`.`links_id`
-                WHERE `glpi_links_itemtypes`.`itemtype` = '".$type."'
-                ORDER BY `glpi_links`.`name`";
+      $query = ['SELECT'     => ['glpi_links.id', 'link', 'name', 'data'],
+                'FROM'       => 'glpi_links',
+                'INNER JOIN' => ['glpi_links_itemtypes'
+                                 => ['FKEY' => ['glpi_links'           => 'id',
+                                                'glpi_links_itemtypes' => 'links_id']]],
+                'WHERE'      => ['itemtype' => $type],
+                'ORDER'      => 'name'];
 
-      $result=$DB->query($query);
+      $result = $DB->request($query);
 
       $pdf->setColumnsSize(100);
-      if ($DB->numrows($result) > 0) {
-         $pdf->displayTitle('<b>'._n('External link', 'External links', $DB->numrows($result)).'</b>');
+      $title = '<b>'._n('External link', 'External links', 2).'</b>';
+      if (!count($result)) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         $title = sprintf(__('%1$s: %2$s'), $title, count($result));
+         $pdf->displayTitle($title);
 
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $result->next()) {
             $name = $data["name"];
             if (empty($name)) {
                $name = $data["link"];
@@ -97,8 +101,6 @@ class PluginPdfLink extends PluginPdfCommon {
                   }
             }
          } // Each link
-      } else {
-         $pdf->displayTitle('<b>'.__('No link defined').'</b>');
       }
       $pdf->displaySpace();
    }

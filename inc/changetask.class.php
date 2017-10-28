@@ -53,11 +53,15 @@ class PluginPdfChangeTask extends PluginPdfCommon {
                               'WHERE'  => ['changes_id' => $ID],
                               'ORDER'  => 'date DESC']);
 
-      if (!count($result)) {
-         $pdf->displayLine(__('No task found.'));
+      $number = count($result);
+
+      $pdf->setColumnsSize(100);
+      $title = "<b>".ChangeTask::getTypeName(2)."</b>";
+      if (!number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $pdf->setColumnsSize(100);
-         $pdf->displayTitle("<b>".ChangeTask::getTypeName(count($result))."</b>");
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
 
          while ($data = $result->next()) {
             $pdf->setColumnsSize(20,20,20,20,20);

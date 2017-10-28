@@ -289,20 +289,33 @@ abstract class PluginPdfCommon {
       $notes = Notepad::getAllForItem($item);
       $rand  = mt_rand();
 
-      $pdf->setColumnsSize(100);
+      $number = count($notes);
 
-      if (count($notes)) {
-         $pdf->displayTitle('<b>'.__('Notes').'</b>');
-         foreach ($notes as $note) {
-            $id      = 'note'.$note['id'].$rand;
-            $content = $note['content'];
-            if (empty($content)) {
-               $content = NOT_AVAILABLE;
-            }
-            $pdf->displayText('', $content, 5);
-         }
+      $pdf->setColumnsSize(100);
+      $title = '<b>'.__('Notes').'</b>';
+
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $pdf->displayTitle('<b>'.__('No note found', 'pdf').'</b>');
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
+         $pdf->displayTitle($title);
+
+         $tot = 0;
+         foreach ($notes as $note) {
+            if (!empty($note['content']) && ($tot < $_SESSION['glpilist_limit'])) {
+               $id      = 'note'.$note['id'].$rand;
+               $content = $note['content'];
+               if (empty($content)) {
+                  $content = NOT_AVAILABLE;
+               }
+               $pdf->displayText('', $content, 5);
+               $tot++;
+            }
+         }
       }
       $pdf->displaySpace();
 

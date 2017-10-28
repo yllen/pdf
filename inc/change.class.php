@@ -266,7 +266,7 @@ class PluginPdfChange extends PluginPdfCommon {
    static function pdfPlan(PluginPdfSimplePDF $pdf, Change $job) {
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".__('Analysis')."</b>");
+      $pdf->displayTitle("<b>".__('Plans')."</b>");
 
       $pdf->setColumnsSize(10, 90);
 
@@ -287,17 +287,22 @@ class PluginPdfChange extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>".__('Solution')."</b>");
 
+      $title = '';
       if ($job->fields['solutiontypes_id'] || !empty($job->fields['solution'])) {
          if ($job->fields['solutiontypes_id']) {
-            $title = Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
-                                           $job->getField('solutiontypes_id')));
-         } else {
-            $title = __('Solution');
+            $title = sprintf(__('%1$s: %2$s'), "<b><i>".__('Solution type')."</i></b>",
+                             Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
+                                                                   $job->getField('solutiontypes_id'))))
+                     ."<br />";
          }
-         $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>",
-                                    $job->fields['solution']));
+         if (!empty($job->fields['solution'])) {
+            $title .= sprintf(__('%1$s: %2$s'), "<b><i>".__('Solution')."</i></b>",
+                              $job->fields['solution']);
+         }
+
+         $pdf->displayText($title);
       } else {
-         $pdf->displayLine(__('None'));
+         $pdf->displayLine(__('No item to display'));
       }
 
       $pdf->displaySpace();
@@ -307,9 +312,10 @@ class PluginPdfChange extends PluginPdfCommon {
    static function pdfStat(PluginPdfSimplePDF $pdf, Change $job) {
 
       $pdf->setColumnsSize(100);
+      $pdf->displayTitle("<b>".__('Statistics')."</b>");
+
       $pdf->displayTitle("<b>"._n('Date', 'Dates', 2)."</b>");
 
-      $pdf->setColumnsSize(50, 50);
       $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Opening date'),
                                 Html::convDateTime($job->fields['date'])));
       $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Time to resolve'),
@@ -325,10 +331,8 @@ class PluginPdfChange extends PluginPdfCommon {
                                    Html::convDateTime($job->fields['closedate'])));
       }
 
-      $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>"._n('Time', 'Times', 2)."</b>");
 
-      $pdf->setColumnsSize(50, 50);
       if (isset($job->fields['takeintoaccount_delay_stat']) > 0) {
          if ($job->fields['takeintoaccount_delay_stat'] > 0) {
             $accountdelay = Html::clean(Html::timestampToString($job->fields['takeintoaccount_delay_stat'],0));

@@ -53,6 +53,8 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
    static function pdfMain(PluginPdfSimplePDF $pdf, KnowbaseItem $item){
       global $DB;
 
+      $dbu = new DbUtils();
+
       $ID = $item->getField('id');
 
       if (!Session::haveRightsOr('knowbase',
@@ -61,7 +63,7 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
       }
 
       $knowbaseitemcategories_id = $item->getField('knowbaseitemcategories_id');
-      $fullcategoryname = Html::clean(getTreeValueCompleteName("glpi_knowbaseitemcategories",
+      $fullcategoryname = Html::clean($dbu->getTreeValueCompleteName("glpi_knowbaseitemcategories",
                                                    $knowbaseitemcategories_id));
 
       $question = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
@@ -89,13 +91,13 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
          $pdf->displayTitle('<b>'.__('Content').'</b>');
          $pdf->displayText('', $answer, 5);
       } else {
-         $pdf->displayTitle('<b>'.__('No answer found').'</b>');
+         $pdf->displayTitle('<b>'.__('No answer found', 'pdf').'</b>');
       }
 
       $pdf->setColumnsSize(50,15,15,10,10);
       $pdf->displayTitle(__('Writer'), __('Creation date'), __('Last update'), __('FAQ'),
                          _n('View', 'Views', 2));
-      $pdf->displayLine(getUserName($item->fields["users_id"]),
+      $pdf->displayLine($dbu->getUserName($item->fields["users_id"]),
                         Html::convDateTime($item->fields["date"]),
                         Html::convDateTime($item->fields["date_mod"]),
                         Dropdown::getYesNo($item->fields["is_faq"]),
@@ -132,6 +134,8 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
    static function pdfCible(PluginPdfSimplePDF $pdf, KnowbaseItem $item) {
       global $DB;
 
+      $dbu = new DbUtils();
+
       $ID = $item->getField('id');
 
       if (!Session::haveRightsOr('knowbase',
@@ -150,7 +154,7 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
          $pdf->displayTitle(_n('Target','Targets',$nb));
 
          $pdf->setColumnsSize(30,70);
-         $pdf->displayTitle(__('Type'),__('Name'));
+         $pdf->displayTitle(__('Type'), _n('Recipient', 'Recipients', 2));
 
          $recursive = '';
          if (count($entities)) {
@@ -211,7 +215,7 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
          if (count($users)) {
             foreach ($users as $key => $val) {
                foreach ($val as $data) {
-                  $pdf->displayLine(__('User'), getUserName($data['users_id']));
+                  $pdf->displayLine(__('User'), $dbu->getUserName($data['users_id']));
                }
             }
          }

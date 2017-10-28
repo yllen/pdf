@@ -55,8 +55,13 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
                                               'is_deleted'   =>0]]);
 
       $pdf->setColumnsSize(100);
-      if (count($result)) {
-         $pdf->displayTitle("<b>"._n('Volume', 'Volumes', count($result))."</b>");
+      $title = "<b>"._n('Volume', 'Volumes', count($result))."</b>";
+
+      if (!count($result)) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         $title = sprintf(__('%1$s: %2$s'), $title, count($result));
+         $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(21,21,20,9,9,9,11);
          $pdf->displayTitle('<b>'.__('Name'), __('Partition'), __('Mount point'), __('File system'),
@@ -79,8 +84,6 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
                                       Html::clean(Html::formatNumber($data['freesize'], false, 0))),
                               sprintf(__('%s %s'),Html::clean(Html::formatNumber($percent, false, 0)), '%'));
          }
-      } else {
-         $pdf->displayTitle("<b>".__('No associated volume', 'pdf')."</b>");
       }
       $pdf->displaySpace();
    }

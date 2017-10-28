@@ -51,8 +51,14 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
       $virtualmachines = $dbu->getAllDataFromTable('glpi_computervirtualmachines',
                                               ['computers_id' => $ID]);
       $pdf->setColumnsSize(100);
-      if (count($virtualmachines)) {
-         $pdf->displayTitle("<b>".__('List of virtual machines')."</b>");
+      $title = "<b>".__('List of virtual machines')."</b>";
+
+      if (!count($virtualmachines)) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
+
          $pdf->setColumnsSize(20,8,8,8,25,8,8,15);
          $pdf->setColumnsAlign('left', 'center', 'center', 'center', 'left', 'right', 'right', 'left');
          $typ = explode(' ', __('Virtualization system'));
@@ -84,8 +90,6 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
                $name
             );
          }
-      } else {
-         $pdf->displayTitle("<b>".__('No associated virtual machine')."</b>");
       }
 
       // From ComputerVirtualMachine::showForVirtualMachine()

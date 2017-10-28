@@ -86,10 +86,12 @@ class PluginPdfItem_OperatingSystem extends PluginPdfCommon {
       $number = count($result);
 
       $pdf->setColumnsSize(100);
+      $title = '<b>'.__('Operating system').'</b>';
       if (!$number) {
-         $pdf->displayLine(__('No item found.'));
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $pdf->displayTitle('<b>'.__('Operating system').'</b>');
+          $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(17,10,14,15,10,10,12,12);
          $pdf->displayTitle(__('Name'), __('Version'), __('Architecture'), __('Service pack'),

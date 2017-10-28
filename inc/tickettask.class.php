@@ -45,7 +45,9 @@ class PluginPdfTicketTask extends PluginPdfCommon {
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $job, $private) {
       global $CFG_GLPI, $DB;
 
-      $ID = $job->getField('id');
+      $dbu = new DbUtils();
+
+      $ID  = $job->getField('id');
 
       //////////////Tasks///////////
 
@@ -91,7 +93,7 @@ class PluginPdfTicketTask extends PluginPdfCommon {
             }
             if ($data['users_id_tech'] > 0) {
                $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('By user', 'pdf'),
-                                                getUserName($data["users_id_tech"]));
+                                                $dbu->getUserName($data["users_id_tech"]));
             }
             if ($data['groups_id_tech'] > 0) {
                $planification .= "<br>".sprintf(__('%1$s: %2$s'), __('By group', 'pdf'),
@@ -110,7 +112,7 @@ class PluginPdfTicketTask extends PluginPdfCommon {
             $pdf->displayLine("</b>".Html::clean($lib),
                               Html::convDateTime($data["date"]),
                               Html::timestampToString($data["actiontime"], 0),
-                              Html::clean(getUserName($data["users_id"])),
+                              Html::clean($dbu->getUserName($data["users_id"])),
                               $planification);
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
                                                Html::clean($data["content"]), 1);

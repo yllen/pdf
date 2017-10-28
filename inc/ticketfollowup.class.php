@@ -45,7 +45,9 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $job, $private) {
       global $CFG_GLPI, $DB;
 
-      $ID = $job->getField('id');
+      $dbu = new DbUtils();
+
+      $ID  = $job->getField('id');
 
       //////////////followups///////////
 
@@ -88,7 +90,7 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
             }
             $pdf->displayLine(Html::clean($lib),
                               Html::convDateTime($data["date"]),
-                              Html::clean(getUserName($data["users_id"])));
+                              Html::clean($dbu->getUserName($data["users_id"])));
 
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>",__('Comments'), ''),
                                                Html::clean($data["content"]), 1);

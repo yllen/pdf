@@ -45,6 +45,8 @@ class PluginPdfTicket extends PluginPdfCommon {
    static function pdfMain(PluginPdfSimplePDF $pdf, Ticket $job) {
       global $CFG_GLPI, $DB;
 
+      $dbu = new DbUtils();
+
       $ID = $job->getField('id');
       if (!$job->can($ID, READ)) {
          return false;
@@ -75,9 +77,9 @@ class PluginPdfTicket extends PluginPdfCommon {
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Opening date')."</i></b>",
                           Html::convDateTime($job->fields["date"])));
 
-      if ($job->fields['due_date']) {
+      if ($job->fields['time_to_resolve']) {
          $due = "<b><i>".sprintf(__('%1$s: %2$s'), __('Time to resolve')."</b></i>",
-               Html::convDateTime($job->fields['due_date']));
+               Html::convDateTime($job->fields['time_to_resolve']));
       }
 
       if ($job->fields["time_to_own"] > 0) {
@@ -129,7 +131,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $lastupdate = Html::convDateTime($job->fields["date_mod"]);
       if ($job->fields['users_id_lastupdater'] > 0) {
          $lastupdate = sprintf(__('%1$s by %2$s'), $lastupdate,
-                               getUserName($job->fields["users_id_lastupdater"]));
+                               $dbu->getUserName($job->fields["users_id_lastupdater"]));
       }
 
       $pdf->displayLine(
@@ -189,7 +191,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $requester = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester'), $listusers);
       foreach ($job->getUsers(CommonITILActor::REQUESTER) as $d) {
          if ($d['users_id']) {
-            $tmp = "<i>".Html::clean(getUserName($d['users_id']))."</i>";
+            $tmp = "<i>".Html::clean($dbu->getUserName($d['users_id']))."</i>";
          } else {
             $tmp = $d['alternative_email'];
          }
@@ -264,7 +266,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $watcher   = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher'), $listusers);
       foreach ($job->getUsers(CommonITILActor::OBSERVER) as $d) {
          if ($d['users_id']) {
-            $tmp = Html::clean(getUserName($d['users_id']));
+            $tmp = Html::clean($dbu->getUserName($d['users_id']));
             if ($d['alternative_email']) {
                $tmp .= ' ('.$d['alternative_email'].')';
             }
@@ -297,7 +299,7 @@ class PluginPdfTicket extends PluginPdfCommon {
                                     $listusers);
       foreach ($job->getUsers(CommonITILActor::ASSIGN) as $d) {
          if ($d['users_id']) {
-            $tmp = Html::clean(getUserName($d['users_id']));
+            $tmp = Html::clean($dbu->getUserName($d['users_id']));
             if ($d['alternative_email']) {
                $tmp .= ' ('.$d['alternative_email'].')';
             }
@@ -447,6 +449,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $onglets = parent::defineAllTabs($options);
       unset($onglets['Projecttask_Ticket$1']); // TODO add method to print linked Projecttask
       unset($onglets['Change_Ticket$1']); // TODO add method to print linked Changes
+      unset($onglets['(KnowbaseItem_Item$1']);
 
       if (Session::haveRight('ticket', Ticket::READALL) // for technician
           || Session::haveRight('followup', TicketFollowup::SEEPRIVATE)
@@ -508,7 +511,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             break;
 
          case 'Problem_Ticket$1' :
-            PluginPdfProblem::pdfForItem($pdf, $item);
+            PluginPdfProblem_Ticket::pdfForTicket($pdf, $item);
             break;
 
          case 'Ticket$4' :

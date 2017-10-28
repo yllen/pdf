@@ -64,8 +64,12 @@ class PluginPdfContract_Item extends PluginPdfCommon {
       $i = $j = 0;
 
       $pdf->setColumnsSize(100);
-      if ($number > 0) {
-         $pdf->displayTitle('<b>'._N('Associated contract', 'Associated contracts', $number).'</b>');
+      $title = '<b>'._n('Associated contract', 'Associated contracts', $number).'</b>';
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(19,19,15,10,16,11,10);
          $pdf->displayTitle(__('Name'), __('Entity'), _x('phone', 'Number'), __('Contract type'),
@@ -96,8 +100,6 @@ class PluginPdfContract_Item extends PluginPdfCommon {
             }
             $j++;
          }
-      } else {
-         $pdf->displayTitle("<b>".__('No associated contract')."</b>");
       }
       $pdf->displaySpace();
    }

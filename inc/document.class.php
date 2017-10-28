@@ -64,10 +64,12 @@ class PluginPdfDocument extends PluginPdfCommon {
        $number = count($result);
 
       $pdf->setColumnsSize(100);
+      $title = '<b>'.__('Associated documents', 'pdf').'</b>';
       if (!$number) {
-         $pdf->displayTitle('<b>'.__('No associated documents', 'pdf').'</b>');
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $pdf->displayTitle('<b>'.__('Associated documents', 'pdf').'</b>');
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
 
          if ($CFG_GLPI['use_rich_text']) {
             $pdf->setColumnsSize(20,15,10,10,10,8,20,7);

@@ -61,10 +61,12 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
       $number = count($result);
 
       $pdf->setColumnsSize(100);
+      $title = '<b>'._n('Item', 'Items', 2).'</b>';
       if (!$number) {
-         $pdf->displayTitle('<b>'.__('No associated problem', 'pdf').'</b>');
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $pdf->displayTitle('<b>'._n('Item', 'Items', $number).'</b>');
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(20,20,26,17,17);
          $pdf->displayTitle("<i>".__('Type'), __('Name'), __('Entity'),__('Serial number'),
@@ -122,6 +124,7 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
                } else {
                   $pdf->displayLine('',
                                     Html::clean($name),
+                                    Dropdown::getDropdownName("glpi_entities", $data['entity']),
                                     Html::clean($data["serial"]),
                                     Html::clean($data["otherserial"]),$nb);
                }
@@ -184,7 +187,8 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
 
       $pdf->setColumnsSize(100);
       if (!$number) {
-         $pdf->displayTitle('<b>'.__('No associated problem', 'pdf').'</b>');
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), "<b>".__('Problem', 'Problems', 2)."<b>",
+                                    __('No item to display')));
       } else {
          $pdf->displayTitle("<b>".sprintf(_n('Last %d problem','Last %d problems', $number)."</b>",
                                           $number));

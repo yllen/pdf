@@ -82,12 +82,7 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
                           Html::clean(Dropdown::getDropdownName('glpi_domains',
                                                                 $item->fields['domains_id']))));
 
-      $pdf->displayLine(__('The MAC address and the IP of the equipment are included in an aggregated network port'));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), _n('Firmware', 'Firmwares', 1).'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_networkequipmentfirmwares',
-                                                                $item->fields['networkequipmentfirmwares_id']))),
+      $pdf->displayLine(__('The MAC address and the IP of the equipment are included in an aggregated network port'),
          '<b><i>'.sprintf(__('%1$s: %2$s'),
                           sprintf(__('%1$s (%2$s)'), __('Memory'),__('Mio')).'</i></b>',
                                   $item->fields['ram']));

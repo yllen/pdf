@@ -50,14 +50,19 @@ class PluginPdfChangeCost extends PluginPdfCommon {
                               'WHERE' => ['changes_id' => $ID],
                               'ORDER' => 'begin_date']);
 
-      if (!count($result)) {
-         $pdf->setColumnsSize(100);
-         $pdf->displayLine(__('No cost for this change', 'pdf'));
+      $number = count($result);
+
+      $pdf->setColumnsSize(100);
+      $title = '<b>'.ChangeCost::getTypeName(2).'</b>';
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
+          $title = sprintf(__('%1$s: %2$s'), $title, $number);
+
          $pdf->setColumnsSize(60,20,20);
-         $pdf->displayTitle("<b>".ChangeCost::getTypeName(count($result)),
-                            __('Change duration'),
-                            CommonITILObject::getActionTime($job->fields['actiontime'])."</b>");
+         $pdf->displayTitle("<b>".$title."</b>",
+                            "<b>".__('Item duration')."</b>",
+                            "<b>".CommonITILObject::getActionTime($job->fields['actiontime'])."</b>");
 
          $pdf->setColumnsSize(19,11,10,10,10,10,10,10,10);
          $pdf->setColumnsAlign('center','center','center','left', 'right','right','right',

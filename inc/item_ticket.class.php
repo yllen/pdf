@@ -62,15 +62,16 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
       $number = $DB->numrows($result);
 
       $pdf->setColumnsSize(100);
+      $title = '<b>'._n('Item', 'Items', 2).'</b>';
       if (!$number) {
-         $pdf->displayLine(__('No item found.'));
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $pdf->displayTitle('<b>'._n('Item', 'Items', $number).'</b>');
-      }
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
 
-         $pdf->setColumnsSize(20,30,25,25);
-         $pdf->displayTitle("<b><i>".__('Type'), __('Name'), __('Serial number'),
-                                  __('Inventory number')."</b></i>");
+         $pdf->setColumnsSize(20,20,26,17,17);
+         $pdf->displayTitle("<i>".__('Type'), __('Name'), __('Entity'), __('Serial number'),
+                                  __('Inventory number')."</i>");
 
                                         $totalnb = 0;
          for ($i=0 ; $i<$number ; $i++) {
@@ -81,55 +82,58 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
 
             if ($item->canView()) {
                $itemtable = $dbu->getTableForItemType($itemtype);
-            $query = "SELECT `$itemtable`.*,
-                             `glpi_items_tickets`.`id` AS IDD,
-                             `glpi_entities`.`id` AS entity
-                      FROM `glpi_items_tickets`,
-                           `$itemtable`";
 
-            if ($itemtype != 'Entity') {
-               $query .= " LEFT JOIN `glpi_entities`
-                                 ON (`$itemtable`.`entities_id`=`glpi_entities`.`id`) ";
-            }
+               $query = "SELECT `$itemtable`.*,
+                                `glpi_items_tickets`.`id` AS IDD,
+                                `glpi_entities`.`id` AS entity
+                         FROM `glpi_items_tickets`,
+                              `$itemtable`";
 
-            $query .= " WHERE `$itemtable`.`id` = `glpi_items_tickets`.`items_id`
-                              AND `glpi_items_tickets`.`itemtype` = '$itemtype'
-                              AND `glpi_items_tickets`.`tickets_id` = '$instID'";
-
-            if ($item->maybeTemplate()) {
-               $query .= " AND `$itemtable`.`is_template` = '0'";
-            }
-
-            $query .= $dbu->getEntitiesRestrictRequest(" AND", $itemtable, '', '',
-                                                       $item->maybeRecursive())."
-                      ORDER BY `glpi_entities`.`completename`, `$itemtable`.`name`";
-
-            $result_linked = $DB->query($query);
-            $nb            = $DB->numrows($result_linked);
-
-            for ($prem=true ; $data=$DB->fetch_assoc($result_linked) ; $prem=false) {
-               $name = $data["name"];
-               if (empty($data["name"])) {
-                  $name = "(".$data["id"].")";
+               if ($itemtype != 'Entity') {
+                  $query .= " LEFT JOIN `glpi_entities`
+                                    ON (`$itemtable`.`entities_id`=`glpi_entities`.`id`) ";
                }
-               if ($prem) {
-                  $typename = $item->getTypeName($nb);
-                  $pdf->displayLine(Html::clean(sprintf(__('%1$s: %2$s'), $typename, $nb)),
-                                    Html::clean($name),
-                                    isset($data['serial']) ? Html::clean($data["serial"]) : '',
-                                    isset($data['otherserial']) ? Html::clean($data["otherserial"]) : '',
-                                    $nb);
-               } else {
-                  $pdf->displayLine('',
-                                    Html::clean($name),
-                                    Html::clean($data["serial"]),
-                                    Html::clean($data["otherserial"]),$nb);
+
+               $query .= " WHERE `$itemtable`.`id` = `glpi_items_tickets`.`items_id`
+                                 AND `glpi_items_tickets`.`itemtype` = '$itemtype'
+                                 AND `glpi_items_tickets`.`tickets_id` = '$instID'";
+
+               if ($item->maybeTemplate()) {
+                  $query .= " AND `$itemtable`.`is_template` = '0'";
                }
+
+               $query .= $dbu->getEntitiesRestrictRequest(" AND", $itemtable, '', '',
+                                                          $item->maybeRecursive())."
+                         ORDER BY `glpi_entities`.`completename`, `$itemtable`.`name`";
+
+               $result_linked = $DB->query($query);
+               $nb            = $DB->numrows($result_linked);
+
+               for ($prem=true ; $data=$DB->fetch_assoc($result_linked) ; $prem=false) {
+                  $name = $data["name"];
+                  if (empty($data["name"])) {
+                     $name = "(".$data["id"].")";
+                  }
+                  if ($prem) {
+                     $typename = $item->getTypeName($nb);
+                     $pdf->displayLine(Html::clean(sprintf(__('%1$s: %2$s'), $typename, $nb)),
+                                       Html::clean($name),
+                                       Dropdown::getDropdownName("glpi_entities", $data['entity']),
+                                       Html::clean($data["serial"]),
+                                       Html::clean($data["otherserial"]),$nb);
+                  } else {
+                     $pdf->displayLine('',
+                                       Html::clean($name),
+                                       Dropdown::getDropdownName("glpi_entities", $data['entity']),
+                                       Html::clean($data["serial"]),
+                                       Html::clean($data["otherserial"]),$nb);
+                  }
+               }
+               $totalnb += $nb;
             }
-            $totalnb += $nb;
          }
+         $pdf->displayLine("<b><i>".sprintf(__('%1$s = %2$s')."</b></i>", __('Total'), $totalnb));
       }
-      $pdf->displayLine("<b><i>".sprintf(__('%1$s = %2$s')."</b></i>", __('Total'), $totalnb));
    }
 
 
@@ -211,7 +215,8 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
 
       $pdf->setColumnsSize(100);
       if (!$number) {
-         $pdf->displayTitle('<b>'.__('No associated ticket', 'pdf').'</b>');
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), "<b>".__('Ticket', 'Tickets', 2)."<b>",
+                            __('No item to display')));
       } else {
          $pdf->displayTitle("<b>".sprintf(_n('Last %d ticket','Last %d tickets', $number)."</b>",
                                           $number));

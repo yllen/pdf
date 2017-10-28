@@ -63,7 +63,14 @@ class PluginPdfChangeValidation extends PluginPdfCommon {
                               'ORDER'  => 'submission_date DESC']);
       $number = count($result);
 
-      if ($number) {
+      $pdf->setColumnsSize(100);
+      $title = '<b>'.ChangeValidation::getTypeName(2).'</b>';
+      if (!$number) {
+          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
+
          $pdf->setColumnsSize(10,10,15,20,10,15,20);
          $pdf->displayTitle(_x('item', 'State'), __('Request date'), __('Approval requester'),
                             __('Request comments'), __('Approval status'), __('Approver'),
@@ -78,8 +85,6 @@ class PluginPdfChangeValidation extends PluginPdfCommon {
                               $dbu->getUserName($row["users_id_validate"]),
                               trim($row["comment_validation"]));
          }
-      } else {
-         $pdf->displayLine(__('No item found'));
       }
       $pdf->displaySpace();
    }

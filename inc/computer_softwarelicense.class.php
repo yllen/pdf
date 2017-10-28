@@ -79,7 +79,7 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
       } else {
          $pdf->setColumnsSize(100);
          $pdf->setColumnsAlign('center');
-         $pdf->displayLine(__('No item found'));
+         $pdf->displayLine(__('No item to display'));
       }
       $pdf->displaySpace();
    }
@@ -109,13 +109,11 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       $pdf->setColumnsAlign('center');
       $title = '<b>'.__('Affected computers').'</b>';
-      if ($number) {
-         if ($number > $_SESSION['glpilist_limit']) {
-            $title = sprintf(__('%1$s: %2$s'), $title,
-                             $_SESSION['glpilist_limit'].' / '.$number);
-         } else {
-            $title = sprintf(__('%1$s: %2$s'), $title, $number);
-         }
+
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
          $pdf->displayTitle($title);
 
          $query = "SELECT `glpi_computers_softwarelicenses`.*,
@@ -185,8 +183,6 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
                                  $data['username']);
             }
          }
-      } else {
-         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item found')));
       }
       $pdf->displaySpace();
    }

@@ -157,18 +157,18 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
       $comp = new Computer();
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.__('Direct connections').'</b>');
-
-      $query = "SELECT *
-                FROM `glpi_computers_items`
-                WHERE `items_id` = '".$ID."'
-                      AND `itemtype` = '".$type."'";
+      $title = '<b>'.__('Direct connections').'</b>';
 
       if ($result = $DB->request(['FROM'  => 'glpi_computers_items',
                                   'WHERE' => ['items_id' => $ID,
                                               'itemtype' => $type]])) {
          $resultnum = count($result);
-         if ($resultnum > 0) {
+
+         if (!$resultnum) {
+            $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+         } else {
+            $pdf->displayTitle($title);
+
             for ($j=0 ; $j < $resultnum ; $j++) {
                $row = $result->next();
                $tID    = $row["computers_id"];
@@ -206,9 +206,6 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
                                                   $line1, 1);
                }
             }// each device   of current type
-
-         } else { // No row
-            $pdf->displayLine(__('Not connected.'));
          } // No row
       } // Result
       $pdf->displaySpace();

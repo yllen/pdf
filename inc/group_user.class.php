@@ -53,15 +53,20 @@ class PluginPdfGroup_User extends PluginPdfCommon {
       $entityrestrict = Group_User::getDataForGroup($group, $used, $ids, '', $tree);
 
       $number = count($used);
-      if ($number > $_SESSION['glpilist_limit']) {
-         $title = sprintf(__('%1$s (%2$s)'), $title, $_SESSION['glpilist_limit']."/".$number);
-      } else {
-         $title = sprintf(__('%1$s: %2$s'), _n('User', 'Users', 2), $number);
-      }
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.$title.'</b>');
 
-      if ($number) {
+      $pdf->setColumnsSize(100);
+      $title = '<b>'._n('User', 'Users', 2).'</b>';
+
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s (%2$s)'), $title, $_SESSION['glpilist_limit']."/".$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
+         $pdf->displayTitle($title);
+
          $user  = new User();
          $group = new Group();
 
@@ -94,9 +99,6 @@ class PluginPdfGroup_User extends PluginPdfCommon {
                                  Dropdown::getYesNo($user->fields['is_active']));
             }
          }
-      } else {
-         $pdf->setColumnsAlign('center');
-         $pdf->displayLine(__('No item found'));
       }
       $pdf->displaySpace();
   }

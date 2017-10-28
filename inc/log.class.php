@@ -46,23 +46,33 @@ class PluginPdfLog extends PluginPdfCommon {
 
       // Get the Full history for the item (really a good idea ?, should we limit this)
       $changes = Log::getHistoryData($item);
+      $number  = count($changes);
 
       $pdf->setColumnsSize(100);
-      if (count($changes) > 0) {
-         $pdf->displayTitle("<b>".__('Historical')."</b>");
+      $title = "<b>".__('Historical')."</b>";
+
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
+         $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(10,15,24,11,40);
          $pdf->displayTitle('<b><i>'.__('ID'), __('Date'), __('User'), __('Field'),
                             _x('name', 'Update').'</i></b>');
 
+         $tot = 0;
          foreach ($changes as $data) {
-            if ($data['display_history']) {
+            if ($data['display_history'] && ($tot < $_SESSION['glpilist_limit'])) {
                $pdf->displayLine($data['id'], $data['date_mod'], $data['user_name'], $data['field'],
                                  Html::clean($data['change']));
+               $tot++;
             }
          } // Each log
-      } else {
-         $pdf->displayTitle("<b>".__('No historical')."</b>");
       }
       $pdf->displaySpace();
    }

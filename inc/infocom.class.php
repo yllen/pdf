@@ -54,9 +54,11 @@ class PluginPdfInfocom extends PluginPdfCommon {
       $ic = new Infocom();
 
       $pdf->setColumnsSize(100);
-      if ($ic->getFromDBforDevice(get_class($item),$ID)) {
+      $title = '<b>'.__('Financial and administratives information').'</b>';
 
-         $pdf->setColumnsSize(100);
+      if (!$ic->getFromDBforDevice(get_class($item),$ID)) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
          $pdf->displayTitle("<b>".__('Asset lifecycle')."</b>");
 
          $pdf->setColumnsSize(50,50);
@@ -171,8 +173,6 @@ class PluginPdfInfocom extends PluginPdfCommon {
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Warranty information')."</i></b>",
                              $ic->fields["warranty_info"]),
             $col1);
-      } else {
-         $pdf->displayTitle("<b>".__('No financial information', 'pdf')."</b>");
       }
 
       $pdf->displaySpace();
