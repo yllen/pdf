@@ -58,8 +58,11 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                 WHERE `glpi_items_tickets`.`tickets_id` = '$instID'
                 ORDER BY `itemtype`";
 
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
+      $result = $DB->request(['SELECT DISTINCT' => 'itemtype',
+                              'FROM'            => 'glpi_items_tickets',
+                              'WHERE'           => ['tickets_id' => $instID],
+                              'ORDER'           => 'itemtype']);
+      $number = count($result);
 
       $pdf->setColumnsSize(100);
       $title = '<b>'._n('Item', 'Items', 2).'</b>';
@@ -75,7 +78,8 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
 
                                         $totalnb = 0;
          for ($i=0 ; $i<$number ; $i++) {
-            $itemtype = $DB->result($result, $i, "itemtype");
+            $row = $result->next();
+            $itemtype = $row['itemtype'];
             if (!($item = getItemForItemtype($itemtype))) {
                continue;
             }
@@ -106,10 +110,10 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                                                           $item->maybeRecursive())."
                          ORDER BY `glpi_entities`.`completename`, `$itemtable`.`name`";
 
-               $result_linked = $DB->query($query);
-               $nb            = $DB->numrows($result_linked);
+               $result_linked = $DB->request($query);
+               $nb            = count($result_linked);
 
-               for ($prem=true ; $data=$DB->fetch_assoc($result_linked) ; $prem=false) {
+               for ($prem=true ; $data=$result_linked->next() ; $prem=false) {
                   $name = $data["name"];
                   if (empty($data["name"])) {
                      $name = "(".$data["id"].")";

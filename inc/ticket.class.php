@@ -47,6 +47,8 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $dbu = new DbUtils();
 
+      $infouser = isset($_REQUEST['item']['_inforequester_']);
+
       $ID = $job->getField('id');
       if (!$job->can($ID, READ)) {
          return false;
@@ -64,7 +66,7 @@ class PluginPdfTicket extends PluginPdfCommon {
          $entity = '';
       }
 
-      $pdf->setColumnsSize(100);
+      $pdf->setColumnsSize(50,50);
       $recipient_name='';
       if ($job->fields["users_id_recipient"]) {
          $recipient      = new User();
@@ -72,59 +74,54 @@ class PluginPdfTicket extends PluginPdfCommon {
          $recipient_name = $recipient->getName();
       }
 
-      $tto = $due = $commenttto = $commentttr = '';
+      $due = $commenttto = $commentttr = $interntto = '';
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Opening date')."</i></b>",
-                          Html::convDateTime($job->fields["date"])));
+                          Html::convDateTime($job->fields["date"])),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('By')."</i></b>", $recipient_name));
 
-      if ($job->fields['time_to_resolve']) {
-         $due = "<b><i>".sprintf(__('%1$s: %2$s'), __('Time to resolve')."</b></i>",
-               Html::convDateTime($job->fields['time_to_resolve']));
+      $ttr = "<b><i>".sprintf(__('%1$s: %2$s'), __('Time to resolve')."</b></i>",
+                              Html::convDateTime($job->fields['time_to_resolve']));
+
+      $tto = "<b><i>".sprintf(__('%1$s: %2$s'), __('Internal time to own')."</b></i>",
+                              Html::convDateTime($job->fields["internal_time_to_own"]));
+
+      if ($job->fields["olas_tto_id"] > 0) {
+         $tto .= "<b><i>".sprintf(__('%1$s: %2$s'), __('OLA')."</b></i>",
+                                  Html::clean(Dropdown::getDropdownName("glpi_olas",
+                                                                        $job->fields["olas_tto_id"])));
+
+         $olalevel = new OlaLevel();
+         $nextaction = new OlaLevel_Ticket();
+         if ($nextaction->getFromDBForTicket($job->fields["id"], SLM::TTO)) {
+            $tto .= "<br /><b><i>".sprintf(__('%1$s: %2$s'),
+                                          sprintf(__('Next escalation: %s')."</b></i>",''),
+                                                  Html::convDateTime($nextaction->fields['date']));
+
+            if ($olalevel->getFromDB($nextaction->fields['olalevels_id'])) {
+               $tto .= " <b><i>".sprintf(__('%1$s: %2$s'), __('Escalation level')."</b></i>",
+                                         $olalevel->getName());
+            }
+         }
       }
 
-      if ($job->fields["time_to_own"] > 0) {
-         $tto = "<b><i>".sprintf(__('%1$s: %2$s'), __('Time to own')."</b></i>",
-                                            Html::convDateTime($job->fields["time_to_own"]));
-      }
-
-      if ($job->fields["slts_tto_id"] > 0) {
-         $commenttto = "<b><i>".sprintf(__('%1$s: %2$s'), __('SLT')."</b></i>",
-                                 Html::clean(Dropdown::getDropdownName("glpi_slts",
-                                                                       $job->fields["slts_tto_id"])));
+      if ($job->fields["slas_ttr_id"] > 0) {
+         $ttr .= "<b><i>".sprintf(__('%1$s: %2$s'), __('SLA')."</b></i>",
+                                  Html::clean(Dropdown::getDropdownName("glpi_slas",
+                                                                        $job->fields["slas_ttr_id"])));
 
          $slalevel = new SlaLevel();
          $nextaction = new SlaLevel_Ticket();
-         if ($nextaction->getFromDBForTicket($job->fields["id"], SLT::TTO)) {
-            $commenttto .= " <b><i>".sprintf(__('%1$s: %2$s'),
-                                             sprintf(__('Next escalation: %s')."</b></i>",''),
-                                             Html::convDateTime($nextaction->fields['date']));
+         if ($nextaction->getFromDBForTicket($job->fields["id"], SLM::TTR)) {
+            $ttr .= "<br /><b><i>".sprintf(__('%1$s: %2$s'),
+                                           sprintf(__('Next escalation: %s')."</b></i>",''),
+                                                   Html::convDateTime($nextaction->fields['date']));
 
             if ($slalevel->getFromDB($nextaction->fields['slalevels_id'])) {
-               $commenttto .= " <b><i>".sprintf(__('%1$s: %2$s'), __('Escalation level')."</b></i>",
-                                           $slalevel->getName());
+               $ttr .= " <b><i>".sprintf(__('%1$s: %2$s'), __('Escalation level')."</b></i>",
+                                         $slalevel->getName());
             }
          }
-         $pdf->displayText($tto, $commenttto, 1);
-      }
-
-      if ($job->fields["slts_ttr_id"] > 0) {
-         $commentttr = "<b><i>".sprintf(__('%1$s: %2$s'), __('SLT')."</b></i>",
-                                     Html::clean(Dropdown::getDropdownName("glpi_slts",
-                                                                           $job->fields["slts_ttr_id"])));
-
-         $slalevel = new SlaLevel();
-         $nextaction = new SlaLevel_Ticket();
-         if ($nextaction->getFromDBForTicket($job->fields["id"], SLT::TTR)) {
-            $commentttr .= " <b><i>".sprintf(__('%1$s: %2$s'),
-                                             sprintf(__('Next escalation: %s')."</b></i>",''),
-                                             Html::convDateTime($nextaction->fields['date']));
-
-            if ($slalevel->getFromDB($nextaction->fields['slalevels_id'])) {
-               $commentttr .= " <b><i>".sprintf(__('%1$s: %2$s'), __('Escalation level')."</b></i>",
-                                               $slalevel->getName());
-            }
-         }
-         $pdf->displayText($due, $commentttr, 1);
       }
 
       $pdf->setColumnsSize(50,50);
@@ -135,8 +132,16 @@ class PluginPdfTicket extends PluginPdfCommon {
       }
 
       $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('By')."</i></b>", $recipient_name),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Last update').'</i></b>', $lastupdate));
+
+      $pdf->displayLine(
+            "<b><i>".sprintf(__('%1$s: %2$s'), __('Time to own')."</b></i>",
+                             Html::convDateTime($job->fields["time_to_own"])),
+            $ttr);
+
+      $pdf->displayLine($tto,
+            "<b><i>".sprintf(__('%1$s: %2$s'), __('Internal time to resolve')."</b></i>",
+                             Html::convDateTime($job->fields['internal_time_to_resolve'])));
 
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Type')."</i></b>",
@@ -192,21 +197,21 @@ class PluginPdfTicket extends PluginPdfCommon {
       foreach ($job->getUsers(CommonITILActor::REQUESTER) as $d) {
          if ($d['users_id']) {
             $tmp = "<i>".Html::clean($dbu->getUserName($d['users_id']))."</i>";
+            if ($d['alternative_email']) {
+               $tmp .= ' ('.$d['alternative_email'].')';
+            }
          } else {
             $tmp = $d['alternative_email'];
          }
 
          $user = new User();
-         if ($info = $user->getFromDB($d['users_id'])) {
-            if ($d['alternative_email'] || $user->fields['phone'] || $user->fields['mobile']
+         if ($info = $user->getFromDB($d['users_id'])
+             && $infouser) {
+            if ($user->fields['phone'] || $user->fields['mobile']
                 || $user->fields['usercategories_id'] || $user->fields['locations_id']) {
 
                $tmp .= " (";
-               $first = false;
-               if ($d['alternative_email']) {
-                  $tmp .= sprintf(__('%1$s: %2$s'), __('Email'), $d['alternative_email']);
-                  $first = false;
-               }
+               $first = true;
                if ($user->fields['phone']) {
                   if (!$first) {
                      $tmp .= " - ";

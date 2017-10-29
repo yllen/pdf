@@ -53,23 +53,25 @@ class PluginPdfReservation extends PluginPdfCommon {
       }
 
       $user = new User();
-      $ri = new ReservationItem;
+      $ri   = new ReservationItem;
+      $dbu  = new DbUtils();
+
       $pdf->setColumnsSize(100);
       if ($ri->getFromDBbyItem($type,$ID)) {
          $now = $_SESSION["glpi_currenttime"];
-         $query = "SELECT *
-                   FROM `glpi_reservationitems`
-                   INNER JOIN `glpi_reservations`
-                        ON (`glpi_reservations`.`reservationitems_id` = `glpi_reservationitems`.`id`)
-                   WHERE `end` > '".$now."'
-                         AND `glpi_reservationitems`.`items_id` = '$ID'
-                   ORDER BY `begin`";
+         $query = ['FROM'        => 'glpi_reservationitems',
+                   'INNER JOIN'  => ['glpi_reservations'
+                                    => ['FKEY' => ['glpi_reservations'     => 'reservationitems_id',
+                                                   'glpi_reservationitems' => 'id']]],
+                   'WHERE'       => ['end'      => ['>', $now],
+                                     'items_id' => $ID],
+                   'ORDER'       => 'begin'];
 
-         $result = $DB->query($query);
+         $result = $DB->request($query);
 
          $pdf->setColumnsSize(100);
 
-         if (!$DB->numrows($result)) {
+         if (!count($result)) {
             $pdf->displayTitle("<b>".__('No current and future reservations', 'pdf')."</b>");
          } else {
             $pdf->displayTitle("<b>".__('Current and future reservations')."</b>");
@@ -77,10 +79,10 @@ class PluginPdfReservation extends PluginPdfCommon {
             $pdf->displayTitle('<i>'.__('Start date'), __('End date'), __('By'), __('Comments').
                                '</i>');
 
-            while ($data = $DB->fetch_assoc($result)) {
+            while ($data = $result->next()) {
                if ($user->getFromDB($data["users_id"])) {
-                  $name = formatUserName($user->fields["id"], $user->fields["name"],
-                                         $user->fields["realname"], $user->fields["firstname"]);
+                  $name = $dbu->formatUserName($user->fields["id"], $user->fields["name"],
+                                               $user->fields["realname"], $user->fields["firstname"]);
                } else {
                   $name = "(".$data["users_id"].")";
                }
@@ -90,20 +92,19 @@ class PluginPdfReservation extends PluginPdfCommon {
             }
          }
 
-         $query = "SELECT *
-                   FROM `glpi_reservationitems`
-                   INNER JOIN `glpi_reservations`
-                        ON (`glpi_reservations`.`reservationitems_id` = `glpi_reservationitems`.`id`)
-                   WHERE `end` <= '".$now."'
-                         AND `glpi_reservationitems`.`items_id` = '$ID'
-                   ORDER BY `begin`
-                   DESC";
+         $query = ['FROM'        => 'glpi_reservationitems',
+                   'INNER JOIN'  => ['glpi_reservations'
+                                     => ['FKEY' => ['glpi_reservations'     => 'reservationitems_id',
+                                                    'glpi_reservationitems' => 'id']]],
+                   'WHERE'       => ['end'      => ['<=', $now],
+                                     'items_id' => $ID],
+                   'ORDER'       => 'begin DESC'];
 
-         $result = $DB->query($query);
+         $result = $DB->request($query);
 
          $pdf->setColumnsSize(100);
 
-         if (!$DB->numrows($result)) {
+         if (!count($result)) {
             $pdf->displayTitle("<b>".__('No past reservations', 'pdf')."</b>");
          } else {
             $pdf->displayTitle("<b>".__('Past reservations')."</b>");
@@ -111,9 +112,9 @@ class PluginPdfReservation extends PluginPdfCommon {
             $pdf->displayTitle('<i>'.__('Start date'), __('End date'), __('By'), __('Comments').
                                '</i>');
 
-            while ($data = $DB->fetch_assoc($result)) {
+            while ($data = $result->next()) {
                if ($user->getFromDB($data["users_id"])) {
-                  $name = formatUserName($user->fields["id"], $user->fields["name"],
+                  $name = $dbu->formatUserName($user->fields["id"], $user->fields["name"],
                                          $user->fields["realname"], $user->fields["firstname"]);
                } else {
                   $name = "(".$data["users_id"].")";

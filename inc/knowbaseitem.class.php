@@ -46,6 +46,9 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['KnowbaseItem$3']);
+      unset($onglets['KnowbaseItem_Item$1']);
+      unset($onglets['KnowbaseItemTranslation$1']);
+      unset($onglets['KnowbaseItem_Revision$1']);
       return $onglets;
    }
 
