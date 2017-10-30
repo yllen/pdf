@@ -89,19 +89,21 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
                 ORDER BY `name`";
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.SoftwareVersion::getTypeName(2).'</b>');
+      $title = '<b>'.SoftwareVersion::getTypeName(2).'</b>';
 
-      if ($result = $DB->query($query)) {
-         if ($DB->numrows($result) > 0) {
+      if ($result = $DB->request($query)) {
+         if (!count($result) ) {
+            $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+         } else {
             $pdf->setColumnsSize(13,13,30,14,30);
-            $pdf->displayTitle('<b><i>'.SoftwareVersion::getTypeName(2).'</i></b>',
+            $pdf->displayTitle('<b><i>'.$title.'</i></b>',
                                '<b><i>'.__('Status').'</i></b>',
                                '<b><i>'.__('Operating system').'</i></b>',
                                '<b><i>'._n('Installation', 'Installations', 2).'</i></b>',
                                '<b><i>'.__('Comments').'</i></b>');
             $pdf->setColumnsAlign('left','left','left','right','left');
 
-            for ($tot=$nb=0 ; $data=$DB->fetch_assoc($result) ; $tot+=$nb) {
+            for ($tot=$nb=0 ; $data=$result->next() ; $tot+=$nb) {
                $nb = Computer_SoftwareVersion::countForVersion($data['id']);
                $pdf->displayLine((empty($data['name'])?"(".$data['id'].")":$data['name']),
                                  $data['sname'], $data['osname'], $nb,
@@ -109,11 +111,7 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
             }
             $pdf->setColumnsAlign('left','right','left', 'right','left');
             $pdf->displayTitle('','',"<b>".sprintf(__('%1$s: %2$s'), __('Total')."</b>", ''),$tot, '');
-         } else {
-            $pdf->displayLine(__('No item found'));
          }
-      } else {
-         $pdf->displayLine(__('No item found'));
       }
       $pdf->displaySpace();
    }

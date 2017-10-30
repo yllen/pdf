@@ -49,7 +49,7 @@ class PluginPdfContract_Item extends PluginPdfCommon {
       $con  = new Contract();
       $dbu  = new DbUtils();
 
-      $query = "SELECT `glpi_contracts_items`.*
+     $query = "SELECT `glpi_contracts_items`.*
                 FROM `glpi_contracts_items`,
                      `glpi_contracts`
                 LEFT JOIN `glpi_entities` ON (`glpi_contracts`.`entities_id`=`glpi_entities`.`id`)
@@ -59,7 +59,7 @@ class PluginPdfContract_Item extends PluginPdfCommon {
                       $dbu->getEntitiesRestrictRequest(" AND","glpi_contracts",'','',true)."
                 ORDER BY `glpi_contracts`.`name`";
 
-      $result = $DB->request($query);
+      $result = $DB->request($query, true);
       $number = count($result);
       $i = $j = 0;
 

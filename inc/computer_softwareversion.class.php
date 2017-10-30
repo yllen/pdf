@@ -50,31 +50,32 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
       $type = $item->getType();
       $crit = ($type=='Software' ? 'softwares_id' : 'id');
 
+      $innerjoin = [];
+      $key       = [];
       if ($type == 'Software') {
          $crit      = 'softwares_id';
          // Software ID
-         $innerjoin = "INNER JOIN `glpi_softwareversions`
-                           ON (`glpi_computers_softwareversions`.`softwareversions_id`
-                               = `glpi_softwareversions`.`id`)";
-         $where     = "WHERE `glpi_softwareversions`.`softwares_id` = '".$ID."'";
+         $innerjoin = 'glpi_softwareversions';
+         $fkey      = ['FKEY' => ['glpi_computers_softwareversions' => 'softwareversions_id',
+                                  'glpi_softwareversions'           => 'id']];
+         $where     = ['glpi_softwareversions.softwares_id' => $ID];
 
       } else {
          $crit      = 'id';
          //SoftwareVersion ID
-         $innerjoin = '';
-         $where       = "WHERE `glpi_computers_softwareversions`.`softwareversions_id` = '".$ID."'";
-
+         $where       = ['glpi_computers_softwareversions.softwareversions_id' => $ID];
       }
-      $query_number = "SELECT COUNT(*) AS cpt
-                       FROM `glpi_computers_softwareversions`
-                       $innerjoin
-                       INNER JOIN `glpi_computers`
-                           ON (`glpi_computers_softwareversions`.`computers_id` = `glpi_computers`.`id`)
-                       $where".
-                            $dbu->getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
-                            AND `glpi_computers`.`is_deleted` = '0'
-                            AND `glpi_computers`.`is_template` = '0'
-                            AND `glpi_computers_softwareversions`.`is_deleted` = '0'";
+
+      $query_number = ['FROM'       => 'glpi_computers_softwareversions', 'COUNT' => 'cpt',
+                       'INNER JOIN' => [$innerjoin => $fkey,
+                                       'glpi_computers'
+                                        => ['FKEY' => ['glpi_computers_softwareversions' => 'computers_id',
+                                                       'glpi_computers'                  => 'id']]],
+                       'WHERE'      => [$where,
+                                        $dbu->getEntitiesRestrictCriteria('glpi_computers'),
+                                        'glpi_computers.is_deleted'                  => 0,
+                                        'glpi_computers.is_template'                 => 0,
+                                        'glpi_computers_softwareversions.is_deleted' => 0]];
 
       $total = 0;
       if ($result =$DB->request($query_number)) {
@@ -193,10 +194,10 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
             $lig++;
          }
       }
-      $sql = "SELECT `id`, `completename`
-              FROM `glpi_entities` " .
-              $dbu->getEntitiesRestrictRequest('WHERE', 'glpi_entities') ."
-              ORDER BY `completename`";
+      $sql = ['SELECT'  => ['id', 'completename'],
+              'FROM'    => 'glpi_entities',
+              'WHERE'   => $dbu->getEntitiesRestrictRequest('glpi_entities'),
+              'ORDER'   => 'completename'];
 
       foreach ($DB->request($sql) as $ID => $data) {
          $nb = Computer_SoftwareVersion::countForVersion($softwareversions_id,$ID);

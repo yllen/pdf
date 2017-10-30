@@ -61,10 +61,10 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
             $tot += $nb;
          }
       }
-      $sql = "SELECT `id`, `completename`
-              FROM `glpi_entities` " .
-              $dbu->getEntitiesRestrictRequest('WHERE', 'glpi_entities') ."
-              ORDER BY `completename`";
+      $sql = ['SELECT'  => ['id', 'completename'],
+              'FROM'    => 'glpi_entities',
+              'WHERE'   => $dbu->getEntitiesRestrictCriteria('glpi_entities'),
+              'ORDER'   => 'completename'];
 
       foreach ($DB->request($sql) as $entity => $data) {
          $nb = Computer_SoftwareLicense::countForLicense($ID,$entity);
@@ -92,14 +92,14 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
 
       $ID = $license->getField('id');
 
-      $query = "SELECT COUNT(*) AS cpt
-                FROM `glpi_computers_softwarelicenses`
-                INNER JOIN `glpi_computers`
-                   ON (`glpi_computers_softwarelicenses`.`computers_id` = `glpi_computers`.`id`)
-                WHERE `glpi_computers_softwarelicenses`.`softwarelicenses_id` = '".$ID."'" .
-                      $dbu->getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
-                      AND `glpi_computers`.`is_deleted` = '0'
-                      AND `glpi_computers`.`is_template` = '0'";
+      $query = ['FROM'        => 'glpi_computers_softwarelicenses', 'COUNT' => 'cpt',
+                'INNER JOIN'  => ['glpi_computers'
+                                  => ['FKEY' => ['glpi_computers_softwarelicenses' => 'computers_id',
+                                                 'glpi_computers'                  => 'id']]],
+                'WHERE'       => ['softwarelicenses_id'       => $ID,
+                                  $dbu->getEntitiesRestrictCriteria('glpi_computers'),
+                                  'glpi_computers.is_deleted' => 0,
+                                  'is_template'               => 0]];
 
       $number = 0;
       if ($result = $DB->request($query)) {

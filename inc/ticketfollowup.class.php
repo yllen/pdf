@@ -51,35 +51,44 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
 
       //////////////followups///////////
 
-      $RESTRICT = "";
+      $where = [];
       if (!$private) {
          // Don't show private'
-         $RESTRICT=" AND `is_private` = '0' ";
+         $where['is_private'] = 0;
       } else if (!Session::haveRight('followup', TicketFollowup::SEEPRIVATE)) {
          // No right, only show connected user private one
-         $RESTRICT=" AND (`is_private` = '0'
-                          OR `users_id` ='".Session::getLoginUserID()."' ) ";
+         $where[] = ['OR' => ['is_private' => 0,
+                     'users_id'   => Session::getLoginUserID()]];
       }
 
-      $query = "SELECT *
-                FROM `glpi_ticketfollowups`
-                WHERE `tickets_id` = '$ID'
-                      $RESTRICT
-                ORDER BY `date` DESC";
-      $result=$DB->query($query);
+      $result = $DB->request(['FROM'  => 'glpi_ticketfollowups',
+                              'WHERE' => ['tickets_id' => $ID,
+                                          $where],
+                              'ORDER' => 'date DESC']);
+
+      $number = count($result);
 
       $pdf->setColumnsSize(100);
-      if (!$DB->numrows($result)) {
-         $pdf->displayTitle('<b>'.__('No followup for this ticket.', 'pdf').'</b>');
+      $title = '<b>'.TicketFollowup::getTypeName(2).'</b>';
+
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $pdf->displayTitle("<b>".TicketFollowup::getTypeName($DB->numrows($result))."</b>");
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s (%2$s)'), $title, $_SESSION['glpilist_limit']."/".$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
+         $pdf->displayTitle($title);
 
-         while ($data=$DB->fetch_array($result)) {
-            $pdf->setColumnsSize(44,14,42);
-            $pdf->displayTitle("<b><i>".__('Source of followup', 'pdf')."</i></b>", // Source
-                               "<b><i>".__('Date')."</i></b>", // Date
-                               "<b><i>".__('Requester')."</i></b>"); // Author
+         $pdf->setColumnsSize(44,14,42);
+         $pdf->displayTitle("<b><i>".__('Source of followup', 'pdf')."</i></b>", // Source
+               "<b><i>".__('Date')."</i></b>", // Date
+               "<b><i>".__('Requester')."</i></b>"); // Author
 
+
+         $tot = 0;
+         while (($data = $result->next()) && ($tot < $_SESSION['glpilist_limit'])) {
             if ($data['requesttypes_id']) {
                $lib = Dropdown::getDropdownName('glpi_requesttypes', $data['requesttypes_id']);
             } else {
@@ -94,6 +103,7 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
 
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>",__('Comments'), ''),
                                                Html::clean($data["content"]), 1);
+            $tot++;
          }
       }
       $pdf->displaySpace();

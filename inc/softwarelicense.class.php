@@ -110,18 +110,21 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
       $license = new SoftwareLicense();
       $dbu     = new DbUtils();
 
-      $query = "SELECT `id`
-                FROM `glpi_softwarelicenses`
-                WHERE `softwares_id` = '".$sID."' " .
-                      $dbu->getEntitiesRestrictRequest('AND', 'glpi_softwarelicenses', '', '', true) . "
-                ORDER BY `name`";
+      $query = ['SELECT' => 'id',
+                'FROM'   => 'glpi_softwarelicenses',
+                'WHERE'  => ['softwares_id' => $sID,
+                             $dbu->getEntitiesRestrictCriteria('glpi_softwarelicenses', '', '', true)],
+                'ORDER'   => 'name'];
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'._n('License', 'Licenses', 2).'</b>');
+      $title = '<b>'._n('License', 'Licenses', 2).'</b>';
 
-      if ($result = $DB->query($query)) {
-         if ($DB->numrows($result)) {
-            for ($tot=0 ; $data=$DB->fetch_assoc($result) ; ) {
+      if ($result = $DB->request($query)) {
+         if (!count($result)) {
+            $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+         } else {
+            $pdf->displayTitle($title);
+            for ($tot=0 ; $data=$result->next() ; ) {
                if ($license->getFromDB($data['id'])) {
                   self::pdfMain($pdf, $license, false);
                   if ($infocom) {
@@ -129,11 +132,9 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
                   }
                }
             }
-         } else {
-            $pdf->displayLine(__('No item found'));
          }
       } else {
-         $pdf->displayLine(__('No item found'));
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       }
       $pdf->displaySpace();
    }

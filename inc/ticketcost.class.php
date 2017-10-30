@@ -47,24 +47,25 @@ class PluginPdfTicketCost extends PluginPdfCommon {
 
       $ID = $job->getField('id');
 
-      $query = "SELECT *
-                FROM `glpi_ticketcosts`
-                WHERE `tickets_id` = '$ID'
-                ORDER BY `begin_date`";
-      $result=$DB->query($query);
+      $result = $DB->request(['FROM'   => 'glpi_ticketcosts',
+                              'WHERE'  => ['tickets_id' => $ID],
+                              'ORDER'  => 'begin_date']);
 
-      if (!$DB->numrows($result)) {
+      $number = count($result);
+
+      if (!$number) {
          $pdf->setColumnsSize(100);
-         $pdf->displayLine(__('No cost for this ticket', 'pdf'));
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), '<b>'.TicketCost::getTypeName(2).'</b>',
+                            __('No item to display')));
       } else {
          $pdf->setColumnsSize(60,20,20);
-         $pdf->displayTitle("<b>".TicketCost::getTypeName($DB->numrows($result)),
-                            __('Ticket duration'),
-                            CommonITILObject::getActionTime($job->fields['actiontime'])."</b>");
+         $pdf->displayTitle("<b>".TicketCost::getTypeName($number)."</b>",
+                            "<b>".__('Ticket duration')."</b>",
+                            "<b>".CommonITILObject::getActionTime($job->fields['actiontime'])."</b>");
 
          $pdf->setColumnsSize(19,11,10,10,10,10,10,10,10);
          $pdf->setColumnsAlign('center','center','center','left', 'right','right','right',
-               'right','right');
+                               'right','right');
          $pdf->displayTitle("<b><i>".__('Name')."</i></b>",
                "<b><i>".__('Begin date')."</i></b>",
                "<b><i>".__('End date')."</i></b>",
@@ -81,8 +82,7 @@ class PluginPdfTicketCost extends PluginPdfCommon {
          $total_fixed    = 0;
          $total_material = 0;
 
-         while ($data=$DB->fetch_array($result)) {
-
+         while ($data = $result->next()) {
             $cost = TicketCost::computeTotalCost($data['actiontime'], $data['cost_time'],
                                            $data['cost_fixed'], $data['cost_material']);
             $pdf->displayLine($data['name'],

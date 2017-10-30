@@ -51,33 +51,44 @@ class PluginPdfTicketTask extends PluginPdfCommon {
 
       //////////////Tasks///////////
 
-      $RESTRICT = "";
+      $where = [];
       if (!$private) {
          // Don't show private'
-         $RESTRICT=" AND `is_private` = '0' ";
+         $where['is_private'] = 0;
       } else if (!Session::haveRight('task', TicketTask::SEEPRIVATE)) {
          // No right, only show connected user private one
-         $RESTRICT=" AND (`is_private` = '0'
-                          OR `users_id` ='".Session::getLoginUserID()."' ) ";
+         $where[] = ['OR' => ['is_private' => 0,
+                              'users_id'   => Session::getLoginUserID(),
+                              'users_id_tech'   => Session::getLoginUserID()]];
       }
 
-      $query = "SELECT *
-                FROM `glpi_tickettasks`
-                WHERE `tickets_id` = '$ID'
-                      $RESTRICT
-                ORDER BY `date` DESC";
-      $result = $DB->query($query);
+      $result = $DB->request(['FROM'  => 'glpi_tickettasks',
+                              'WHERE' => ['tickets_id' => $ID,
+                                          $where],
+                              'ORDER' => 'date DESC']);
+
+      $number = count($result);
 
       $pdf->setColumnsSize(100);
-      if (!$DB->numrows($result)) {
-         $pdf->displayTitle('<b>'.__('No task for this ticket.', 'pdf').'</b>');
-      } else {
-         $pdf->displayTitle("<b>".TicketTask::getTypeName($DB->numrows($result))."</b>");
+      $title = '<b>'.TicketTask::getTypeName(2).'</b>';
 
-         while ($data=$DB->fetch_array($result)) {
-            $pdf->setColumnsSize(20,20,20,20,20);
-            $pdf->displayTitle("<i>".__('Type'), __('Date'), __('Duration'), __('Writer'),
-                                     __('Planning')."</i>");
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s (%2$s)'), $title, $_SESSION['glpilist_limit']."/".$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
+         $pdf->displayTitle($title);
+
+         $pdf->setColumnsSize(20,20,20,20,20);
+         $pdf->displayTitle("<i>".__('Type'), __('Date'), __('Duration'), __('Writer'),
+               __('Planning')."</i>");
+
+
+         $tot = 0;
+         while (($data = $result->next()) && ($tot < $_SESSION['glpilist_limit'])) {
 
             $actiontime = Html::timestampToString($data['actiontime'], false);
             $planification = '';
@@ -116,6 +127,7 @@ class PluginPdfTicketTask extends PluginPdfCommon {
                               $planification);
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
                                                Html::clean($data["content"]), 1);
+            $tot++;
          }
       }
 
