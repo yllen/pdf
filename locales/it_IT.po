@@ -1,123 +1,113 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
-# Translators:
-# Pierfrancesco Passerini <pieroliste@gmail.com>, 2016
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GLPI Project - Plugin PDF\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-25 20:07+0100\n"
-"PO-Revision-Date: 2016-03-11 16:27+0000\n"
-"Last-Translator: Pierfrancesco Passerini <pieroliste@gmail.com>\n"
-"Language-Team: Italian (Italy) (http://www.transifex.com/yllen/glpi-project-plugin-pdf/language/it_IT/)\n"
+"POT-Creation-Date: 2017-10-31 20:18+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Pierfrancesco Passerini <p.passerini@gmail.com>, 2017\n"
+"Language-Team: Italian (Italy) (https://www.transifex.com/yllen/teams/7201/it_IT/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: it_IT\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: hook.php:48 setup.php:76 inc/common.class.php:122
-#: inc/preference.class.php:182 inc/profile.class.php:43
+#: hook.php:49 setup.php:84 inc/common.class.php:123
+#: inc/preference.class.php:181 inc/profile.class.php:43
 #: inc/profile.class.php:71 inc/profile.class.php:75 inc/profile.class.php:93
+#: inc/profile.class.php:147
 msgid "Print to pdf"
 msgstr "Stampa pdf"
 
-#: inc/changecost.class.php:58
-msgid "No cost for this change"
-msgstr "Nessun costo per questa modifica"
-
-#: inc/change_problem.class.php:69
-msgid "No problem found."
-msgstr "Nessun problema trovato."
-
-#: inc/change_problem.class.php:242
-msgid "No change found."
-msgstr "Nessuna modifica trovata."
-
-#: inc/changevalidation.class.php:49
+#: inc/changevalidation.class.php:51
 msgid "Approvals for the change"
 msgstr "Convalida della modifica"
 
-#: inc/common.class.php:292
-msgid "No note found"
-msgstr "Nessuna nota"
-
-#: inc/computerdisk.class.php:84
-msgid "No volume found"
-msgstr "Nessun volume"
-
-#: inc/computer_item.class.php:125
+#: inc/computer_item.class.php:128
 msgid "No printer"
 msgstr "Nessuna stampante"
 
-#: inc/computer_item.class.php:129
+#: inc/computer_item.class.php:132
 msgid "No monitor"
 msgstr "Nessun monitor"
 
-#: inc/computer_item.class.php:133
+#: inc/computer_item.class.php:136
 msgid "No peripheral"
 msgstr "Nessuna periferica"
 
-#: inc/computer_item.class.php:137
+#: inc/computer_item.class.php:140
 msgid "No phone"
 msgstr "Nessun telefono"
 
-#: inc/computer_softwareversion.class.php:291
-msgid "No installed software"
-msgstr "Software non installato"
+#: inc/computer_softwareversion.class.php:346
+msgid "Affected licenses of not installed software"
+msgstr ""
 
 #: inc/document.class.php:67
-msgid "No associated documents"
-msgstr "Nessun documento associato"
-
-#: inc/document.class.php:69
 msgid "Associated documents"
-msgstr "Documenti associato"
+msgstr "Documenti associati"
 
-#: inc/infocom.class.php:157
-msgid "No financial information"
-msgstr "Nessuna informazione finanziaria"
+#: inc/group.class.php:224
+#, php-format
+msgid "No sons of %s"
+msgstr ""
 
-#: inc/knowbaseitem.class.php:85
+#: inc/knowbaseitem.class.php:90
 msgid "No question found"
-msgstr "No question found"
+msgstr "Nessuna domanda"
 
-#: inc/preference.class.php:118
+#: inc/knowbaseitem.class.php:97
+msgid "No answer found"
+msgstr ""
+
+#: inc/preference.class.php:117
 msgid "Choose the tables to print in pdf"
-msgstr "Scelta tabelle da stampare"
+msgstr "Scelta tabelle da stampare in pdf"
 
-#: inc/preference.class.php:161
+#: inc/preference.class.php:160
 msgid "Portrait"
 msgstr "Verticale"
 
-#: inc/preference.class.php:162
+#: inc/preference.class.php:161
 msgid "Landscape"
 msgstr "Orizzontale"
 
-#: inc/preference.class.php:168
+#: inc/preference.class.php:167
 msgctxt "button"
 msgid "Print"
 msgstr "Stampa"
 
-#: inc/problem_ticket.class.php:243
+#: inc/problem_ticket.class.php:248
 msgid "No ticket found."
 msgstr "Chiamata non trovata."
 
-#: inc/reservation.class.php:127
+#: inc/problem_ticket.class.php:400
+msgid "Items of the ticket"
+msgstr ""
+
+#: inc/reservation.class.php:75
+msgid "No current and future reservations"
+msgstr "Nessuna prenotazione presente o futura"
+
+#: inc/reservation.class.php:108
+msgid "No past reservations"
+msgstr "Nessuna prenotazione passata"
+
+#: inc/reservation.class.php:128
 msgid "Item not reservable"
 msgstr "Dispositivo non prenotabile"
 
-#: inc/ticketcost.class.php:58
-msgid "No cost for this ticket"
-msgstr "Nessun costo per questa chiamata"
+#: inc/ticket.class.php:466
+msgid "Requester information"
+msgstr "Informazioni del richiedente"
 
-#: inc/ticketfollowup.class.php:70
-msgid "No followup for this ticket."
-msgstr "Nessun collegamento a questa chiamata."
-
-#: inc/ticketfollowup.class.php:77
+#: inc/ticketfollowup.class.php:85
 msgid "Source of followup"
 msgstr "Sorgente del collegamento"
 
@@ -143,8 +133,16 @@ msgstr "5 stelle"
 
 #: inc/ticketsatisfaction.class.php:81
 msgid "No answer"
-msgstr "No answer"
+msgstr "Nessuna risposta"
 
-#: inc/ticketvalidation.class.php:49
+#: inc/tickettask.class.php:106
+msgid "By user"
+msgstr "Per utente"
+
+#: inc/tickettask.class.php:110
+msgid "By group"
+msgstr "Per gruppo"
+
+#: inc/ticketvalidation.class.php:51
 msgid "Approvals for the ticket"
 msgstr "Convalida della chiamata"

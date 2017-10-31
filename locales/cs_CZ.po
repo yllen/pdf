@@ -10,40 +10,40 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-10-31 20:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2017\n"
-"Language-Team: Spanish (Argentina) (https://www.transifex.com/yllen/teams/7201/es_AR/)\n"
+"Last-Translator: David Stepan <stepand@tiscali.cz>, 2017\n"
+"Language-Team: Czech (Czech Republic) (https://www.transifex.com/yllen/teams/7201/cs_CZ/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_AR\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: cs_CZ\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: hook.php:49 setup.php:84 inc/common.class.php:123
 #: inc/preference.class.php:181 inc/profile.class.php:43
 #: inc/profile.class.php:71 inc/profile.class.php:75 inc/profile.class.php:93
 #: inc/profile.class.php:147
 msgid "Print to pdf"
-msgstr "Imprimir en pdf"
+msgstr "Tisk do PDF"
 
 #: inc/changevalidation.class.php:51
 msgid "Approvals for the change"
-msgstr "Aprobaciones para el cambio"
+msgstr "Schvalování změny"
 
 #: inc/computer_item.class.php:128
 msgid "No printer"
-msgstr "Sin impresora"
+msgstr "Žádná tiskárna"
 
 #: inc/computer_item.class.php:132
 msgid "No monitor"
-msgstr "Sin monitor"
+msgstr "Žádný monitor"
 
 #: inc/computer_item.class.php:136
 msgid "No peripheral"
-msgstr "Sin periféricos"
+msgstr "Žádné zařízení"
 
 #: inc/computer_item.class.php:140
 msgid "No phone"
-msgstr "Sin teléfono"
+msgstr "Žádný telefon"
 
 #: inc/computer_softwareversion.class.php:346
 msgid "Affected licenses of not installed software"
@@ -51,7 +51,7 @@ msgstr ""
 
 #: inc/document.class.php:67
 msgid "Associated documents"
-msgstr "Documentos asociados"
+msgstr "Přiřazené dokumenty"
 
 #: inc/group.class.php:224
 #, php-format
@@ -60,7 +60,7 @@ msgstr ""
 
 #: inc/knowbaseitem.class.php:90
 msgid "No question found"
-msgstr "Sin pregunta"
+msgstr "Nenalezena žádná otázka"
 
 #: inc/knowbaseitem.class.php:97
 msgid "No answer found"
@@ -68,24 +68,24 @@ msgstr ""
 
 #: inc/preference.class.php:117
 msgid "Choose the tables to print in pdf"
-msgstr "Elegir tablas para imprimir en pdf"
+msgstr "Vybrat sloupce k tisku do PDF"
 
 #: inc/preference.class.php:160
 msgid "Portrait"
-msgstr "Retrato"
+msgstr "Na výšku"
 
 #: inc/preference.class.php:161
 msgid "Landscape"
-msgstr "Paisaje"
+msgstr "Na šířku"
 
 #: inc/preference.class.php:167
 msgctxt "button"
 msgid "Print"
-msgstr "Imprimir"
+msgstr "Tisk"
 
 #: inc/problem_ticket.class.php:248
 msgid "No ticket found."
-msgstr "Sin incidencia"
+msgstr "Nenalezen požadavek"
 
 #: inc/problem_ticket.class.php:400
 msgid "Items of the ticket"
@@ -93,56 +93,56 @@ msgstr ""
 
 #: inc/reservation.class.php:75
 msgid "No current and future reservations"
-msgstr ""
+msgstr "Žádná aktuální ani budoucí rezervace"
 
 #: inc/reservation.class.php:108
 msgid "No past reservations"
-msgstr ""
+msgstr "Žádné minulé rezervace"
 
 #: inc/reservation.class.php:128
 msgid "Item not reservable"
-msgstr "Elemento no reservable"
+msgstr "Položka není rezervovatelná"
 
 #: inc/ticket.class.php:466
 msgid "Requester information"
-msgstr ""
+msgstr "Informace žadatele"
 
 #: inc/ticketfollowup.class.php:85
 msgid "Source of followup"
-msgstr "Fuente del seguimiento"
+msgstr "Zdroj sledování"
 
 #: inc/ticketsatisfaction.class.php:61
 msgid "1 star"
-msgstr "1 estrella"
+msgstr "1 hvězdička"
 
 #: inc/ticketsatisfaction.class.php:62
 msgid "2 stars"
-msgstr "2 estrellas"
+msgstr "2 hvězdičky"
 
 #: inc/ticketsatisfaction.class.php:63
 msgid "3 stars"
-msgstr "3 estrellas"
+msgstr "3 hvězdičky"
 
 #: inc/ticketsatisfaction.class.php:64
 msgid "4 stars"
-msgstr "4 estrellas"
+msgstr "4 hvězdičky"
 
 #: inc/ticketsatisfaction.class.php:65
 msgid "5 stars"
-msgstr "5 estrellas"
+msgstr "5 hvězdičky"
 
 #: inc/ticketsatisfaction.class.php:81
 msgid "No answer"
-msgstr "Sin respuesta"
+msgstr "Bez odpovědi"
 
 #: inc/tickettask.class.php:106
 msgid "By user"
-msgstr ""
+msgstr "Dle uživatele"
 
 #: inc/tickettask.class.php:110
 msgid "By group"
-msgstr ""
+msgstr "Dle skupiny"
 
 #: inc/ticketvalidation.class.php:51
 msgid "Approvals for the ticket"
-msgstr "Aprobaciones para el incidente"
+msgstr "Schválení požadavku"

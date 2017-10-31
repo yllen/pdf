@@ -73,7 +73,7 @@ class PluginPdfGroup_User extends PluginPdfCommon {
          if ($tree) {
             $pdf->setColumnsSize(35,25,10,10,10,10);
             $pdf->displayTitle(User::getTypeName(1), Group::getTypeName(1), __('Dynamic'),
-                               __('Manager'), _('Delegatee'), __('Active'));
+                               __('Manager'), __('Delegatee'), __('Active'));
          } else {
             $pdf->setColumnsSize(40,15,15,15,15);
             $pdf->displayTitle(User::getTypeName(1), __('Dynamic'),__('Manager'), __('Delegatee'),

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-09 16:46+0100\n"
+"POT-Creation-Date: 2017-10-31 20:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2017\n"
 "Language-Team: French (France) (https://www.transifex.com/yllen/teams/7201/fr_FR/)\n"
@@ -18,127 +18,96 @@ msgstr ""
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: hook.php:48 setup.php:82 inc/common.class.php:123
-#: inc/preference.class.php:182 inc/profile.class.php:43
+#: hook.php:49 setup.php:84 inc/common.class.php:123
+#: inc/preference.class.php:181 inc/profile.class.php:43
 #: inc/profile.class.php:71 inc/profile.class.php:75 inc/profile.class.php:93
+#: inc/profile.class.php:147
 msgid "Print to pdf"
 msgstr "Impression pdf"
 
-#: inc/changecost.class.php:58
-msgid "No cost for this change"
-msgstr "Pas de coût pour ce changement"
-
-#: inc/change_item.class.php:185 inc/change_problem.class.php:242
-msgid "No associated change"
-msgstr "Aucun changement"
-
-#: inc/change_problem.class.php:69 inc/item_problem.class.php:64
-#: inc/item_problem.class.php:181
-msgid "No associated problem"
-msgstr "Aucun problème associé"
-
-#: inc/changevalidation.class.php:49
+#: inc/changevalidation.class.php:51
 msgid "Approvals for the change"
 msgstr "Validations pour ce changement"
 
-#: inc/common.class.php:304
-msgid "No note found"
-msgstr "Aucune note"
-
-#: inc/computerantivirus.class.php:72
-msgid "No Antivirus"
-msgstr "Aucun antivirus"
-
-#: inc/computerdisk.class.php:84
-msgid "No associated volume"
-msgstr "Aucun volume"
-
-#: inc/computer_item.class.php:125
+#: inc/computer_item.class.php:128
 msgid "No printer"
 msgstr "Pas d'imprimante"
 
-#: inc/computer_item.class.php:129
+#: inc/computer_item.class.php:132
 msgid "No monitor"
 msgstr "Pas d'écran"
 
-#: inc/computer_item.class.php:133
+#: inc/computer_item.class.php:136
 msgid "No peripheral"
 msgstr "Pas de périphérique"
 
-#: inc/computer_item.class.php:137
+#: inc/computer_item.class.php:140
 msgid "No phone"
 msgstr "Pas de téléphone"
 
-#: inc/computer_softwareversion.class.php:291
-msgid "No installed software"
-msgstr "Aucun logiciel installé"
+#: inc/computer_softwareversion.class.php:346
+msgid "Affected licenses of not installed software"
+msgstr "Licences associées à un logiciel non installé"
 
 #: inc/document.class.php:67
-msgid "No associated documents"
-msgstr "Aucun document associé"
-
-#: inc/document.class.php:69
 msgid "Associated documents"
 msgstr "Documents associés"
 
-#: inc/infocom.class.php:182
-msgid "No financial information"
-msgstr "Pas d'information financière"
+#: inc/group.class.php:224
+#, php-format
+msgid "No sons of %s"
+msgstr "Auncun enfant pour 1%s"
 
-#: inc/item_ticket.class.php:210
-msgid "No associated ticket"
-msgstr "Aucun ticket associé"
-
-#: inc/knowbaseitem.class.php:85
+#: inc/knowbaseitem.class.php:90
 msgid "No question found"
 msgstr "Pas de question trouvée"
 
-#: inc/preference.class.php:118
+#: inc/knowbaseitem.class.php:97
+msgid "No answer found"
+msgstr "Aucune réponse trouvée"
+
+#: inc/preference.class.php:117
 msgid "Choose the tables to print in pdf"
 msgstr "Choisir les tableaux pour l'impression pdf"
 
-#: inc/preference.class.php:161
+#: inc/preference.class.php:160
 msgid "Portrait"
 msgstr "Portrait"
 
-#: inc/preference.class.php:162
+#: inc/preference.class.php:161
 msgid "Landscape"
 msgstr "Paysage"
 
-#: inc/preference.class.php:168
+#: inc/preference.class.php:167
 msgctxt "button"
 msgid "Print"
 msgstr "Imprimer"
 
-#: inc/problem_ticket.class.php:243
+#: inc/problem_ticket.class.php:248
 msgid "No ticket found."
 msgstr "Aucun ticket"
 
-#: inc/reservation.class.php:73
+#: inc/problem_ticket.class.php:400
+msgid "Items of the ticket"
+msgstr "Eléments du ticket"
+
+#: inc/reservation.class.php:75
 msgid "No current and future reservations"
 msgstr "Aucune réservation actuelle ou future"
 
-#: inc/reservation.class.php:107
+#: inc/reservation.class.php:108
 msgid "No past reservations"
 msgstr "Aucune réservation antérieure"
 
-#: inc/reservation.class.php:127
+#: inc/reservation.class.php:128
 msgid "Item not reservable"
 msgstr "Eléments non réservable"
 
-#: inc/ticket.class.php:458
+#: inc/ticket.class.php:466
 msgid "Requester information"
 msgstr "Information sur le demandeur"
 
-#: inc/ticketcost.class.php:58
-msgid "No cost for this ticket"
-msgstr "Aucun coût pour ce ticket"
-
-#: inc/ticketfollowup.class.php:70
-msgid "No followup for this ticket."
-msgstr "Aucun suivi pour ce ticket"
-
-#: inc/ticketfollowup.class.php:77
+#: inc/ticketfollowup.class.php:85
 msgid "Source of followup"
 msgstr "Source du suivi"
 
@@ -166,14 +135,14 @@ msgstr "5 étoiles"
 msgid "No answer"
 msgstr "Pas de réponse"
 
-#: inc/tickettask.class.php:93
+#: inc/tickettask.class.php:106
 msgid "By user"
 msgstr "Par l'utilisateur"
 
-#: inc/tickettask.class.php:97
+#: inc/tickettask.class.php:110
 msgid "By group"
 msgstr "Par le groupe"
 
-#: inc/ticketvalidation.class.php:49
+#: inc/ticketvalidation.class.php:51
 msgid "Approvals for the ticket"
 msgstr "Validations pour ce tickets"
