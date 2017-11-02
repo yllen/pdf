@@ -56,6 +56,7 @@ function plugin_init_pdf() {
 
 
       // Define the type for which we know how to generate PDF :
+      $PLUGIN_HOOKS['plugin_pdf']['Change']           = 'PluginPdfChange';
       $PLUGIN_HOOKS['plugin_pdf']['Computer']         = 'PluginPdfComputer';
       $PLUGIN_HOOKS['plugin_pdf']['Group']            = 'PluginPdfGroup';
       $PLUGIN_HOOKS['plugin_pdf']['KnowbaseItem']     = 'PluginPdfKnowbaseItem';
@@ -64,12 +65,13 @@ function plugin_init_pdf() {
       $PLUGIN_HOOKS['plugin_pdf']['Peripheral']       = 'PluginPdfPeripheral';
       $PLUGIN_HOOKS['plugin_pdf']['Phone']            = 'PluginPdfPhone';
       $PLUGIN_HOOKS['plugin_pdf']['Printer']          = 'PluginPdfPrinter';
+      $PLUGIN_HOOKS['plugin_pdf']['Problem']          = 'PluginPdfProblem';
       $PLUGIN_HOOKS['plugin_pdf']['Software']         = 'PluginPdfSoftware';
       $PLUGIN_HOOKS['plugin_pdf']['SoftwareLicense']  = 'PluginPdfSoftwareLicense';
       $PLUGIN_HOOKS['plugin_pdf']['SoftwareVersion']  = 'PluginPdfSoftwareVersion';
       $PLUGIN_HOOKS['plugin_pdf']['Ticket']           = 'PluginPdfTicket';
-      $PLUGIN_HOOKS['plugin_pdf']['Problem']          = 'PluginPdfProblem';
-      $PLUGIN_HOOKS['plugin_pdf']['Change']           = 'PluginPdfChange';
+      $PLUGIN_HOOKS['plugin_pdf']['User']             = 'PluginPdfUser';
+
 
       // End init, when all types are registered by all plugins
       $PLUGIN_HOOKS['post_init']['pdf'] = 'plugin_pdf_postinit';
