@@ -71,6 +71,7 @@ class PluginPdfUser extends PluginPdfCommon {
             '<b><i>'.sprintf(__('%1$s : %2$s'), __('Valid since').'</i></b>',
                              Html::convDateTime($item->fields['begin_date']).$end));
 
+      $emails = [];
       foreach ($DB->request('glpi_useremails', ['users_id' => $item->getField('id')]) as $key => $email) {
          if ($email['is_default'] == 1) {
             $emails[]= $email['email'] ." (".__('Default email').")";
@@ -124,27 +125,6 @@ class PluginPdfUser extends PluginPdfCommon {
    }
 
 
-   // From Group::showLDAPForm()
-   static function pdfLdapForm(PluginPdfSimplePDF $pdf, Group $item) {
-
-      if (Session::haveRight("config", READ) && AuthLdap::useAuthLdap()) {
-         $pdf->setColumnsSize(100);
-         $pdf->displayTitle('<b>'.__('LDAP directory link').'</b>');
-
-         $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'),
-                                         __('User attribute containing its groups').'</b>', ''),
-                                         $item->getField('ldap_field'));
-         $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Attribute value').'</b>', ''),
-                                         $item->getField('ldap_value'));
-         $pdf->displayText('<b>'.sprintf(__('%1$s: %2$s'), __('Group DN').'</b>', ''),
-                                         $item->getField('ldap_group_dn'));
-
-         $pdf->displaySpace();
-      }
-   }
-
-
-   // From Group::showItems()
    static function pdfItems(PluginPdfSimplePDF $pdf, User $user, $tech) {
       global $CFG_GLPI, $DB;
 
@@ -166,37 +146,14 @@ class PluginPdfUser extends PluginPdfCommon {
          $title = __('Used items');
       }
 
-      $group_where = "";
-      $groups      = [];
-
-      $result = $DB->request(['SELECT'    => ['glpi_groups_users.groups_id', 'name'],
-                              'FROM'      => 'glpi_groups_users',
-                              'LEFT JOIN' => ['glpi_groups'
-                                                => ['FKEY' => ['glpi_groups'       => 'id',
-                                                               'glpi_groups_users' => 'groups_id']]],
-                              'WHERE'     => ['users_id' => $ID]]);
-      $number = count($result);
-
-      if ($number > 0) {
-         $nb = 0;
-
-         while ($datas = $result->next()) {
-            $group_where[$field_group] = $datas["groups_id"];
-            $groups[$datas["groups_id"]] = $datas["name"];
-            $nb ++;
-         }
-         if ($nb > 1) {
-            $wherenel = ['OR' => [$group_where]];
-         }
-      }
-
       $pdf->setColumnsSize(100);
       $pdf->displayTitle('<b>'.$title.'</b>');
 
-         $pdf->setColumnsSize(15,15,15,15,15,15,10);
-         $pdf->displayTitle(__('Type'),  __('Entity'), __('Name'), __('Serial number'),
-               __('Inventory number'), __('Status'), '');
+      $pdf->setColumnsSize(15,15,15,15,15,15,10);
+      $pdf->displayTitle(__('Type'),  __('Entity'), __('Name'), __('Serial number'),
+                          __('Inventory number'), __('Status'), '');
 
+      $empty = true;
       foreach ($type_user as $itemtype) {
          if (!($item = getItemForItemtype($itemtype))) {
             continue;
@@ -204,11 +161,8 @@ class PluginPdfUser extends PluginPdfCommon {
          if ($item->canView()) {
             $itemtable = getTableForItemType($itemtype);
 
-            $query = "SELECT *
-                      FROM `$itemtable`
-                      WHERE `".$field_user."` = $ID";
-
             $where[$field_user] = $ID;
+
             if ($item->maybeTemplate()) {
                $where['is_template'] = 0;
             }
@@ -216,16 +170,15 @@ class PluginPdfUser extends PluginPdfCommon {
                $where['is_deleted'] = 0;
             }
 
-            $query = ['FROM'  => $itemtable,
-                     'WHERE' => [$where]];
+            $result    = $DB->request(['FROM'  => $itemtable,
+                                       'WHERE' => [$where]]);
 
-            $result    = $DB->request($query);
             $type_name = $item->getTypeName();
 
             if (count($result)) {
                while ($data = $result->next()) {
-                  $name   = $data["name"];
-                  if ($_SESSION["glpiis_ids_visible"] || empty($link)) {
+                  $name  = $data["name"];
+                  if (empty($name)) {
                      $name = sprintf(__('%1$s (%2$s)'), $name, $data["id"]);
                   }
                   $linktype = "";
@@ -236,10 +189,89 @@ class PluginPdfUser extends PluginPdfCommon {
                                     Dropdown::getDropdownName("glpi_entities", $data["entities_id"]),
                                     $name, $data["serial"], $data["otherserial"],
                                     Dropdown::getDropdownName("glpi_states", $data['states_id']),
-                                    __('User'));
+                                    $linktype);
+               }
+               $empty = false;
+            }
+         }
+      }
+      if ($empty) {
+         $pdf->setColumnsSize(100);
+         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('User'),__('No item to display')));
+      }
+
+      $pdf->setColumnsSize(15,15,15,15,15,15,10);
+      $pdf->displayTitle(__('Type'),  __('Entity'), __('Name'), __('Serial number'),
+                         __('Inventory number'), __('Status'), '');
+
+      $group_where = "";
+      $groups      = [];
+
+      $result = $DB->request(['SELECT'    => ['glpi_groups_users.groups_id', 'name'],
+                              'FROM'      => 'glpi_groups_users',
+                              'LEFT JOIN' => ['glpi_groups'
+                                               => ['FKEY' => ['glpi_groups'       => 'id',
+                                                              'glpi_groups_users' => 'groups_id']]],
+                              'WHERE'     => ['users_id' => $ID]]);
+
+      $number = count($result);
+
+      if ($number > 0) {
+         $first = true;
+
+         while ($data = $result->next()) {
+            if ($first) {
+               $first = false;
+            } else {
+               $group_where .= " OR ";
+            }
+
+            $group_where               .= " `".$field_group."` = '".$data["groups_id"]."' ";
+            $groups[$data["groups_id"]] = $data["name"];
+         }
+
+         foreach ($type_group as $itemtype) {
+            if (!($item = getItemForItemtype($itemtype))) {
+               continue;
+            }
+            if ($item->canView() && $item->isField($field_group)) {
+               $itemtable = getTableForItemType($itemtype);
+
+               if ($item->maybeTemplate()) {
+                  $where['is_template'] = 0;
+               }
+               if ($item->maybeDeleted()) {
+                  $where['is_deleted'] = 0;
+               }
+
+               $result    = $DB->request(['FROM'  => $itemtable,
+                                          'WHERE' => [$group_where]]);
+
+               $type_name = $item->getTypeName();
+
+               if (count($result)) {
+                  while ($data = $result->next()) {
+                     $name   = $data["name"];
+                     if (empty($name)) {
+                        $name = sprintf(__('%1$s (%2$s)'), $name, $data["id"]);
+                     }
+                     $linktype = "";
+                     if (isset($groups[$data[$field_group]])) {
+                        $linktype = sprintf(__('%1$s = %2$s'), _n('Group', 'Groups', 1),
+                                            $groups[$data[$field_group]]);
+                     }
+                     $pdf->displayLine($item->getTypeName(1),
+                                       Dropdown::getDropdownName("glpi_entities", $data["entities_id"]),
+                                       $name, $data["serial"], $data["otherserial"],
+                                       Dropdown::getDropdownName("glpi_states", $data['states_id']),
+                                       $linktype);
+                  }
                }
             }
          }
+      } else {
+         $pdf->setColumnsSize(100);
+         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Group'),__('No item to display')));
       }
       $pdf->displaySpace();
    }
@@ -251,8 +283,6 @@ class PluginPdfUser extends PluginPdfCommon {
       unset($onglets['Profile_User$1']);
       unset($onglets['Group_User$1']);
       unset($onglets['Config$1']);
- //     unset($onglets['User$1']);
- //     unset($onglets['User$2']);
       unset($onglets['Ticket$1']);
       unset($onglets['Item_Problem$1']);
       unset($onglets['Change_Item$1']);
@@ -264,56 +294,6 @@ class PluginPdfUser extends PluginPdfCommon {
       unset($onglets['Auth$1']);
 
       return $onglets;
-   }
-
-
-   static function pdfChildren(PluginPdfSimplePDF $pdf, CommonTreeDropdown $item) {
-      global $DB;
-
-      $ID            = $item->getID();
-      $fields        = $item->getAdditionalFields();
-      $nb            = count($fields);
-      $entity_assign = $item->isEntityAssign();
-
-      $fk            = $item->getForeignKeyField();
-      $crit          = [$fk     => $item->getID(),
-                        'ORDER' => 'name'];
-
-      if ($item->haveChildren()) {
-         $pdf->setColumnsSize(100);
-         $pdf->displayTitle(sprintf(__('Sons of %s'), '<b>'.$item->getNameID().'</b>'));
-
-         if ($entity_assign) {
-            if ($fk == 'entities_id') {
-               $crit['id']  = $_SESSION['glpiactiveentities'];
-               $crit['id'] += $_SESSION['glpiparententities'];
-            } else {
-               $crit['entities_id'] = $_SESSION['glpiactiveentities'];
-            }
-
-            $pdf->setColumnsSize(30, 30, 40);
-            $pdf->displayTitle(__('Name'), __('Entity'), __('Comments'));
-         } else {
-            $pdf->setColumnsSize(45, 55);
-            $pdf->displayTitle(__('Name'), __('Comments'));
-         }
-
-         foreach ($DB->request($item->getTable(), $crit) as $data) {
-            if ($entity_assign) {
-               $pdf->displayLine($data['name'],
-                                 Dropdown::getDropdownName("glpi_entities", $data["entities_id"]),
-                                 $data['comment']);
-            } else {
-               $pdf->displayLine($data['name'], $data['comment']);
-            }
-         }
-      } else {
-         $pdf->setColumnsSize(100);
-         $pdf->displayTitle('<b>'.sprintf(__('No sons of %s', 'behaviors'), $item->getNameID().'</b>'));
-
-      }
-
-      $pdf->displaySpace();
    }
 
 
