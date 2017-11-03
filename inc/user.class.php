@@ -283,13 +283,8 @@ class PluginPdfUser extends PluginPdfCommon {
       unset($onglets['Profile_User$1']);
       unset($onglets['Group_User$1']);
       unset($onglets['Config$1']);
-      unset($onglets['Ticket$1']);
-      unset($onglets['Item_Problem$1']);
-      unset($onglets['Change_Item$1']);
-      unset($onglets['Document_Item$1']);
       unset($onglets['Reservation$1']);
       unset($onglets['Synchronisation$1']);
-      unset($onglets['Link$1']);
       unset($onglets['Certificate_Item$1']);
       unset($onglets['Auth$1']);
 
@@ -309,18 +304,6 @@ class PluginPdfUser extends PluginPdfCommon {
 
          case 'User$2' :
             self::pdfItems($pdf, $item, true);
-            break;
-
-         case 'Group$3' :
-            self::pdfLdapForm($pdf, $item);
-            break;
-
-         case 'Group$4' :
-            self::pdfChildren($pdf, $item);
-            break;
-
-         case 'Group_User$1' :
-            PluginPdfGroup_User::pdfForGroup($pdf, $item, $tree);
             break;
 
          case 'Change_Item$1' :
