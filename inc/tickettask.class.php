@@ -51,21 +51,21 @@ class PluginPdfTicketTask extends PluginPdfCommon {
 
       //////////////Tasks///////////
 
-      $where = [];
+      $query = ['FROM'  => 'glpi_tickettasks',
+                'WHERE' => ['tickets_id' => $ID],
+                'ORDER' => 'date DESC'];
+
       if (!$private) {
          // Don't show private'
-         $where['is_private'] = 0;
+         $query['WHERE']['is_private'] = 0;
       } else if (!Session::haveRight('task', TicketTask::SEEPRIVATE)) {
          // No right, only show connected user private one
-         $where[] = ['OR' => ['is_private' => 0,
-                              'users_id'   => Session::getLoginUserID(),
-                              'users_id_tech'   => Session::getLoginUserID()]];
+         $query['WHERE']['OR'] = ['is_private' => 0,
+                                  'users_id'   => Session::getLoginUserID(),
+                                  'users_id_tech'   => Session::getLoginUserID()];
       }
 
-      $result = $DB->request(['FROM'  => 'glpi_tickettasks',
-                              'WHERE' => ['tickets_id' => $ID,
-                                          $where],
-                              'ORDER' => 'date DESC']);
+      $result = $DB->request($query);
 
       $number = count($result);
 
