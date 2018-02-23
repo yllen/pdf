@@ -36,7 +36,7 @@ class PluginPdfProfile extends Profile {
    static $rightname = 'profile';
 
 
-   function getSearchOptions() {
+   function getSearchOptionsNew() {
 
       $tab = [];
 

@@ -161,17 +161,17 @@ class PluginPdfUser extends PluginPdfCommon {
          if ($item->canView()) {
             $itemtable = getTableForItemType($itemtype);
 
-            $where[$field_user] = $ID;
+            $query = ['FROM'  => $itemtable,
+                      'WHERE' => [$field_user => $ID]];
 
             if ($item->maybeTemplate()) {
-               $where['is_template'] = 0;
+               $query['WHERE']['is_template'] = 0;
             }
             if ($item->maybeDeleted()) {
-               $where['is_deleted'] = 0;
+               $query['WHERE']['is_deleted'] = 0;
             }
 
-            $result    = $DB->request(['FROM'  => $itemtable,
-                                       'WHERE' => [$where]]);
+            $result    = $DB->request($query);
 
             $type_name = $item->getTypeName();
 
@@ -237,15 +237,17 @@ class PluginPdfUser extends PluginPdfCommon {
             if ($item->canView() && $item->isField($field_group)) {
                $itemtable = getTableForItemType($itemtype);
 
+               $query = ['FROM'  => $itemtable,
+                        'WHERE' => [$group_where]];
+
                if ($item->maybeTemplate()) {
-                  $where['is_template'] = 0;
+                  $query['WHERE']['is_template'] = 0;
                }
                if ($item->maybeDeleted()) {
-                  $where['is_deleted'] = 0;
+                  $query['WHERE']['is_deleted'] = 0;
                }
 
-               $result    = $DB->request(['FROM'  => $itemtable,
-                                          'WHERE' => [$group_where]]);
+               $result    = $DB->request($query, true);
 
                $type_name = $item->getTypeName();
 

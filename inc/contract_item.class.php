@@ -49,17 +49,18 @@ class PluginPdfContract_Item extends PluginPdfCommon {
       $con  = new Contract();
       $dbu  = new DbUtils();
 
-     $query = "SELECT `glpi_contracts_items`.*
-                FROM `glpi_contracts_items`,
-                     `glpi_contracts`
-                LEFT JOIN `glpi_entities` ON (`glpi_contracts`.`entities_id`=`glpi_entities`.`id`)
-                WHERE `glpi_contracts`.`id`=`glpi_contracts_items`.`contracts_id`
-                      AND `glpi_contracts_items`.`items_id` = '".$ID."'
-                      AND `glpi_contracts_items`.`itemtype` = '".$type."'".
-                      $dbu->getEntitiesRestrictRequest(" AND","glpi_contracts",'','',true)."
-                ORDER BY `glpi_contracts`.`name`";
+     $query = ['SELECT'    =>  'glpi_contracts_items.*',
+               'FROM'      => ['glpi_contracts_items', 'glpi_contracts'],
+               'LEFT JOIN' => ['glpi_entities'
+                               => ['FKEY' => ['glpi_contracts' => 'entities_id',
+                                              'glpi_entities'  => 'id']]],
+               'WHERE'    => ['glpi_contracts.id'              => '`glpi_contracts_items`.`contracts_id`',
+                              'glpi_contracts_items.items_id'  => $ID ,
+                              'glpi_contracts_items.itemtype'  => $type,
+                              $dbu->getEntitiesRestrictCriteria('glpi_contracts','','',true)],
+               'ORDER'    => 'glpi_contracts.name'];
 
-      $result = $DB->request($query, true);
+      $result = $DB->request($query);
       $number = count($result);
       $i = $j = 0;
 

@@ -72,15 +72,17 @@ function plugin_pdf_install() {
       //Add new rights in glpi_profilerights table
       $profileRight = new ProfileRight();
 
-      foreach ($DB->request(['FROM'  => 'glpi_plugin_pdf_profiles',
-                             'WHERE' => ['use' => 1]]) as $data) {
-         $right['profiles_id']   = $data['id'];
-         $right['name']          = "plugin_pdf";
-         $right['rights']        = $data['use'];
+      if ($DB->tableExists('glpi_plugin_pdf_profiles')) {
+         foreach ($DB->request(['FROM'  => 'glpi_plugin_pdf_profiles',
+                                'WHERE' => ['use' => 1]]) as $data) {
+            $right['profiles_id']   = $data['id'];
+            $right['name']          = "plugin_pdf";
+            $right['rights']        = $data['use'];
 
-         $profileRight->add($right);
+            $profileRight->add($right);
+         }
+         $DB->query("DROP TABLE `glpi_plugin_pdf_profiles`");
       }
-      $DB->query("DROP TABLE `glpi_plugin_pdf_profiles`");
 
    }
 

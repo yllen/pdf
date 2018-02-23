@@ -62,7 +62,7 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
                 'WHERE'     => ['tickets_id' => $ID],
                 'ORDER'     => 'glpi_problems.name'];
 
-      $result = $DB->request($query, true);
+      $result = $DB->request($query);
       $number = count($result);
 
       $problems = [];

@@ -50,35 +50,32 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
       $type = $item->getType();
       $crit = ($type=='Software' ? 'softwares_id' : 'id');
 
-      $innerjoin = [];
-      $key       = [];
-      if ($type == 'Software') {
-         $crit      = 'softwares_id';
-         // Software ID
-         $innerjoin = 'glpi_softwareversions';
-         $fkey      = ['FKEY' => ['glpi_computers_softwareversions' => 'softwareversions_id',
-                                  'glpi_softwareversions'           => 'id']];
-         $where     = ['glpi_softwareversions.softwares_id' => $ID];
-
-      } else {
-         $crit      = 'id';
-         //SoftwareVersion ID
-         $where       = ['glpi_computers_softwareversions.softwareversions_id' => $ID];
-      }
 
       $query_number = ['FROM'       => 'glpi_computers_softwareversions', 'COUNT' => 'cpt',
-                       'INNER JOIN' => [$innerjoin => $fkey,
-                                       'glpi_computers'
+                       'INNER JOIN' => ['glpi_computers'
                                         => ['FKEY' => ['glpi_computers_softwareversions' => 'computers_id',
                                                        'glpi_computers'                  => 'id']]],
-                       'WHERE'      => [$where,
-                                        $dbu->getEntitiesRestrictCriteria('glpi_computers'),
+                       'WHERE'      => [$dbu->getEntitiesRestrictCriteria('glpi_computers'),
                                         'glpi_computers.is_deleted'                  => 0,
                                         'glpi_computers.is_template'                 => 0,
                                         'glpi_computers_softwareversions.is_deleted' => 0]];
 
+      if ($type == 'Software') {
+         $crit      = 'softwares_id';
+         // Software ID
+         $query_number['INNER JOIN']['glpi_softwareversions']
+                           = ['FKEY' => ['glpi_computers_softwareversions' => 'softwareversions_id',
+                                         'glpi_softwareversions'           => 'id']];
+         $query_number['WHERE']['glpi_softwareversions.softwares_id'] = $ID;
+
+      } else {
+         $crit      = 'id';
+         //SoftwareVersion ID
+         $query_number['WHERE']['glpi_computers_softwareversions.softwareversions_id'] = $ID;
+      }
+
       $total = 0;
-      if ($result =$DB->request($query_number)) {
+      if ($result = $DB->request($query_number)) {
          $row = $result->next();
          $total  = $row['cpt'];
       }
