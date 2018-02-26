@@ -56,7 +56,7 @@ function plugin_pdf_MassiveActions($type) {
 function plugin_pdf_install() {
    global $DB;
 
-   $migration = new Migration('1.3');
+   $migration = new Migration('1.3.1');
    //new install
    if (!$DB->tableExists('glpi_plugin_pdf_profiles')
        && !$DB->tableExists('glpi_plugin_pdf_preferences')) {
@@ -136,9 +136,14 @@ function plugin_pdf_install() {
                    WHERE `tabref`='_main_'";
          $DB->queryOrDie($query, "update tabref for main");
       }
+   }
+
+   if (!$DB->tableExists('glpi_plugin_pdf_configs')) {
+      include_once(GLPI_ROOT."/plugins/pdf/inc/config.class.php");
+      PluginPdfConfig::install($migration);
+   }
 
       $migration->executeMigration();
-   }
 
    return true;
 }

@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2017 PDF plugin team
+ @copyright Copyright (c) 2009-2018 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -43,7 +43,7 @@ class PluginPdfTicketCost extends PluginPdfCommon {
 
 
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $job) {
-      global $CFG_GLPI, $DB;
+      global $CFG_GLPI, $DB, $PDF_DEVICES;
 
       $ID = $job->getField('id');
 
@@ -59,11 +59,16 @@ class PluginPdfTicketCost extends PluginPdfCommon {
                             __('No item to display')));
       } else {
          $pdf->setColumnsSize(60,20,20);
-         $pdf->displayTitle("<b>".TicketCost::getTypeName($number)."</b>",
+         $title = TicketCost::getTypeName($number);
+         if (!empty(PluginPdfConfig::deviceName())) {
+            $title = sprintf(__('%1$s (%2$s)'),
+                             TicketCost::getTypeName($number), PluginPdfConfig::deviceName());
+         }
+         $pdf->displayTitle("<b>".$title."</b>",
                             "<b>".__('Ticket duration')."</b>",
                             "<b>".CommonITILObject::getActionTime($job->fields['actiontime'])."</b>");
 
-         $pdf->setColumnsSize(19,11,10,10,10,10,10,10,10);
+         $pdf->setColumnsSize(20,10,10,10,9,10,10,10,10);
          $pdf->setColumnsAlign('center','center','center','left', 'right','right','right',
                                'right','right');
          $pdf->displayTitle("<b><i>".__('Name')."</i></b>",
@@ -91,10 +96,10 @@ class PluginPdfTicketCost extends PluginPdfCommon {
                               Html::Clean(Dropdown::getDropdownName('glpi_budgets',
                                                                     $data['budgets_id'])),
                               CommonITILObject::getActionTime($data['actiontime']),
-                              Html::Clean(Html::formatNumber($data['cost_time'])),
-                              Html::Clean(Html::formatNumber($data['cost_fixed'])),
-                              Html::Clean(Html::formatNumber($data['cost_material'])),
-                              Html::Clean(Html::formatNumber($cost)));
+                              PluginPdfConfig::formatNumber($data['cost_time']),
+                              PluginPdfConfig::formatNumber($data['cost_fixed']),
+                              PluginPdfConfig::formatNumber($data['cost_material']),
+                              PluginPdfConfig::formatNumber($cost));
 
             $total_time     += $data['actiontime'];
             $total_costtime += ($data['actiontime']*$data['cost_time']/HOUR_TIMESTAMP);
@@ -102,13 +107,13 @@ class PluginPdfTicketCost extends PluginPdfCommon {
             $total_material += $data['cost_material'];
             $total          += $cost;
          }
-         $pdf->setColumnsSize(51,10,10,10,10,10);
+         $pdf->setColumnsSize(52,8,10,10,10,10);
          $pdf->setColumnsAlign('right','right','right','right','right','right');
          $pdf->displayLine('<b>'.__('Total'), CommonITILObject::getActionTime($total_time),
-                           Html::Clean(Html::formatNumber($total_costtime)),
-                           Html::Clean(Html::formatNumber($total_fixed)),
-                           Html::Clean(Html::formatNumber($total_material)),
-                           Html::Clean(Html::formatNumber($total)));
+                           PluginPdfConfig::formatNumber($total_costtime),
+                           PluginPdfConfig::formatNumber($total_fixed),
+                           PluginPdfConfig::formatNumber($total_material),
+                           PluginPdfConfig::formatNumber($total));
       }
       $pdf->displaySpace();
    }

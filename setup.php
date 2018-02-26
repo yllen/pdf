@@ -31,9 +31,15 @@
 */
 
 function plugin_init_pdf() {
-   global $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS, $PDF_DEVICES;
 
    $PLUGIN_HOOKS['csrf_compliant']['pdf'] = true;
+
+   Plugin::registerClass('PluginPdfConfig', array('addtabon' => 'Config'));
+   $PLUGIN_HOOKS['config_page']['pdf'] = 'front/config.form.php';
+
+   include_once(GLPI_ROOT."/plugins/pdf/inc/config.class.php");
+   $PDF_DEVICES = PluginPdfConfig::devices();
 
    Plugin::registerClass('PluginPdfProfile', ['addtabon' => 'Profile']);
    $PLUGIN_HOOKS['change_profile']['pdf'] = ['PluginPdfProfile','initProfile'];
