@@ -39,7 +39,7 @@ function plugin_init_pdf() {
    $PLUGIN_HOOKS['config_page']['pdf'] = 'front/config.form.php';
 
    include_once(GLPI_ROOT."/plugins/pdf/inc/config.class.php");
-   $PDF_DEVICES = PluginPdfConfig::devices();
+   $PDF_DEVICES = PluginPdfConfig::currency();
 
    Plugin::registerClass('PluginPdfProfile', ['addtabon' => 'Profile']);
    $PLUGIN_HOOKS['change_profile']['pdf'] = ['PluginPdfProfile','initProfile'];

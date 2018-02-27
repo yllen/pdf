@@ -59,9 +59,9 @@ class PluginPdfChangeCost extends PluginPdfCommon {
       } else {
          $pdf->setColumnsSize(60,20,20);
          $title = ChangeCost::getTypeName($number);
-         if (!empty(PluginPdfConfig::deviceName())) {
+         if (!empty(PluginPdfConfig::currencyName())) {
             $title = sprintf(__('%1$s (%2$s)'),
-                  ChangeCost::getTypeName($number), PluginPdfConfig::deviceName());
+                  ChangeCost::getTypeName($number), PluginPdfConfig::currencyName());
          }
          $pdf->displayTitle("<b>".$title."</b>",
                             "<b>".__('Item duration')."</b>",

@@ -60,9 +60,9 @@ class PluginPdfTicketCost extends PluginPdfCommon {
       } else {
          $pdf->setColumnsSize(60,20,20);
          $title = TicketCost::getTypeName($number);
-         if (!empty(PluginPdfConfig::deviceName())) {
+         if (!empty(PluginPdfConfig::currencyName())) {
             $title = sprintf(__('%1$s (%2$s)'),
-                             TicketCost::getTypeName($number), PluginPdfConfig::deviceName());
+                             TicketCost::getTypeName($number), PluginPdfConfig::currencyName());
          }
          $pdf->displayTitle("<b>".$title."</b>",
                             "<b>".__('Ticket duration')."</b>",
