@@ -35,7 +35,7 @@ function plugin_init_pdf() {
 
    $PLUGIN_HOOKS['csrf_compliant']['pdf'] = true;
 
-   Plugin::registerClass('PluginPdfConfig', array('addtabon' => 'Config'));
+   Plugin::registerClass('PluginPdfConfig', ['addtabon' => 'Config']);
    $PLUGIN_HOOKS['config_page']['pdf'] = 'front/config.form.php';
 
    include_once(GLPI_ROOT."/plugins/pdf/inc/config.class.php");
@@ -90,7 +90,7 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return ['name'           => __('Print to pdf', 'pdf'),
-           'version'        => '1.3.1.1',
+           'version'        => '1.3.2',
            'author'         => 'Remi Collet, Nelly Mahu-Lasson',
            'license'        => 'GPLv3+',
            'homepage'       => 'https://forge.glpi-project.org/projects/pdf',

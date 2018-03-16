@@ -155,11 +155,11 @@ class PluginPdfUser extends PluginPdfCommon {
 
       $empty = true;
       foreach ($type_user as $itemtype) {
-         if (!($item = getItemForItemtype($itemtype))) {
+         if (!($item = $dbu->getItemForItemtype($itemtype))) {
             continue;
          }
          if ($item->canView()) {
-            $itemtable = getTableForItemType($itemtype);
+            $itemtable = $dbu->getTableForItemType($itemtype);
 
             $query = ['FROM'  => $itemtable,
                       'WHERE' => [$field_user => $ID]];
@@ -231,11 +231,11 @@ class PluginPdfUser extends PluginPdfCommon {
          }
 
          foreach ($type_group as $itemtype) {
-            if (!($item = getItemForItemtype($itemtype))) {
+            if (!($item = $dbu->getItemForItemtype($itemtype))) {
                continue;
             }
             if ($item->canView() && $item->isField($field_group)) {
-               $itemtable = getTableForItemType($itemtype);
+               $itemtable = $dbu->getTableForItemType($itemtype);
 
                $query = ['FROM'  => $itemtable,
                         'WHERE' => [$group_where]];

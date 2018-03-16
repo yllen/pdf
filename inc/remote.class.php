@@ -84,8 +84,9 @@ class PluginPdfRemote  {
          return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER,
                                                      '', 'type');
       }
+      $dbu = new DbUtils();
       $type = $params['type'];
-      if (!$item = getItemForItemtype($type)) {
+      if (!$item = $dbu->getItemForItemtype($type)) {
          return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '',
                                                      'type');
       }

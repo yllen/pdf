@@ -80,7 +80,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
          for ($i=0 ; $i<$number ; $i++) {
             $row = $result->next();
             $itemtype = $row['itemtype'];
-            if (!($item = getItemForItemtype($itemtype))) {
+            if (!($item = $dbu->getItemForItemtype($itemtype))) {
                continue;
             }
 

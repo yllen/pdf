@@ -388,7 +388,7 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
             $data = $item_ticket->find("`tickets_id` = ".$job->fields['id']);
             foreach ($data as $val) {
                if (!empty($val["itemtype"]) && ($val["items_id"] > 0)) {
-                  if ($object = getItemForItemtype($val["itemtype"])) {
+                  if ($object = $dbu->getItemForItemtype($val["itemtype"])) {
                      if ($object->getFromDB($val["items_id"])) {
                         $item_col .= $object->getTypeName();
                         $item_col .= " - ".$object->getNameID()."<br />";

@@ -42,9 +42,10 @@ if (!isset($_SESSION['glpicsrftokens'][$token])) {
 
 Plugin::load('pdf', true);
 
+$dbu = new DbUtils();
 
 if (isset($_POST["plugin_pdf_inventory_type"])
-    && ($item = getItemForItemtype($_POST["plugin_pdf_inventory_type"]))
+    && ($item = $dbu->getItemForItemtype($_POST["plugin_pdf_inventory_type"]))
     && isset($_POST["itemID"])) {
 
    $type = $_POST["plugin_pdf_inventory_type"];

@@ -144,7 +144,7 @@ class PluginPdfGroup extends PluginPdfCommon {
       $tmpusr = new User();
 
       foreach ($datas as $data) {
-         if (!($item = getItemForItemtype($data['itemtype']))) {
+         if (!($item = $dbu->getItemForItemtype($data['itemtype']))) {
             continue;
          }
          $item->getFromDB($data['items_id']);

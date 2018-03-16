@@ -54,13 +54,15 @@ abstract class PluginPdfCommon {
    **/
    final function addStandardTab($itemtype, &$ong, $options) {
 
+      $dbu = new DbUtils();
+
       $withtemplate = 0;
       if (isset($options['withtemplate'])) {
          $withtemplate = $options['withtemplate'];
       }
 
       if (!is_integer($itemtype)
-          && ($obj = getItemForItemtype($itemtype))) {
+          && ($obj = $dbu->getItemForItemtype($itemtype))) {
 
          if (method_exists($itemtype, "displayTabContentForPDF")
              && !($obj instanceof PluginPdfCommon)) {
@@ -334,6 +336,8 @@ abstract class PluginPdfCommon {
    **/
    final function generatePDF($tab_id, $tabs, $page=0, $render=true) {
 
+      $dbu = new DbUtils();
+
       $this->pdf = new PluginPdfSimplePDF('a4', ($page ? 'landscape' : 'portrait'));
 
       foreach ($tab_id as $key => $id) {
@@ -362,7 +366,7 @@ abstract class PluginPdfCommon {
                         continue;
                      }
                   } else if (method_exists($itemtype, "displayTabContentForPdf")
-                             && ($obj = getItemForItemtype($itemtype))) {
+                             && ($obj = $dbu->getItemForItemtype($itemtype))) {
                      if ($obj->displayTabContentForPdf($this->pdf, $this->obj, $tabnum)) {
                         continue;
                      }
