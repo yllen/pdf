@@ -112,8 +112,8 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
 
       $query = ['SELECT' => 'id',
                 'FROM'   => 'glpi_softwarelicenses',
-                'WHERE'  => ['softwares_id' => $sID,
-                             $dbu->getEntitiesRestrictCriteria('glpi_softwarelicenses', '', '', true)],
+                'WHERE'  => ['softwares_id' => $sID]
+                             + $dbu->getEntitiesRestrictCriteria('glpi_softwarelicenses', '', '', true),
                 'ORDER'   => 'name'];
 
       $pdf->setColumnsSize(100);

@@ -90,21 +90,21 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return ['name'           => __('Print to pdf', 'pdf'),
-           'version'        => '1.3.2',
+           'version'        => '1.5.0',
            'author'         => 'Remi Collet, Nelly Mahu-Lasson',
            'license'        => 'GPLv3+',
            'homepage'       => 'https://forge.glpi-project.org/projects/pdf',
-           'minGlpiVersion' => '9.2',
-           'requirements'   => ['glpi' => ['min' => '9.2',
-                                           'max' => '9.3']]];
+           'minGlpiVersion' => '9.3',
+           'requirements'   => ['glpi' => ['min' => '9.3',
+                                           'max' => '9.4']]];
 
 }
 
 
 function plugin_pdf_check_prerequisites(){
 
-   if (version_compare(GLPI_VERSION,'9.2','lt') || version_compare(GLPI_VERSION,'9.3','ge')) {
-      echo "This plugin requires GLPI >= 9.2";
+   if (version_compare(GLPI_VERSION,'9.3','lt') || version_compare(GLPI_VERSION,'9.4','ge')) {
+      echo "This plugin requires GLPI >= 9.3";
       return false;
    }
    return true;

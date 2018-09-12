@@ -83,7 +83,7 @@ class PluginPdfConfig extends CommonDBTM {
                      `currency`  VARCHAR(15) NULL,
                      `date_mod` datetime default NULL,
                      PRIMARY KEY  (`id`)
-                   ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+                   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
          $DB->queryOrDie($query, 'Error in creating glpi_plugin_pdf_configs'.
                                  "<br>".$DB->error());
 
@@ -94,19 +94,11 @@ class PluginPdfConfig extends CommonDBTM {
                                  "<br>" . $DB->error());
       }
 
-      return true;
    }
 
 
-   static function uninstall() {
-      global $DB;
-
-      if ($DB->tableExists('glpi_plugin_pdf_configs')) { //not installed
-
-         $query = "DROP TABLE `glpi_plugin_pdf_configs`";
-         $DB->queryOrDie($query, $DB->error());
-      }
-      return true;
+   static function uninstall(Migration $mig) {
+      $mig->dropTable('glpi_plugin_pdf_configs');
    }
 
 

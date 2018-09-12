@@ -56,7 +56,8 @@ function plugin_pdf_MassiveActions($type) {
 function plugin_pdf_install() {
    global $DB;
 
-   $migration = new Migration('1.3.1');
+   $migration = new Migration('1.5.0');
+
    //new install
    if (!$DB->tableExists('glpi_plugin_pdf_profiles')
        && !$DB->tableExists('glpi_plugin_pdf_preferences')) {
@@ -81,7 +82,7 @@ function plugin_pdf_install() {
 
             $profileRight->add($right);
          }
-         $DB->query("DROP TABLE `glpi_plugin_pdf_profiles`");
+         $migration->dropTable('glpi_plugin_pdf_profiles');
       }
 
    }
@@ -95,7 +96,7 @@ function plugin_pdf_install() {
                   `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',
                   `tabref` varchar(255) NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name',
                   PRIMARY KEY (`id`)
-               ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+               ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
       $DB->queryOrDie($query, $DB->error());
    } else {
       if ($DB->tableExists('glpi_plugin_pdf_preference')) {
@@ -152,11 +153,12 @@ function plugin_pdf_install() {
 function plugin_pdf_uninstall() {
    global $DB;
 
+   $migration = new Migration('1.5.0');
+
    $tables = ["glpi_plugin_pdf_preference",
               "glpi_plugin_pdf_profiles",
               "glpi_plugin_pdf_preferences"];
 
-   $migration = new Migration('1.3');
    foreach ($tables as $table) {
       $migration->dropTable($table);
    }
@@ -166,6 +168,13 @@ function plugin_pdf_uninstall() {
              FROM `glpi_profilerights`
              WHERE `name` = 'plugin_pdf'";
    $DB->queryOrDie($query, $DB->error());
+
+   if ($DB->tableExists('glpi_plugin_pdf_configs')) {
+      include_once(GLPI_ROOT."/plugins/pdf/inc/config.class.php");
+      PluginPdfConfig::uninstall($migration);
+   }
+
+   $migration->executeMigration();
 
    return true;
 }

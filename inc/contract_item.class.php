@@ -56,8 +56,8 @@ class PluginPdfContract_Item extends PluginPdfCommon {
                                               'glpi_entities'  => 'id']]],
                'WHERE'    => ['glpi_contracts.id'              => '`glpi_contracts_items`.`contracts_id`',
                               'glpi_contracts_items.items_id'  => $ID ,
-                              'glpi_contracts_items.itemtype'  => $type,
-                              $dbu->getEntitiesRestrictCriteria('glpi_contracts','','',true)],
+                              'glpi_contracts_items.itemtype'  => $type]
+                              + $dbu->getEntitiesRestrictCriteria('glpi_contracts','','',true),
                'ORDER'    => 'glpi_contracts.name'];
 
       $result = $DB->request($query);

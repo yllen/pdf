@@ -55,10 +55,10 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                        'INNER JOIN' => ['glpi_computers'
                                         => ['FKEY' => ['glpi_computers_softwareversions' => 'computers_id',
                                                        'glpi_computers'                  => 'id']]],
-                       'WHERE'      => [$dbu->getEntitiesRestrictCriteria('glpi_computers'),
-                                        'glpi_computers.is_deleted'                  => 0,
+                       'WHERE'      => ['glpi_computers.is_deleted'                  => 0,
                                         'glpi_computers.is_template'                 => 0,
-                                        'glpi_computers_softwareversions.is_deleted' => 0]];
+                                        'glpi_computers_softwareversions.is_deleted' => 0]
+                                        + $dbu->getEntitiesRestrictCriteria('glpi_computers')];
 
       if ($type == 'Software') {
          $crit      = 'softwares_id';

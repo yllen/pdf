@@ -97,9 +97,9 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
                                   => ['FKEY' => ['glpi_computers_softwarelicenses' => 'computers_id',
                                                  'glpi_computers'                  => 'id']]],
                 'WHERE'       => ['softwarelicenses_id'       => $ID,
-                                  $dbu->getEntitiesRestrictCriteria('glpi_computers'),
                                   'glpi_computers.is_deleted' => 0,
-                                  'is_template'               => 0]];
+                                  'is_template'               => 0]
+                                  + $dbu->getEntitiesRestrictCriteria('glpi_computers')];
 
       $number = 0;
       if ($result = $DB->request($query)) {
