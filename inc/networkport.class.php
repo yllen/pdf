@@ -117,19 +117,18 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('MAC').'</b>',
                                               $netport->fields["mac"]));
 
-               $sqlip = "LEFT JOIN `glpi_networknames`
-                           ON (`glpi_ipaddresses`.`items_id` = `glpi_networknames`.`id`
-                               AND `glpi_ipaddresses`.`entities_id`
-                                    = '".$_SESSION['glpiactive_entity']."')
-                         WHERE `glpi_networknames`.`items_id` = '".$netport->fields["id"]."'";
+               $sqlip = ['LEFT JOIN' => ['glpi_networknames'
+                                           => ['FKEY' => ['glpi_ipaddresses'  =>'items_id',
+                                                          'glpi_networknames' => 'id'],
+                                                         ['glpi_ipaddresses.entities_id' => $_SESSION["glpiactive_entity"]]]],
+                         'WHERE'     => ['glpi_networknames.items_id' => $netport->fields["id"]]];
 
                $ipname = '';
                $ip     = new IPAddress();
-               if ($ip->getFromDBByQuery($sqlip)) {
+               if ($ip->getFromDBByRequest($sqlip)) {
                   $ipname   = $ip->fields['name'];
 
-                  $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('ip').'</b>',
-                                              $ipname));
+                  $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('ip').'</b>', $ipname));
 
                   $sql = "SELECT `glpi_ipaddresses_ipnetworks`.`ipnetworks_id`
                           FROM `glpi_ipaddresses_ipnetworks`
@@ -138,15 +137,14 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                           WHERE `glpi_ipaddresses_ipnetworks`.`ipaddresses_id` = '".$ip->getID()."'" .
                                 $dbu->getEntitiesRestrictRequest(' AND', 'glpi_ipnetworks');
 
-                  $res        = $DB->request($sql);
+                  $res        = $DB->request($sql, true);
                   if ($res) {
                      $row = $res->next();
 
                      $ipnetwork = new IPNetwork();
                      if ($ipnetwork->getFromDB($row['ipnetworks_id'])) {
-
                         $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('IP network').'</b>',
-                                                    $ipnetwork->fields['completename']));
+                                                        $ipnetwork->fields['completename']));
                      }
                   }
                }
