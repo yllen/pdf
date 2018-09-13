@@ -137,7 +137,7 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                           WHERE `glpi_ipaddresses_ipnetworks`.`ipaddresses_id` = '".$ip->getID()."'" .
                                 $dbu->getEntitiesRestrictRequest(' AND', 'glpi_ipnetworks');
 
-                  $res        = $DB->request($sql, true);
+                  $res        = $DB->request($sql);
                   if ($res) {
                      $row = $res->next();
 

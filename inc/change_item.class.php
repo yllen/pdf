@@ -158,7 +158,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
 
          case 'Group' :
             if ($tree) {
-               $restrict = "IN (".implode(',', getSonsOf('glpi_groups', $item->getID())).")";
+               $restrict = "IN (".implode(',', $dbu->getSonsOf('glpi_groups', $item->getID())).")";
             } else {
                $restrict = "='".$item->getID()."'";
             }
