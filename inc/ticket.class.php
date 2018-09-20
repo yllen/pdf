@@ -379,19 +379,27 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>".__('Solution')."</b>");
 
-      if ($job->fields['solutiontypes_id'] || !empty($job->fields['solution'])) {
-         if ($job->fields['solutiontypes_id']) {
-            $title = Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
-                                           $job->getField('solutiontypes_id')));
-         } else {
-            $title = __('Solution');
+      $soluce = $DB->request(['FROM'    => 'glpi_itilsolutions',
+                              'WHERE'   => ['itemtype'   => 'Ticket',
+                              'items_id'   => $job->fields['id']]]);
+
+      $number = count($soluce);
+
+      if ($number) {
+         while ($row = $soluce->next()) {
+            if ($row['solutiontypes_id']) {
+               $title = Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
+                                                              $row['solutiontypes_id']));
+            } else {
+               $title = __('Solution');
+            }
+            $sol = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
+                                                      html_entity_decode($row['content']),
+                                                                         ENT_QUOTES, "UTF-8"));
+            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol);
          }
-         $sol = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
-                           html_entity_decode($job->getField('solution'),
-                                              ENT_QUOTES, "UTF-8")));
-         $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol);
       } else {
-         $pdf->displayLine(__('None'));
+         $pdf->displayLine(__('No item found'));
       }
 
       $pdf->displaySpace();
@@ -507,7 +515,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             PluginPdfTicketCost::pdfForTicket($pdf, $item);
             break;
 
-         case 'Ticket$2' : // 0.85
+         case 'ITILSolution$1' : // 0.85
             self::pdfSolution($pdf, $item);
             break;
 
