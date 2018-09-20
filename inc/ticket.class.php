@@ -394,8 +394,8 @@ class PluginPdfTicket extends PluginPdfCommon {
                $title = __('Solution');
             }
             $sol = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
-                                                      html_entity_decode($row['content']),
-                                                                         ENT_QUOTES, "UTF-8"));
+                                                      html_entity_decode($row['content'],
+                                                                         ENT_QUOTES, "UTF-8")));
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol);
          }
       } else {
