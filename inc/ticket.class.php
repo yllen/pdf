@@ -370,42 +370,6 @@ class PluginPdfTicket extends PluginPdfCommon {
    }
 
 
-
-
-
-   static function pdfSolution(PluginPdfSimplePDF $pdf, Ticket $job) {
-      global $CFG_GLPI, $DB;
-
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".__('Solution')."</b>");
-
-      $soluce = $DB->request(['FROM'    => 'glpi_itilsolutions',
-                              'WHERE'   => ['itemtype'   => 'Ticket',
-                              'items_id'   => $job->fields['id']]]);
-
-      $number = count($soluce);
-
-      if ($number) {
-         while ($row = $soluce->next()) {
-            if ($row['solutiontypes_id']) {
-               $title = Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
-                                                              $row['solutiontypes_id']));
-            } else {
-               $title = __('Solution');
-            }
-            $sol = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
-                                                      html_entity_decode($row['content'],
-                                                                         ENT_QUOTES, "UTF-8")));
-            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol);
-         }
-      } else {
-         $pdf->displayLine(__('No item found'));
-      }
-
-      $pdf->displaySpace();
-   }
-
-
    static function pdfStat(PluginPdfSimplePDF $pdf, Ticket $job) {
 
       $pdf->setColumnsSize(100);
@@ -496,7 +460,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             if (Session::haveRight('document', READ)) {
                PluginPdfDocument::pdfForItem($pdf, $item);
             }
-            self::pdfSolution($pdf, $item);
+             PluginPdfITILSolution::pdfForItem($pdf, $item);
             break;
 
          case 'TicketFollowup$1' : // 0.85
@@ -515,8 +479,8 @@ class PluginPdfTicket extends PluginPdfCommon {
             PluginPdfTicketCost::pdfForTicket($pdf, $item);
             break;
 
-         case 'ITILSolution$1' : // 0.85
-            self::pdfSolution($pdf, $item);
+         case 'ITILSolution$1' : // 9.3
+            PluginPdfITILSolution::pdfForItem($pdf, $item);
             break;
 
          case 'Ticket$3' :

@@ -281,34 +281,6 @@ class PluginPdfChange extends PluginPdfCommon {
    }
 
 
-   static function pdfSolution(PluginPdfSimplePDF $pdf, Change $job) {
-      global $CFG_GLPI, $DB;
-
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".__('Solution')."</b>");
-
-      $title = '';
-      if ($job->fields['solutiontypes_id'] || !empty($job->fields['solution'])) {
-         if ($job->fields['solutiontypes_id']) {
-            $title = sprintf(__('%1$s: %2$s'), "<b><i>".__('Solution type')."</i></b>",
-                             Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
-                                                                   $job->getField('solutiontypes_id'))))
-                     ."<br />";
-         }
-         if (!empty($job->fields['solution'])) {
-            $title .= sprintf(__('%1$s: %2$s'), "<b><i>".__('Solution')."</i></b>",
-                              $job->fields['solution']);
-         }
-
-         $pdf->displayText($title);
-      } else {
-         $pdf->displayLine(__('No item to display'));
-      }
-
-      $pdf->displaySpace();
-   }
-
-
    static function pdfStat(PluginPdfSimplePDF $pdf, Change $job) {
 
       $pdf->setColumnsSize(100);
@@ -384,8 +356,8 @@ class PluginPdfChange extends PluginPdfCommon {
             self::pdfPlan($pdf, $item);
             break;
 
-         case 'Change$2' :
-            self::pdfSolution($pdf, $item);
+         case 'ITILSolution$1' : // 9.3
+            PluginPdfITILSolution::pdfForItem($pdf, $item);
             break;
 
          case 'Change$4' :

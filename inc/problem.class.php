@@ -438,31 +438,6 @@ class PluginPdfProblem extends PluginPdfCommon {
    }
 
 
-   static function pdfSolution(PluginPdfSimplePDF $pdf, Problem $job) {
-      global $CFG_GLPI, $DB;
-
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".__('Solution')."</b>");
-
-      if ($job->fields['solutiontypes_id'] || !empty($job->fields['solution'])) {
-         if ($job->fields['solutiontypes_id']) {
-            $title = Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
-                                           $job->getField('solutiontypes_id')));
-         } else {
-            $title = __('Solution');
-         }
-         $sol = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
-                           html_entity_decode($job->getField('solution'),
-                                              ENT_QUOTES, "UTF-8")));
-         $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol);
-      } else {
-         $pdf->displayLine(__('None'));
-      }
-
-      $pdf->displaySpace();
-   }
-
-
       static function pdfAnalysis(PluginPdfSimplePDF $pdf, Problem $job) {
       global $CFG_GLPI, $DB;
 
@@ -580,8 +555,8 @@ class PluginPdfProblem extends PluginPdfCommon {
             PluginPdfItem_Problem::pdfForProblem($pdf, $item);
             break;
 
-         case 'Problem$2' :
-            self::pdfSolution($pdf, $item);
+         case 'ITILSolution$1' : // 9.3
+            PluginPdfITILSolution::pdfForItem($pdf, $item);
             break;
 
          case 'Problem$4' :
