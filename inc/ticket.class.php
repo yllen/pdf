@@ -378,8 +378,8 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->setColumnsSize(50, 50);
       $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Opening date'),
                                 Html::convDateTime($job->fields['date'])));
-      $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Due date'),
-                                Html::convDateTime($job->fields['due_date'])));
+      $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Time to resolve'),
+                                Html::convDateTime($job->fields['time_to_resolve'])));
       if (in_array($job->fields["status"], $job->getSolvedStatusArray())
           || in_array($job->fields["status"], $job->getClosedStatusArray())) {
          $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Resolution date'),
