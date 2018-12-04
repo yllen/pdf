@@ -90,7 +90,7 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return ['name'           => __('Print to pdf', 'pdf'),
-           'version'        => '1.4.1',
+           'version'        => '1.5.0',
            'author'         => 'Remi Collet, Nelly Mahu-Lasson',
            'license'        => 'GPLv3+',
            'homepage'       => 'https://forge.glpi-project.org/projects/pdf',
@@ -105,9 +105,13 @@ function plugin_pdf_check_prerequisites(){
 
    if (version_compare(GLPI_VERSION,'9.3','lt') || version_compare(GLPI_VERSION,'9.4','ge')) {
       echo "This plugin requires GLPI >= 9.3";
-      return false;
+   } else if (!extension_loaded('intl')) { // class_exists("NumberFormatter")
+      echo "Incompatible PHP Installation. Requires module PECL intl";
+   } else {
+      return true;
    }
-   return true;
+   return false;
+
 }
 
 

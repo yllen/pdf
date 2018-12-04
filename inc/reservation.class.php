@@ -130,4 +130,101 @@ class PluginPdfReservation extends PluginPdfCommon {
 
       $pdf->displaySpace();
    }
+
+
+   static function pdfForUser(PluginPdfSimplePDF $pdf, User $user) {
+      global $DB, $CFG_GLPI;
+
+      $ID   = $user->getField('id');
+      if (!Session::haveRight("reservation", READ)) {
+         return false;
+      }
+
+      $pdf->setColumnsSize(100);
+      $now = $_SESSION["glpi_currenttime"];
+
+      // Print reservation in progress
+      $query = ['SELECT'     => ['begin', 'end', 'items_id', 'glpi_reservationitems.entities_id',
+                                 'users_id', 'glpi_reservations.comment', 'reservationitems_id',
+                                 'completename'],
+                'FROM'       => 'glpi_reservations',
+                'LEFT JOIN'  => ['glpi_reservationitems'
+                                  => ['FKEY' => ['glpi_reservations'     => 'reservationitems_id',
+                                                 'glpi_reservationitems' => 'id']],
+                                 'glpi_entities'
+                                  => ['FKEY' => ['glpi_reservationitems' => 'entities_id',
+                                                 'glpi_entities'         => 'id']]],
+                'WHERE'       => ['end'      => ['>', $now],
+                                  'users_id' => $ID],
+               'ORDER'       => 'begin'];
+
+      $result = $DB->request($query);
+
+      if (!count($result)) {
+         $pdf->displayTitle("<b>".__('No current and future reservations', 'pdf')."</b>");
+      } else {
+         $pdf->displayTitle("<b>".__('Current and future reservations')."</b>");
+         $pdf->setColumnsSize(10,10,10,20,15,35);
+         $pdf->displayTitle('<i>'.__('Start date'), __('End date'), __('Item'), __('Entity'),
+                                  __('By'), __('Comments').
+                           '</i>');
+      }
+      $ri = new ReservationItem();
+
+      while ($data = $result->next()) {
+         if ($ri->getFromDB($data["reservationitems_id"])) {
+            if ($item = getItemForItemtype($ri->fields['itemtype'])) {
+               if ($item->getFromDB($ri->fields['items_id'])) {
+                  $name = $item->fields['name'];
+               }
+            }
+         }
+         $pdf->displayLine(Html::convDateTime($data["begin"]), Html::convDateTime($data["end"]),
+                           $name, $data['completename'], getUserName($data["users_id"]),
+                           str_replace(["\r","\n"]," ",$data["comment"]));
+      }
+
+      // Print old reservations
+      $pdf->setColumnsSize(100);
+      $query = ['SELECT'     => ['begin', 'end', 'items_id', 'glpi_reservationitems.entities_id',
+                                 'users_id', 'glpi_reservations.comment', 'reservationitems_id',
+                                 'completename'],
+                'FROM'       => 'glpi_reservations',
+                'LEFT JOIN'  => ['glpi_reservationitems'
+                                  => ['FKEY' => ['glpi_reservations'     => 'reservationitems_id',
+                                                 'glpi_reservationitems' => 'id']],
+                                 'glpi_entities'
+                                  => ['FKEY' => ['glpi_reservationitems' => 'entities_id',
+                                                 'glpi_entities'         => 'id']]],
+                'WHERE'       => ['end'      => ['<=', $now],
+                                  'users_id' => $ID],
+               'ORDER'       => 'begin DESC'];
+
+      $result = $DB->request($query);
+
+      if (!count($result)) {
+         $pdf->displayTitle("<b>".__('No past reservations', 'pdf')."</b>");
+      } else {
+         $pdf->displayTitle("<b>".__('Past reservations')."</b>");
+         $pdf->setColumnsSize(10,10,10,20,15,35);
+         $pdf->displayTitle('<i>'.__('Start date'), __('End date'), __('Item'), __('Entity'),
+                                  __('By'), __('Comments').
+                            '</i>');
+      }
+
+      while ($data = $result->next()) {
+         if ($ri->getFromDB($data["reservationitems_id"])) {
+            if ($item = getItemForItemtype($ri->fields['itemtype'])) {
+               if ($item->getFromDB($ri->fields['items_id'])) {
+                  $name = $item->fields['name'];
+               }
+            }
+         }
+         $pdf->displayLine(Html::convDateTime($data["begin"]), Html::convDateTime($data["end"]),
+                           $name, $data['completename'], getUserName($data["users_id"]),
+                           str_replace(["\r","\n"]," ",$data["comment"]));
+      }
+      $pdf->displaySpace();
+   }
+
 }
