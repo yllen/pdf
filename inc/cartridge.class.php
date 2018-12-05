@@ -178,4 +178,137 @@ class PluginPdfCartridge extends PluginPdfCommon {
          $pdf->displaySpace();
       }
    }
+
+
+   static function pdfForCartridgeItem(PluginPdfSimplePDF $pdf, CartridgeItem $cartitem, $show_old = false) {
+      global $DB;
+
+      $tID = $cartitem->getField('id');
+      if (!$cartitem->can($tID, READ)) {
+         return false;
+      }
+
+      $where = ['glpi_cartridges.cartridgeitems_id' => $tID];
+      $order = ['glpi_cartridges.date_use ASC',
+                'glpi_cartridges.date_out DESC',
+                'glpi_cartridges.date_in'];
+
+      if (!$show_old) { // NEW
+         $where['glpi_cartridges.date_out'] = null;
+         $order = ['glpi_cartridges.date_out ASC',
+                   'glpi_cartridges.date_use ASC',
+                   'glpi_cartridges.date_in'];
+      } else { //OLD
+         $where['NOT'] = ['glpi_cartridges.date_out' => null];
+      }
+
+      $stock_time       = 0;
+      $use_time         = 0;
+      $pages_printed    = 0;
+      $nb_pages_printed = 0;
+
+      $iterator = $DB->request(['SELECT'    => ['glpi_cartridges.*',
+                                                'glpi_printers.id AS printID',
+                                                'glpi_printers.name AS printname',
+                                                'glpi_printers.init_pages_counter'],
+                                'FROM'      => Cartridge::gettable(),
+                                'LEFT JOIN' => ['glpi_printers'
+                                                => ['FKEY' => [Cartridge::getTable()  => 'printers_id',
+                                                               'glpi_printers'   => 'id']]],
+                                'WHERE'     => $where,
+                                'ORDER'     => $order]);
+
+      $number = count($iterator);
+
+      $pages = [];
+
+      if (!$number) {
+         $pdf->setColumnsSize(100);
+         $pdf->displayTitle(__('No cartridge'));
+      } else {
+         if (!$show_old) {
+            $pdf->setColumnsSize(25,25,25,25);
+            $pdf->displayTitle("<b><i>".__('Total')."</i></b>",
+                               "<b><i>".Cartridge::getTotalNumber($tID)."</i></b>",
+                               "<b><i>".__('New')."</i></b>",
+                               "<b><i>".Cartridge::getUnusedNumber($tID)."</i></b>");
+            $pdf->displayTitle("<b><i>".__('Used cartridges')."</i></b>",
+                               "<b><i>".Cartridge::getUsedNumber($tID),
+                               "<b><i>".__('Worn cartridges')."</i></b>",
+                               "<b><i>".Cartridge::getOldNumber($tID));
+         } else { // Old
+            $pdf->setColumnsSize(100);
+            $pdf->displayTitle("<b>".__('Worn cartridges')."</b>");
+         }
+
+         if (!$show_old) {
+            $pdf->setColumnsSize(5,20,20,20,35);
+            $pdf->displayLine("<b>".__('ID')."</b>", "<b>"._x('item', 'State')."</b>",
+                              "<b>".__('Add date')."</b>", "<b>".__('Use date')."</b>",
+                              "<b>".__('Used on')."</b>");
+         } else {
+            $pdf->setColumnsSize(5,20,15,15,15,15,15);
+            $pdf->displayLine("<b>".__('ID')."</b>", "<b>"._x('item', 'State')."</b>",
+                              "<b>".__('Add date')."</b>", "<b>".__('Use date')."</b>",
+                              "<b>".__('Used on')."</b>", "<b>".__('End date')."</b>",
+                              "<b>".__('Printer counter')."</b>");
+         }
+
+         while ($data = $iterator->next()) {
+            $date_in  = Html::convDate($data["date_in"]);
+            $date_use = Html::convDate($data["date_use"]);
+            $date_out = Html::convDate($data["date_out"]);
+            $printer  = $data["printers_id"];
+
+            if (!is_null($date_use)) {
+               $tmp_dbeg       = explode("-", $data["date_in"]);
+               $tmp_dend       = explode("-", $data["date_use"]);
+               $stock_time_tmp = mktime(0, 0, 0, $tmp_dend[1], $tmp_dend[2], $tmp_dend[0])
+                                 - mktime(0, 0, 0, $tmp_dbeg[1], $tmp_dbeg[2], $tmp_dbeg[0]);
+               $stock_time    += $stock_time_tmp;
+            }
+            $pdfpages = '';
+            if ($show_old) {
+               $tmp_dbeg      = explode("-", $data["date_use"]);
+               $tmp_dend      = explode("-", $data["date_out"]);
+               $use_time_tmp  = mktime(0, 0, 0, $tmp_dend[1], $tmp_dend[2], $tmp_dend[0])
+               - mktime(0, 0, 0, $tmp_dbeg[1], $tmp_dbeg[2], $tmp_dbeg[0]);
+               $use_time     += $use_time_tmp;
+
+               // Get initial counter page
+               if (!isset($pages[$printer])) {
+                  $pages[$printer] = $data['init_pages_counter'];
+               }
+               if ($pages[$printer] < $data['pages']) {
+                  $pages_printed   += $data['pages']-$pages[$printer];
+                  $nb_pages_printed++;
+                  $pp               = $data['pages']-$pages[$printer];
+                  $pdfpages = sprintf(_n('%d printed page', '%d printed pages', $pp), $pp);
+                  $pages[$printer]  = $data['pages'];
+               } else if ($data['pages'] != 0) {
+                  $pdfpages = __('Counter error');
+               }
+            }
+            $pdf->displayLine($data["id"], Cartridge::getStatus($data["date_use"], $data["date_out"]),
+                  $date_in, $date_use, $data["printname"], $date_out,
+                  $pdfpages);
+         }
+
+         if ($show_old && ($number > 0)) {
+            if ($nb_pages_printed == 0) {
+               $nb_pages_printed = 1;
+            }
+            $pdf->setColumnsSize(33,33,34);
+            $pdf->displayLine("<b>".__('Average time in stock')."</b>",
+                              "<b>".__('Average time in use')."</b>",
+                              "<b>".__('Average number of printed pages')."</b>");
+
+            $pdf->displayLine(round($stock_time/$number/60/60/24/30.5, 1)." ".__('month'),
+                              round($use_time/$number/60/60/24/30.5, 1)." ".__('month'),
+                              round($pages_printed/$nb_pages_printed));
+         }
+         $pdf->displaySpace();
+      }
+   }
+
 }
