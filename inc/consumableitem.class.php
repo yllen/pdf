@@ -123,7 +123,7 @@ class PluginPdfConsumableItem extends PluginPdfCommon {
 
       $iterator = $DB->request(['FROM'   => 'glpi_consumables',
                                 'WHERE'  => $where,
-                                'ORDER'  => $order], true);
+                                'ORDER'  => $order]);
 
       if (!$number) {
          $pdf->setColumnsSize(100);
