@@ -112,7 +112,6 @@ class PluginPdfCartridgeItem extends PluginPdfCommon {
       if (!$item->can($instID, READ)) {
          return false;
       }
-      $rand    = mt_rand();
 
       $iterator = CartridgeItem_PrinterModel::getListForItem($item);
       $number = count($iterator);
@@ -129,31 +128,7 @@ class PluginPdfCartridgeItem extends PluginPdfCommon {
 
          foreach ($datas as $data) {
             $pdf->displayLine($data['name']);
-     toolbox::logdebug("data", $datas);
          }
       }
    }
-   /*
-            $opt = [
-               'is_deleted' => 0,
-               'criteria'   => [
-                  [
-                     'field'      => 40, // printer model
-                     'searchtype' => 'equals',
-                     'value'      => $data["id"],
-                  ]
-               ]
-            ];
-            $url = Printer::getSearchURL()."?".Toolbox::append_params($opt, '&amp;');
-            echo "<td class='center'><a href='".$url."'>".$data["name"]."</a></td>";
-            echo "</tr>";
-         }
-         echo $header_begin.$header_bottom.$header_end;
-         echo "</table>";
-
-         echo "</div>";
-      } else {
-         echo "<p class='center b'>".__('No item found')."</p>";
-      }
-   })*/
 }
