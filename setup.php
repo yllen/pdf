@@ -63,6 +63,7 @@ function plugin_init_pdf() {
 
       // Define the type for which we know how to generate PDF :
       $PLUGIN_HOOKS['plugin_pdf']['CartridgeItem']    = 'PluginPdfCartridgeItem';
+      $PLUGIN_HOOKS['plugin_pdf']['ConsumableItem']   = 'PluginPdfConsumableItem';
       $PLUGIN_HOOKS['plugin_pdf']['Change']           = 'PluginPdfChange';
       $PLUGIN_HOOKS['plugin_pdf']['Computer']         = 'PluginPdfComputer';
       $PLUGIN_HOOKS['plugin_pdf']['Group']            = 'PluginPdfGroup';
