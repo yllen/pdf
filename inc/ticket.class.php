@@ -424,9 +424,9 @@ class PluginPdfTicket extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['Projecttask_Ticket$1']); // TODO add method to print linked Projecttask
+      unset($onglets['ProjectTask_Ticket$1']); // TODO add method to print linked Projecttask
       unset($onglets['Change_Ticket$1']); // TODO add method to print linked Changes
-      unset($onglets['(KnowbaseItem_Item$1']);
+      unset($onglets['KnowbaseItem_Item$1']);
 
       if (Session::haveRight('ticket', Ticket::READALL) // for technician
           || Session::haveRight('followup', TicketFollowup::SEEPRIVATE)

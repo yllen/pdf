@@ -137,21 +137,24 @@ class PluginPdfUser extends PluginPdfCommon {
          $type_group  = $CFG_GLPI['linkgroup_tech_types'];
          $field_user  = 'users_id_tech';
          $field_group = 'groups_id_tech';
-         $title = __('Managed items');
+         $title       = __('Managed items');
+         $conso       = false;
       } else {
          $type_user   = $CFG_GLPI['linkuser_types'];
          $type_group  = $CFG_GLPI['linkgroup_types'];
          $field_user  = 'users_id';
          $field_group = 'groups_id';
-         $title = __('Used items');
+         $title       = __('Used items');
+         $conso       = true;
       }
+
 
       $pdf->setColumnsSize(100);
       $pdf->displayTitle('<b>'.$title.'</b>');
 
       $pdf->setColumnsSize(15,15,15,15,15,15,10);
       $pdf->displayTitle(__('Type'),  __('Entity'), __('Name'), __('Serial number'),
-                          __('Inventory number'), __('Status'), '');
+                         __('Inventory number'), __('Status'), '');
 
       $empty = true;
       foreach ($type_user as $itemtype) {
@@ -187,23 +190,22 @@ class PluginPdfUser extends PluginPdfCommon {
                   }
                   $pdf->displayLine($item->getTypeName(1),
                                     Dropdown::getDropdownName("glpi_entities", $data["entities_id"]),
-                                    $name, $data["serial"], $data["otherserial"],
-                                    Dropdown::getDropdownName("glpi_states", $data['states_id']),
+                                    $name, isset($data["serial"]) ? $data["serial"] : '',
+                                    isset($data["otherserial"]) ? $data["otherserial"] : '',
+                                    isset($data["states_id"])
+                                       ? Dropdown::getDropdownName("glpi_states", $data['states_id'])
+                                       : '',
                                     $linktype);
                }
                $empty = false;
             }
          }
       }
-      if ($empty) {
-         $pdf->setColumnsSize(100);
-         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('User'),__('No item to display')));
+      if (!$empty) {
+         $pdf->setColumnsSize(15,15,15,15,15,15,10);
+         $pdf->displayTitle(__('Type'),  __('Entity'), __('Name'), __('Serial number'),
+                            __('Inventory number'), __('Status'), '');
       }
-
-      $pdf->setColumnsSize(15,15,15,15,15,15,10);
-      $pdf->displayTitle(__('Type'),  __('Entity'), __('Name'), __('Serial number'),
-                         __('Inventory number'), __('Status'), '');
-
       $group_where = "";
       $groups      = [];
 
@@ -229,6 +231,7 @@ class PluginPdfUser extends PluginPdfCommon {
             $group_where               .= " `".$field_group."` = '".$data["groups_id"]."' ";
             $groups[$data["groups_id"]] = $data["name"];
          }
+         $empty = false;
 
          foreach ($type_group as $itemtype) {
             if (!($item = $dbu->getItemForItemtype($itemtype))) {
@@ -271,11 +274,33 @@ class PluginPdfUser extends PluginPdfCommon {
                }
             }
          }
-      } else {
+      } if ($empty) {
          $pdf->setColumnsSize(100);
-         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Group'),__('No item to display')));
+         $pdf->displayLine(sprintf(__('%1$s: %2$s'), $title,__('No item to display')));
       }
       $pdf->displaySpace();
+
+      if ($conso) {
+         $pdf->setColumnsSize(100);
+         $pdf->displayTitle('<b>'.__('Used consumables').'</b>');
+
+         $pdf->setColumnsSize(70,30);
+         $pdf->displayTitle(__('Name'),  __('Use date'));
+
+         $iterator = $DB->request(['FROM'      => 'glpi_consumables',
+                                   'LEFT JOIN' => ['glpi_consumableitems'
+                                                   => ['FKEY' => ['glpi_consumables' => 'consumableitems_id',
+                                                                  'glpi_consumableitems' => 'id']]],
+                                   'WHERE'     => ['NOT'      => ['date_out' => 'NULL'],
+                                                   'itemtype' => 'User',
+                                                   'items_id' => $ID],
+                                   'ORDER'     => 'date_out DESC']);
+
+         while ($dataconso = $iterator->next()) {
+            $pdf->displayLine($dataconso["name"], Html::convDate($dataconso["date_out"]));
+         }
+      }
+
    }
 
 

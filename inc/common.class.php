@@ -91,7 +91,9 @@ abstract class PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets  = $this->obj->defineTabs();
-
+      if (isset($onglets['Ticket$1'])) {
+          $onglets['Ticket$1'] = 'Traitement du ticket';
+      }
       $othertabs = CommonGLPI::getOtherTabs($this->obj->getType());
 
       unset($onglets['empty']);

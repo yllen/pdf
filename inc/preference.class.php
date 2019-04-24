@@ -47,6 +47,7 @@ class PluginPdfPreference extends CommonDBTM {
          if (!($item = $dbu->getItemForItemtype($type))) {
             continue;
          }
+
          if ($item->canView()) {
             $pref->menu($item, $target);
          }
