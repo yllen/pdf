@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -38,7 +38,7 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
 
    function __construct(CommonGLPI $obj=NULL) {
 
-      $this->obj = ($obj ? $obj : new TicketFollowup());
+      $this->obj = ($obj ? $obj : new ITILFollowup());
    }
 
 
@@ -51,14 +51,15 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
 
       //////////////followups///////////
 
-      $query = ['FROM'  => 'glpi_ticketfollowups',
-                'WHERE' => ['tickets_id' => $ID],
+      $query = ['FROM'  => 'glpi_itilfollowups',
+                'WHERE' => ['items_id' => $ID,
+                            'itemtype' => 'Ticket'],
                 'ORDER' => 'date DESC'];
 
       if (!$private) {
          // Don't show private'
          $query['WHERE']['is_private'] = 0;
-      } else if (!Session::haveRight('followup', TicketFollowup::SEEPRIVATE)) {
+      } else if (!Session::haveRight('followup', ITILFollowup::SEEPRIVATE)) {
          // No right, only show connected user private one
          $query['WHERE']['OR'] = ['is_private' => 0,
                                   'users_id'   => Session::getLoginUserID()];
@@ -69,7 +70,7 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
       $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'.TicketFollowup::getTypeName(2).'</b>';
+      $title = '<b>'.ITILFollowup::getTypeName(2).'</b>';
 
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));

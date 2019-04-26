@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -53,13 +53,14 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
          return false;
       }
 
-      $result = $DB->request(['SELECT DISTINCT' => ['glpi_changes_problems.id', 'glpi_problems.*', 'name'],
-                              'FROM'            => 'glpi_changes_problems',
-                              'LEFT JOIN'       => ['glpi_problems'
-                                                    => ['FKEY' => ['glpi_changes_problems' => 'problems_id',
-                                                                   'glpi_problems'         => 'id']]],
-                              'WHERE'           => ['changes_id' => $ID],
-                              'ORDER'           => 'name']);
+      $result = $DB->request('glpi_changes_problems',
+                             ['SELECT'    => ['glpi_changes_problems.id', 'DISTINCT' => true,
+                                              'glpi_problems.*', 'name'],
+                              'LEFT JOIN' => ['glpi_problems'
+                                              => ['FKEY' => ['glpi_changes_problems' => 'problems_id',
+                                                             'glpi_problems'         => 'id']]],
+                              'WHERE'     => ['changes_id' => $ID],
+                              'ORDER'     => 'name']);
       $number = count($result);
 
       $problems = [];
@@ -230,13 +231,14 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
          return false;
       }
 
-      $result = $DB->request(['SELECT DISTINCT' => ['glpi_changes_problems.id', 'glpi_changes.*', 'name'],
-                              'FROM'            => 'glpi_changes_problems',
-                              'LEFT JOIN'       => ['glpi_changes'
-                                                    => ['FKEY' => ['glpi_changes_problems' => 'changes_id',
-                                                                   'glpi_changes'          => 'id']]],
-                              'WHERE'           => ['problems_id' => $ID],
-                              'ORDER'           => 'name']);
+      $result = $DB->request('glpi_changes_problems',
+                             ['SELECT'    => ['glpi_changes_problems.id', 'DISTINCT' => true,
+                                              'glpi_changes.*', 'name'],
+                              'LEFT JOIN' => ['glpi_changes'
+                                              => ['FKEY' => ['glpi_changes_problems' => 'changes_id',
+                                                             'glpi_changes'          => 'id']]],
+                              'WHERE'     => ['problems_id' => $ID],
+                              'ORDER'     => 'name']);
       $number = count($result);
 
       $problems = [];

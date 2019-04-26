@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -108,7 +108,6 @@ class PluginPdfComputer extends PluginPdfCommon {
       $pdf->setColumnsSize(3,14,42,41);
 
       foreach ($devtypes as $itemtype) {
-
          $devicetypes   = new $itemtype();
          $specificities = $devicetypes->getSpecificities();
          $specif_fields = array_keys($specificities);

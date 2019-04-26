@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -86,10 +86,10 @@ class PluginPdfTicket extends PluginPdfCommon {
       $tto = "<b><i>".sprintf(__('%1$s: %2$s'), __('Internal time to own')."</b></i>",
                               Html::convDateTime($job->fields["internal_time_to_own"]));
 
-      if ($job->fields["olas_tto_id"] > 0) {
+      if ($job->fields["olas_id_tto"] > 0) {
          $tto .= "<b><i>".sprintf(__('%1$s: %2$s'), __('OLA')."</b></i>",
                                   Html::clean(Dropdown::getDropdownName("glpi_olas",
-                                                                        $job->fields["olas_tto_id"])));
+                                                                        $job->fields["olas_id_tto"])));
 
          $olalevel = new OlaLevel();
          $nextaction = new OlaLevel_Ticket();
@@ -105,10 +105,10 @@ class PluginPdfTicket extends PluginPdfCommon {
          }
       }
 
-      if ($job->fields["slas_ttr_id"] > 0) {
+      if ($job->fields["slas_id_ttr"] > 0) {
          $ttr .= "<b><i>".sprintf(__('%1$s: %2$s'), __('SLA')."</b></i>",
                                   Html::clean(Dropdown::getDropdownName("glpi_slas",
-                                                                        $job->fields["slas_ttr_id"])));
+                                                                        $job->fields["slas_id_ttr"])));
 
          $slalevel = new SlaLevel();
          $nextaction = new SlaLevel_Ticket();
@@ -429,7 +429,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       unset($onglets['KnowbaseItem_Item$1']);
 
       if (Session::haveRight('ticket', Ticket::READALL) // for technician
-          || Session::haveRight('followup', TicketFollowup::SEEPRIVATE)
+          || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)
           || Session::haveRight('task', TicketTask::SEEPRIVATE)) {
          $onglets['_private_'] = __('Private');
       }
@@ -462,7 +462,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             }
              PluginPdfITILSolution::pdfForItem($pdf, $item);
             break;
-
+/*
          case 'TicketFollowup$1' : // 0.85
             PluginPdfTicketFollowup::pdfForTicket($pdf, $item, $private);
             break;
@@ -470,7 +470,7 @@ class PluginPdfTicket extends PluginPdfCommon {
          case 'TicketTask$1' : // 0.85
             PluginPdfTicketTask::pdfForTicket($pdf, $item, $private);
             break;
-
+*/
          case 'TicketValidation$1' : // 0.85
             PluginPdfTicketValidation::pdfForTicket($pdf, $item);
             break;
@@ -478,11 +478,11 @@ class PluginPdfTicket extends PluginPdfCommon {
          case 'TicketCost$1' :
             PluginPdfTicketCost::pdfForTicket($pdf, $item);
             break;
-
+/*
          case 'ITILSolution$1' : // 9.3
             PluginPdfITILSolution::pdfForItem($pdf, $item);
             break;
-
+*/
          case 'Ticket$3' :
             PluginPdfTicketSatisfaction::pdfForTicket($pdf, $item);
             break;
