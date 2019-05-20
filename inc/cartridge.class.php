@@ -222,10 +222,7 @@ class PluginPdfCartridge extends PluginPdfCommon {
 
       $pages = [];
 
-      if (!$number) {
-         $pdf->setColumnsSize(100);
-         $pdf->displayTitle(__('No cartridge'));
-      } else {
+      if ($number) {
          if (!$show_old) {
             $pdf->setColumnsSize(25,25,25,25);
             $pdf->displayTitle("<b><i>".__('Total')."</i></b>",

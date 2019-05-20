@@ -233,7 +233,7 @@ class PluginPdfComputer extends PluginPdfCommon {
             self::pdfDevice($pdf, $item);
             break;
 
-         case 'ComputerDisk$1' :
+         case 'Item_Disk$1' :
             PluginPdfComputerDisk::pdfForComputer($pdf, $item);
             break;
 

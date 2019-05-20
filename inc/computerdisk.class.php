@@ -46,13 +46,14 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
 
       $ID = $item->getField('id');
 
-      $result = $DB->request(['SELECT'    => ['glpi_filesystems.name', 'glpi_computerdisks.*'],
-                              'FROM'      => 'glpi_computerdisks',
+      $result = $DB->request('glpi_items_disks',
+                             ['SELECT'    => ['glpi_filesystems.name', 'glpi_items_disks.*'],
                               'LEFT JOIN' => ['glpi_filesystems'
-                                              => ['FKEY' => ['glpi_computerdisks' => 'filesystems_id',
+                                              => ['FKEY' => ['glpi_items_disks' => 'filesystems_id',
                                                              'glpi_filesystems'   => 'id']]],
-                              'WHERE'     => ['computers_id' => $ID,
-                                              'is_deleted'   =>0]]);
+                              'WHERE'     => ['items_id'   => $ID,
+                                              'itemtype'   => 'Computer',
+                                              'is_deleted' =>0]]);
 
       $pdf->setColumnsSize(100);
       $title = "<b>"._n('Volume', 'Volumes', count($result))."</b>";
