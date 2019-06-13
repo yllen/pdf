@@ -1,6 +1,6 @@
 <?php
 /**
- * @version $Id$
+ * @version $Id:  yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -31,7 +31,7 @@
 */
 
 
-class PluginPdfComputerDisk extends PluginPdfCommon {
+class PluginPdfItem_Disk extends PluginPdfCommon {
 
    static $rightname = "plugin_pdf";
 
@@ -41,7 +41,7 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
    }
 
 
-   static function pdfForComputer(PluginPdfSimplePDF $pdf, Computer $item) {
+   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item) {
       global $DB;
 
       $ID = $item->getField('id');
@@ -52,8 +52,8 @@ class PluginPdfComputerDisk extends PluginPdfCommon {
                                               => ['FKEY' => ['glpi_items_disks' => 'filesystems_id',
                                                              'glpi_filesystems'   => 'id']]],
                               'WHERE'     => ['items_id'   => $ID,
-                                              'itemtype'   => 'Computer',
-                                              'is_deleted' =>0]]);
+                                              'itemtype'   => $item->getType(),
+                                              'is_deleted' => 0]]);
 
       $pdf->setColumnsSize(100);
       $title = "<b>"._n('Volume', 'Volumes', count($result))."</b>";

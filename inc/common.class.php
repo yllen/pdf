@@ -225,6 +225,21 @@ abstract class PluginPdfCommon {
             PluginPdfLog::pdfForItem($pdf, $item);
             break;
 
+         case 'KnowbaseItem_Item$1' :
+            if (Session::haveRight($item::$rightname, READ)) {
+               PluginPdfItem_Knowbaseitem::pdfForItem($pdf, $item);
+            }
+            break;
+
+         case 'Item_Devices$1' :
+            if (Session::haveRight($item::$rightname, READ)) {
+               PluginPdfItem_Device::pdfForItem($pdf, $item);
+            }
+            break;
+
+         case 'Item_Disk$1' :
+            PluginPdfItem_Disk::pdfForItem($pdf, $item);
+            break;
 
          default :
             return false;

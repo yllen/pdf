@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -53,8 +53,8 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
          return false;
       }
 
-      $result = $DB->request(['SELECT DISTINCT' => 'itemtype',
-                              'FROM'            => 'glpi_items_problems',
+      $result = $DB->request('glpi_items_problems',
+                             ['SELECT DISTINCT' => 'itemtype',
                               'WHERE'           => ['problems_id' => $instID],
                               'ORDER'           => 'itemtype']);
 
@@ -186,9 +186,9 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
       $number = count($result);
 
       $pdf->setColumnsSize(100);
+      $title = '<b>'.__('Problem', 'Problems', 2).'</b>';
       if (!$number) {
-         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), "<b>".__('Problem', 'Problems', 2)."<b>",
-                                    __('No item to display')));
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
          $pdf->displayTitle("<b>".sprintf(_n('Last %d problem','Last %d problems', $number)."</b>",
                                           $number));

@@ -47,7 +47,6 @@ class PluginPdfPreference extends CommonDBTM {
          if (!($item = $dbu->getItemForItemtype($type))) {
             continue;
          }
-
          if ($item->canView()) {
             $pref->menu($item, $target);
          }
@@ -99,8 +98,8 @@ class PluginPdfPreference extends CommonDBTM {
       $landscape = false;
       $values    = [];
 
-      foreach ($DB->request(['SELECT' => 'tabref',
-                             'FROM'   => $this->getTable(),
+      foreach ($DB->request($this->getTable(),
+                            ['SELECT' => 'tabref',
                              'WHERE'  => ['users_id' => $_SESSION['glpiID'],
                                           'itemtype' => $type]]) AS $data) {
          if ($data["tabref"] == 'landscape') {

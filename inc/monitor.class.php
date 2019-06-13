@@ -45,7 +45,6 @@ class PluginPdfMonitor extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['KnowbaseItem_Item$1']);
       return $onglets;
    }
 

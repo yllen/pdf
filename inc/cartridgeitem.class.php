@@ -124,7 +124,7 @@ class PluginPdfCartridgeItem extends PluginPdfCommon {
       if (!$number) {
          $pdf->displayTitle(_('No printel model associated', 'pdf'));
       } else {
-         $pdf->displayTitle("<b>"._('Model')."</b>");
+         $pdf->displayTitle("<b>"._n('Printer model', 'Printer models', $number)."</b>");
 
          foreach ($datas as $data) {
             $pdf->displayLine($data['name']);

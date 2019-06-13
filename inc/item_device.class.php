@@ -78,7 +78,7 @@ class PluginPdfItem_Device extends PluginPdfCommon {
                    WHERE `items_id` = '".$ID."'
                    AND `itemtype` = '".$item->getType()."'
                    GROUP BY `".$fk."`".$specif_text;
-toolbox::logdebug("query", $query);
+
          $device = new $associated_type();
          $itemdevice = new $itemtype();
          foreach ($DB->request($query) as $data) {
@@ -96,6 +96,7 @@ toolbox::logdebug("query", $query);
                      }
                      if (isset($device->fields[$label["name"]])
                          && !empty($device->fields[$label["name"]])) {
+
                         if (($label["type"] == "dropdownValue")
                             && ($device->fields[$label["name"]] != 0)) {
                            if (!isset($value) || empty($value)) {
@@ -116,8 +117,13 @@ toolbox::logdebug("query", $query);
                                   $value = __('No');
                                }
                            }
-                           $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $label["label"].'</i></b>',
-                                                     $value." ");
+                           if (isset($label["unit"])) {
+                              $labelname = '<b><i>'.sprintf(__('%1$s (%2$s)'), $label["label"],
+                                                            $label["unit"]).'</i></b>';
+                           } else {
+                              $labelname = $label["label"];
+                           }
+                           $col4 .= sprintf(__('%1$s: %2$s'), $labelname, $value." ");
                         }
                      } else if (isset($device->fields[$label["name"]."_default"])
                                 && !empty($device->fields[$label["name"]."_default"])) {
