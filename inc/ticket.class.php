@@ -426,7 +426,6 @@ class PluginPdfTicket extends PluginPdfCommon {
       $onglets = parent::defineAllTabs($options);
       unset($onglets['ProjectTask_Ticket$1']); // TODO add method to print linked Projecttask
       unset($onglets['Change_Ticket$1']); // TODO add method to print linked Changes
-      unset($onglets['KnowbaseItem_Item$1']);
 
       if (Session::haveRight('ticket', Ticket::READALL) // for technician
           || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)
@@ -462,15 +461,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             }
              PluginPdfITILSolution::pdfForItem($pdf, $item);
             break;
-/*
-         case 'TicketFollowup$1' : // 0.85
-            PluginPdfTicketFollowup::pdfForTicket($pdf, $item, $private);
-            break;
 
-         case 'TicketTask$1' : // 0.85
-            PluginPdfTicketTask::pdfForTicket($pdf, $item, $private);
-            break;
-*/
          case 'TicketValidation$1' : // 0.85
             PluginPdfTicketValidation::pdfForTicket($pdf, $item);
             break;
@@ -478,11 +469,7 @@ class PluginPdfTicket extends PluginPdfCommon {
          case 'TicketCost$1' :
             PluginPdfTicketCost::pdfForTicket($pdf, $item);
             break;
-/*
-         case 'ITILSolution$1' : // 9.3
-            PluginPdfITILSolution::pdfForItem($pdf, $item);
-            break;
-*/
+
          case 'Ticket$3' :
             PluginPdfTicketSatisfaction::pdfForTicket($pdf, $item);
             break;

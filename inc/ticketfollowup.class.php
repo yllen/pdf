@@ -43,7 +43,7 @@ class PluginPdfTicketFollowup extends PluginPdfCommon {
 
 
    static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $job, $private) {
-      global $CFG_GLPI, $DB;
+      global $DB;
 
       $dbu = new DbUtils();
 

@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2018 PDF plugin team
+ @copyright Copyright (c) 2018-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -46,15 +46,19 @@ class PluginPdfITILSolution extends PluginPdfCommon {
       global $DB;
 
       $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".__('Solution')."</b>");
 
-      $soluce = $DB->request(['FROM'    => 'glpi_itilsolutions',
-                              'WHERE'   => ['itemtype'   => $item->getType(),
-                                            'items_id'   => $item->fields['id']]]);
+      $soluce = $DB->request('glpi_itilsolutions',
+                             ['itemtype'   => $item->getType(),
+                              'items_id'   => $item->fields['id']]);
 
       $number = count($soluce);
 
-      if ($number) {
+      $title = '<b>'.__('Solution').'</b>';
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
          while ($row = $soluce->next()) {
             if ($row['solutiontypes_id']) {
                $title = Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
@@ -65,10 +69,16 @@ class PluginPdfITILSolution extends PluginPdfCommon {
             $sol = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
                                                       html_entity_decode($row['content'],
                                                                          ENT_QUOTES, "UTF-8")));
-            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol);
+
+            if ($row['status'] == 3) {
+               $text = __('Soluce approved on ', 'pdf');
+            } else if ($row['status'] == 4) {
+               $text = __('Soluce refused on ', 'pdf');
+            }
+            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol.
+                              "<br /><br /><br /><i>".sprintf(__('%1$s %2$s'), $text,
+                                                              $row['date_approval'])."</i>");
          }
-      } else {
-         $pdf->displayLine(__('No item found'));
       }
 
       $pdf->displaySpace();
