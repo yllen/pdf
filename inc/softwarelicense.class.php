@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -124,17 +124,42 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
             $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
          } else {
             $pdf->displayTitle($title);
+            $pdf->setColumnsSize(15,15,10,10,10,10,10,10,10);
+            $pdf->setColumnsAlign('left', 'left', 'left', 'right', 'right');
+            $pdf->displayTitle('<b><i>'.__('Name').'</i></b>', '<b><i>'.__('Entity').'</i></b>',
+                               '<b><i>'.__('Serial number').'</i></b>',
+                               '<b><i>'. _x('quantity', 'Number').'</i></b>',
+                               '<b><i>'.__('Affected computers').'</i></b>',
+                               '<b><i>'.__('Type').'</i></b>',
+                               '<b><i>'.__('Purchase version').'</i></b>',
+                               '<b><i>'.__('Version in use').'</i></b>',
+                               '<b><i>'.__('Expiration').'</i></b>');
+            $totnbre = $totaffect = 0;
             for ($tot=0 ; $data=$result->next() ; ) {
                if ($license->getFromDB($data['id'])) {
-                  self::pdfMain($pdf, $license, false);
-                  if ($infocom) {
-                     PluginPdfInfocom::pdfForItem($pdf, $license);
-                  }
+                  $totnbre += $license->fields['number'];
+                  $totaffect += Computer_SoftwareLicense::countForLicense($license->getField('id'));
+
+                  $pdf->displayLine($license->fields['name'],
+                                    Dropdown::getDropdownName('glpi_entities', $license->fields['entities_id']),
+                                    $license->fields['serial'],
+                                    ($license->fields['number'] > 0) ? $license->fields['number']
+                                                                     :__('Unlimited'),
+                                    Computer_SoftwareLicense::countForLicense($license->getField('id')),
+                                    Html::clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
+                                                                          $license->fields['softwarelicensetypes_id'])),
+                                    Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
+                                                                           $license->fields['softwareversions_id_buy'])),
+                                    Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
+                                                                          $license->fields['softwareversions_id_use'])),
+                                    Html::convDate($license->fields['expire']));
                }
             }
+            $pdf->setColumnsAlign('left', 'left', 'right', 'right', 'right');
+            $pdf->displayLine("&nbsp;","&nbsp;","<b>".__('Total')."</b>",
+                              "<b>".$totnbre."</b>", "<b>".$totaffect."</b>",
+                              "&nbsp;","&nbsp;","&nbsp;","&nbsp;");
          }
-      } else {
-         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       }
       $pdf->displaySpace();
    }

@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -43,7 +43,6 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, SoftwareVersion $version) {
-      global $DB;
 
       $ID = $version->getField('id');
 
@@ -77,16 +76,18 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
 
       $sID = $item->getField('id');
 
-      $query = "SELECT `glpi_softwareversions`.*,
-                       `glpi_states`.`name` AS sname,
-                       `glpi_operatingsystems`.`name` AS osname
-                FROM `glpi_softwareversions`
-                LEFT JOIN `glpi_states`
-                     ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
-                LEFT JOIN `glpi_operatingsystems`
-                     ON (`glpi_operatingsystems`.`id` = `glpi_softwareversions`.`operatingsystems_id`)
-                WHERE (`softwares_id` = '".$sID."')
-                ORDER BY `name`";
+      $query = ['FIELDS'    => ['glpi_softwareversions.*',
+                                'glpi_states.name AS sname',
+                                'glpi_operatingsystems.name AS osname'],
+                'FROM'      => 'glpi_softwareversions',
+                'LEFT JOIN' => ['glpi_states'
+                                => ['FKEY' => ['glpi_states'           => 'id',
+                                               'glpi_softwareversions' => 'states_id']],
+                                'glpi_operatingsystems'
+                                => ['FKEY' => ['glpi_operatingsystems' => 'id',
+                                               'glpi_softwareversions' => 'operatingsystems_id']]],
+                'WHERE'      => ['softwares_id' => $sID],
+                'ORDER'      => 'name'];
 
       $pdf->setColumnsSize(100);
       $title = '<b>'.SoftwareVersion::getTypeName(2).'</b>';
