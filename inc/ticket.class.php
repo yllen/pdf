@@ -454,7 +454,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             break;
 
          case 'Ticket$1' : // 0.90+
-            PluginPdfTicketFollowup::pdfForTicket($pdf, $item, $private);
+            PluginPdfItilFollowup::pdfForItem($pdf, $item, $private);
             PluginPdfTicketTask::pdfForTicket($pdf, $item, $private);
             if (Session::haveRight('document', READ)) {
                PluginPdfDocument::pdfForItem($pdf, $item);

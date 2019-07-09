@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -54,23 +54,34 @@ class PluginPdfGroup extends PluginPdfCommon {
       $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Complete name').'</i></b>',
                                          $item->fields['completename']));
 
-      $pdf->setColumnsSize(34,22,22,22);
-      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Visible in a ticket'), ''.'</i></b>'),
-                        '<b><i>'.sprintf(__('%1$s - %2$s'),__('Requester').'</i></b>',
+      $pdf->setColumnsAlign('center');
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Visible in a ticket'), ''.'</i></b>'));
+      $pdf->setColumnsSize(20,20,20,20,20);
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s - %2$s'),__('Requester').'</i></b>',
                                          Dropdown::getYesNo($item->fields['is_requester'])),
+                        '<b><i>'.sprintf(__('%1$s - %2$s'),__('Watcher').'</i></b>',
+                                         Dropdown::getYesNo($item->fields['is_watcher'])),
                         '<b><i>'.sprintf(__('%1$s - %2$s'), __('Assigned to').'</i></b>',
                                          Dropdown::getYesNo($item->fields['is_assign'])),
-                        '<b><i>'.sprintf(__('%1$s: %2$s'), __('Can be notified').'</i></b>',
+                        '<b><i>'.sprintf(__('%1$s - %2$s'),__('Task').'</i></b>',
+                                         Dropdown::getYesNo($item->fields['is_task'])),
+                        '<b><i>'.sprintf(__('%1$s - %2$s'), __('Can be notified').'</i></b>',
                                          Dropdown::getYesNo($item->fields['is_notify'])));
 
-      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Visible in a project'), ''),
-                        '<b><i>'.sprintf(__('%1$s - %2$s'), __('Can be manager').'</i></b>',
+      $pdf->setColumnsSize(100);
+      $pdf->setColumnsAlign('center');
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Visible in a project'), ''));
+      $pdf->setColumnsAlign('left');
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s - %2$s'), __('Can be manager').'</i></b>',
                                          Dropdown::getYesNo($item->fields['is_manager'])));
 
-      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Can contain'), ''),
-                        '<b><i>'.sprintf(__('%1$s - %2$s'), _n('Item', 'Items', 2).'</i></b>',
+      $pdf->setColumnsSize(100);
+      $pdf->setColumnsAlign('center');
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Can contain'), ''));
+      $pdf->setColumnsSize(50,50);
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s - %2$s'), _n('Item', 'Items', 2).'</i></b>',
                                          Dropdown::getYesNo($item->fields['is_itemgroup'])),
-                        '<b><i>'.sprintf(__('%1$s: %2$s'), _n('User', 'Users', 2).'</i></b>',
+                        '<b><i>'.sprintf(__('%1$s - %2$s'), _n('User', 'Users', 2).'</i></b>',
                                          Dropdown::getYesNo($item->fields['is_usergroup'])));
 
       PluginPdfCommon::mainLine($pdf, $item, 'comment');
@@ -116,8 +127,8 @@ class PluginPdfGroup extends PluginPdfCommon {
       }
 
       $datas  = [];
-      $max = $group->getDataItems($types, $field, $tree, $user, 0, $datas);
-      $nb = count($datas);
+      $max    = $group->getDataItems($types, $field, $tree, $user, 0, $datas);
+      $nb     = count($datas);
 
       if ($nb < $max) {
          $title = sprintf(__('%1$s (%2$s)'), $title, $nb."/".$max);
@@ -173,8 +184,7 @@ class PluginPdfGroup extends PluginPdfCommon {
 
       $onglets = parent::defineAllTabs($options);
 
-      unset($onglets['NotificationTarget$1']);  // TODO Notifications
-
+      unset($onglets['NotificationTarget$1']);
       return $onglets;
    }
 
@@ -262,7 +272,6 @@ class PluginPdfGroup extends PluginPdfCommon {
          case 'Item_Problem$1' :
             PluginPdfItem_Problem::pdfForItem($pdf, $item, $tree);
                break;
-
 
          default :
             return false;

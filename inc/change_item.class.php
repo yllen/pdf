@@ -55,8 +55,8 @@ class PluginPdfChange_Item extends PluginPdfCommon {
 
       $result = $DB->request('glpi_changes_items',
                              ['SELECT DISTINCT' => 'itemtype',
-                              'WHERE'  => ['changes_id' => $instID],
-                              'ORDER'  => 'itemtype']);
+                              'WHERE'           => ['changes_id' => $instID],
+                              'ORDER'           => 'itemtype']);
       $number = count($result);
 
       $pdf->setColumnsSize(100);
@@ -83,30 +83,29 @@ class PluginPdfChange_Item extends PluginPdfCommon {
             if ($item->canView()) {
                $itemtable = $dbu->getTableForItemType($itemtype);
 
-               $query = "SELECT `$itemtable`.*,
-                             `glpi_changes_items`.`id` AS IDD,
-                             `glpi_entities`.`id` AS entity
-                         FROM `glpi_changes_items`,
-                           `$itemtable`";
+               $query = ['FIELDS'   => [$itemtable.'.*', 'glpi_changes_items.id AS IDD',
+                                        'glpi_entities.id AS entity'],
+                         'FROM'     => 'glpi_changes_items',
+                         'LEFT JOIN' => [$itemtable => ['FKEY' => [$itemtable => 'id',
+                                                                  'glpi_changes_items' => 'items_id'],
+                                                                  'glpi_changes_items.itemtype'   => $itemtype,
+                                                                  'glpi_changes_items.changes_id' => $instID]]];
 
                if ($itemtype != 'Entity') {
-                  $query .= " LEFT JOIN `glpi_entities`
-                                 ON (`$itemtable`.`entities_id`=`glpi_entities`.`id`) ";
+                  $query['LEFT JOIN']['glpi_entities'] = ['FKEY' => [$itemtable      => 'entities_id',
+                                                                     'glpi_entities' => 'id']];
                }
 
-               $query .= " WHERE `$itemtable`.`id` = `glpi_changes_items`.`items_id`
-                                 AND `glpi_changes_items`.`itemtype` = '$itemtype'
-                                 AND `glpi_changes_items`.`changes_id` = '$instID'";
+               $query['WHERE'] = $dbu->getEntitiesRestrictCriteria($itemtable, '', '',
+                                                                   $item->maybeRecursive());
 
                if ($item->maybeTemplate()) {
-                  $query .= " AND `$itemtable`.`is_template` = '0'";
+                  $query['WHERE'][$itemtable.'.is_template'] = 0;
                }
 
-               $query .= $dbu->getEntitiesRestrictRequest(" AND", $itemtable, '', '',
-                                                          $item->maybeRecursive())."
-                         ORDER BY `glpi_entities`.`completename`, `$itemtable`.`name`";
+               $query['ORDER'] = ['glpi_entities.completename', $itemtable.'.name'];
 
-               $result_linked = $DB->request($query);
+               $result_linked = $DB->request($query, '',true);
                $nb            = count($result_linked);
 
                for ($prem=true ; $data=$result_linked->next() ; $prem=false) {

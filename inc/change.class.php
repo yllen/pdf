@@ -338,8 +338,13 @@ class PluginPdfChange extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['Change_Project$1']); // projet
-      unset($onglets['KnowbaseItem_Item$1']);
+      unset($onglets['Itil_Project$1']); // projet
+
+      if (Session::haveRight('change', Change::READALL) // for technician
+            || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)
+            || Session::haveRight('task', TicketTask::SEEPRIVATE)) {
+         $onglets['_private_'] = __('Private');
+      }
 
       return $onglets;
    }
@@ -347,7 +352,13 @@ class PluginPdfChange extends PluginPdfCommon {
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
+      $private = isset($_REQUEST['item']['_private_']);
+
       switch ($tab) {
+         case '_private_' :
+            // nothing to export, just a flag
+            break;
+
          case 'Change$1' :
             self::pdfAnalysis($pdf, $item);
             break;
@@ -356,28 +367,25 @@ class PluginPdfChange extends PluginPdfCommon {
             self::pdfPlan($pdf, $item);
             break;
 
-         case 'ITILSolution$1' : // 9.3
-            PluginPdfITILSolution::pdfForItem($pdf, $item);
-            break;
-
          case 'Change$4' :
             self::pdfStat($pdf, $item);
+            break;
+
+         case 'Change$5' :
+            PluginPdfItilFollowup::pdfForItem($pdf, $item,  $private);
+            PluginPdfChangeTask::pdfForChange($pdf, $item,  $private);
+            if (Session::haveRight('document', READ)) {
+               PluginPdfDocument::pdfForItem($pdf, $item);
+            }
+            PluginPdfITILSolution::pdfForItem($pdf, $item);
             break;
 
          case 'ChangeValidation$1' :
             PluginPdfChangeValidation::pdfForChange($pdf, $item);
             break;
 
-         case 'ChangeTask$1' :
-            PluginPdfChangeTask::pdfForChange($pdf, $item);
-            break;
-
          case 'ChangeCost$1' :
             PluginPdfChangeCost::pdfForChange($pdf, $item);
-            break;
-
-         case 'Change_Project$1' :
-            // projet
             break;
 
          case 'Change_Problem$1' :
