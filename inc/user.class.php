@@ -332,14 +332,6 @@ class PluginPdfUser extends PluginPdfCommon {
             self::pdfItems($pdf, $item, true);
             break;
 
-         case 'Change_Item$1' :
-            PluginPdfChange_Item::pdfForItem($pdf, $item, $tree);
-            break;
-
-         case 'Item_Problem$1' :
-            PluginPdfItem_Problem::pdfForItem($pdf, $item, $tree);
-               break;
-
          case 'Reservation$1' :
             PluginPdfReservation::pdfForUser($pdf, $item);
             break;

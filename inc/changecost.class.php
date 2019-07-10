@@ -42,7 +42,7 @@ class PluginPdfChangeCost extends PluginPdfCommon {
 
 
    static function pdfForChange(PluginPdfSimplePDF $pdf, Change $job) {
-      global $CFG_GLPI, $DB;
+      global $DB;
 
       $ID = $job->getField('id');
 

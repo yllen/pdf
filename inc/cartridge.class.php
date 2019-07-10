@@ -49,7 +49,7 @@ class PluginPdfCartridge extends PluginPdfCommon {
     * @param $old
    **/
    static function pdfForPrinter(PluginPdfSimplePDF $pdf, Printer $p, $old=false) {
-      global $DB,$CFG_GLPI;
+      global $DB;
 
       $instID = $p->getField('id');
 

@@ -43,7 +43,6 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, SoftwareLicense $license, $main=true, $cpt=true) {
-      global $DB;
 
       $ID = $license->getField('id');
 

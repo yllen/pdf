@@ -50,7 +50,6 @@ class PluginPdfCartridgeItem extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, CartridgeItem $cartitem){
-      global $DB;
 
       $dbu = new DbUtils();
 

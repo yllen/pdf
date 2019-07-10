@@ -43,7 +43,6 @@ class PluginPdfProblem extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Problem $job) {
-      global $CFG_GLPI, $DB;
 
       $dbu = new DbUtils();
 
@@ -247,7 +246,7 @@ class PluginPdfProblem extends PluginPdfCommon {
 
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item, $tree=false) {
-      global $DB,$CFG_GLPI;
+      global $DB;
 
       $dbu  = new DbUtils();
       $ID   = $item->getField('id');
@@ -439,7 +438,6 @@ class PluginPdfProblem extends PluginPdfCommon {
 
 
       static function pdfAnalysis(PluginPdfSimplePDF $pdf, Problem $job) {
-      global $CFG_GLPI, $DB;
 
       $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>".__('Analysis')."</b>");
@@ -522,7 +520,6 @@ class PluginPdfProblem extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['KnowbaseItem_Item$1']);
       unset($onglets['ProblemCost$1']);
       return $onglets;
    }

@@ -50,7 +50,6 @@ class PluginPdfConsumableItem extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, ConsumableItem $consitem){
-      global $DB;
 
       $dbu = new DbUtils();
 

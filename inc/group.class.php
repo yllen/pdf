@@ -265,14 +265,6 @@ class PluginPdfGroup extends PluginPdfCommon {
             PluginPdfGroup_User::pdfForGroup($pdf, $item, $tree);
             break;
 
-         case 'Change_Item$1' :
-            PluginPdfChange_Item::pdfForItem($pdf, $item, $tree);
-            break;
-
-         case 'Item_Problem$1' :
-            PluginPdfItem_Problem::pdfForItem($pdf, $item, $tree);
-               break;
-
          default :
             return false;
       }

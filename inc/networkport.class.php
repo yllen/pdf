@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2017 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -50,8 +50,8 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
       $type     = get_class($item);
 
       $pdf->setColumnsSize(100);
-      if ($result = $DB->request(['SELECT' => ['id', 'name', 'logical_number'],
-                                  'FROM'   => 'glpi_networkports',
+      if ($result = $DB->request('glpi_networkports',
+                                 ['SELECT' => ['id', 'name', 'logical_number'],
                                   'WHERE'  => ['items_id' => $ID,
                                                'itemtype' => $type],
                                   'ORDER'  => ['name', 'logical_number']])) {
@@ -130,12 +130,13 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
 
                   $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('ip').'</b>', $ipname));
 
-                  $sql = "SELECT `glpi_ipaddresses_ipnetworks`.`ipnetworks_id`
-                          FROM `glpi_ipaddresses_ipnetworks`
-                          LEFT JOIN `glpi_ipnetworks`
-                           ON (`glpi_ipaddresses_ipnetworks`.`ipnetworks_id` = `glpi_ipnetworks`.`id`)
-                          WHERE `glpi_ipaddresses_ipnetworks`.`ipaddresses_id` = '".$ip->getID()."'" .
-                                $dbu->getEntitiesRestrictRequest(' AND', 'glpi_ipnetworks');
+                  $sql = ['SELECT'    => 'ipnetworks_id',
+                          'FROM'      => 'glpi_ipaddresses_ipnetworks',
+                          'LEFT JOIN' => ['glpi_ipnetworks'
+                                          => ['FKEY' => ['glpi_ipaddresses_ipnetworks' => 'ipnetworks_id',
+                                                         'glpi_ipnetworks'             => 'id']]],
+                          'WHERE'     => ['glpi_ipaddresses_ipnetworks.ipaddresses_id' => $ip->getID()]
+                                         + $dbu->getEntitiesRestrictCriteria('glpi_ipnetworks')];
 
                   $res        = $DB->request($sql);
                   if ($res) {

@@ -43,7 +43,7 @@ class PluginPdfChangeValidation extends PluginPdfCommon {
 
 
    static function pdfForChange(PluginPdfSimplePDF $pdf, Change $change) {
-      global $CFG_GLPI, $DB;
+      global $DB;
 
       $dbu = new DbUtils();
 

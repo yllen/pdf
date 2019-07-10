@@ -43,7 +43,6 @@ class PluginPdfChange extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Change $job) {
-      global $CFG_GLPI, $DB;
 
       $dbu = new DbUtils();
 

@@ -42,7 +42,7 @@ class PluginPdfDocument extends PluginPdfCommon {
 
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-      global $DB, $CFG_GLPI;
+      global $DB;
 
       $ID   = $item->getField('id');
       $type = get_class($item);

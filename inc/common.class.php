@@ -170,7 +170,7 @@ abstract class PluginPdfCommon {
             break;
 
          case 'Document_Item$1' :
-            if (Session::haveRight($item::$rightname, READ)) {
+            if (Session::haveRight('document', READ)) {
                PluginPdfDocument::pdfForItem($pdf, $item);
             }
             break;
@@ -180,7 +180,7 @@ abstract class PluginPdfCommon {
             break;
 
          case 'Infocom$1' :
-            if (Session::haveRight($item::$rightname, READ)) {
+            if (Session::haveRight('infocom', READ)) {
                PluginPdfInfocom::pdfForItem($pdf, $item);
             }
             break;
@@ -192,31 +192,31 @@ abstract class PluginPdfCommon {
             break;
 
          case 'Ticket$1' :
-            if (Session::haveRight($item::$rightname, READ)) {
+            if (Ticket::canView()) {
                PluginPdfItem_Ticket::pdfForItem($pdf, $item);
             }
             break;
 
          case 'Item_Problem$1' :
-            if (Session::haveRight($item::$rightname, READ)) {
+            if (Problem::canView()) {
                PluginPdfItem_Problem::pdfForItem($pdf, $item);
             }
             break;
 
          case 'Change_Item$1' :
-            if (Session::haveRight($item::$rightname, READ)) {
+            if (Change::canView()) {
                PluginPdfChange_Item::pdfForItem($pdf, $item);
             }
             break;
 
          case 'Link$1' :
-            if (Session::haveRight($item::$rightname, READ)) {
+            if (Session::haveRight('link', READ)) {
                PluginPdfLink::pdfForItem($pdf, $item);
             }
             break;
 
          case 'Reservation$1' :
-            if (Session::haveRight($item::$rightname, READ)) {
+            if (Session::haveRight('reservation', READ)) {
                PluginPdfReservation::pdfForItem($pdf, $item);
             }
             break;
@@ -226,19 +226,23 @@ abstract class PluginPdfCommon {
             break;
 
          case 'KnowbaseItem_Item$1' :
-            if (Session::haveRight($item::$rightname, READ)) {
+            if (KnowbaseItem::canView()) {
                PluginPdfItem_Knowbaseitem::pdfForItem($pdf, $item);
             }
             break;
 
          case 'Item_Devices$1' :
-            if (Session::haveRight($item::$rightname, READ)) {
+            if (Session::haveRight('device', READ)) {
                PluginPdfItem_Device::pdfForItem($pdf, $item);
             }
             break;
 
          case 'Item_Disk$1' :
             PluginPdfItem_Disk::pdfForItem($pdf, $item);
+            break;
+
+         case 'Computer_Item$1' :
+            PluginPdfComputer_Item::pdfForItem($pdf, $item);
             break;
 
          default :
@@ -280,8 +284,8 @@ abstract class PluginPdfCommon {
 
       $entity = '';
       if ($this->obj->getFromDB($ID) && $this->obj->can($ID, READ)) {
-         if ($this->obj->getType()!='Ticket'
-             && $this->obj->getType()!='KnowbaseItem'
+         if ($this->obj->getType() != 'Ticket'
+             && $this->obj->getType() != 'KnowbaseItem'
              && $this->obj->getField('name')) {
             $name = $this->obj->getField('name');
          } else {
@@ -510,7 +514,6 @@ abstract class PluginPdfCommon {
    **/
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
                                                        array $ids) {
-      global $DB;
 
       switch ($ma->getAction()) {
          case 'DoIt' :

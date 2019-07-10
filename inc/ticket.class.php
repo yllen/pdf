@@ -43,7 +43,6 @@ class PluginPdfTicket extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Ticket $job) {
-      global $CFG_GLPI, $DB;
 
       $dbu = new DbUtils();
 
@@ -425,7 +424,6 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['ProjectTask_Ticket$1']); // TODO add method to print linked Projecttask
-      unset($onglets['Change_Ticket$1']); // TODO add method to print linked Changes
 
       if (Session::haveRight('ticket', Ticket::READALL) // for technician
           || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)

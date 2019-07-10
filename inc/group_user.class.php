@@ -43,7 +43,6 @@ class PluginPdfGroup_User extends PluginPdfCommon {
 
 
    static function pdfForGroup(PluginPdfSimplePDF $pdf, Group $group, $tree) {
-      global $DB,$CFG_GLPI;
 
       $dbu  = new DbUtils();
       $used = [];

@@ -138,7 +138,7 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
 
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item, $tree=false) {
-      global $DB,$CFG_GLPI;
+      global $DB;
 
       $dbu = new DbUtils();
 

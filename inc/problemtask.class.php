@@ -43,7 +43,7 @@ class PluginPdfProblemTask extends PluginPdfCommon {
 
 
    static function pdfForProblem(PluginPdfSimplePDF $pdf, Problem $job) {
-      global $CFG_GLPI, $DB;
+      global $DB;
 
       $dbu = new DbUtils();
 

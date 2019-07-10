@@ -52,7 +52,6 @@ class PluginPdfProfile extends Profile {
 
 
    function showForm($ID, $options=[]) {
-      global $DB;
 
       $profile      = new Profile();
 

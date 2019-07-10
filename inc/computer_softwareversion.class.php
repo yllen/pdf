@@ -166,7 +166,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
 
 
    static function pdfForVersionByEntity(PluginPdfSimplePDF $pdf, SoftwareVersion $version) {
-      global $DB, $CFG_GLPI;
+      global $DB;
 
       $dbu = new DbUtils();
 

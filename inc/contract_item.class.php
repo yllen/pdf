@@ -42,7 +42,7 @@ class PluginPdfContract_Item extends PluginPdfCommon {
 
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-      global $DB,$CFG_GLPIG;
+      global $DB;
 
       $type = $item->getType();
       $ID   = $item->getField('id');

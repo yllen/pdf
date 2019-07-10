@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -45,7 +45,7 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['KnowbaseItem$3']);
+      unset($onglets['KnowbaseItem$3']); // tab for edition
       unset($onglets['KnowbaseItem_Item$1']);
       unset($onglets['KnowbaseItemTranslation$1']);
       unset($onglets['KnowbaseItem_Revision$1']);
@@ -54,7 +54,6 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, KnowbaseItem $item){
-      global $DB;
 
       $dbu = new DbUtils();
 
@@ -121,10 +120,6 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
             self::pdfCible($pdf, $item);
             break;
 
-         case 'Document$1' :
-            PluginPdfDocument::pdfForItem($pdf, $item);
-            break;
-
          default :
             return false;
       }
@@ -135,7 +130,6 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
     * @since version 0.85
    **/
    static function pdfCible(PluginPdfSimplePDF $pdf, KnowbaseItem $item) {
-      global $DB;
 
       $dbu = new DbUtils();
 
