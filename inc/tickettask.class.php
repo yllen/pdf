@@ -60,9 +60,9 @@ class PluginPdfTicketTask extends PluginPdfCommon {
          $query['WHERE']['is_private'] = 0;
       } else if (!Session::haveRight('task', TicketTask::SEEPRIVATE)) {
          // No right, only show connected user private one
-         $query['WHERE']['OR'] = ['is_private' => 0,
-                                  'users_id'   => Session::getLoginUserID(),
-                                  'users_id_tech'   => Session::getLoginUserID()];
+         $query['WHERE']['OR'] = ['is_private'    => 0,
+                                  'users_id'      => Session::getLoginUserID(),
+                                  'users_id_tech' => Session::getLoginUserID()];
       }
 
       $result = $DB->request($query);
@@ -70,7 +70,7 @@ class PluginPdfTicketTask extends PluginPdfCommon {
       $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'.TicketTask::getTypeName(2).'</b>';
+      $title = '<b>'.TicketTask::getTypeName($number).'</b>';
 
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));

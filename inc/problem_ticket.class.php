@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -69,10 +69,12 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
       $used     = [];
 
       $pdf->setColumnsSize(100);
+      $title = '<b>'.__('Problem', 'Problems', $number).'</b>';
       if (!$number) {
-         $pdf->displayTitle('<b>'.__('No problem found.').'</b>');
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'),$title, __('No item to display')));
       } else {
-         $pdf->displayTitle("<b>".sprintf(_n('Problem','Problems',$number)."</b>"));
+         $pdf->displayTitle("<b>".sprintf(_n('Last %d problem','Last %d problems', $number)."</b>",
+               $number));
 
          $job = new Problem();
          while ($data = $result->next()) {
@@ -230,13 +232,13 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
          return false;
       }
 
-      $query = "SELECT DISTINCT `glpi_problems_tickets`.`id` AS linkID,
-                                `glpi_tickets`.*
-                FROM `glpi_problems_tickets`
-                LEFT JOIN `glpi_tickets`
-                     ON (`glpi_problems_tickets`.`tickets_id` = `glpi_tickets`.`id`)
-                WHERE `glpi_problems_tickets`.`problems_id` = '$ID'
-                ORDER BY `glpi_tickets`.`name`";
+      $query = ['SELECT DISTINCT' => 'glpi_problems_tickets.id AS linkID',
+                'SELECT'          => 'glpi_tickets'.'.*',
+                'FROM'            => 'glpi_problems_tickets',
+                'LEFT JOIN'       => ['glpi_tickets' => ['FKEY' => ['glpi_problems_tickets' => 'tickets_id',
+                                                                    'glpi_tickets'          => 'id']]],
+                'WHERE'           => ['glpi_problems_tickets.problems_id' => $ID],
+                'ORDER'           => 'glpi_tickets.name'];
       $result = $DB->request($query);
       $number = count($result);
 
@@ -244,10 +246,12 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
       $used     = [];
 
       $pdf->setColumnsSize(100);
+      $title = '<b>'.__('Ticket', 'Tickets', 2).'</b>';
       if (!$number) {
-         $pdf->displayTitle('<b>'.__('No ticket found.', 'pdf').'</b>');
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'),$title, __('No item to display')));
       } else {
-         $pdf->displayTitle("<b>".Ticket::getTypeName($number)."</b>");
+         $pdf->displayTitle("<b>".sprintf(_n('Last %d ticket','Last %d tickets', $number)."</b>",
+               $number));
 
          $job = new Ticket();
          while ($data = $result->next()) {

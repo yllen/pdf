@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -51,24 +51,32 @@ class PluginPdfProblemTask extends PluginPdfCommon {
 
       //////////////Tasks///////////
 
-      $query = "SELECT *
-                FROM `glpi_problemtasks`
-                WHERE `problems_id` = '$ID'
-                ORDER BY `date` DESC";
-      $result = $DB->query($query);
+      $query = ['FROM'  => 'glpi_problemtasks',
+                'WHERE' => ['problems_id' => $ID],
+                'ORDER' => 'date DESC'];
 
-      if (!$DB->numrows($result)) {
-         $pdf->setColumnsSize(100);
-         $pdf->displayLine(__('No task found.'));
+      $result = $DB->request($query);
+
+      $number = count($result);
+
+      $pdf->setColumnsSize(100);
+      $title = '<b>'.ProblemTask::getTypeName($number).'</b>';
+
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $pdf->displayTitle("<b>".ProblemTask::getTypeName($DB->numrows($result)."</b>"));
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s (%2$s)'), $title, $_SESSION['glpilist_limit']."/".$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
+         $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(30,10,20,20,20);
          $pdf->displayTitle("<i>".__('Type'), __('Date'), __('Duration'), __('Writer'),
                                      __('Planning')."</i>");
 
-         while ($data=$DB->fetch_array($result)) {
-
+         foreach ($result as $id => $data) {
             $actiontime = Html::timestampToString($data['actiontime'], false);
             $planification = '';
             if (empty($data['begin'])) {

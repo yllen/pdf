@@ -384,7 +384,7 @@ class PluginPdfChange extends PluginPdfCommon {
             break;
 
          case 'ChangeCost$1' :
-            PluginPdfChangeCost::pdfForChange($pdf, $item);
+            PluginPdfCommonItilCost::pdfForItem($pdf, $item);
             break;
 
          case 'Change_Problem$1' :

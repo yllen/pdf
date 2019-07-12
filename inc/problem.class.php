@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2019 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -437,7 +437,7 @@ class PluginPdfProblem extends PluginPdfCommon {
    }
 
 
-      static function pdfAnalysis(PluginPdfSimplePDF $pdf, Problem $job) {
+   static function pdfAnalysis(PluginPdfSimplePDF $pdf, Problem $job) {
 
       $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>".__('Analysis')."</b>");
@@ -520,12 +520,20 @@ class PluginPdfProblem extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['ProblemCost$1']);
+      unset($onglets['Itil_project$1']);
+
+      if (Session::haveRight('problem', Problem::READALL) // for technician
+          || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)) {
+         $onglets['_private_'] = __('Private');
+      }
+
       return $onglets;
    }
 
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
+
+      $private = isset($_REQUEST['item']['_private_']);
 
       switch ($tab) {
          case '_private_' :
@@ -544,20 +552,25 @@ class PluginPdfProblem extends PluginPdfCommon {
             PluginPdfProblem_Ticket::pdfForProblem($pdf, $item);
             break;
 
-         case 'ProblemTask$1' :
+         case 'Problem$5' :
+            PluginPdfItilFollowup::pdfForItem($pdf, $item, $private);
             PluginPdfProblemTask::pdfForProblem($pdf, $item);
+            if (Session::haveRight('document', READ)) {
+               PluginPdfDocument::pdfForItem($pdf, $item);
+            }
+            PluginPdfITILSolution::pdfForItem($pdf, $item);
             break;
 
          case 'Item_Problem$1' :
             PluginPdfItem_Problem::pdfForProblem($pdf, $item);
             break;
 
-         case 'ITILSolution$1' : // 9.3
-            PluginPdfITILSolution::pdfForItem($pdf, $item);
-            break;
-
          case 'Problem$4' :
             self::pdfStat($pdf, $item);
+            break;
+
+         case 'ProblemCost$1' ;
+            PluginPdfCommonItilCost::pdfForItem($pdf, $item);
             break;
 
          default :

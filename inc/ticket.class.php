@@ -465,7 +465,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             break;
 
          case 'TicketCost$1' :
-            PluginPdfTicketCost::pdfForTicket($pdf, $item);
+            PluginPdfCommonItilCost::pdfForItem($pdf, $item);
             break;
 
          case 'Ticket$3' :

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version $Id:
+ * @version $Id: setup.php 378 2014-06-08 15:12:45Z yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -30,44 +30,47 @@
  --------------------------------------------------------------------------
 */
 
-class PluginPdfChangeCost extends PluginPdfCommon {
+class PluginPdfCommonItilCost extends PluginPdfCommon {
 
 
    static $rightname = "plugin_pdf";
 
 
    function __construct(CommonGLPI $obj=NULL) {
-      $this->obj = ($obj ? $obj : new ChangeCost());
+
+      $this->obj = ($obj ? $obj : new TicketCost());
    }
 
 
-   static function pdfForChange(PluginPdfSimplePDF $pdf, Change $job) {
+   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $job) {
       global $DB;
 
-      $ID = $job->getField('id');
+      $ID        = $job->getField('id');
+      $type      = $job->gettype();
+      $table     = 'glpi_'.(strtolower($type)).'costs';
+      $classname = $type.'Cost';
 
-      $result = $DB->request('glpi_changecosts',
-                             ['WHERE' => ['changes_id' => $ID],
-                              'ORDER' => 'begin_date']);
+      $result = $DB->request($table, ['WHERE'  => [$job->getForeignKeyField() => $ID],
+                                      'ORDER'  => 'begin_date']);
 
       $number = count($result);
 
       if (!$number) {
          $pdf->setColumnsSize(100);
-         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), '<b>'.ChangeCost::getTypeName(2).'</b>',
-                                    __('No item to display')));
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), '<b>'.$classname::getTypeName(2).'</b>',
+                            __('No item to display')));
       } else {
          $pdf->setColumnsSize(60,20,20);
-         $title = ChangeCost::getTypeName($number);
+         $title = $classname::getTypeName($number);
          if (!empty(PluginPdfConfig::currencyName())) {
             $title = sprintf(__('%1$s (%2$s)'),
-                  ChangeCost::getTypeName($number), PluginPdfConfig::currencyName());
+                             $classname::getTypeName($number), PluginPdfConfig::currencyName());
          }
          $pdf->displayTitle("<b>".$title."</b>",
-                            "<b>".__('Item duration')."</b>",
+                            "<b>".__('Duration')."</b>",
                             "<b>".CommonITILObject::getActionTime($job->fields['actiontime'])."</b>");
 
-         $pdf->setColumnsSize(19,11,10,10,10,10,10,10,10);
+         $pdf->setColumnsSize(20,10,10,10,9,10,10,10,10);
          $pdf->setColumnsAlign('center','center','center','left', 'right','right','right',
                                'right','right');
          $pdf->displayTitle("<b><i>".__('Name')."</i></b>",
@@ -87,7 +90,7 @@ class PluginPdfChangeCost extends PluginPdfCommon {
          $total_material = 0;
 
          while ($data = $result->next()) {
-            $cost = ChangeCost::computeTotalCost($data['actiontime'], $data['cost_time'],
+            $cost = $classname::computeTotalCost($data['actiontime'], $data['cost_time'],
                                            $data['cost_fixed'], $data['cost_material']);
             $pdf->displayLine($data['name'],
                               Html::convDate($data['begin_date']),
@@ -106,13 +109,14 @@ class PluginPdfChangeCost extends PluginPdfCommon {
             $total_material += $data['cost_material'];
             $total          += $cost;
          }
-         $pdf->setColumnsSize(52,9,10,10,10,9);
+         $pdf->setColumnsSize(52,8,10,10,10,10);
          $pdf->setColumnsAlign('right','right','right','right','right','right');
-         $pdf->displayLine('<b>'.__('Total'), CommonITILObject::getActionTime($total_time),
-                           PluginPdfConfig::formatNumber($total_costtime),
-                           PluginPdfConfig::formatNumber($total_fixed),
-                           PluginPdfConfig::formatNumber($total_material),
-                           PluginPdfConfig::formatNumber($total));
+         $pdf->displayLine('<b>'.__('Total').'</b>',
+                           '<b>'.CommonITILObject::getActionTime($total_time).'</b>',
+                           '<b>'.PluginPdfConfig::formatNumber($total_costtime).'</b>',
+                           '<b>'.PluginPdfConfig::formatNumber($total_fixed).'</b>',
+                           '<b>'.PluginPdfConfig::formatNumber($total_material).'</b>',
+                           '<b>'.PluginPdfConfig::formatNumber($total).'</b>');
       }
       $pdf->displaySpace();
    }

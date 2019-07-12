@@ -40,12 +40,15 @@ class PluginPdfProfile extends Profile {
 
       $tab = [];
 
-      $tab['common'] = __('Print to pdf', 'pdf');
+      $tab[] = ['id'                 => 'common',
+                'name'               => __('Print to pdf', 'pdf')];
 
-      $tab['table']     = $this->getTable();
-      $tab['field']     = 'use';
-      $tab['linkfield'] = 'id';
-      $tab['datatype']  = 'bool';
+
+      $tab[] = ['id'                 => '2',
+                'table'              => $this->getTable(),
+                'field'              => 'use',
+                'linkfield'          => 'id',
+                'datatype'           => 'bool'];
 
       return $tab;
    }
@@ -170,6 +173,7 @@ class PluginPdfProfile extends Profile {
          $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
       }
    }
+
 
    static function removeRightsFromSession() {
 
