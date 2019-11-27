@@ -347,7 +347,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Title')."</i></b>", $job->fields["name"]));
 
       $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
-                                         Html::clean($job->fields['content']), 1);
+                                         $job->fields['content'], 1);
 
       // Linked tickets
       $tickets   = Ticket_Ticket::getLinkedTicketsTo($ID);

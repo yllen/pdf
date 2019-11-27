@@ -99,7 +99,7 @@ class PluginPdfChangeTask extends PluginPdfCommon {
                               Html::clean($dbu->getUserName($data["users_id"])),
                               Html::clean($planification),1);
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
-                                               Html::clean($data["content"]), 1);
+                                               $data["content"], 1);
          }
       }
 

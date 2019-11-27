@@ -126,7 +126,7 @@ class PluginPdfTicketTask extends PluginPdfCommon {
                               Html::clean($dbu->getUserName($data["users_id"])),
                               $planification);
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
-                                               Html::clean($data["content"]), 1);
+                                               $data["content"], 1);
             $tot++;
          }
       }

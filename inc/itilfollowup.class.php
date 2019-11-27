@@ -104,7 +104,7 @@ class PluginPdfItilFollowup extends PluginPdfCommon {
                               Html::clean($dbu->getUserName($data["users_id"])));
 
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>",__('Comments'), ''),
-                                               Html::clean($data["content"]), 1);
+                                               $data["content"], 1);
             $tot++;
          }
       }
