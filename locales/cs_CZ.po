@@ -4,8 +4,8 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# David Stepan <stepand@tiscali.cz>, 2017
-# Pavel Borecki <pavel.borecki@gmail.com>, 2018
+# Pavel Borecki <pavel.borecki@gmail.com>, 2019
+# David Stepan <stepand@tiscali.cz>, 2019
 # 
 #, fuzzy
 msgid ""
@@ -14,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-12 18:43+0200\n"
 "PO-Revision-Date: 2017-01-09 15:25+0000\n"
-"Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>, 2018\n"
+"Last-Translator: David Stepan <stepand@tiscali.cz>, 2019\n"
 "Language-Team: Czech (Czech Republic) (https://www.transifex.com/yllen/teams/7201/cs_CZ/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,7 +31,7 @@ msgstr "Tisk do PDF"
 
 #: inc/cartridgeitem.class.php:124
 msgid "No printel model associated"
-msgstr ""
+msgstr "Není přiřazen žádný model tiskárny"
 
 #: inc/changevalidation.class.php:51
 msgid "Approvals for the change"
@@ -47,7 +47,7 @@ msgstr "Žádný monitor"
 
 #: inc/computer_item.class.php:136
 msgid "No peripheral"
-msgstr "Žádná periferie"
+msgstr "Žádné zařízení"
 
 #: inc/computer_item.class.php:140
 msgid "No phone"
@@ -676,11 +676,11 @@ msgstr "Zdroj následné komunikace"
 
 #: inc/itilsolution.class.php:74
 msgid "Soluce approved on "
-msgstr ""
+msgstr "Řešení schváleno"
 
 #: inc/itilsolution.class.php:76
 msgid "Soluce refused on "
-msgstr ""
+msgstr "Řešení odmítnuto"
 
 #: inc/knowbaseitem.class.php:89
 msgid "No question found"
@@ -721,7 +721,7 @@ msgstr "Žádné minulé rezervace"
 
 #: inc/reservation.class.php:128
 msgid "Item not reservable"
-msgstr "Položku si není možné zamluvit"
+msgstr "Položku si není možné rezervovat"
 
 #: inc/ticket.class.php:435
 msgid "Requester information"

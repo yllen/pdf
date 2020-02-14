@@ -94,11 +94,16 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
       // From ComputerVirtualMachine::showForVirtualMachine()
       if ($item->fields['uuid']) {
          $where = "`uuid`".ComputerVirtualMachine::getUUIDRestrictRequest($item->fields['uuid']);
-         $hosts = $dbu->getAllDataFromTable('glpi_computervirtualmachines', $where);
+         $hosts = $dbu->getAllDataFromTable(self::getTable(),
+                                            ['RAW'
+                                             => ['LOWER(uuid)'
+                                                 => self::getUUIDRestrictCriteria($comp->fields['uuid'])
+                                                ]
+                                            ]);
 
          if (count($hosts)) {
             $pdf->setColumnsSize(100);
-            $pdf->displayTitle("<b>".__('List of host machines')."</b>");
+            $pdf->displayTitle("<b>".__('List of virtualized environments')."</b>");
 
             $pdf->setColumnsSize(26,37,37);
             $pdf->displayTitle(__('Name'), __('Operating system'), __('Entity'));
