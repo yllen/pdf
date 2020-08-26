@@ -178,24 +178,24 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
 
                $line1 = ($comp->fields['name']?$comp->fields['name']:"(".$comp->fields['id'].")");
                $line1 = sprintf(__('%1$s - %2$s'), $line1,
-                                sprintf(__('%1$s: %2$s'), __('Status'),
+                                sprintf(__('%1$s: %2$s'), '<b>'.__('Status').'</b>',
                                         Html::clean(Dropdown::getDropdownName("glpi_states",
                                                                               $comp->fields['states_id']))));
                if ($comp->fields['serial']) {
                   $line1 = sprintf(__('%1$s - %2$s'), $line1,
-                                   sprintf(__('%1$s: %2$s'), __('Serial number'),
+                                   sprintf(__('%1$s: %2$s'), '<b>'.__('Serial number').'</b>',
                                            $comp->fields['serial']));
                }
 
 
                $line2 = "";
                if ($comp->fields['otherserial']) {
-                  $line2 = sprintf(__('%1$s: %2$s'), __('Inventory number'),
+                  $line2 = sprintf(__('%1$s: %2$s'), '<b>'.__('Inventory number').'</b>',
                                    $item->getField("otherserial"));
                }
                if ($info->fields['immo_number']) {
                   $line2 = sprintf(__('%1$s - %2$s'), $line2,
-                                   sprintf(__('%1$s: %2$s'), __('Immobilization number'),
+                                   sprintf(__('%1$s: %2$s'), '<b>'.__('Immobilization number').'</b>',
                                            $info->fields["immo_number"]));
                }
                if ($line2) {

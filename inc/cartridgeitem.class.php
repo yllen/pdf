@@ -90,8 +90,9 @@ class PluginPdfCartridgeItem extends PluginPdfCommon {
 
       switch ($tab) {
          case 'Cartridge$1' :
-            PluginPdfCartridge::pdfForCartridgeItem($pdf, $item, false);
-            PluginPdfCartridge::pdfForCartridgeItem($pdf, $item, true);
+            PluginPdfCartridge::pdfForCartridgeItem($pdf, $item, 'new');
+            PluginPdfCartridge::pdfForCartridgeItem($pdf, $item, 'used');
+            PluginPdfCartridge::pdfForCartridgeItem($pdf, $item, 'old');
             break;
 
          case 'CartridgeItem_PrinterModel$1' :
@@ -120,10 +121,16 @@ class PluginPdfCartridgeItem extends PluginPdfCommon {
       }
 
       $pdf->setColumnsSize(100);
+      $title = '<b>'._n('Printer model', 'Printer models', $number).'</b>';
       if (!$number) {
          $pdf->displayTitle(_('No printel model associated', 'pdf'));
       } else {
-         $pdf->displayTitle("<b>"._n('Printer model', 'Printer models', $number)."</b>");
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
+         $pdf->displayTitle($title);
 
          foreach ($datas as $data) {
             $pdf->displayLine($data['name']);

@@ -56,12 +56,17 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                                                'itemtype' => $type],
                                   'ORDER'  => ['name', 'logical_number']])) {
          $nb_connect = count($result);
+
+         $title = '<b>'._n('Network port', 'Network ports',$nb_connect).'</b>';
          if (!$nb_connect) {
-            $pdf->displayTitle('<b>0 '.__('No network port found').'</b>');
+            $pdf->displayTitle('<b>'.__('No network port found').'</b>');
          } else {
-            $pdf->displayTitle('<b>'.sprintf(__('%1$s: %2$d'),
-                                             _n('Network port', 'Network ports',$nb_connect),
-                                             $nb_connect."</b>"));
+            if ($nb_connect > $_SESSION['glpilist_limit']) {
+               $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+            } else {
+               $title = sprintf(__('%1$s: %2$d'), $title, $nb_connect);
+            }
+            $pdf->displayTitle($title);
 
             while ($devid = $result->next()) {
                $netport = new NetworkPort;
@@ -120,7 +125,8 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                $sqlip = ['LEFT JOIN' => ['glpi_networknames'
                                            => ['FKEY' => ['glpi_ipaddresses'  =>'items_id',
                                                           'glpi_networknames' => 'id'],
-                                                         ['glpi_ipaddresses.entities_id' => $_SESSION["glpiactive_entity"]]]],
+                                                         ['glpi_ipaddresses.entities_id'
+                                                               => $_SESSION["glpiactive_entity"]]]],
                          'WHERE'     => ['glpi_networknames.items_id' => $netport->fields["id"]]];
 
                $ipname = '';
@@ -130,7 +136,7 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
 
                   $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('ip').'</b>', $ipname));
 
-                  $sql = ['SELECT'    => 'ipnetworks_id',
+                  $sql = ['SELECT'    => 'glpi_ipaddresses_ipnetworks.ipnetworks_id',
                           'FROM'      => 'glpi_ipaddresses_ipnetworks',
                           'LEFT JOIN' => ['glpi_ipnetworks'
                                           => ['FKEY' => ['glpi_ipaddresses_ipnetworks' => 'ipnetworks_id',

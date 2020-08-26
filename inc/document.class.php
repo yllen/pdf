@@ -64,16 +64,20 @@ class PluginPdfDocument extends PluginPdfCommon {
        $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'.__('Associated documents', 'pdf').'</b>';
+      $title = '<b>'._n('Associated document', 'Associated documents', $number, 'pdf').'</b>';
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
          $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(20,15,10,10,10,8,20,7);
-         $pdf->displayTitle('<b>'.__('Name'), __('Entity'), __('File'), __('Web link'), __('Heading'),
-                            __('MIME type'), __('Tag'), __('Date').'</b>');
+         $pdf->displayTitle(__('Name'), __('Entity'), __('File'), __('Web link'), __('Heading'),
+                            __('MIME type'), __('Tag'), __('Date'));
          while ($data = $result->next()) {
             $pdf->displayLine($data["name"], $data['completename'], basename($data["filename"]),
                               $data["link"], Dropdown::getDropdownName("glpi_documentcategories",

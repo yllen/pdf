@@ -56,12 +56,12 @@ function plugin_pdf_MassiveActions($type) {
 function plugin_pdf_install() {
    global $DB;
 
-   $migration = new Migration('1.6.0');
+   $migration = new Migration('1.7.0');
 
    //new install
    if (!$DB->tableExists('glpi_plugin_pdf_profiles')
        && !$DB->tableExists('glpi_plugin_pdf_preferences')) {
-      include_once(GLPI_ROOT."/plugins/pdf/inc/profile.class.php");
+      include_once(Plugin::getPhpDir('pdf')."inc/profile.class.php");
       PluginPdfProfile::install($migration);
 
    } else {
@@ -74,8 +74,7 @@ function plugin_pdf_install() {
       $profileRight = new ProfileRight();
 
       if ($DB->tableExists('glpi_plugin_pdf_profiles')) {
-         foreach ($DB->request('glpi_plugin_pdf_profiles',
-                               ['use' => 1]) as $data) {
+         foreach ($DB->request('glpi_plugin_pdf_profiles', ['use' => 1]) as $data) {
             $right['profiles_id']   = $data['id'];
             $right['name']          = "plugin_pdf";
             $right['rights']        = $data['use'];
@@ -140,7 +139,7 @@ function plugin_pdf_install() {
    }
 
    if (!$DB->tableExists('glpi_plugin_pdf_configs')) {
-      include_once(GLPI_ROOT."/plugins/pdf/inc/config.class.php");
+      include_once(Plugin::getPhpDir('pdf')."inc/config.class.php");
       PluginPdfConfig::install($migration);
    }
 
@@ -153,7 +152,7 @@ function plugin_pdf_install() {
 function plugin_pdf_uninstall() {
    global $DB;
 
-   $migration = new Migration('1.5.0');
+   $migration = new Migration('1.7.0');
 
    $tables = ["glpi_plugin_pdf_preference",
               "glpi_plugin_pdf_profiles",
@@ -170,7 +169,7 @@ function plugin_pdf_uninstall() {
    $DB->queryOrDie($query, $DB->error());
 
    if ($DB->tableExists('glpi_plugin_pdf_configs')) {
-      include_once(GLPI_ROOT."/plugins/pdf/inc/config.class.php");
+      include_once(Plugin::getPhpDir('pdf')."inc/config.class.php");
       PluginPdfConfig::uninstall($migration);
    }
 

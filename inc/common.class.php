@@ -264,10 +264,9 @@ abstract class PluginPdfCommon {
     * @return true
    **/
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-      global $CFG_GLPI;
 
       $pref = new PluginPdfPreference;
-      $pref->menu($item, $CFG_GLPI['root_doc']."/plugins/pdf/front/export.php");
+      $pref->menu($item, Plugin::getWebDir('pdf')."/front/export.php");
 
       return true;
    }
@@ -313,7 +312,7 @@ abstract class PluginPdfCommon {
       $number = count($notes);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'.__('Notes').'</b>';
+      $title = '<b>'._n('Note', 'Notes', $number).'</b>';
 
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
@@ -505,7 +504,7 @@ abstract class PluginPdfCommon {
             echo Html::submit(_sx('button', 'Post'), $opt);
             return true;
       }
-      return parent::showMassiveActionsSubForm($ma);
+//      return parent::showMassiveActionsSubForm($ma);
    }
 
 
@@ -525,7 +524,7 @@ abstract class PluginPdfCommon {
              $_SESSION["plugin_pdf"]["type"]   = $item->getType();
              $_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
              echo "<script type='text/javascript'>
-                      location.href='../plugins/pdf/front/export.massive.php'</script>";
+                      location.href='.".Plugin::getWebDir('pdf')."/front/export.massive.php'</script>";
              break;
       }
    }

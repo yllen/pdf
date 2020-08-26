@@ -57,13 +57,18 @@ class PluginPdfLink extends PluginPdfCommon {
                 'ORDER'      => 'name'];
 
       $result = $DB->request($query);
+      $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'._n('External link', 'External links', 2).'</b>';
-      if (!count($result)) {
+      $title = '<b>'._n('External link', 'External links', $number).'</b>';
+      if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $title = sprintf(__('%1$s: %2$s'), $title, count($result));
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
          $pdf->displayTitle($title);
 
          while ($data = $result->next()) {
