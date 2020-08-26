@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -411,7 +411,7 @@ abstract class PluginPdfCommon {
       $col1 = '<b>'.sprintf(__('%1$s %2$s'),__('ID'), $item->fields['id']).'</b>';
       $col2 = sprintf(__('%1$s: %2$s'), __('Last update'),
                       Html::convDateTime($item->fields['date_mod']));
-      if (!empty($printer->fields['template_name'])) {
+      if (!empty($item->fields['template_name'])) {
          $col2 = sprintf(__('%1$s (%2$s)'), $col2,
                          sprintf(__('%1$s: %2$s'), __('Template name'),
                                  $item->fields['template_name']));
