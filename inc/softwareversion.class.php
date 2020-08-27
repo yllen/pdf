@@ -89,30 +89,38 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
                 'WHERE'      => ['softwares_id' => $sID],
                 'ORDER'      => 'name'];
 
+      $result = $DB->request($query);
+      $number = count($result);
+
       $pdf->setColumnsSize(100);
-      $title = '<b>'.SoftwareVersion::getTypeName(2).'</b>';
+      $title = '<b>'.SoftwareVersion::getTypeName($number).'</b>';
 
-      if ($result = $DB->request($query)) {
-         if (!count($result) ) {
-            $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
          } else {
-            $pdf->setColumnsSize(13,13,30,14,30);
-            $pdf->displayTitle('<b><i>'.$title.'</i></b>',
-                               '<b><i>'.__('Status').'</i></b>',
-                               '<b><i>'.__('Operating system').'</i></b>',
-                               '<b><i>'._n('Installation', 'Installations', 2).'</i></b>',
-                               '<b><i>'.__('Comments').'</i></b>');
-            $pdf->setColumnsAlign('left','left','left','right','left');
-
-            for ($tot=$nb=0 ; $data=$result->next() ; $tot+=$nb) {
-               $nb = Computer_SoftwareVersion::countForVersion($data['id']);
-               $pdf->displayLine((empty($data['name'])?"(".$data['id'].")":$data['name']),
-                                 $data['sname'], $data['osname'], $nb,
-                                 str_replace(["\r","\n"]," ",$data['comment']));
-            }
-            $pdf->setColumnsAlign('left','right','left', 'right','left');
-            $pdf->displayTitle('','',"<b>".sprintf(__('%1$s: %2$s'), __('Total')."</b>", ''),$tot, '');
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
          }
+         $pdf->displayTitle($title);
+
+         $pdf->setColumnsSize(13,13,30,14,30);
+         $pdf->displayTitle('<b><i>'.$title.'</i></b>',
+                            '<b><i>'.__('Status').'</i></b>',
+                            '<b><i>'.__('Operating system').'</i></b>',
+                            '<b><i>'._n('Installation', 'Installations', 2).'</i></b>',
+                            '<b><i>'.__('Comments').'</i></b>');
+         $pdf->setColumnsAlign('left','left','left','right','left');
+
+         for ($tot=$nb=0 ; $data=$result->next() ; $tot+=$nb) {
+            $nb = Item_SoftwareVersion::countForVersion($data['id']);
+            $pdf->displayLine((empty($data['name'])?"(".$data['id'].")":$data['name']),
+                              $data['sname'], $data['osname'], $nb,
+                              str_replace(["\r","\n"]," ",$data['comment']));
+         }
+         $pdf->setColumnsAlign('left','right','left', 'right','left');
+         $pdf->displayTitle('','',"<b>".sprintf(__('%1$s: %2$s'), __('Total')."</b>", ''),$tot, '');
       }
       $pdf->displaySpace();
    }
@@ -121,12 +129,12 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         case 'Computer_SoftwareVersion$1' :
-            PluginPdfComputer_SoftwareVersion::pdfForVersionByEntity($pdf, $item);
+         case 'Item_SoftwareVersion$1' :
+            PluginPdfItem_SoftwareVersion::pdfForVersionByEntity($pdf, $item);
             break;
 
-         case 'Computer_SoftwareVersion$2' :
-            PluginPdfComputer_SoftwareVersion::pdfForItem($pdf, $item);
+         case 'Item_SoftwareVersion$2' :
+            PluginPdfItem_SoftwareVersion::pdfForItem($pdf, $item);
             break;
 
          default :

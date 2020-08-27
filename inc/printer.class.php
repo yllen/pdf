@@ -68,15 +68,12 @@ class PluginPdfPrinter extends PluginPdfCommon {
                                                                 $printer->fields['networks_id']))));
 
       $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Domain').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_domains',
-                                                                $printer->fields['domains_id']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Memory').'</i></b>',
-                          $printer->fields['memory_size']));
+                          $printer->fields['memory_size']),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Initial page counter').'</i></b>',
+                          $printer->fields['init_pages_counter']));
 
       $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Initial page counter').'</i></b>',
-                          $printer->fields['init_pages_counter']),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Current counter of pages').'</i></b>',
                           $printer->fields['last_pages_counter']));
 

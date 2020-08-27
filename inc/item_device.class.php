@@ -123,7 +123,7 @@ class PluginPdfItem_Device extends PluginPdfCommon {
                            } else {
                               $labelname = $label["label"];
                            }
-                           $col4 .= sprintf(__('%1$s: %2$s'), $labelname, $value." ");
+                           $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $labelname.'</i></b>', $value." ");
                         }
                      } else if (isset($device->fields[$label["name"]."_default"])
                                 && !empty($device->fields[$label["name"]."_default"])) {

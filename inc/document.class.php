@@ -64,7 +64,7 @@ class PluginPdfDocument extends PluginPdfCommon {
        $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'._n('Associated document', 'Associated documents', $number, 'pdf').'</b>';
+      $title = '<b>'._n('Document', 'Documents', $number).'</b>';
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {

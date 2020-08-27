@@ -55,15 +55,23 @@ class PluginPdfItem_Knowbaseitem extends PluginPdfCommon {
                               'WHERE'     => ['items_id'   => $ID,
                                               'itemtype'   => $item->getType()]]);
 
+      $number = count($result);
+
       $pdf->setColumnsSize(100);
 
-      if (!count($result)) {
+      if (!$number) {
          $pdf->displayTitle("<b>".__('No knowledge base entries linked')."</b>");
       } else {
-         $pdf->displayTitle("<b>".__('Link a knowledge base entry')."</b>");
+         $title = "<b>".__('Link a knowledge base entry')."</b>";
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
+         $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(40,40,10,10);
-         $pdf->displayTitle('<b>'.__('Type'), __('Item'), __('Creation date'), __('Update date').'</b>');
+         $pdf->displayTitle(__('Type'), __('Item'), __('Creation date'), __('Update date'));
 
          while ($data = $result->next()) {
             $pdf->displayLine(__('Knowledge base'),

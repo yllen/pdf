@@ -55,13 +55,19 @@ class PluginPdfItem_Disk extends PluginPdfCommon {
                                               'itemtype'   => $item->getType(),
                                               'is_deleted' => 0]]);
 
-      $pdf->setColumnsSize(100);
-      $title = "<b>"._n('Volume', 'Volumes', count($result))."</b>";
+      $number = count($result);
 
-      if (!count($result)) {
+      $pdf->setColumnsSize(100);
+      $title = "<b>"._n('Volume', 'Volumes', $number)."</b>";
+
+      if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $title = sprintf(__('%1$s: %2$s'), $title, count($result));
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
          $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(21,21,20,9,9,9,11);

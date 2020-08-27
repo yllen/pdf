@@ -107,7 +107,8 @@ class PluginPdfSoftware extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
-  //    unset($onglets['Software$1']); // Merge tab can't be exported
+      unset($onglets['Appliance_Item$1']);
+      unset($onglets['Impact$1']);
       return $onglets;
    }
 
@@ -124,8 +125,12 @@ class PluginPdfSoftware extends PluginPdfCommon {
             PluginPdfSoftwareLicense::pdfForSoftware($pdf, $item, $infocom);
             break;
 
-         case 'Computer_SoftwareVersion$1' :
-            PluginPdfComputer_SoftwareVersion::pdfForItem($pdf, $item);
+         case 'Item_SoftwareVersion$1' :
+            PluginPdfItem_SoftwareVersion::pdfForItem($pdf, $item);
+            break;
+
+         Case 'Domain_Item$1' :
+            PluginPdfDomain_Item::pdfForItem($pdf, $item);
             break;
 
          default :

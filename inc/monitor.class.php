@@ -45,6 +45,8 @@ class PluginPdfMonitor extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
+      unset($onglets['Impact$1']);
+      unset($onglets['Appliance_Item$1']);
       return $onglets;
    }
 
@@ -94,6 +96,10 @@ class PluginPdfMonitor extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
+         Case 'Domain_Item$1' :
+            PluginPdfDomain_Item::pdfForItem($pdf, $item);
+            break;
+
          default :
             return false;
       }

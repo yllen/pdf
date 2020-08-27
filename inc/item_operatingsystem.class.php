@@ -90,7 +90,11 @@ class PluginPdfItem_OperatingSystem extends PluginPdfCommon {
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-          $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
          $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(17,10,14,15,10,10,12,12);

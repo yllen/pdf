@@ -30,7 +30,7 @@
  --------------------------------------------------------------------------
 */
 
-define ('K_PATH_IMAGES', GLPI_ROOT.'/plugins/pdf/pics/');
+define ('K_PATH_IMAGES', Plugin::getPhpDir('pdf').'/pics/');
 
 
 class PluginPdfSimplePDF {
