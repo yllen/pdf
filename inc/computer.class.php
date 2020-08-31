@@ -132,14 +132,6 @@ class PluginPdfComputer extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         case 'Item_OperatingSystem$1' :
-            PluginPdfItem_OperatingSystem::pdfForItem($pdf, $item);
-            break;
-
-         case 'Item_SoftwareVersion$1' :
-            PluginPdfItem_SoftwareVersion::pdfForComputer($pdf, $item);
-            break;
-
          case 'ComputerVirtualMachine$1' :
             PluginPdfComputerVirtualMachine::pdfForComputer($pdf, $item);
             break;
@@ -154,10 +146,6 @@ class PluginPdfComputer extends PluginPdfCommon {
 
          case 'Computer_Item$1' :
             PluginPdfComputer_Item::pdfForComputer($pdf, $item);
-            break;
-
-         Case 'Domain_Item$1' :
-            PluginPdfDomain_Item::pdfForItem($pdf, $item);
             break;
 
          default :

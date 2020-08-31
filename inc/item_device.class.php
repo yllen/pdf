@@ -59,6 +59,7 @@ class PluginPdfItem_Device extends PluginPdfCommon {
 
       $pdf->setColumnsSize(3,14,42,41);
 
+      $vide = true;
       foreach ($devtypes as $itemtype) {
 
          $devicetypes   = new $itemtype();
@@ -76,8 +77,10 @@ class PluginPdfItem_Device extends PluginPdfCommon {
          $query = "SELECT count(*) AS NB, `id`, `".$fk."`".$specif_text."
                    FROM `".$linktable."`
                    WHERE `items_id` = '".$ID."'
-                   AND `itemtype` = '".$item->getType()."'
+                         AND `itemtype` = '".$item->getType()."'
                    GROUP BY `".$fk."`".$specif_text;
+
+
 
          $device = new $associated_type();
          $itemdevice = new $itemtype();
@@ -133,8 +136,14 @@ class PluginPdfItem_Device extends PluginPdfCommon {
                   }
                }
                $pdf->displayLine($data['NB'], $device->getTypeName(), $device->getName(), $col4);
+               $vide = false;
             }
          }
+      }
+      if ($vide) {
+         $pdf->setColumnsSize(100);
+         $pdf->setColumnsAlign('center');
+         $pdf->displayLine( __('No item to display'));
       }
 
       $pdf->displaySpace();

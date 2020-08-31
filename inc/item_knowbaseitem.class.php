@@ -46,15 +46,15 @@ class PluginPdfItem_Knowbaseitem extends PluginPdfCommon {
 
       $ID = $item->getField('id');
 
-      $result = $DB->request('glpi_knowbaseitems_items',
-                             ['SELECT'    => ['glpi_knowbaseitems.name',
-                                              'glpi_knowbaseitems_items.*'],
-                              'LEFT JOIN' => ['glpi_knowbaseitems'
+      $result = $DB->request('glpi_knowbaseitems',
+                             ['SELECT'    => ['glpi_knowbaseitems.*',
+                                              'glpi_knowbaseitems_items.itemtype',
+                                              'glpi_knowbaseitems_items.items_id'],
+                              'LEFT JOIN' => ['glpi_knowbaseitems_items'
                                               => ['FKEY' => ['glpi_knowbaseitems_items' => 'knowbaseitems_id',
                                                              'glpi_knowbaseitems'       => 'id']]],
                               'WHERE'     => ['items_id'   => $ID,
                                               'itemtype'   => $item->getType()]]);
-
       $number = count($result);
 
       $pdf->setColumnsSize(100);
@@ -76,7 +76,7 @@ class PluginPdfItem_Knowbaseitem extends PluginPdfCommon {
          while ($data = $result->next()) {
             $pdf->displayLine(__('Knowledge base'),
                               $data['name'],
-                              Html::convDate($data['date_creation']),
+                              Html::convDate($data['date']),
                               Html::convDate($data['date_mod']));
          }
       }

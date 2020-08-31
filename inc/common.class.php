@@ -245,6 +245,18 @@ abstract class PluginPdfCommon {
             PluginPdfComputer_Item::pdfForItem($pdf, $item);
             break;
 
+         case 'Item_SoftwareVersion$1' :
+            PluginPdfItem_SoftwareVersion::pdfForItem($pdf, $item);
+            break;
+
+         Case 'Domain_Item$1' :
+            PluginPdfDomain_Item::pdfForItem($pdf, $item);
+            break;
+
+         case 'Item_OperatingSystem$1' :
+            PluginPdfItem_OperatingSystem::pdfForItem($pdf, $item);
+            break;
+
          default :
             return false;
       }

@@ -96,10 +96,6 @@ class PluginPdfMonitor extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         Case 'Domain_Item$1' :
-            PluginPdfDomain_Item::pdfForItem($pdf, $item);
-            break;
-
          default :
             return false;
       }

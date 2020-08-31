@@ -45,6 +45,8 @@ class PluginPdfPhone extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
+      unset($onglets['Appliance_Item$1']);
+      unset($onglets['Impact$1']);
       return $onglets;
    }
 

@@ -45,8 +45,10 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['NetworkName$1']); // TODO add method to print networkName
+      unset($onglets['NetworkName$1']);
       unset($onglets['Certificate_Item$1']);
+      unset($onglets['Impact$1']);
+      unset($onglets['Appliance_Item$1']);
       return $onglets;
    }
 
@@ -76,11 +78,7 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
                           Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Domain').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_domains',
-                                                                $item->fields['domains_id']))));
-
-      $pdf->displayLine(__('The MAC address and the IP of the equipment are included in an aggregated network port'),
+         '<b><i>'.__('The MAC address and the IP of the equipment are included in an aggregated network port'),
          '<b><i>'.sprintf(__('%1$s: %2$s'),
                           sprintf(__('%1$s (%2$s)'), __('Memory'),__('Mio')).'</i></b>',
                                   $item->fields['ram']));
@@ -95,11 +93,6 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-
-         case 'Item_OperatingSystem$1' :
-            PluginPdfItem_OperatingSystem::pdfForItem($pdf, $item);
-            break;
-
          default :
             return false;
       }
