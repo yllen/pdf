@@ -54,17 +54,18 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
       }
 
       $result = $DB->request('glpi_items_tickets',
-                             ['SELECT DISTINCT' => 'itemtype',
-                              'WHERE'           => ['tickets_id' => $instID],
-                              'ORDER'           => 'itemtype']);
+                             ['SELECT'    => 'itemtype',
+                              'DISTINCT'  => true,
+                              'WHERE'     => ['tickets_id' => $instID],
+                              'ORDER'     => 'itemtype']);
       $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'._n('Item', 'Items', 2).'</b>';
+      $title = '<b>'._n('Item', 'Items', $number).'</b>';
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $title = sprintf(__('%1$s: %2$s'), $title, '');
          $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(20,20,26,17,17);
@@ -133,6 +134,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
          }
          $pdf->displayLine("<b><i>".sprintf(__('%1$s = %2$s')."</b></i>", __('Total'), $totalnb));
       }
+      $pdf->displaySpace();
    }
 
 
@@ -213,7 +215,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
       $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'.__('Ticket', 'Tickets', $number).'</b>';
+      $title = '<b>'.Ticket::getTypeName($number).'</b>';
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'),$title, __('No item to display')));
       } else {
@@ -358,7 +360,24 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                $pdf->displayText($texte, $col, 1);
             }
 
-            $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Associated items'), '');
+            $first = true;
+            $listitems = '';
+            foreach ($DB->request('glpi_items_tickets',
+                                  ['WHERE' => ['tickets_id' => $job->fields["id"]]]) as $data) {
+
+               if (!($item = $dbu->getItemForItemtype($data['itemtype']))) {
+                  continue;
+               }
+               if ($first) {
+                  $texteitem = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>',
+                                       _n('Associated items', 'Associated items', 2), ''."<br />");
+               }
+               $listitems .= sprintf(__('%1$s - %2$s'), $item->getTypeName(1),
+                                     Dropdown::getDropdownName(getTableForItemType($data['itemtype']),
+                                                               $data['items_id'])."<br />");
+               $first = false;
+            }
+            $pdf->displayText($texteitem, $listitems);
 
             $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Title'), '');
             $pdf->displayText($texte, $job->fields["name"], 1);

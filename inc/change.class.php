@@ -287,47 +287,46 @@ class PluginPdfChange extends PluginPdfCommon {
 
       $pdf->displayTitle("<b>"._n('Date', 'Dates', 2)."</b>");
 
-      $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Opening date'),
-                                Html::convDateTime($job->fields['date'])));
-      $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Time to resolve'),
-                                Html::convDateTime($job->fields['time_to_resolve'])));
+      $pdf->setColumnsSize(50, 50);
+      $pdf->displayLine(__('Opening date'), Html::convDateTime($job->fields['date']));
+      $pdf->displayLine(__('Time to resolve'), Html::convDateTime($job->fields['time_to_resolve']));
 
       if (in_array($job->fields["status"], $job->getSolvedStatusArray())
           || in_array($job->fields["status"], $job->getClosedStatusArray())) {
-         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Resolution date'),
-                                   Html::convDateTime($job->fields['solvedate'])));
+         $pdf->displayLine(__('Resolution date'), Html::convDateTime($job->fields['solvedate']));
       }
       if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
-         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Closing date'),
-                                   Html::convDateTime($job->fields['closedate'])));
+         $pdf->displayLine(__('Closing date'), Html::convDateTime($job->fields['closedate']));
       }
 
+      $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>"._n('Time', 'Times', 2)."</b>");
 
+      $pdf->setColumnsSize(50, 50);
       if (isset($job->fields['takeintoaccount_delay_stat']) > 0) {
          if ($job->fields['takeintoaccount_delay_stat'] > 0) {
             $accountdelay = Html::clean(Html::timestampToString($job->fields['takeintoaccount_delay_stat'],0));
          }
-         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Take into account'),
-                                   isset($accountdelay) ? $accountdelay : ''));
+         $pdf->displayLine(__('Take into account'),
+                           isset($accountdelay) ? $accountdelay : '');
       }
 
       if (in_array($job->fields["status"], $job->getSolvedStatusArray())
           || in_array($job->fields["status"], $job->getClosedStatusArray())) {
                if ($job->fields['solve_delay_stat'] > 0) {
-            $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Solution'),
-                                      Html::clean(Html::timestampToString($job->fields['solve_delay_stat'],0))));
+            $pdf->displayLine(__('Resolution'),
+                              Html::clean(Html::timestampToString($job->fields['solve_delay_stat'],0)));
          }
       }
       if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
          if ($job->fields['close_delay_stat'] > 0) {
-            $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Closing'),
-                                      Html::clean(Html::timestampToString($job->fields['close_delay_stat'],0))));
+            $pdf->displayLine(__('Closing'),
+                              Html::clean(Html::timestampToString($job->fields['close_delay_stat'],0)));
          }
       }
       if ($job->fields['waiting_duration'] > 0) {
-         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Pending'),
-                                   Html::clean(Html::timestampToString($job->fields['waiting_duration'],0))));
+         $pdf->displayLine(__('Pending'),
+                           Html::clean(Html::timestampToString($job->fields['waiting_duration'],0)));
       }
 
       $pdf->displaySpace();
@@ -337,7 +336,8 @@ class PluginPdfChange extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['Itil_Project$1']); // projet
+      unset($onglets['Itil_Project$1']);
+      unset($onglets['Impact$1']);
 
       if (Session::haveRight('change', Change::READALL) // for technician
             || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)

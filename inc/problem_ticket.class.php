@@ -232,13 +232,14 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
          return false;
       }
 
-      $query = ['SELECT DISTINCT' => 'glpi_problems_tickets.id AS linkID',
-                'SELECT'          => 'glpi_tickets'.'.*',
-                'FROM'            => 'glpi_problems_tickets',
-                'LEFT JOIN'       => ['glpi_tickets' => ['FKEY' => ['glpi_problems_tickets' => 'tickets_id',
-                                                                    'glpi_tickets'          => 'id']]],
-                'WHERE'           => ['glpi_problems_tickets.problems_id' => $ID],
-                'ORDER'           => 'glpi_tickets.name'];
+      $query = ['SELECT'    => ['glpi_problems_tickets.id AS linkID',
+                                'glpi_tickets'.'.*'],
+                'DISTINCT'  => true,
+                'FROM'      => 'glpi_problems_tickets',
+                'LEFT JOIN' => ['glpi_tickets' => ['FKEY' => ['glpi_problems_tickets' => 'tickets_id',
+                                                              'glpi_tickets'          => 'id']]],
+                'WHERE'     => ['glpi_problems_tickets.problems_id' => $ID],
+                'ORDER'     => 'glpi_tickets.name'];
       $result = $DB->request($query);
       $number = count($result);
 

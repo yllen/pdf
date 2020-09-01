@@ -45,6 +45,8 @@ class PluginPdfITILSolution extends PluginPdfCommon {
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
       global $DB;
 
+      $dbu = new DbUtils();
+
       $pdf->setColumnsSize(100);
 
       $soluce = $DB->request('glpi_itilsolutions',
@@ -74,10 +76,18 @@ class PluginPdfITILSolution extends PluginPdfCommon {
                $text = __('Soluce approved on ', 'pdf');
             } else if ($row['status'] == 4) {
                $text = __('Soluce refused on ', 'pdf');
+            } else {
+               $text = $textapprove = '';
             }
-            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol.
-                              "<br /><br /><br /><i>".sprintf(__('%1$s %2$s'), $text,
-                                                              $row['date_approval'])."</i>");
+            if (isset($row['date_approval']) || isset($row["users_id_approval"])) {
+               $textapprove = "<br /><br /><br /><i>".
+                               sprintf(__('%1$s %2$s'), $text,
+                                       Html::convDateTime($row['date_approval']))."&nbsp;".
+                               sprintf(__('%1$s %2$s'), __('By'),
+                                       Html::clean($dbu->getUserName($row["users_id_approval"])))."</i>";
+               $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol.
+                                 $textapprove);
+            }
          }
       }
 

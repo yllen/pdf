@@ -76,8 +76,8 @@ class PluginPdfItem_Knowbaseitem extends PluginPdfCommon {
          while ($data = $result->next()) {
             $pdf->displayLine(__('Knowledge base'),
                               $data['name'],
-                              Html::convDate($data['date']),
-                              Html::convDate($data['date_mod']));
+                              Html::convDateTime($data['date']),
+                              Html::convDateTime($data['date_mod']));
          }
       }
       $pdf->displaySpace();

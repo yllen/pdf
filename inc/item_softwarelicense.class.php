@@ -1,6 +1,6 @@
 <?php
 /**
- * @version $Id$
+ * @version $Id: setup.php 378 2014-06-08 15:12:45Z yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -20,8 +20,8 @@
  along with Reports. If not, see <http://www.gnu.org/licenses/>.
 
  @package   pdf
- @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @authors   Nelly Mahu-Lasson
+ @copyright Copyright (c) 2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -31,13 +31,13 @@
 */
 
 
-class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
+class PluginPdfItem_SoftwareLicense extends PluginPdfCommon {
 
    static $rightname = "plugin_pdf";
 
 
    function __construct(CommonGLPI $obj=NULL) {
-      $this->obj = ($obj ? $obj : new Computer_SoftwareLicense());
+      $this->obj = ($obj ? $obj : new Item_SoftwareLicense());
    }
 
 
@@ -55,7 +55,7 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
 
       $tot = 0;
       if (in_array(0,$_SESSION["glpiactiveentities"])) {
-         $nb = Computer_SoftwareLicense::countForLicense($ID, 0);
+         $nb = Item_SoftwareLicense::countForLicense($ID, 0);
          if ($nb > 0) {
             $pdf->displayLine(__('Root entity'), $nb);
             $tot += $nb;
@@ -67,7 +67,7 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
               'ORDER'   => 'completename'];
 
       foreach ($DB->request($sql) as $entity => $data) {
-         $nb = Computer_SoftwareLicense::countForLicense($ID,$entity);
+         $nb = Item_SoftwareLicense::countForLicense($ID,$entity);
          if ($nb > 0) {
             $pdf->displayLine($data["completename"], $nb);
             $tot += $nb;
@@ -92,10 +92,11 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
 
       $ID = $license->getField('id');
 
-      $query = ['FROM'        => 'glpi_computers_softwarelicenses', 'COUNT' => 'cpt',
+      $query = ['FROM'        => 'glpi_items_softwarelicenses', 'COUNT' => 'cpt',
                 'INNER JOIN'  => ['glpi_computers'
-                                  => ['FKEY' => ['glpi_computers_softwarelicenses' => 'computers_id',
-                                                 'glpi_computers'                  => 'id']]],
+                                  => ['FKEY' => ['glpi_items_softwarelicenses' => 'items_id',
+                                                 'glpi_computers'                  => 'id',
+                                                 ['AND' => ['glpi_items_softwarelicenses.itemtype' => 'Computer']]]]],
                 'WHERE'       => ['softwarelicenses_id'       => $ID,
                                   'glpi_computers.is_deleted' => 0,
                                   'is_template'               => 0]
@@ -116,7 +117,7 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
          $title = sprintf(__('%1$s: %2$s'), $title, $number);
          $pdf->displayTitle($title);
 
-         $query = "SELECT `glpi_computers_softwarelicenses`.*,
+         $query = "SELECT `glpi_items_softwarelicenses`.*,
                           `glpi_computers`.`name` AS compname,
                           `glpi_computers`.`id` AS cID,
                           `glpi_computers`.`serial`,
@@ -131,12 +132,13 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
                           `glpi_groups`.`name` AS groupe,
                           `glpi_softwarelicenses`.`name` AS lname,
                           `glpi_softwarelicenses`.`id` AS lID
-                   FROM `glpi_computers_softwarelicenses`
+                   FROM `glpi_items_softwarelicenses`
                    INNER JOIN `glpi_softwarelicenses`
-                        ON (`glpi_computers_softwarelicenses`.`softwarelicenses_id`
+                        ON (`glpi_items_softwarelicenses`.`softwarelicenses_id`
                                 = `glpi_softwarelicenses`.`id`)
                    INNER JOIN `glpi_computers`
-                        ON (`glpi_computers_softwarelicenses`.`computers_id` = `glpi_computers`.`id`)
+                        ON (`glpi_items_softwarelicenses`.`items_id` = `glpi_computers`.`id`
+                            AND `glpi_items_softwarelicenses`.`itemtype` = 'Computer')
                    LEFT JOIN `glpi_entities`
                         ON (`glpi_computers`.`entities_id` = `glpi_entities`.`id`)
                    LEFT JOIN `glpi_locations`

@@ -54,20 +54,21 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
       }
 
       $result = $DB->request('glpi_changes_problems',
-                             ['SELECT DISTINCT' => 'glpi_changes_problems.id',
-                              'FIELDS'          => ['glpi_problems.*', 'name'],
-                              'LEFT JOIN'       => ['glpi_problems'
-                                                    => ['FKEY' => ['glpi_changes_problems' => 'problems_id',
-                                                                   'glpi_problems'         => 'id']]],
-                              'WHERE'           => ['changes_id' => $ID],
-                              'ORDER'           => 'name']);
+                             ['SELECT'    => 'glpi_changes_problems.id',
+                              'DISTINCT'  => true,
+                              'FIELDS'    => ['glpi_problems.*', 'name'],
+                              'LEFT JOIN' => ['glpi_problems'
+                                                => ['FKEY' => ['glpi_changes_problems' => 'problems_id',
+                                                               'glpi_problems'         => 'id']]],
+                              'WHERE'     => ['changes_id' => $ID],
+                              'ORDER'     => 'name']);
       $number = count($result);
 
       $problems = [];
       $used     = [];
 
       $pdf->setColumnsSize(100);
-      $title = "<b>".Problem::getTypeName(2)."</b>";
+      $title = "<b>".Problem::getTypeName($number)."</b>";
 
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
@@ -232,20 +233,21 @@ class PluginPdfChange_Problem extends PluginPdfCommon {
       }
 
       $result = $DB->request('glpi_changes_problems',
-                             ['SELECT DISTINCT' => 'glpi_changes_problems.id',
-                              'FIELDS'           => ['glpi_changes.*', 'name'],
-                              'LEFT JOIN'        => ['glpi_changes'
-                                                     => ['FKEY' => ['glpi_changes_problems' => 'changes_id',
-                                                                    'glpi_changes'          => 'id']]],
-                              'WHERE'            => ['problems_id' => $ID],
-                              'ORDER'            => 'name']);
+                             ['SELECT '   => 'glpi_changes_problems.id',
+                              'DISTINCT'  => true,
+                              'FIELDS'    => ['glpi_changes.*', 'name'],
+                              'LEFT JOIN' => ['glpi_changes'
+                                               => ['FKEY' => ['glpi_changes_problems' => 'changes_id',
+                                                              'glpi_changes'          => 'id']]],
+                              'WHERE'     => ['problems_id' => $ID],
+                              'ORDER'     => 'name']);
       $number = count($result);
 
       $problems = [];
       $used     = [];
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'.Change::getTypeName(2).'</b>';
+      $title = '<b>'.Change::getTypeName($number).'</b>';
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {

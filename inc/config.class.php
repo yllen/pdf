@@ -304,7 +304,8 @@ class PluginPdfConfig extends CommonDBTM {
 
 
       $config = new Config();
-      foreach ($config->find("`context` = 'core' AND `name` = 'language'") as $row) {
+      foreach ($config->find(['context' => 'core',
+                              'name'    => 'language']) as $row) {
          $language = $row['value'];
       }
       $user = new User();

@@ -54,13 +54,14 @@ class PluginPdfChange_Item extends PluginPdfCommon {
       }
 
       $result = $DB->request('glpi_changes_items',
-                             ['SELECT DISTINCT' => 'itemtype',
-                              'WHERE'           => ['changes_id' => $instID],
-                              'ORDER'           => 'itemtype']);
+                             ['SELECT'    => 'itemtype',
+                              'DISTINCT'  => true,
+                              'WHERE'     => ['changes_id' => $instID],
+                              'ORDER'     => 'itemtype']);
       $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'._n('Item', 'Items', 2).'</b>';
+      $title = '<b>'._n('Item', 'Items', $number).'</b>';
 
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
@@ -131,8 +132,9 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                $totalnb += $nb;
             }
          }
-      }
+    //  }
       $pdf->displayLine("<b><i>".sprintf(__('%1$s = %2$s')."</b></i>", __('Total'), $totalnb));
+      }
    }
 
 
@@ -187,7 +189,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
       $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'.Change::getTypeName(2).'</b>';
+      $title = '<b>'.Change::getTypeName($number).'</b>';
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
@@ -236,7 +238,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
             }
             if ($job->fields['time_to_resolve']) {
                $col = sprintf(__('%1$s, %2$s'), $col,
-                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Time_to_resolve'),
+                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>',__('Time to resolve'),
                                                Html::convDateTime($job->fields['time_to_resolve'])));
             }
             $pdf->displayLine($col);
@@ -335,7 +337,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
             $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Title'), '');
             $pdf->displayText($texte, $job->fields["name"], 1);
          }
-         $pdf->displaySpace();
       }
+      $pdf->displaySpace();
    }
 }

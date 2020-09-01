@@ -303,7 +303,7 @@ class PluginPdfProblem extends PluginPdfCommon {
                                           $number."</b>"));
 
          $job = new Problem();
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             if (!$job->getFromDB($data["id"])) {
                continue;
             }

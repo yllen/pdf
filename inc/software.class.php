@@ -126,7 +126,7 @@ class PluginPdfSoftware extends PluginPdfCommon {
             break;
 
          case 'Item_SoftwareVersion$1' :
-            PluginPdfItem_SoftwareVersion::pdfForItem($pdf, $item);
+            PluginPdfItem_SoftwareVersion::pdfForSoftware($pdf, $item);
             break;
 
          Case 'Domain_Item$1' :

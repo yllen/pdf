@@ -1,6 +1,6 @@
 <?php
 /**
- * @version $Id$
+ * @version $Id: setup.php 378 2014-06-08 15:12:45Z yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -20,8 +20,8 @@
  along with Reports. If not, see <http://www.gnu.org/licenses/>.
 
  @package   pdf
- @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @authors   Nelly Mahu-Lasson
+ @copyright Copyright (c) 2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -31,17 +31,17 @@
 */
 
 
-class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
+class PluginPdfItem_SoftwareVersion extends PluginPdfCommon {
 
    static $rightname = "plugin_pdf";
 
 
    function __construct(CommonGLPI $obj=NULL) {
-      $this->obj = ($obj ? $obj : new Computer_SoftwareVersion());
+      $this->obj = ($obj ? $obj : new Item_SoftwareVersion());
    }
 
 
-   static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
+   static function pdfForSoftware(PluginPdfSimplePDF $pdf, CommonDBTM $item){
       global $DB;
 
       $dbu = new DbUtils();
@@ -51,27 +51,29 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
       $crit = ($type=='Software' ? 'softwares_id' : 'id');
 
 
-      $query_number = ['FROM'       => 'glpi_computers_softwareversions', 'COUNT' => 'cpt',
+      $query_number = ['FROM'       => 'glpi_items_softwareversions', 'COUNT' => 'cpt',
                        'INNER JOIN' => ['glpi_computers'
-                                        => ['FKEY' => ['glpi_computers_softwareversions' => 'computers_id',
-                                                       'glpi_computers'                  => 'id']]],
-                       'WHERE'      => ['glpi_computers.is_deleted'                  => 0,
-                                        'glpi_computers.is_template'                 => 0,
-                                        'glpi_computers_softwareversions.is_deleted' => 0]
+                                        => ['FKEY' => ['glpi_items_softwareversions' => 'items_id',
+                                                       'glpi_computers'                  => 'id'],
+                                                       ['AND' => ['glpi_items_softwareversions.itemtype' => 'Computer']]]],
+                       'WHERE'      => ['glpi_computers.is_deleted'               => 0,
+                                        'glpi_computers.is_template'              => 0,
+                                        'glpi_items_softwareversions.is_deleted'  => 0]
                                         + $dbu->getEntitiesRestrictCriteria('glpi_computers')];
 
       if ($type == 'Software') {
          $crit      = 'softwares_id';
          // Software ID
          $query_number['INNER JOIN']['glpi_softwareversions']
-                           = ['FKEY' => ['glpi_computers_softwareversions' => 'softwareversions_id',
-                                         'glpi_softwareversions'           => 'id']];
+                           = ['FKEY' => ['glpi_items_softwareversions' => 'softwareversions_id',
+                                         'glpi_softwareversions'           => 'id'],
+                                         ['AND' => ['glpi_items_softwareversions.itemtype' => 'Computer']]];
          $query_number['WHERE']['glpi_softwareversions.softwares_id'] = $ID;
 
       } else {
          $crit      = 'id';
          //SoftwareVersion ID
-         $query_number['WHERE']['glpi_computers_softwareversions.softwareversions_id'] = $ID;
+         $query_number['WHERE']['glpi_items_softwareversions.softwareversions_id'] = $ID;
       }
 
       $total = 0;
@@ -80,7 +82,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
          $total  = $row['cpt'];
       }
 
-      $query = "SELECT DISTINCT `glpi_computers_softwareversions`.*,
+      $query = "SELECT DISTINCT `glpi_items_softwareversions`.*,
                           `glpi_computers`.`name` AS compname,
                           `glpi_computers`.`id` AS cID,
                           `glpi_computers`.`serial`,
@@ -97,12 +99,14 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                           `glpi_locations`.`completename` AS location,
                           `glpi_states`.`name` AS state,
                           `glpi_groups`.`name` AS groupe
-                FROM `glpi_computers_softwareversions`
+                FROM `glpi_items_softwareversions`
                 INNER JOIN `glpi_softwareversions`
-                     ON (`glpi_computers_softwareversions`.`softwareversions_id`
-                              = `glpi_softwareversions`.`id`)
+                     ON (`glpi_items_softwareversions`.`softwareversions_id`
+                              = `glpi_softwareversions`.`id`
+                         AND `glpi_items_softwareversions`.`itemtype` = 'Computer')
                 INNER JOIN `glpi_computers`
-                     ON (`glpi_computers_softwareversions`.`computers_id` = `glpi_computers`.`id`)
+                     ON (`glpi_items_softwareversions`.`items_id` = `glpi_computers`.`id`
+                         AND `glpi_items_softwareversions`.`itemtype` = 'Computer')
                 LEFT JOIN `glpi_entities` ON (`glpi_computers`.`entities_id` = `glpi_entities`.`id`)
                 LEFT JOIN `glpi_locations`
                      ON (`glpi_computers`.`locations_id` = `glpi_locations`.`id`)
@@ -116,29 +120,34 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                 ORDER BY version, compname
                 LIMIT 0," . intval($_SESSION['glpilist_limit']);
 
-      $pdf->setColumnsSize(100);
+      $result = $DB->request($query);
+      $number = count($result);
 
-      if (($result = $DB->request($query))
-          && (($number = count($result)) > 0)) {
-         if ($number == $total) {
-            $pdf->displayTitle('<b>'.sprintf(__('%1$s: %2$s'),
-                                             _n('Installation', 'Installations', 2), $number)."</b>");
+      $pdf->setColumnsSize(100);
+      $title = '<b>'._n('Installation', 'Installations', $number).'</b>';
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         if ($total > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$total);
          } else {
-            $pdf->displayTitle('<b>'.sprintf(__('%1$s: %2$s'), _n('Installation', 'Installations', 2),
-                                             $number." / ".$total)."</b>");
+            $title = sprintf(__('%1$s: %2$s'), $title, $total);
          }
-         $pdf->setColumnsSize(8,12,10,10,12,8,10,5,17,8);
+         $pdf->displayTitle($title);
+
+         $pdf->setColumnsSize(8,12,10,10,12,8,10,12,12,8);
          $pdf->displayTitle('<b><i>'._n('Version', 'Versions', 2), __('Name'), __('Serial number'),
                             __('Inventory number'), __('Location'), __('Status'), __('Group'),
                             __('User'), _n('License', 'Licenses', 2),
                             __('Installation date').'</i></b>');
 
          while ($data = $result->next()) {
-            $compname = $data['compname'];
-            if (empty($compname) || $_SESSION['glpiis_ids_visible']) {
-               $compname = sprintf(__('%1$s (%2$s)'), $compname, $data['cID']);
+            $itemname = $data['compname'];
+            if (empty($itemname) || $_SESSION['glpiis_ids_visible']) {
+               $itemname = sprintf(__('%1$s (%2$s)'), $itemname, $data['cID']);
             }
-            $lics = Computer_SoftwareLicense::GetLicenseForInstallation($data['cID'], $data['vID']);
+            $lics = Item_SoftwareLicense::GetLicenseForInstallation($item->getType(),
+                                                                    $data['cID'], $data['vID']);
 
             $tmp = [];
             if (count($lics)) {
@@ -151,15 +160,12 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                }
             }
             $linkUser = User::canView();
-            $pdf->displayLine($data['version'], $compname,$data['serial'], $data['otherserial'],
+            $pdf->displayLine($data['version'], $itemname,$data['serial'], $data['otherserial'],
                               $data['location'], $data['state'], $data['groupe'],
                               formatUserName($data['userid'], $data['username'], $data['userrealname'],
                                              $data['userfirstname'], $linkUser), implode(', ', $tmp),
                               Html::convDate($data['date_install']));
          }
-      } else {
-         $pdf->displayTitle('<b>'._n('Installation', 'Installations', 2).'</b>');
-         $pdf->displayLine(__('No item found'));
       }
       $pdf->displaySpace();
    }
@@ -184,7 +190,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
 
       $lig = $tot = 0;
       if (in_array(0, $_SESSION["glpiactiveentities"])) {
-         $nb = Computer_SoftwareVersion::countForVersion($softwareversions_id,0);
+         $nb = Item_SoftwareVersion::countForVersion($softwareversions_id,0);
          if ($nb > 0) {
             $pdf->displayLine(__('Root entity'), $nb);
             $tot += $nb;
@@ -197,7 +203,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
               'ORDER'   => 'completename'];
 
       foreach ($DB->request($sql) as $ID => $data) {
-         $nb = Computer_SoftwareVersion::countForVersion($softwareversions_id,$ID);
+         $nb = Item_SoftwareVersion::countForVersion($softwareversions_id,$ID);
          if ($nb > 0) {
             $pdf->displayLine($data["completename"], $nb);
             $tot += $nb;
@@ -218,31 +224,33 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
    }
 
 
-   static function pdfForComputer(PluginPdfSimplePDF $pdf, Computer $comp){
+   static function pdfForItem(PluginPdfSimplePDF $pdf, $item){
       global $DB;
 
-      $ID = $comp->getField('id');
+      $ID = $item->getField('id');
 
-      // From Computer_SoftwareVersion::showForComputer();
+      // From Item_SoftwareVersion::showForComputer();
       $query = "SELECT `glpi_softwares`.`softwarecategories_id`,
                        `glpi_softwares`.`name` AS softname,
-                       `glpi_computers_softwareversions`.`id`,
+                       `glpi_items_softwareversions`.`id`,
                        `glpi_states`.`name` AS state,
                        `glpi_softwareversions`.`id` AS verid,
                        `glpi_softwareversions`.`softwares_id`,
                        `glpi_softwareversions`.`name` AS version,
                        `glpi_softwares`.`is_valid` AS softvalid,
-                       `glpi_computers_softwareversions`.`date_install` AS dateinstall
-                FROM `glpi_computers_softwareversions`
+                       `glpi_items_softwareversions`.`date_install` AS dateinstall
+                FROM `glpi_items_softwareversions`
                 LEFT JOIN `glpi_softwareversions`
-                     ON (`glpi_computers_softwareversions`.`softwareversions_id`
-                           = `glpi_softwareversions`.`id`)
+                     ON (`glpi_items_softwareversions`.`softwareversions_id`
+                           = `glpi_softwareversions`.`id`
+                         AND `glpi_items_softwareversions`.`itemtype` = '".$item->getType()."')
                 LEFT JOIN `glpi_states`
                      ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
                 LEFT JOIN `glpi_softwares`
                      ON (`glpi_softwareversions`.`softwares_id` = `glpi_softwares`.`id`)
-                WHERE `glpi_computers_softwareversions`.`computers_id` = '$ID'
-                      AND `glpi_computers_softwareversions`.`is_deleted` = '0'
+                WHERE `glpi_items_softwareversions`.`items_id` = '$ID'
+                      AND `glpi_items_softwareversions`.`itemtype` = '".$item->getType()."'
+                      AND `glpi_items_softwareversions`.`is_deleted` = '0'
                 ORDER BY `softwarecategories_id`, `softname`, `version`";
 
       $output              = [];
@@ -282,18 +290,19 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                                   __('Installation date'), __('Valid license').'</b>');
             }
 
-            // From Computer_SoftwareVersion::displaySoftsByCategory()
+            // From Item_SoftwareVersion::displaySoftsByCategory()
             $verid = $soft['verid'];
             $query = "SELECT `glpi_softwarelicenses`.*,
                              `glpi_softwarelicensetypes`.`name` AS type
-                      FROM `glpi_computers_softwarelicenses`
+                      FROM `glpi_items_softwarelicenses`
                       INNER JOIN `glpi_softwarelicenses`
-                           ON (`glpi_computers_softwarelicenses`.`softwarelicenses_id`
+                           ON (`glpi_items_softwarelicenses`.`softwarelicenses_id`
                                     = `glpi_softwarelicenses`.`id`)
                       LEFT JOIN `glpi_softwarelicensetypes`
                            ON (`glpi_softwarelicenses`.`softwarelicensetypes_id`
-                                    =`glpi_softwarelicensetypes`.`id`)
-                      WHERE `glpi_computers_softwarelicenses`.`computers_id` = '$ID'
+                                    =`glpi_softwarelicensetypes`.`id`
+                               AND `glpi_items_softwarelicenses`.`itemtype` = 'Computer')
+                      WHERE `glpi_items_softwarelicenses`.`items_id` = '$ID'
                             AND (`glpi_softwarelicenses`.`softwareversions_id_use` = '$verid'
                                  OR (`glpi_softwarelicenses`.`softwareversions_id_use` = '0'
                                      AND `glpi_softwarelicenses`.`softwareversions_id_buy` = '$verid'))";
@@ -318,9 +327,10 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                        `glpi_softwareversions`.`name` AS version,
                        `glpi_states`.`name` AS state
                 FROM `glpi_softwarelicenses`
-                LEFT JOIN `glpi_computers_softwarelicenses`
-                      ON (`glpi_computers_softwarelicenses`.softwarelicenses_id
-                              = `glpi_softwarelicenses`.`id`)
+                LEFT JOIN `glpi_items_softwarelicenses`
+                      ON (`glpi_items_softwarelicenses`.softwarelicenses_id
+                              = `glpi_softwarelicenses`.`id`
+                          AND `glpi_items_softwarelicenses`.`itemtype` = 'Computer')
                 INNER JOIN `glpi_softwares`
                       ON (`glpi_softwarelicenses`.`softwares_id` = `glpi_softwares`.`id`)
                 LEFT JOIN `glpi_softwareversions`
@@ -331,7 +341,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
                                        = `glpi_softwareversions`.`id`))
                 LEFT JOIN `glpi_states`
                      ON (`glpi_states`.`id` = `glpi_softwareversions`.`states_id`)
-                WHERE `glpi_computers_softwarelicenses`.`computers_id` = '$ID' ";
+                WHERE `glpi_items_softwarelicenses`.`items_id` = '$ID'";
 
       if (count($installed)) {
          $query .= " AND `glpi_softwarelicenses`.`id` NOT IN (".implode(',',$installed).")";
