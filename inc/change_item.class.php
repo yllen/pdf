@@ -178,8 +178,8 @@ class PluginPdfChange_Item extends PluginPdfCommon {
       $query = "SELECT ".Change::getCommonSelect()."
                 FROM `glpi_changes`
                 LEFT JOIN `glpi_changes_items`
-                  ON (`glpi_changes`.`id` = `glpi_changes_items`.`changes_id`) ".
-                      Change::getCommonLeftJoin()."
+                              ON (`glpi_changes`.`id` = `glpi_changes_items`.`changes_id`)  ".
+                Change::getCommonLeftJoin()."
                 WHERE $restrict ".
                       $dbu->getEntitiesRestrictRequest("AND","glpi_changes")."
                 ORDER BY $order

@@ -183,13 +183,6 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
             $order      = '`glpi_tickets`.`date_mod` DESC';
             break;
 
-         case 'Change' :
-            $leftjoin .= "LEFT JOIN `glpi_changes_tickets`
-                            ON `glpi_changes_tickets`.`tickets_id` =  `glpi_tickets`.`id` ";
-            $restrict  = "`glpi_changes_tickets`.`changes_id` = '".$item->getID()."'";
-            $order     = '`glpi_tickets`.`date_mod` DESC';
-            break;
-
          default :
             $restrict = "(`glpi_items_tickets`.`items_id` = '".$item->getID()."' ".
                         " AND `glpi_items_tickets`.`itemtype` = '".$item->getType()."')";
@@ -361,7 +354,7 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
             }
 
             $first = true;
-            $listitems = '';
+            $listitems = $texteitem = '';
             foreach ($DB->request('glpi_items_tickets',
                                   ['WHERE' => ['tickets_id' => $job->fields["id"]]]) as $data) {
 
@@ -377,7 +370,9 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                                                                $data['items_id'])."<br />");
                $first = false;
             }
-            $pdf->displayText($texteitem, $listitems);
+            if (!empty($listitems)) {
+               $pdf->displayText($texteitem, $listitems);
+            }
 
             $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Title'), '');
             $pdf->displayText($texte, $job->fields["name"], 1);

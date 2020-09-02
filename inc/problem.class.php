@@ -444,6 +444,7 @@ class PluginPdfProblem extends PluginPdfCommon {
 
       $pdf->setColumnsSize(10, 90);
 
+      $text = '';
       if ($job->fields['impactcontent']) {
          $text = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
                              html_entity_decode($job->getField('impactcontent'),
@@ -520,7 +521,8 @@ class PluginPdfProblem extends PluginPdfCommon {
    function defineAllTabs($options=[]) {
 
       $onglets = parent::defineAllTabs($options);
-      unset($onglets['Itil_project$1']);
+      unset($onglets['Itil_Project$1']);
+      unset($onglets['Impact$1']);
 
       if (Session::haveRight('problem', Problem::READALL) // for technician
           || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)) {

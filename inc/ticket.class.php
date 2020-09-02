@@ -448,7 +448,6 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $onglets = parent::defineAllTabs($options);
       unset($onglets['ProjectTask_Ticket$1']);
-      unset($onglets['Change_Ticket$1']);
       unset($onglets['Itil_Project$1']);
 
       if (Session::haveRight('ticket', Ticket::READALL) // for technician
@@ -512,7 +511,7 @@ class PluginPdfTicket extends PluginPdfCommon {
 
          case 'Change_Ticket$1' :
             if (Change::canView()) {
-               PluginPdfChange_Item::pdfForItem($pdf, $item);
+               PluginPdfChange_Ticket::pdfForTicket($pdf, $item);
             }
             break;
 

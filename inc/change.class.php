@@ -392,7 +392,7 @@ class PluginPdfChange extends PluginPdfCommon {
             break;
 
          case 'Change_Ticket$1' :
-            PluginPdfItem_Ticket::pdfForItem($pdf, $item);
+            PluginPdfChange_Ticket::pdfForChange($pdf, $item);
             break;
 
          case 'Change_Item$1' :
