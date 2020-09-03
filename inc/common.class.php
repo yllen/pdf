@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -245,6 +245,18 @@ abstract class PluginPdfCommon {
             PluginPdfComputer_Item::pdfForItem($pdf, $item);
             break;
 
+         case 'Item_SoftwareVersion$1' :
+            PluginPdfItem_SoftwareVersion::pdfForItem($pdf, $item);
+            break;
+
+         Case 'Domain_Item$1' :
+            PluginPdfDomain_Item::pdfForItem($pdf, $item);
+            break;
+
+         case 'Item_OperatingSystem$1' :
+            PluginPdfItem_OperatingSystem::pdfForItem($pdf, $item);
+            break;
+
          default :
             return false;
       }
@@ -264,10 +276,9 @@ abstract class PluginPdfCommon {
     * @return true
    **/
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-      global $CFG_GLPI;
 
       $pref = new PluginPdfPreference;
-      $pref->menu($item, $CFG_GLPI['root_doc']."/plugins/pdf/front/export.php");
+      $pref->menu($item, Plugin::getWebDir('pdf')."/front/export.php");
 
       return true;
    }
@@ -313,7 +324,7 @@ abstract class PluginPdfCommon {
       $number = count($notes);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'.__('Notes').'</b>';
+      $title = '<b>'._n('Note', 'Notes', $number).'</b>';
 
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
@@ -411,7 +422,7 @@ abstract class PluginPdfCommon {
       $col1 = '<b>'.sprintf(__('%1$s %2$s'),__('ID'), $item->fields['id']).'</b>';
       $col2 = sprintf(__('%1$s: %2$s'), __('Last update'),
                       Html::convDateTime($item->fields['date_mod']));
-      if (!empty($printer->fields['template_name'])) {
+      if (!empty($item->fields['template_name'])) {
          $col2 = sprintf(__('%1$s (%2$s)'), $col2,
                          sprintf(__('%1$s: %2$s'), __('Template name'),
                                  $item->fields['template_name']));
@@ -505,7 +516,7 @@ abstract class PluginPdfCommon {
             echo Html::submit(_sx('button', 'Post'), $opt);
             return true;
       }
-      return parent::showMassiveActionsSubForm($ma);
+//      return parent::showMassiveActionsSubForm($ma);
    }
 
 
@@ -525,7 +536,7 @@ abstract class PluginPdfCommon {
              $_SESSION["plugin_pdf"]["type"]   = $item->getType();
              $_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
              echo "<script type='text/javascript'>
-                      location.href='../plugins/pdf/front/export.massive.php'</script>";
+                      location.href='.".Plugin::getWebDir('pdf')."/front/export.massive.php'</script>";
              break;
       }
    }

@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2019 PDF plugin team
+ @copyright Copyright (c) 2019-2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -46,30 +46,38 @@ class PluginPdfItem_Knowbaseitem extends PluginPdfCommon {
 
       $ID = $item->getField('id');
 
-      $result = $DB->request('glpi_knowbaseitems_items',
-                             ['SELECT'    => ['glpi_knowbaseitems.name',
-                                              'glpi_knowbaseitems_items.*'],
-                              'LEFT JOIN' => ['glpi_knowbaseitems'
+      $result = $DB->request('glpi_knowbaseitems',
+                             ['SELECT'    => ['glpi_knowbaseitems.*',
+                                              'glpi_knowbaseitems_items.itemtype',
+                                              'glpi_knowbaseitems_items.items_id'],
+                              'LEFT JOIN' => ['glpi_knowbaseitems_items'
                                               => ['FKEY' => ['glpi_knowbaseitems_items' => 'knowbaseitems_id',
                                                              'glpi_knowbaseitems'       => 'id']]],
                               'WHERE'     => ['items_id'   => $ID,
                                               'itemtype'   => $item->getType()]]);
+      $number = count($result);
 
       $pdf->setColumnsSize(100);
 
-      if (!count($result)) {
+      if (!$number) {
          $pdf->displayTitle("<b>".__('No knowledge base entries linked')."</b>");
       } else {
-         $pdf->displayTitle("<b>".__('Link a knowledge base entry')."</b>");
+         $title = "<b>".__('Link a knowledge base entry')."</b>";
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
+         $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(40,40,10,10);
-         $pdf->displayTitle('<b>'.__('Type'), __('Item'), __('Creation date'), __('Update date').'</b>');
+         $pdf->displayTitle(__('Type'), __('Item'), __('Creation date'), __('Update date'));
 
          while ($data = $result->next()) {
             $pdf->displayLine(__('Knowledge base'),
                               $data['name'],
-                              Html::convDate($data['date_creation']),
-                              Html::convDate($data['date_mod']));
+                              Html::convDateTime($data['date']),
+                              Html::convDateTime($data['date_mod']));
          }
       }
       $pdf->displaySpace();

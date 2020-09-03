@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -38,7 +38,7 @@ function plugin_init_pdf() {
    Plugin::registerClass('PluginPdfConfig', ['addtabon' => 'Config']);
    $PLUGIN_HOOKS['config_page']['pdf'] = 'front/config.form.php';
 
-   include_once(GLPI_ROOT."/plugins/pdf/inc/config.class.php");
+   include_once(Plugin::getPhpDir('pdf')."/inc/config.class.php");
    $PDF_DEVICES = PluginPdfConfig::currency();
 
    Plugin::registerClass('PluginPdfProfile', ['addtabon' => 'Profile']);
@@ -92,31 +92,12 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return ['name'           => __('Print to pdf', 'pdf'),
-           'version'        => '1.6.1',
+           'version'        => '1.7.0',
            'author'         => 'Remi Collet, Nelly Mahu-Lasson',
            'license'        => 'GPLv3+',
            'homepage'       => 'https://forge.glpi-project.org/projects/pdf',
-           'minGlpiVersion' => '9.4',
-           'requirements'   => ['glpi' => ['min' => '9.4',
-                                           'max' => '9.5']]];
+           'minGlpiVersion' => '9.5',
+           'requirements'   => ['glpi' => ['min' => '9.5',
+                                           'max' => '9.6']]];
 
-}
-
-
-function plugin_pdf_check_prerequisites(){
-
-   if (version_compare(GLPI_VERSION,'9.4','lt') || version_compare(GLPI_VERSION,'9.5','ge')) {
-      echo "This plugin requires GLPI >= 9.4";
-   } else if (!extension_loaded('intl')) { // class_exists("NumberFormatter")
-      echo "Incompatible PHP Installation. Requires module intl";
-   } else {
-      return true;
-   }
-   return false;
-
-}
-
-
-function plugin_pdf_check_config(){
-   return true;
 }

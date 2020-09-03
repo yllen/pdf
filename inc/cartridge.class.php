@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -180,7 +180,7 @@ class PluginPdfCartridge extends PluginPdfCommon {
    }
 
 
-   static function pdfForCartridgeItem(PluginPdfSimplePDF $pdf, CartridgeItem $cartitem, $show_old = false) {
+   static function pdfForCartridgeItem(PluginPdfSimplePDF $pdf, CartridgeItem $cartitem, $state) {
       global $DB;
 
       $tID = $cartitem->getField('id');
@@ -193,11 +193,15 @@ class PluginPdfCartridge extends PluginPdfCommon {
                 'glpi_cartridges.date_out DESC',
                 'glpi_cartridges.date_in'];
 
-      if (!$show_old) { // NEW
+      if ($state == "new") {
          $where['glpi_cartridges.date_out'] = null;
+         $where['glpi_cartridges.date_use'] = null;
          $order = ['glpi_cartridges.date_out ASC',
                    'glpi_cartridges.date_use ASC',
                    'glpi_cartridges.date_in'];
+      } else if ($state == "used") {
+         $where['glpi_cartridges.date_out'] = null;
+         $where['NOT'] = ['glpi_cartridges.date_use' => null];
       } else { //OLD
          $where['NOT'] = ['glpi_cartridges.date_out' => null];
       }
@@ -223,22 +227,30 @@ class PluginPdfCartridge extends PluginPdfCommon {
       $pages = [];
 
       if ($number) {
-         if (!$show_old) {
+         if ($state == 'new') {
             $pdf->setColumnsSize(25,25,25,25);
             $pdf->displayTitle("<b><i>".__('Total')."</i></b>",
                                "<b><i>".Cartridge::getTotalNumber($tID)."</i></b>",
-                               "<b><i>".__('New')."</i></b>",
+                               "<b><i>".sprintf(__('%1$s %2$s'), _n('Cartridge', 'Cartridges', $number),
+                                                 _nx('cartridge', 'New', 'New', $number))."</i></b>",
                                "<b><i>".Cartridge::getUnusedNumber($tID)."</i></b>");
             $pdf->displayTitle("<b><i>".__('Used cartridges')."</i></b>",
                                "<b><i>".Cartridge::getUsedNumber($tID),
                                "<b><i>".__('Worn cartridges')."</i></b>",
                                "<b><i>".Cartridge::getOldNumber($tID));
+
+            $pdf->setColumnsSize(100);
+            $pdf->displayTitle("<b>".sprintf(__('%1$s %2$s'), _n('Cartridge', 'Cartridges', $number),
+                                                 _nx('cartridge', 'New', 'New', $number))."</b>");
+         } else if ($state == "used") {
+            $pdf->setColumnsSize(100);
+            $pdf->displayTitle("<b>".__('Used cartridges')."</b>");
          } else { // Old
             $pdf->setColumnsSize(100);
             $pdf->displayTitle("<b>".__('Worn cartridges')."</b>");
          }
 
-         if (!$show_old) {
+         if ($state != 'old') {
             $pdf->setColumnsSize(5,20,20,20,35);
             $pdf->displayLine("<b>".__('ID')."</b>", "<b>"._x('item', 'State')."</b>",
                               "<b>".__('Add date')."</b>", "<b>".__('Use date')."</b>",
@@ -265,7 +277,7 @@ class PluginPdfCartridge extends PluginPdfCommon {
                $stock_time    += $stock_time_tmp;
             }
             $pdfpages = '';
-            if ($show_old) {
+            if ($state == 'old') {
                $tmp_dbeg      = explode("-", $data["date_use"]);
                $tmp_dend      = explode("-", $data["date_out"]);
                $use_time_tmp  = mktime(0, 0, 0, $tmp_dend[1], $tmp_dend[2], $tmp_dend[0])
@@ -291,7 +303,7 @@ class PluginPdfCartridge extends PluginPdfCommon {
                   $pdfpages);
          }
 
-         if ($show_old && ($number > 0)) {
+         if (($state == 'old') && ($number > 0)) {
             if ($nb_pages_printed == 0) {
                $nb_pages_printed = 1;
             }

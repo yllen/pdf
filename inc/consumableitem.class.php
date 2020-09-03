@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2018-2019 PDF plugin team
+ @copyright Copyright (c) 2018-2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -80,6 +80,10 @@ class PluginPdfConsumableItem extends PluginPdfCommon {
             '<b><i>'.sprintf(__('%1$s: %2$s'),  __('Alert threshold').'</i></b>',
                              $consitem->getField('alarm_threshold')));
 
+      $pdf->displayLine(
+            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Inventory number').'</i></b>',
+                             $consitem->fields['otherserial']));
+
       PluginPdfCommon::mainLine($pdf, $consitem, 'comment');
 
       $pdf->displaySpace();
@@ -134,9 +138,11 @@ class PluginPdfConsumableItem extends PluginPdfCommon {
             $pdf->setColumnsSize(50,50);
             $pdf->displayTitle("<b><i>".sprintf(__('%1$s: %2$s'), __('Total'),
                                                 Consumable::getTotalNumber($instID))."</i></b>",
-                               "<b><i>".sprintf(__('%1$s: %2$s'), __('New'),
+                               "<b><i>".sprintf(__('%1$s: %2$s'),
+                                                _nx('consumable','New','New',$instID),
                                                 Consumable::getUnusedNumber($instID))."</i></b>");
-            $pdf->displayTitle("", "<b><i>".sprintf(__('%1$s: %2$s'),__('Used'),
+            $pdf->displayTitle("", "<b><i>".sprintf(__('%1$s: %2$s'),
+                                                    _nx('consumable','Used','Used',$instID),
                                                           Consumable::getOldNumber($instID)));
          } else { // Old
             $pdf->setColumnsSize(100);

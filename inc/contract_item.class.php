@@ -69,8 +69,7 @@ class PluginPdfContract_Item extends PluginPdfCommon {
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $title = sprintf(__('%1$s: %2$s'), $title, $number);
-         $pdf->displayTitle($title);
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, $number));
 
          $pdf->setColumnsSize(19,19,15,10,16,11,10);
          $pdf->displayTitle(__('Name'), __('Entity'), _x('phone', 'Number'), __('Contract type'),
@@ -84,6 +83,12 @@ class PluginPdfContract_Item extends PluginPdfCommon {
             $assocID = $row['id'];
 
             if ($con->getFromDB($cID)) {
+               $textduration = '';
+               if ($con->fields['duration'] > 0) {
+                  $textduration = sprintf(__('Valid to %s'),
+                                          Infocom::getWarrantyExpir($con->fields["begin_date"],
+                                                                    $con->fields["duration"]));
+               }
                $pdf->displayLine(
                   (empty($con->fields["name"]) ? "(".$con->fields["id"].")" : $con->fields["name"]),
                   Dropdown::getDropdownName("glpi_entities", $con->fields["entities_id"]),
@@ -95,9 +100,7 @@ class PluginPdfContract_Item extends PluginPdfCommon {
                   sprintf(__('%1$s - %2$s'),
                           sprintf(_n('%d month', '%d months', $con->fields["duration"]),
                                   $con->fields["duration"]),
-                          sprintf(__('Valid to %s'),
-                                  Infocom::getWarrantyExpir($con->fields["begin_date"],
-                                                            $con->fields["duration"]))));
+                          $textduration));
             }
             $j++;
          }
