@@ -536,7 +536,7 @@ abstract class PluginPdfCommon {
              $_SESSION["plugin_pdf"]["type"]   = $item->getType();
              $_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
              echo "<script type='text/javascript'>
-                      location.href='.".Plugin::getWebDir('pdf')."/front/export.massive.php'</script>";
+                      location.href='../plugins/pdf/front/export.massive.php'</script>";
              break;
       }
    }
