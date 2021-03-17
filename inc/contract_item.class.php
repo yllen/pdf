@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -106,5 +106,159 @@ class PluginPdfContract_Item extends PluginPdfCommon {
          }
       }
       $pdf->displaySpace();
+   }
+
+
+   static function pdfForContract(PluginPdfSimplePDF $pdf, Contract $contract) {
+      global $DB;
+
+      $instID = $contract->fields['id'];
+
+      if (!$contract->can($instID, READ)) {
+         return false;
+      }
+
+      $types_iterator = Contract_Item::getDistinctTypes($instID);
+      $number = count($types_iterator);
+
+      $data    = [];
+      $totalnb = 0;
+      $used    = [];
+      while ($type_row = $types_iterator->next()) {
+         $itemtype = $type_row['itemtype'];
+         if (!($item = getItemForItemtype($itemtype))) {
+            continue;
+         }
+         if ($item->canView()) {
+            $itemtable = getTableForItemType($itemtype);
+            $itemtype_2 = null;
+            $itemtable_2 = null;
+
+            $params = ['SELECT' => [$itemtable . '.*',
+                                    Contract_Item::getTable() . '.id AS linkid',
+                                    'glpi_entities.id AS entity'],
+                       'FROM'   => 'glpi_contracts_items',
+                       'WHERE'  => ['glpi_contracts_items.itemtype'     => $itemtype,
+                                    'glpi_contracts_items.contracts_id' => $instID]];
+
+            if ($item instanceof Item_Devices) {
+               $itemtype_2  = $itemtype::$itemtype_2;
+               $itemtable_2 = $itemtype_2::getTable();
+               $namefield   = 'name_device';
+               $params['SELECT'][] = $itemtable_2 . '.designation AS ' . $namefield;
+            } else {
+               $namefield = $item->getNameField();
+               $namefield = "$itemtable.$namefield";
+            }
+
+            $params['LEFT JOIN'][$itemtable] = ['FKEY' => [$itemtable                 => 'id',
+                                                           Contract_Item::getTable()  => 'items_id']];
+
+            if ($itemtype != 'Entity') {
+               $params['LEFT JOIN']['glpi_entities'] = ['FKEY' => [$itemtable        => 'entities_id',
+                                                                   'glpi_entities'   => 'id']];
+            }
+
+            if ($item instanceof Item_Devices) {
+               $id_2  = $itemtype_2::getIndexName();
+               $fid_2 = $itemtype::$items_id_2;
+
+               $params['LEFT JOIN'][$itemtable_2] = ['FKEY' => [$itemtable     => $fid_2,
+                                                                $itemtable_2   => $id_2]];
+            }
+
+            if ($item->maybeTemplate()) {
+               $params['WHERE'][] = [$itemtable . '.is_template' => 0];
+            }
+            $params['WHERE'] += getEntitiesRestrictCriteria($itemtable, '', '', $item->maybeRecursive());
+            $params['ORDER'] = "glpi_entities.completename, $namefield";
+
+            $iterator = $DB->request($params);
+            $nb       = count($iterator);
+
+            if ($nb > $_SESSION['glpilist_limit']) {
+               $opt = ['order'      => 'ASC',
+                       'is_deleted' => 0,
+                       'reset'      => 'reset',
+                       'start'      => 0,
+                       'sort'       => 80,
+                       'criteria'   => [0 => ['value'      => '$$$$'.$instID,
+                       'searchtype' => 'contains',
+                       'field'      => 29]]];
+
+               $link = ". __('Device list').";
+
+               $data[$itemtype] = ['longlist' => true,
+                                   'name'     => sprintf(__('%1$s: %2$s'),
+                                                         $item->getTypeName($nb), $nb),
+                                   'link'     => $link];
+            } else if ($nb > 0) {
+               $data[$itemtype] = [];
+               while ($objdata = $iterator->next()) {
+                  $data[$itemtype][$objdata['id']] = $objdata;
+                  $used[$itemtype][$objdata['id']] = $objdata['id'];
+               }
+            }
+            $totalnb += $nb;
+         }
+      }
+
+      $pdf->setColumnsSize(100);
+      $title = '<b>'._n('Item', 'Items', $number).'</b>';
+
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $pdf->displayTitle($title);
+
+         $pdf->setColumnsSize(15,18,29,15,15,8);
+         $pdf->displayTitle("<b><i>".__('Type')."</i></b>", "<b><i>".__('Name')."</i></b>",
+                            "<b><i>".__('Entity')."</i></b>",  "<b><i>".__('Serial number')."</i></b>",
+                            "<b><i>".__('Inventory number')."</i></b>", "<b><i>".__('Status')."</i></b>");
+
+         $totalnb = 0;
+         foreach ($data as $itemtype => $datas) {
+
+            if (isset($datas['longlist'])) {
+               $pdf->displayLine($datas['name'], $datas['link']);
+            } else {
+               $prem = true;
+               $nb   = count($datas);
+               foreach ($datas as $objdata) {
+                  $item = new $itemtype();
+                  if ($item instanceof Item_Devices) {
+                     $name = $objdata["name_device"];
+                  } else {
+                     $name = $objdata["name"];
+                  }
+                  if ($_SESSION["glpiis_ids_visible"]
+                        || empty($data["name"])) {
+                     $name = sprintf(__('%1$s (%2$s)'), $name, $objdata["id"]);
+                  }
+
+                  if ($prem) {
+                     $typename = $item->getTypeName($nb);
+                     $pdf->displayLine(Html::clean(sprintf(__('%1$s: %2$s'), $typename, $nb)),
+                                       Html::clean($name),
+                                       Dropdown::getDropdownName("glpi_entities", $objdata['entity']),
+                                       Html::clean((isset($objdata["serial"])? "".$objdata["serial"]."" :"-")),
+                                       Html::clean((isset($objdata["otherserial"])? "".$objdata["otherserial"]."" :"-")),
+                                       (isset($objdata['states_id']) ? Dropdown::getDropdownName("glpi_states", $objdata['states_id'])
+                                                                     : ''));
+                     $prem = false;
+                  } else {
+                     $pdf->displayLine('',
+                                       Html::clean($name),
+                                       Dropdown::getDropdownName("glpi_entities", $objdata['entity']),
+                                       Html::clean((isset($objdata["serial"])? "".$objdata["serial"]."" :"-")),
+                                       Html::clean((isset($objdata["otherserial"])? "".$objdata["otherserial"]."" :"-")),
+                                       (isset($objdata['states_id']) ? Dropdown::getDropdownName("glpi_states", $objdata['states_id'])
+                                                                     : ''));
+                  }
+               }
+            }
+         }
+      }
    }
 }
