@@ -98,7 +98,7 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
 
       // From ComputerVirtualMachine::showForVirtualMachine()
       if ($item->fields['uuid']) {
-         $hosts = $dbu->getAllDataFromTable(self::getTable(),
+         $hosts = $dbu->getAllDataFromTable($item::getTable(),
                                             ['RAW'
                                              => ['LOWER(uuid)'
                                                  => ComputerVirtualMachine::getUUIDRestrictRequest($item->fields['uuid'])
