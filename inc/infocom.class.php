@@ -43,7 +43,7 @@ class PluginPdfInfocom extends PluginPdfCommon {
 
 
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-      global $CFG_GLPI;
+      global $CFG_GLPI, $PDF_DEVICES;
 
       $ID = $item->getField('id');
 
@@ -108,9 +108,9 @@ class PluginPdfInfocom extends PluginPdfCommon {
 
          $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), _x('price', 'Value')."</i></b>",
-                             Html::clean(Html::formatNumber($ic->fields["value"]))),
+                             PluginPdfConfig::formatNumber($ic->fields["value"])),
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Warranty extension value')."</i></b>",
-                             Html::clean(Html::formatNumber($ic->fields["warranty_value"]))));
+                             PluginPdfConfig::formatNumber($ic->fields["warranty_value"])));
 
          $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Account net value')."</i></b>",
@@ -130,14 +130,23 @@ class PluginPdfInfocom extends PluginPdfCommon {
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization coefficient')."</i></b>",
                              $ic->fields["sink_coeff"]));
 
+         $currency = PluginPdfConfig::getInstance();
+
+         foreach ($PDF_DEVICES as $option => $value) {
+            if ($currency->fields['currency'] == $option) {
+               $sym = $value[1];
+            }
+         }
          $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('TCO (value + tracking cost)')."</i></b>",
-                             Html::clean(Infocom::showTco($item->getField('ticket_tco'),
-                                                          $ic->fields["value"]))),
+                             sprintf(__('%1$s %2$s'),
+                                     Html::clean(Infocom::showTco($item->getField('ticket_tco'),
+                                                                  $ic->fields["value"])), $sym)),
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Monthly TCO')."</i></b>",
-                             Html::clean(Infocom::showTco($item->getField('ticket_tco'),
-                                                          $ic->fields["value"],
-                                                          $ic->fields["buy_date"]))));
+                             sprintf(__('%1$s %2$s'),
+                                     Html::clean(Infocom::showTco($item->getField('ticket_tco'),
+                                                                  $ic->fields["value"],
+                                                                  $ic->fields["buy_date"])), $sym)));
 
          $pdf->displayLine(
                "<b><i>".sprintf(__('%1$s: %2$s'), __('Business criticity')."</i></b>",
