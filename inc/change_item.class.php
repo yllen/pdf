@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @copyright Copyright (c) 2009-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -175,11 +175,27 @@ class PluginPdfChange_Item extends PluginPdfCommon {
             break;
       }
 
-      $query = "SELECT ".Change::getCommonSelect()."
+      if (count($_SESSION["glpiactiveentities"])>1) {
+         $SELECT = ", `glpi_entities`.`completename` AS entityname,
+                      `glpi_changes`.`entities_id` AS entityID ";
+         $FROM   = " LEFT JOIN `glpi_entities`
+                        ON (`glpi_entities`.`id` = `glpi_changes`.`entities_id`) ";
+      }
+      $query = "SELECT DISTINCT `glpi_changes`.*,
+                        `glpi_itilcategories`.`completename` AS catname
+                        $SELECT
                 FROM `glpi_changes`
                 LEFT JOIN `glpi_changes_items`
-                              ON (`glpi_changes`.`id` = `glpi_changes_items`.`changes_id`)  ".
-                Change::getCommonLeftJoin()."
+                              ON (`glpi_changes`.`id` = `glpi_changes_items`.`changes_id`)
+                LEFT JOIN `glpi_changes_groups`
+                  ON (`glpi_changes`.`id` = `glpi_changes_groups`.`changes_id`)
+                LEFT JOIN `glpi_changes_users`
+                  ON (`glpi_changes`.`id` = `glpi_changes_users`.`changes_id`)
+                LEFT JOIN `glpi_changes_suppliers`
+                  ON (`glpi_changes`.`id` = `glpi_changes_suppliers`.`changes_id`)
+                LEFT JOIN `glpi_itilcategories`
+                  ON (`glpi_changes`.`itilcategories_id` = `glpi_itilcategories`.`id`)
+                $FROM
                 WHERE $restrict ".
                       $dbu->getEntitiesRestrictRequest("AND","glpi_changes")."
                 ORDER BY $order

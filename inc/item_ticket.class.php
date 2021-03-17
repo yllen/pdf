@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @copyright Copyright (c) 2009-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -153,7 +153,6 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
 
       $restrict  = '';
       $order     = '';
-      $leftjoin  = Ticket::getCommonLeftJoin();
       switch ($item->getType()) {
          case 'User' :
             $restrict   = "(`glpi_tickets_users`.`users_id` = '".$item->getID()."'
@@ -196,9 +195,30 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
             $order    = '`glpi_tickets`.`date_mod` DESC';
       }
 
-      $query = "SELECT ".Ticket::getCommonSelect()."
-                FROM `glpi_tickets` ".
-                $leftjoin."
+      if (count($_SESSION["glpiactiveentities"])>1) {
+         $SELECT = ", `glpi_entities`.`completename` AS entityname,
+                      `glpi_tickets`.`entities_id` AS entityID ";
+         $FROM   = " LEFT JOIN `glpi_entities`
+                        ON (`glpi_entities`.`id` = `glpi_tickets`.`entities_id`) ";
+      }
+
+      $query = "SELECT DISTINCT `glpi_tickets`.*,
+                       `glpi_itilcategories`.`completename` AS catname
+                       $SELECT
+                FROM `glpi_tickets`
+                LEFT JOIN `glpi_groups_tickets`
+                     ON (`glpi_tickets`.`id` = `glpi_groups_tickets`.`tickets_id`)
+                LEFT JOIN `glpi_tickets_users`
+                     ON (`glpi_tickets`.`id` = `glpi_tickets_users`.`tickets_id`)
+                LEFT JOIN `glpi_suppliers_tickets`
+                     ON (`glpi_tickets`.`id` = `glpi_suppliers_tickets`.`tickets_id`)
+                LEFT JOIN `glpi_itilcategories`
+                     ON (`glpi_tickets`.`itilcategories_id` = `glpi_itilcategories`.`id`)
+                LEFT JOIN `glpi_tickettasks`
+                     ON (`glpi_tickets`.`id` = `glpi_tickettasks`.`tickets_id`)
+                LEFT JOIN `glpi_items_tickets`
+                     ON (`glpi_tickets`.`id` = `glpi_items_tickets`.`tickets_id`)
+                $FROM
                 WHERE $restrict ".
                       $dbu->getEntitiesRestrictRequest("AND","glpi_tickets")."
                 ORDER BY $order

@@ -42,9 +42,9 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=[]) {
+   function defineAllTabsPDF($options=[]) {
 
-      $onglets = parent::defineAllTabs($options);
+      $onglets = parent::defineAllTabsPDF($options);
       unset($onglets['KnowbaseItem$3']); // tab for edition
       unset($onglets['KnowbaseItem_Item$1']);
       unset($onglets['KnowbaseItemTranslation$1']);

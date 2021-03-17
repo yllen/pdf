@@ -42,9 +42,9 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=[]) {
+   function defineAllTabsPDF($options=[]) {
 
-      $onglets = parent::defineAllTabs($options);
+      $onglets = parent::defineAllTabsPDF($options);
       unset($onglets['NetworkName$1']);
       unset($onglets['Certificate_Item$1']);
       unset($onglets['Impact$1']);

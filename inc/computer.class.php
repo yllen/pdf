@@ -41,9 +41,9 @@ class PluginPdfComputer extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=[]) {
+   function defineAllTabsPDF($options=[]) {
 
-      $onglets = parent::defineAllTabs($options);
+      $onglets = parent::defineAllTabsPDF($options);
       unset($onglets['Lock$1']);
       unset($onglets['Appliance_Item$1']);
       unset($onglets['Certificate_Item$1']);

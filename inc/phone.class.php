@@ -42,9 +42,9 @@ class PluginPdfPhone extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=[]) {
+   function defineAllTabsPDF($options=[]) {
 
-      $onglets = parent::defineAllTabs($options);
+      $onglets = parent::defineAllTabsPDF($options);
       unset($onglets['Appliance_Item$1']);
       unset($onglets['Impact$1']);
       return $onglets;

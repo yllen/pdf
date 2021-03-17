@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @copyright Copyright (c) 2009-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -30,7 +30,7 @@
  --------------------------------------------------------------------------
 */
 
-abstract class PluginPdfCommon {
+abstract class PluginPdfCommon extends CommonGLPI {
 
    protected $obj= NULL;
 
@@ -88,7 +88,7 @@ abstract class PluginPdfCommon {
     *
     * @param $options Array of options
    **/
-   function defineAllTabs($options=[]) {
+   function defineAllTabsPDF($options=[]) {
 
       $onglets  = $this->obj->defineTabs();
 

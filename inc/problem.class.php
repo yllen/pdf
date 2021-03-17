@@ -518,9 +518,9 @@ class PluginPdfProblem extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=[]) {
+   function defineAllTabsPDF($options=[]) {
 
-      $onglets = parent::defineAllTabs($options);
+      $onglets = parent::defineAllTabsPDF($options);
       unset($onglets['Itil_Project$1']);
       unset($onglets['Impact$1']);
 

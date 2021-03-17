@@ -93,7 +93,7 @@ class PluginPdfGroup extends PluginPdfCommon {
    // From Group::showLDAPForm()
    static function pdfLdapForm(PluginPdfSimplePDF $pdf, Group $item) {
 
-      if (Session::haveRight("config", READ) && AuthLdap::useAuthLdap()) {
+      if (Session::haveRight("config", READ) && AuthLDAP::useAuthLdap()) {
          $pdf->setColumnsSize(100);
          $pdf->displayTitle('<b>'.__('LDAP directory link').'</b>');
 
@@ -180,9 +180,9 @@ class PluginPdfGroup extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=[]) {
+   function defineAllTabsPDF($options=[]) {
 
-      $onglets = parent::defineAllTabs($options);
+      $onglets = parent::defineAllTabsPDF($options);
 
       unset($onglets['NotificationTarget$1']);
       return $onglets;
