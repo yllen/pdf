@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2018-2019 PDF plugin team
+ @copyright Copyright (c) 2018-2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -59,6 +59,7 @@ class PluginPdfItem_Device extends PluginPdfCommon {
 
       $pdf->setColumnsSize(3,14,42,41);
 
+      $vide = true;
       foreach ($devtypes as $itemtype) {
 
          $devicetypes   = new $itemtype();
@@ -76,8 +77,10 @@ class PluginPdfItem_Device extends PluginPdfCommon {
          $query = "SELECT count(*) AS NB, `id`, `".$fk."`".$specif_text."
                    FROM `".$linktable."`
                    WHERE `items_id` = '".$ID."'
-                   AND `itemtype` = '".$item->getType()."'
+                         AND `itemtype` = '".$item->getType()."'
                    GROUP BY `".$fk."`".$specif_text;
+
+
 
          $device = new $associated_type();
          $itemdevice = new $itemtype();
@@ -123,7 +126,7 @@ class PluginPdfItem_Device extends PluginPdfCommon {
                            } else {
                               $labelname = $label["label"];
                            }
-                           $col4 .= sprintf(__('%1$s: %2$s'), $labelname, $value." ");
+                           $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $labelname.'</i></b>', $value." ");
                         }
                      } else if (isset($device->fields[$label["name"]."_default"])
                                 && !empty($device->fields[$label["name"]."_default"])) {
@@ -133,8 +136,14 @@ class PluginPdfItem_Device extends PluginPdfCommon {
                   }
                }
                $pdf->displayLine($data['NB'], $device->getTypeName(), $device->getName(), $col4);
+               $vide = false;
             }
          }
+      }
+      if ($vide) {
+         $pdf->setColumnsSize(100);
+         $pdf->setColumnsAlign('center');
+         $pdf->displayLine( __('No item to display'));
       }
 
       $pdf->displaySpace();

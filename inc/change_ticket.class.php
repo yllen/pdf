@@ -1,6 +1,6 @@
 <?php
 /**
- * @version $Id$
+ * @version $Id:
  -------------------------------------------------------------------------
  LICENSE
 
@@ -20,8 +20,8 @@
  along with Reports. If not, see <http://www.gnu.org/licenses/>.
 
  @package   pdf
- @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @authors   Nelly Mahu-Lasson
+ @copyright Copyright (c) 2020-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -31,52 +31,50 @@
 */
 
 
-class PluginPdfProblem_Ticket extends PluginPdfCommon {
+class PluginPdfChange_Ticket extends PluginPdfCommon {
 
 
    static $rightname = "plugin_pdf";
 
 
    function __construct(CommonGLPI $obj=NULL) {
-      $this->obj = ($obj ? $obj : new Problem_Ticket());
+      $this->obj = ($obj ? $obj : new Change_Ticket());
    }
 
 
-   static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $ticket) {
+   static function pdfForChange(PluginPdfSimplePDF $pdf, Change $change) {
       global $DB;
 
       $dbu = new DbUtils();
 
-      $ID  = $ticket->getField('id');
+      $ID = $change->getField('id');
 
-      if (!Session::haveRight('problem', Problem::READALL)
-          || !$ticket->can($ID, READ)) {
+      if (!$change->can($ID, READ)) {
          return false;
       }
 
-      $query = ['SELECT'    => ['glpi_problems_tickets.id', 'glpi_problems.*'],
-                'FROM'      => 'glpi_problems_tickets',
-                'LEFT JOIN' => ['glpi_problems'
-                                 => ['FKEY' => ['glpi_problems_tickets' => 'problems_id',
-                                                'glpi_problems'         => 'id']]],
-                'WHERE'     => ['tickets_id' => $ID],
-                'ORDER'     => 'glpi_problems.name'];
-
-      $result = $DB->request($query);
+      $result = $DB->request('glpi_changes_tickets',
+                             ['SELECT'    => 'glpi_changes_tickets.id',
+                              'DISTINCT'  => true,
+                              'FIELDS'    => ['glpi_tickets.*', 'name'],
+                              'LEFT JOIN' => ['glpi_tickets'
+                                                => ['FKEY' => ['glpi_changes_tickets' => 'tickets_id',
+                                                               'glpi_tickets'         => 'id']]],
+                              'WHERE'     => ['changes_id' => $ID],
+                              'ORDER'     => 'name']);
       $number = count($result);
 
-      $problems = [];
-      $used     = [];
-
       $pdf->setColumnsSize(100);
-      $title = '<b>'.__('Problem', 'Problems', $number).'</b>';
-      if (!$number) {
-         $pdf->displayTitle(sprintf(__('%1$s: %2$s'),$title, __('No item to display')));
-      } else {
-         $pdf->displayTitle("<b>".sprintf(_n('Last %d problem','Last %d problems', $number)."</b>",
-               $number));
+      $title = "<b>".Ticket::getTypeName($number)."</b>";
 
-         $job = new Problem();
+      if (!$number) {
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      } else {
+         $pdf->displayTitle("<b>".sprintf(_n('Last %d ticket','Last %d tickets', $number)."</b>",
+                            $number));
+         $pdf->displayTitle($title);
+
+         $job = new Ticket();
          while ($data = $result->next()) {
             if (!$job->getFromDB($data["id"])) {
                continue;
@@ -84,7 +82,7 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
             $pdf->setColumnsAlign('center');
             $col = '<b><i>ID '.$job->fields["id"].'</i></b>, '.
                     sprintf(__('%1$s: %2$s'), __('Status'),
-                            Problem::getStatus($job->fields["status"]));
+                            Ticket::getStatus($job->fields["status"]));
 
             if (count($_SESSION["glpiactiveentities"]) > 1) {
                if ($job->fields['entities_id'] == 0) {
@@ -200,7 +198,7 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
                foreach ($grps as $d) {
                   if ($first) {
                      $col = sprintf(__('%1$s  %2$s'), $col,
-                                   Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
+                                    Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
                   } else {
                      $col = sprintf(__('%1$s, %2$s'), $col,
                                     Dropdown::getDropdownName("glpi_groups", $d['groups_id']));
@@ -209,8 +207,29 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
                }
             }
             if ($col) {
-               $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', ('Assigned to'), '');
+               $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Assigned to'), '');
                $pdf->displayText($texte, $col, 1);
+            }
+
+            $first = true;
+            $listitems = $texteitem = '';
+            foreach ($DB->request('glpi_items_tickets',
+                                  ['WHERE' => ['tickets_id' => $job->fields["id"]]]) as $data) {
+
+               if (!($item = $dbu->getItemForItemtype($data['itemtype']))) {
+                  continue;
+               }
+               if ($first) {
+                  $texteitem = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>',
+                        _n('Associated items', 'Associated items', 2), ''."<br />");
+               }
+               $listitems .= sprintf(__('%1$s - %2$s'), $item->getTypeName(1),
+                                     Dropdown::getDropdownName(getTableForItemType($data['itemtype']),
+                                                               $data['items_id'])."<br />");
+               $first = false;
+            }
+            if (!empty($listitems)) {
+               $pdf->displayText($texteitem, $listitems);
             }
 
             $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', ('Title'), '');
@@ -221,40 +240,37 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
    }
 
 
-   static function pdfForProblem(PluginPdfSimplePDF $pdf, Problem $problem) {
+   static function pdfForTicket(PluginPdfSimplePDF $pdf, Ticket $ticket) {
       global $DB;
 
       $dbu = new DbUtils();
 
-      $ID  = $problem->getField('id');
+      $ID = $ticket->getField('id');
 
-      if (!$problem->can($ID, READ)) {
+      if (!$ticket->can($ID, READ)) {
          return false;
       }
 
-      $query = ['SELECT'    => ['glpi_problems_tickets.id AS linkID',
-                                'glpi_tickets'.'.*'],
-                'DISTINCT'  => true,
-                'FROM'      => 'glpi_problems_tickets',
-                'LEFT JOIN' => ['glpi_tickets' => ['FKEY' => ['glpi_problems_tickets' => 'tickets_id',
-                                                              'glpi_tickets'          => 'id']]],
-                'WHERE'     => ['glpi_problems_tickets.problems_id' => $ID],
-                'ORDER'     => 'glpi_tickets.name'];
-      $result = $DB->request($query);
+      $result = $DB->request('glpi_changes_tickets',
+                             ['SELECT'    => 'glpi_changes_tickets.id',
+                              'DISTINCT'  => true,
+                              'FIELDS'    => ['glpi_changes.*', 'name'],
+                              'LEFT JOIN' => ['glpi_changes'
+                                               => ['FKEY' => ['glpi_changes_tickets' => 'changes_id',
+                                                              'glpi_changes'          => 'id']]],
+                              'WHERE'     => ['tickets_id' => $ID],
+                              'ORDER'     => 'name']);
       $number = count($result);
 
-      $problems = [];
-      $used     = [];
-
       $pdf->setColumnsSize(100);
-      $title = '<b>'.__('Ticket', 'Tickets', 2).'</b>';
+      $title = '<b>'.Change::getTypeName($number).'</b>';
       if (!$number) {
-         $pdf->displayTitle(sprintf(__('%1$s: %2$s'),$title, __('No item to display')));
+         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $pdf->displayTitle("<b>".sprintf(_n('Last %d ticket','Last %d tickets', $number)."</b>",
-               $number));
+         $pdf->displayTitle("<b>".sprintf(_n('Last %d change','Last %d changes', $number)."</b>",
+                            $number));
 
-         $job = new Ticket();
+         $job = new Change();
          while ($data = $result->next()) {
             if (!$job->getFromDB($data["id"])) {
                continue;
@@ -311,7 +327,7 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
             if ($job->fields["itilcategories_id"]) {
                $pdf->displayLine(
                   '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
-                                  Dropdown::getDropdownName('glpi_itilcategories',
+                                   Dropdown::getDropdownName('glpi_itilcategories',
                                                              $job->fields["itilcategories_id"])));
             }
 
@@ -387,26 +403,8 @@ class PluginPdfProblem_Ticket extends PluginPdfCommon {
 
             $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', ('Title'), '');
             $pdf->displayText($texte, $job->fields["name"], 1);
-
-            $item_col = '';
-            $item_ticket = new Item_Ticket();
-            $data = $item_ticket->find("`tickets_id` = ".$job->fields['id']);
-            foreach ($data as $val) {
-               if (!empty($val["itemtype"]) && ($val["items_id"] > 0)) {
-                  if ($object = $dbu->getItemForItemtype($val["itemtype"])) {
-                     if ($object->getFromDB($val["items_id"])) {
-                        $item_col .= $object->getTypeName();
-                        $item_col .= " - ".$object->getNameID()."<br />";
-                     }
-                  }
-               }
-            }
-            $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>',
-                                      __('Items of the ticket', 'behaviors'), '');
-            $pdf->displayText($texte, $item_col, 1);
          }
       }
       $pdf->displaySpace();
-
    }
 }

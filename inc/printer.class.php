@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -40,10 +40,12 @@ class PluginPdfPrinter extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=[]) {
+   function defineAllTabsPDF($options=[]) {
 
-      $onglets = parent::defineAllTabs($options);
+      $onglets = parent::defineAllTabsPDF($options);
       unset($onglets['Certificate_Item$1']);
+      unset($onglets['Impact$1']);
+      unset($onglets['Appliance_Item$1']);
       return $onglets;
    }
 
@@ -68,15 +70,12 @@ class PluginPdfPrinter extends PluginPdfCommon {
                                                                 $printer->fields['networks_id']))));
 
       $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Domain').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_domains',
-                                                                $printer->fields['domains_id']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Memory').'</i></b>',
-                          $printer->fields['memory_size']));
+                          $printer->fields['memory_size']),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Initial page counter').'</i></b>',
+                          $printer->fields['init_pages_counter']));
 
       $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Initial page counter').'</i></b>',
-                          $printer->fields['init_pages_counter']),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Current counter of pages').'</i></b>',
                           $printer->fields['last_pages_counter']));
 

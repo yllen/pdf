@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2018 PDF plugin team
+ @copyright Copyright (c) 2009-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -48,13 +48,19 @@ class PluginPdfComputerAntivirus extends PluginPdfCommon {
 
       $result = $DB->request('glpi_computerantiviruses', ['computers_id' => $ID,
                                                           'is_deleted'   => 0]);
+      $number = count($result);
+
       $pdf->setColumnsSize(100);
       $title = "<b>".__('Antivirus')."</b>";
 
-      if (!count($result)) {
+      if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $title = sprintf(__('%1$s: %2$s'), $title, count($result));
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+                  $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
          $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(25,20,15,15,5,5,15);

@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -50,21 +50,26 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
       $virtualmachines = $dbu->getAllDataFromTable('glpi_computervirtualmachines',
                                               ['computers_id' => $ID]);
       $pdf->setColumnsSize(100);
-      $title = "<b>".__('List of virtual machines')."</b>";
+      $title = "<b>".__('List of virtualized environments')."</b>";
 
-      if (!count($virtualmachines)) {
-         $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
+      $number = count($virtualmachines);
+
+      if (!$number) {
+         $pdf->displayTitle("<b>".__('No virtualized environment associated with the computer')."</b>");
       } else {
-         $title = sprintf(__('%1$s: %2$s'), $title, count($virtualmachines));
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
          $pdf->displayTitle($title);
 
-         $pdf->setColumnsSize(20,8,8,8,25,8,8,15);
-         $pdf->setColumnsAlign('left', 'center', 'center', 'center', 'left', 'right', 'right', 'left');
-         $typ = explode(' ', __('Virtualization system'));
-         $sys = explode(' ', __('Virtualization model'));
-         $sta = explode(' ', __('State of the virtual machine'));
-         $pdf->displayTitle(__('Name'), $typ[0], $sys[0], $sta[0], __('UUID'), __('CPU'), __('Mio'),
+         $pdf->setColumnsSize(19,11,11,8,20,8,8,15);
+         $pdf->displayTitle(__('Name'), __('Virtualization system'), __('Virtualization model'),
+                            __('State'), __('UUID'), _x('quantity', 'Processors number'),
+                              sprintf(__('%1$s (%2$s)'), __('Memory'), __('Mio')),
                             __('Machine'));
+         $pdf->setColumnsAlign('left', 'center', 'center', 'center', 'left', 'right', 'right', 'left');
 
          foreach ($virtualmachines as $virtualmachine) {
             $name = '';
@@ -93,11 +98,10 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
 
       // From ComputerVirtualMachine::showForVirtualMachine()
       if ($item->fields['uuid']) {
-         $where = "`uuid`".ComputerVirtualMachine::getUUIDRestrictRequest($item->fields['uuid']);
-         $hosts = $dbu->getAllDataFromTable(self::getTable(),
+         $hosts = $dbu->getAllDataFromTable($item::getTable(),
                                             ['RAW'
                                              => ['LOWER(uuid)'
-                                                 => self::getUUIDRestrictCriteria($comp->fields['uuid'])
+                                                 => ComputerVirtualMachine::getUUIDRestrictRequest($item->fields['uuid'])
                                                 ]
                                             ]);
 
@@ -110,7 +114,7 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
 
             $computer = new Computer();
             foreach ($hosts as $host) {
-               if ($computer->getFromDB($host['computers_id'])) {
+               if ($computer->getFromDB($host['id'])) {
                   $pdf->displayLine(
                      $computer->getName(),
                      Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',

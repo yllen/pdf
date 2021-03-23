@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -178,14 +178,14 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $pdf->displayLine(
             "<b><i>". sprintf(__('%1$s: %2$s'), __('Impact')."</i></b>",
-                  Html::clean($job->getImpactName($job->fields["impact"]))));
+                  Html::clean($job->getImpactName($job->fields["impact"]))),
+            "<b><i>".sprintf(__('%1$s: %2$s'), __('Location')."</i></b>",
+                  Dropdown::getDropdownName("glpi_locations",
+                        $job->fields["locations_id"])));
 
       $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Priority')."</i></b>",
-                             Html::clean($job->getPriorityName($job->fields["priority"]))),
-            "<b><i>".sprintf(__('%1$s: %2$s'), __('Location')."</i></b>",
-                             Dropdown::getDropdownName("glpi_locations",
-                                                       $job->fields["locations_id"])));
+                             Html::clean($job->getPriorityName($job->fields["priority"]))));
 
       $pdf->setColumnsSize(50,50);
 
@@ -371,22 +371,46 @@ class PluginPdfTicket extends PluginPdfCommon {
 
    static function pdfStat(PluginPdfSimplePDF $pdf, Ticket $job) {
 
+      $now                      = time();
+      $date_creation            = strtotime($job->fields['date']);
+      $date_takeintoaccount     = $date_creation + $job->fields['takeintoaccount_delay_stat'];
+      if ($date_takeintoaccount == $date_creation) {
+         $date_takeintoaccount  = 0;
+      }
+
       $pdf->setColumnsSize(100);
       $pdf->displayTitle("<b>"._n('Date', 'Dates', 2)."</b>");
 
       $pdf->setColumnsSize(50, 50);
-      $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Opening date'),
-                                Html::convDateTime($job->fields['date'])));
-      $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Time to resolve'),
-                                Html::convDateTime($job->fields['time_to_resolve'])));
+      $pdf->setColumnsAlign('right', 'left');
+
+      $pdf->displayLine(Html::convDateTime($job->fields['date']), __('Opening date'));
+
+      if (!empty($job->fields['internal_time_to_own'])) {
+         $pdf->displayLine(Html::convDateTime($job->fields['internal_time_to_own']),
+                           __('Internal time to own'));
+      }
+      if (!empty($job->fields['takeintoaccount_delay_stat'])) {
+         $pdf->displayLine(Html::convDateTime(date("Y-m-d H:i:s", $date_takeintoaccount)),
+                           __('Take into account'));
+      }
+      if (!empty($job->fields['time_to_own'])) {
+         $pdf->displayLine(Html::convDateTime($job->fields['time_to_own']), __('Time to own'));
+      }
+      if (!empty($job->fields['internal_time_to_resolve'])) {
+         $pdf->displayLine(Html::convDateTime($job->fields['internal_time_to_resolve']),
+                           __('Internal time to resolve'));
+      }
+      if (!empty($job->fields['time_to_resolve'])) {
+          $pdf->displayLine(Html::convDateTime($job->fields['time_to_resolve']),
+                            __('Time to resolve'));
+      }
       if (in_array($job->fields["status"], $job->getSolvedStatusArray())
           || in_array($job->fields["status"], $job->getClosedStatusArray())) {
-         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Resolution date'),
-                                   Html::convDateTime($job->fields['solvedate'])));
+         $pdf->displayLine(Html::convDateTime($job->fields['solvedate']), __('Resolution date'));
       }
       if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
-         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Closing date'),
-                                   Html::convDateTime($job->fields['closedate'])));
+         $pdf->displayLine(Html::convDateTime($job->fields['closedate']), __('Closing date'));
       }
 
       $pdf->setColumnsSize(100);
@@ -394,36 +418,37 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $pdf->setColumnsSize(50, 50);
       if ($job->fields['takeintoaccount_delay_stat'] > 0) {
-         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Take into account'),
-                                   Html::clean(Html::timestampToString($job->fields['takeintoaccount_delay_stat'],0))));
+         $pdf->displayLine(__('Take into account'),
+                           Html::clean(Html::timestampToString($job->fields['takeintoaccount_delay_stat'],0)));
       }
 
       if (in_array($job->fields["status"], $job->getSolvedStatusArray())
           || in_array($job->fields["status"], $job->getClosedStatusArray())) {
                if ($job->fields['solve_delay_stat'] > 0) {
-            $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Solution'),
-                                      Html::clean(Html::timestampToString($job->fields['solve_delay_stat'],0))));
+            $pdf->displayLine(__('Solution'),
+                              Html::clean(Html::timestampToString($job->fields['solve_delay_stat'],0)));
          }
       }
       if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
          if ($job->fields['close_delay_stat'] > 0) {
-            $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Closing'),
-                                      Html::clean(Html::timestampToString($job->fields['close_delay_stat'],0))));
+            $pdf->displayLine(__('Closing'),
+                              Html::clean(Html::timestampToString($job->fields['close_delay_stat'],1)));
          }
       }
       if ($job->fields['waiting_duration'] > 0) {
-         $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Pending'),
-                                   Html::clean(Html::timestampToString($job->fields['waiting_duration'],0))));
+         $pdf->displayLine(__('Pending'),
+                           Html::clean(Html::timestampToString($job->fields['waiting_duration'],0)));
       }
 
       $pdf->displaySpace();
    }
 
 
-   function defineAllTabs($options=[]) {
+   function defineAllTabsPDF($options=[]) {
 
-      $onglets = parent::defineAllTabs($options);
-      unset($onglets['ProjectTask_Ticket$1']); // TODO add method to print linked Projecttask
+      $onglets = parent::defineAllTabsPDF($options);
+      unset($onglets['ProjectTask_Ticket$1']);
+      unset($onglets['Itil_Project$1']);
 
       if (Session::haveRight('ticket', Ticket::READALL) // for technician
           || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)
@@ -482,6 +507,12 @@ class PluginPdfTicket extends PluginPdfCommon {
 
          case 'Item_Ticket$1' :
             PluginPdfItem_Ticket::pdfForTicket($pdf, $item);
+            break;
+
+         case 'Change_Ticket$1' :
+            if (Change::canView()) {
+               PluginPdfChange_Ticket::pdfForTicket($pdf, $item);
+            }
             break;
 
          default :

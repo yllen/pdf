@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -54,9 +54,10 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
       }
 
       $result = $DB->request('glpi_items_problems',
-                             ['SELECT DISTINCT' => 'itemtype',
-                              'WHERE'           => ['problems_id' => $instID],
-                              'ORDER'           => 'itemtype']);
+                             ['SELECT'    => 'itemtype',
+                              'DISTINCT'  => true,
+                              'WHERE'     => ['problems_id' => $instID],
+                              'ORDER'     => 'itemtype']);
 
       $number = count($result);
 
@@ -172,11 +173,28 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
             break;
       }
 
-      $query = "SELECT ".Problem::getCommonSelect()."
+      if (count($_SESSION["glpiactiveentities"])>1) {
+         $SELECT = ", `glpi_entities`.`completename` AS entityname,
+                      `glpi_problems`.`entities_id` AS entityID ";
+         $FROM   = " LEFT JOIN `glpi_entities`
+                        ON (`glpi_entities`.`id` = `glpi_problems`.`entities_id`) ";
+      }
+
+      $query = "SELECT DISTINCT `glpi_problems`.*,
+                        `glpi_itilcategories`.`completename` AS catname
+                        $SELECT
                 FROM `glpi_problems`
                 LEFT JOIN `glpi_items_problems`
-                  ON (`glpi_problems`.`id` = `glpi_items_problems`.`problems_id`) ".
-                        Problem::getCommonLeftJoin()."
+                  ON (`glpi_problems`.`id` = `glpi_items_problems`.`problems_id`)
+                LEFT JOIN `glpi_groups_problems`
+                  ON (`glpi_problems`.`id` = `glpi_groups_problems`.`problems_id`)
+                LEFT JOIN `glpi_problems_users`
+                  ON (`glpi_problems`.`id` = `glpi_problems_users`.`problems_id`)
+                LEFT JOIN `glpi_problems_suppliers`
+                  ON (`glpi_problems`.`id` = `glpi_problems_suppliers`.`problems_id`)
+                LEFT JOIN `glpi_itilcategories`
+                  ON (`glpi_problems`.`itilcategories_id` = `glpi_itilcategories`.`id`)
+               $FROM
                 WHERE $restrict ".
                       $dbu->getEntitiesRestrictRequest("AND","glpi_problems")."
                 ORDER BY $order
@@ -186,7 +204,7 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
       $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'.__('Problem', 'Problems', 2).'</b>';
+      $title = '<b>'.Problem::getTypeName($number).'</b>';
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {

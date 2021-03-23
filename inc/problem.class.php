@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -303,7 +303,7 @@ class PluginPdfProblem extends PluginPdfCommon {
                                           $number."</b>"));
 
          $job = new Problem();
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             if (!$job->getFromDB($data["id"])) {
                continue;
             }
@@ -444,6 +444,7 @@ class PluginPdfProblem extends PluginPdfCommon {
 
       $pdf->setColumnsSize(10, 90);
 
+      $text = '';
       if ($job->fields['impactcontent']) {
          $text = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
                              html_entity_decode($job->getField('impactcontent'),
@@ -517,10 +518,11 @@ class PluginPdfProblem extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=[]) {
+   function defineAllTabsPDF($options=[]) {
 
-      $onglets = parent::defineAllTabs($options);
-      unset($onglets['Itil_project$1']);
+      $onglets = parent::defineAllTabsPDF($options);
+      unset($onglets['Itil_Project$1']);
+      unset($onglets['Impact$1']);
 
       if (Session::haveRight('problem', Problem::READALL) // for technician
           || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)) {

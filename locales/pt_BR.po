@@ -4,18 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2017
-# Eduardo Spinola <eduardo.spinola@gmail.com>, 2017
-# Diego Nobre <diego@koruma.com.br>, 2019
+# Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2020
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-12 18:43+0200\n"
+"POT-Creation-Date: 2020-09-02 18:32+0200\n"
 "PO-Revision-Date: 2017-01-09 15:25+0000\n"
-"Last-Translator: Diego Nobre <diego@koruma.com.br>, 2019\n"
+"Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2020\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/yllen/teams/7201/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,7 +28,7 @@ msgstr ""
 msgid "Print to pdf"
 msgstr "Imprimir em PDF"
 
-#: inc/cartridgeitem.class.php:124
+#: inc/cartridgeitem.class.php:126
 msgid "No printel model associated"
 msgstr "Nenhum modelo de impressão associado"
 
@@ -53,10 +51,6 @@ msgstr "Nenhum periférico"
 #: inc/computer_item.class.php:140
 msgid "No phone"
 msgstr "Nenhum telefone"
-
-#: inc/computer_softwareversion.class.php:343
-msgid "Affected licenses of not installed software"
-msgstr "Licenças afetadas de software não instalado"
 
 #: inc/config.class.php:114
 msgid "Choose your international currency"
@@ -662,24 +656,24 @@ msgstr "Kwacha zambiano"
 msgid "Zimbabwe Dollar"
 msgstr "Dólar zimbabueano"
 
-#: inc/document.class.php:67
-msgid "Associated documents"
-msgstr "Documentos associados"
-
 #: inc/group.class.php:234
 #, php-format
 msgid "No sons of %s"
 msgstr "Sem filhos de %s"
 
+#: inc/item_softwareversion.class.php:353
+msgid "Affected licenses of not installed software"
+msgstr "Licenças afetadas de software não instalado"
+
 #: inc/itilfollowup.class.php:87
 msgid "Source of followup"
 msgstr "Fonte de acompanhamento"
 
-#: inc/itilsolution.class.php:74
+#: inc/itilsolution.class.php:76
 msgid "Soluce approved on "
 msgstr "Solução aprovada em "
 
-#: inc/itilsolution.class.php:76
+#: inc/itilsolution.class.php:78
 msgid "Soluce refused on "
 msgstr "Solução recusada em "
 
@@ -708,7 +702,7 @@ msgctxt "button"
 msgid "Print"
 msgstr "Imprimir"
 
-#: inc/problem_ticket.class.php:404
+#: inc/problem_ticket.class.php:405
 msgid "Items of the ticket"
 msgstr "Itens do chamado"
 
@@ -724,7 +718,7 @@ msgstr "Nenhuma reserva passada"
 msgid "Item not reservable"
 msgstr "Item não reservável"
 
-#: inc/ticket.class.php:435
+#: inc/ticket.class.php:460
 msgid "Requester information"
 msgstr "Informação do requerente"
 

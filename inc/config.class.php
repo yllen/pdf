@@ -22,7 +22,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2018 PDF plugin team
+ @copyright Copyright (c) 2018-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -128,7 +128,7 @@ class PluginPdfConfig extends CommonDBTM {
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
       if ($item->getType()=='Config') {
-            return self::getName();
+            return $this::getName();
       }
       return '';
    }
@@ -304,7 +304,8 @@ class PluginPdfConfig extends CommonDBTM {
 
 
       $config = new Config();
-      foreach ($config->find("`context` = 'core' AND `name` = 'language'") as $row) {
+      foreach ($config->find(['context' => 'core',
+                              'name'    => 'language']) as $row) {
          $language = $row['value'];
       }
       $user = new User();

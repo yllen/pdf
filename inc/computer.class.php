@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2021 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -41,12 +41,13 @@ class PluginPdfComputer extends PluginPdfCommon {
    }
 
 
-   function defineAllTabs($options=[]) {
+   function defineAllTabsPDF($options=[]) {
 
-      $onglets = parent::defineAllTabs($options);
-      unset($onglets['OcsLink$1']); // TODO add method to print OCS
-      unset($onglets['Lock$1']); // TODO add method to print Lock fields
+      $onglets = parent::defineAllTabsPDF($options);
+      unset($onglets['Lock$1']);
+      unset($onglets['Appliance_Item$1']);
       unset($onglets['Certificate_Item$1']);
+      unset($onglets['Impact$1']);
       return $onglets;
    }
 
@@ -76,12 +77,12 @@ class PluginPdfComputer extends PluginPdfCommon {
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
                           Dropdown::getDropdownName('glpi_groups',
                                                     $computer->fields['groups_id'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Domain').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_domains',
-                                                                $computer->fields['domains_id']))));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']));
 
       $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Update Source').'</i></b>',
+                          Dropdown::getDropdownName('glpi_autoupdatesystems',
+                                                     $computer->fields['autoupdatesystems_id'])));
 
       PluginPdfCommon::mainLine($pdf, $computer, 'comment');
 
@@ -131,18 +132,6 @@ class PluginPdfComputer extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         case 'Item_OperatingSystem$1' :
-            PluginPdfItem_OperatingSystem::pdfForItem($pdf, $item);
-            break;
-
-         case 'Computer_SoftwareVersion$1' :
-            PluginPdfComputer_SoftwareVersion::pdfForComputer($pdf, $item);
-            break;
-
-         case 'Computer_Item$1' :
-            PluginPdfComputer_Item::pdfForComputer($pdf, $item);
-            break;
-
          case 'ComputerVirtualMachine$1' :
             PluginPdfComputerVirtualMachine::pdfForComputer($pdf, $item);
             break;
@@ -153,6 +142,10 @@ class PluginPdfComputer extends PluginPdfCommon {
 
          case 'RegistryKey$1' :
             PluginPdfRegistryKey::pdfForComputer($pdf, $item);
+            break;
+
+         case 'Computer_Item$1' :
+            PluginPdfComputer_Item::pdfForComputer($pdf, $item);
             break;
 
          default :

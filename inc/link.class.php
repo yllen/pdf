@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2019 PDF plugin team
+ @copyright Copyright (c) 2009-2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -57,13 +57,18 @@ class PluginPdfLink extends PluginPdfCommon {
                 'ORDER'      => 'name'];
 
       $result = $DB->request($query);
+      $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'._n('External link', 'External links', 2).'</b>';
-      if (!count($result)) {
+      $title = '<b>'._n('External link', 'External links', $number).'</b>';
+      if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $title = sprintf(__('%1$s: %2$s'), $title, count($result));
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+         } else {
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         }
          $pdf->displayTitle($title);
 
          while ($data = $result->next()) {
