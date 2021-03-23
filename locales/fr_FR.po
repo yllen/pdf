@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-12 18:43+0200\n"
+"POT-Creation-Date: 2020-09-02 18:32+0200\n"
 "PO-Revision-Date: 2017-01-09 15:25+0000\n"
 "Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2020\n"
 "Language-Team: French (France) (https://www.transifex.com/yllen/teams/7201/fr_FR/)\n"
@@ -28,7 +28,7 @@ msgstr ""
 msgid "Print to pdf"
 msgstr "Impression pdf"
 
-#: inc/cartridgeitem.class.php:124
+#: inc/cartridgeitem.class.php:126
 msgid "No printel model associated"
 msgstr "Aucun modèle d'imprimante associé"
 
@@ -51,10 +51,6 @@ msgstr "Pas de périphérique"
 #: inc/computer_item.class.php:140
 msgid "No phone"
 msgstr "Pas de téléphone"
-
-#: inc/computer_softwareversion.class.php:343
-msgid "Affected licenses of not installed software"
-msgstr "Licences associées à un logiciel non installé"
 
 #: inc/config.class.php:114
 msgid "Choose your international currency"
@@ -660,24 +656,24 @@ msgstr "kwacha de Zambie"
 msgid "Zimbabwe Dollar"
 msgstr "dollar du Zimbabwe"
 
-#: inc/document.class.php:67
-msgid "Associated documents"
-msgstr "Documents associés"
-
 #: inc/group.class.php:234
 #, php-format
 msgid "No sons of %s"
 msgstr "Auncun enfant pour 1%s"
 
+#: inc/item_softwareversion.class.php:353
+msgid "Affected licenses of not installed software"
+msgstr "Licences associées à un logiciel non installé"
+
 #: inc/itilfollowup.class.php:87
 msgid "Source of followup"
 msgstr "Source du suivi"
 
-#: inc/itilsolution.class.php:74
+#: inc/itilsolution.class.php:76
 msgid "Soluce approved on "
 msgstr "Solution approuvée le "
 
-#: inc/itilsolution.class.php:76
+#: inc/itilsolution.class.php:78
 msgid "Soluce refused on "
 msgstr "Solution refusée le "
 
@@ -706,7 +702,7 @@ msgctxt "button"
 msgid "Print"
 msgstr "Imprimer"
 
-#: inc/problem_ticket.class.php:404
+#: inc/problem_ticket.class.php:405
 msgid "Items of the ticket"
 msgstr "Eléments du ticket"
 
@@ -722,7 +718,7 @@ msgstr "Aucune réservation antérieure"
 msgid "Item not reservable"
 msgstr "Elément non réservable"
 
-#: inc/ticket.class.php:435
+#: inc/ticket.class.php:460
 msgid "Requester information"
 msgstr "Information sur le demandeur"
 

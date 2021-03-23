@@ -4,16 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# NeoTrinity <tecvisor@yahoo.fr>, 2017
+# Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2020
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-12 18:43+0200\n"
+"POT-Creation-Date: 2020-09-02 18:32+0200\n"
 "PO-Revision-Date: 2017-01-09 15:25+0000\n"
-"Last-Translator: NeoTrinity <tecvisor@yahoo.fr>, 2017\n"
+"Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2020\n"
 "Language-Team: Croatian (https://www.transifex.com/yllen/teams/7201/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,7 +28,7 @@ msgstr ""
 msgid "Print to pdf"
 msgstr "Štampati u PDF"
 
-#: inc/cartridgeitem.class.php:124
+#: inc/cartridgeitem.class.php:126
 msgid "No printel model associated"
 msgstr ""
 
@@ -51,10 +51,6 @@ msgstr "Nema periferije"
 #: inc/computer_item.class.php:140
 msgid "No phone"
 msgstr "Nema telefona"
-
-#: inc/computer_softwareversion.class.php:343
-msgid "Affected licenses of not installed software"
-msgstr "Dodijeljena licenca ne instaliranog softvera"
 
 #: inc/config.class.php:114
 msgid "Choose your international currency"
@@ -660,24 +656,24 @@ msgstr ""
 msgid "Zimbabwe Dollar"
 msgstr ""
 
-#: inc/document.class.php:67
-msgid "Associated documents"
-msgstr "Povezani dokumenti"
-
 #: inc/group.class.php:234
 #, php-format
 msgid "No sons of %s"
 msgstr "Nema poveze od %s"
 
+#: inc/item_softwareversion.class.php:353
+msgid "Affected licenses of not installed software"
+msgstr "Dodijeljena licenca ne instaliranog softvera"
+
 #: inc/itilfollowup.class.php:87
 msgid "Source of followup"
 msgstr "Izvor praćenja"
 
-#: inc/itilsolution.class.php:74
+#: inc/itilsolution.class.php:76
 msgid "Soluce approved on "
 msgstr ""
 
-#: inc/itilsolution.class.php:76
+#: inc/itilsolution.class.php:78
 msgid "Soluce refused on "
 msgstr ""
 
@@ -706,7 +702,7 @@ msgctxt "button"
 msgid "Print"
 msgstr "Štampati"
 
-#: inc/problem_ticket.class.php:404
+#: inc/problem_ticket.class.php:405
 msgid "Items of the ticket"
 msgstr "Stavke od naloga"
 
@@ -722,7 +718,7 @@ msgstr "Nema prošlih rezervacija"
 msgid "Item not reservable"
 msgstr "Stavka se ne može rezervirati"
 
-#: inc/ticket.class.php:435
+#: inc/ticket.class.php:460
 msgid "Requester information"
 msgstr "Podaci o zahtjevniku"
 

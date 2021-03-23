@@ -4,17 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Pavel Borecki <pavel.borecki@gmail.com>, 2019
-# David Stepan <stepand@tiscali.cz>, 2019
+# Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2020
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-12 18:43+0200\n"
+"POT-Creation-Date: 2020-09-02 18:32+0200\n"
 "PO-Revision-Date: 2017-01-09 15:25+0000\n"
-"Last-Translator: David Stepan <stepand@tiscali.cz>, 2019\n"
+"Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2020\n"
 "Language-Team: Czech (Czech Republic) (https://www.transifex.com/yllen/teams/7201/cs_CZ/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,7 +28,7 @@ msgstr ""
 msgid "Print to pdf"
 msgstr "Tisk do PDF"
 
-#: inc/cartridgeitem.class.php:124
+#: inc/cartridgeitem.class.php:126
 msgid "No printel model associated"
 msgstr "Není přiřazen žádný model tiskárny"
 
@@ -52,10 +51,6 @@ msgstr "Žádné zařízení"
 #: inc/computer_item.class.php:140
 msgid "No phone"
 msgstr "Žádný telefon"
-
-#: inc/computer_softwareversion.class.php:343
-msgid "Affected licenses of not installed software"
-msgstr "Licence přiřazené nenainstalovanému software"
 
 #: inc/config.class.php:114
 msgid "Choose your international currency"
@@ -661,24 +656,24 @@ msgstr "Zambijská kwacha"
 msgid "Zimbabwe Dollar"
 msgstr "Zimbabwský dolar"
 
-#: inc/document.class.php:67
-msgid "Associated documents"
-msgstr "Související dokumenty"
-
 #: inc/group.class.php:234
 #, php-format
 msgid "No sons of %s"
 msgstr "Žádní podřízení %s"
 
+#: inc/item_softwareversion.class.php:353
+msgid "Affected licenses of not installed software"
+msgstr "Licence přiřazené nenainstalovanému software"
+
 #: inc/itilfollowup.class.php:87
 msgid "Source of followup"
 msgstr "Zdroj následné komunikace"
 
-#: inc/itilsolution.class.php:74
+#: inc/itilsolution.class.php:76
 msgid "Soluce approved on "
 msgstr "Řešení schváleno"
 
-#: inc/itilsolution.class.php:76
+#: inc/itilsolution.class.php:78
 msgid "Soluce refused on "
 msgstr "Řešení odmítnuto"
 
@@ -707,7 +702,7 @@ msgctxt "button"
 msgid "Print"
 msgstr "Tisk"
 
-#: inc/problem_ticket.class.php:404
+#: inc/problem_ticket.class.php:405
 msgid "Items of the ticket"
 msgstr "Položky požadavku"
 
@@ -723,7 +718,7 @@ msgstr "Žádné minulé rezervace"
 msgid "Item not reservable"
 msgstr "Položku si není možné rezervovat"
 
-#: inc/ticket.class.php:435
+#: inc/ticket.class.php:460
 msgid "Requester information"
 msgstr "Informace o žadateli"
 
