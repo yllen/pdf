@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id$
  -------------------------------------------------------------------------
  LICENSE
 
@@ -44,24 +43,25 @@ class PluginPdfContract_Item extends PluginPdfCommon {
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item){
       global $DB;
 
-      $type = $item->getType();
-      $ID   = $item->getField('id');
-      $con  = new Contract();
-      $dbu  = new DbUtils();
+      $type       = $item->getType();
+      $ID         = $item->getField('id');
+      $itemtable  = getTableForItemType($type);
+      $con        = new Contract();
+      $dbu        = new DbUtils();
 
-     $query = ['SELECT'    =>  'glpi_contracts_items.*',
-               'FROM'      => ['glpi_contracts_items', 'glpi_contracts'],
-               'LEFT JOIN' => ['glpi_entities'
-                               => ['FKEY' => ['glpi_contracts' => 'entities_id',
-                                              'glpi_entities'  => 'id']]],
-               'WHERE'    => ['glpi_contracts.id'              => '`glpi_contracts_items`.`contracts_id`',
-                              'glpi_contracts_items.items_id'  => $ID ,
-                              'glpi_contracts_items.itemtype'  => $type]
+     $query = ['SELECT'    => ['glpi_contracts_items.*', 'glpi_contracts.*'],
+               'FROM'      => 'glpi_contracts_items',
+               'LEFT JOIN' => ['glpi_contracts'
+                               => ['FKEY' => ['glpi_contracts' => 'id',
+                                             'glpi_contracts_items' => 'contracts_id']]],
+               'WHERE'    => ['glpi_contracts_items.items_id' => $ID ,
+                              'glpi_contracts_items.itemtype' => $type]
                               + $dbu->getEntitiesRestrictCriteria('glpi_contracts','','',true),
                'ORDER'    => 'glpi_contracts.name'];
 
       $result = $DB->request($query);
       $number = count($result);
+
       $i = $j = 0;
 
       $pdf->setColumnsSize(100);
