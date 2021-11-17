@@ -1,6 +1,6 @@
 <?php
 /**
- * @version $Id$
+ * @version $Id: common.class.php 558 2020-09-03 08:40:26Z yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2021 PDF plugin team
+ @copyright Copyright (c) 2009-2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -30,7 +30,7 @@
  --------------------------------------------------------------------------
 */
 
-abstract class PluginPdfCommon extends CommonGLPI {
+abstract class PluginPdfCommon {
 
    protected $obj= NULL;
 
@@ -88,7 +88,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
     *
     * @param $options Array of options
    **/
-   function defineAllTabsPDF($options=[]) {
+   function defineAllTabs($options=[]) {
 
       $onglets  = $this->obj->defineTabs();
 
@@ -430,74 +430,6 @@ abstract class PluginPdfCommon extends CommonGLPI {
       return $pdf->displayTitle($col1, $col2);
    }
 
-   static function displayLines($pdf, $lines){
-      for ($idx = 0; $x < count($lines); $idx++){
-         if ($idx < count($lines)-2 ){
-            $pdf->displayLine($lines[$idx], $lines[++$idx]);
-         } else if ($idx < count($lines)-1 ){   //If there is an even amount of fields
-            return $pdf->displayLine($lines[$idx], $lines[++$idx]);
-         } else if ($idx == count($lines)-1){   //There is an un even amount of fields
-            return $pdf->displayLine($lines[$idx]);
-         }
-      }
-   }
-
-   static function mainField(PluginPdfSimplePDF $pdf, $item, $field) {
-      $dbu  = new DbUtils();
-
-      $type = Toolbox::strtolower($item->getType());
-      switch($field) {
-         case 'name' : 
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
-                                    $item->fields['name']);
-         case 'status' :
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Status').'</i></b>',
-                                    Html::clean(Dropdown::getDropdownName('glpi_states',
-                                                                          $item->fields['states_id'])));
-         case 'location' :
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
-                                    Dropdown::getDropdownName('glpi_locations',
-                                                              $item->fields['locations_id']));
-         case 'type' :
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Type').'</i></b>',
-                                    Html::clean(Dropdown::getDropdownName('glpi_'.$type.'types',
-                                                                          $item->fields[$type.'types_id'])));
-         case 'tech':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Technician in charge of the hardware').'</i></b>',
-                                    $dbu->getUserName($item->fields['users_id_tech']));
-         case 'manufacturer':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Manufacturer').'</i></b>',
-                                    Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                                                          $item->fields['manufacturers_id'])));
-         case 'techgroup':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group in charge of the hardware').'</i></b>',
-                                    Dropdown::getDropdownName('glpi_groups',
-                                                              $item->fields['groups_id_tech']));
-         case 'model':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Model').'</i></b>',
-                                    Html::clean(Dropdown::getDropdownName('glpi_'.$type.'models',
-                                                                          $item->fields[$type.'models_id'])));
-         case 'contactnum':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Alternate username number').'</i></b>',
-                                    $item->fields['contact_num']);
-         case 'serial':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Serial number').'</i></b>',
-                                    $item->fields['serial']);
-         case 'contact':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Alternate username').'</i></b>',
-                                    $item->fields['contact']);
-         case 'otherserial':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Inventory number').'</i></b>',
-                                    $item->fields['otherserial']);
-         case 'user':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                                    $dbu->getUserName($item->fields['users_id']));
-         case 'management':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Management type').'</i></b>',
-                                    ($item->fields['is_global']?__('Global management')
-                                                               :__('Unit management')));
-      }
-   }
 
    static function mainLine(PluginPdfSimplePDF $pdf, $item, $field) {
 
@@ -604,7 +536,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
              $_SESSION["plugin_pdf"]["type"]   = $item->getType();
              $_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
              echo "<script type='text/javascript'>
-                      location.href='../plugins/pdf/front/export.massive.php'</script>";
+                      location.href='.".Plugin::getWebDir('pdf')."/front/export.massive.php'</script>";
              break;
       }
    }

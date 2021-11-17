@@ -1,6 +1,6 @@
 <?php
 /**
- * @version $Id$
+ * @version $Id: computer.class.php 558 2020-09-03 08:40:26Z yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2021 PDF plugin team
+ @copyright Copyright (c) 2009-2020 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -41,9 +41,9 @@ class PluginPdfComputer extends PluginPdfCommon {
    }
 
 
-   function defineAllTabsPDF($options=[]) {
+   function defineAllTabs($options=[]) {
 
-      $onglets = parent::defineAllTabsPDF($options);
+      $onglets = parent::defineAllTabs($options);
       unset($onglets['Lock$1']);
       unset($onglets['Appliance_Item$1']);
       unset($onglets['Certificate_Item$1']);
@@ -58,34 +58,6 @@ class PluginPdfComputer extends PluginPdfCommon {
 
       PluginPdfCommon::mainTitle($pdf, $computer);
 
-
-      $name          = PluginPdfCommon::mainField($pdf, $computer, 'name');
-      $status        = PluginPdfCommon::mainField($pdf, $computer, 'status');
-      $location      = PluginPdfCommon::mainField($pdf, $computer, 'location');
-      $type          = PluginPdfCommon::mainField($pdf, $computer, 'type');
-      $tech          = PluginPdfCommon::mainField($pdf, $computer, 'tech');
-      $manufacturer  = PluginPdfCommon::mainField($pdf, $computer, 'manufacturer');
-      $techgroup     = PluginPdfCommon::mainField($pdf, $computer, 'techgroup');
-      $model         = PluginPdfCommon::mainField($pdf, $computer, 'model');
-      $contactnum    = PluginPdfCommon::mainField($pdf, $computer, 'contactnum');
-      $serial        = PluginPdfCommon::mainField($pdf, $computer, 'serial');
-      $contact       = PluginPdfCommon::mainField($pdf, $computer, 'contact');
-      $otherserial   = PluginPdfCommon::mainField($pdf, $computer, 'otherserial');
-      $comment       = PluginPdfCommon::mainField($pdf, $computer, 'comment');
-      $user = '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                               $dbu->getUserName($computer->fields['users_id']));
-      $network = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
-                                  Html::clean(Dropdown::getDropdownName('glpi_networks',
-                                                                        $computer->fields['networks_id'])));
-      $group = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                                Dropdown::getDropdownName('glpi_groups',
-                                                          $computer->fields['groups_id']));
-      $uuid = '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']);
-      $update = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Update Source').'</i></b>',
-                                 Dropdown::getDropdownName('glpi_autoupdatesystems',
-                                                           $computer->fields['autoupdatesystems_id']));
-
-      /*
       PluginPdfCommon::mainLine($pdf, $computer, 'name-status');
       PluginPdfCommon::mainLine($pdf, $computer, 'location-type');
       PluginPdfCommon::mainLine($pdf, $computer, 'tech-manufacturer');
@@ -93,12 +65,25 @@ class PluginPdfComputer extends PluginPdfCommon {
       PluginPdfCommon::mainLine($pdf, $computer, 'contactnum-serial');
       PluginPdfCommon::mainLine($pdf, $computer, 'contact-otherserial');
 
-      $pdf->displayLine($user,$network);
-      $pdf->displayLine($group, $uuid);
-      $pdf->displayLine($update);
-      */
 
-      PluginPdfCommon::displayLines($pdf, [$contact, $contactnum, $model, $manufacturer, $serial, $otherserial]);
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
+                          $dbu->getUserName($computer->fields['users_id'])),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
+                           Html::clean(Dropdown::getDropdownName('glpi_networks',
+                                                                 $computer->fields['networks_id']))));
+
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
+                          Dropdown::getDropdownName('glpi_groups',
+                                                    $computer->fields['groups_id'])),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']));
+
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Update Source').'</i></b>',
+                          Dropdown::getDropdownName('glpi_autoupdatesystems',
+                                                     $computer->fields['autoupdatesystems_id'])));
+
       PluginPdfCommon::mainLine($pdf, $computer, 'comment');
 
       $pdf->displaySpace();
