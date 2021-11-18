@@ -51,12 +51,14 @@ class PluginPdfComputer extends PluginPdfCommon {
       return $onglets;
    }
 
-
    static function pdfMain(PluginPdfSimplePDF $pdf, Computer $computer){
 
       $dbu = new DbUtils();
 
-      PluginPdfCommon::mainTitle($pdf, $computer);
+      //PluginPdfCommon::mainTitle($pdf, $computer);
+      
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle('<b>'.sprintf($computer->getType()).'</b>');
 
 
       $name          = PluginPdfCommon::mainField($pdf, $computer, 'name');
@@ -100,6 +102,8 @@ class PluginPdfComputer extends PluginPdfCommon {
 
       PluginPdfCommon::displayLines($pdf, [$contact, $contactnum, $model, $manufacturer, $serial, $otherserial]);
       PluginPdfCommon::mainLine($pdf, $computer, 'comment');
+      $pdf->displayText('<b><i>'.sprintf(__('%1$s: %2$s'), __('test').'</i></b>',
+                                                      ''), implode(" ; ", $computer->fields));
 
       $pdf->displaySpace();
    }

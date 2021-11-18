@@ -430,7 +430,9 @@ abstract class PluginPdfCommon extends CommonGLPI {
       return $pdf->displayTitle($col1, $col2);
    }
 
+   //displays all the fields given to it in two columns
    static function displayLines($pdf, $lines){
+      $pdf->setColumnsSize(50,50);
       for ($idx = 0; $x < count($lines); $idx++){
          if ($idx < count($lines)-2 ){
             $pdf->displayLine($lines[$idx], $lines[++$idx]);

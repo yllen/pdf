@@ -164,6 +164,8 @@ class PluginPdfPreference extends CommonDBTM {
 
       if ($ID) {
          echo "<input type='hidden' name='itemID' value='".$ID."'>";
+         echo "<input type='submit' value='" . _sx('button', 'Save') .
+              "' name='plugin_pdf_user_preferences_save' class='submit'>";
          echo "<input type='submit' value='". _sx('button','Print', 'pdf') .
               "' name='generate' class='submit'></td></tr>";
       } else {
