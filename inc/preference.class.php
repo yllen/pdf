@@ -66,7 +66,7 @@ class PluginPdfPreference extends CommonDBTM {
              " name='item[$num]' value='1'>&nbsp; ".$label."</a></td>";
     }
 
-   function tabmenu($item, $itempdf, $tabnum, $tabtitle, $values) {
+   function tabmenu($item, $itempdf, $tabnum, $tabtitle, $fields) {
       global $DB, $PLUGIN_HOOKS;
 
       $tabItem = $itempdf->getPdfItemForTab($item, $tabnum);
@@ -75,7 +75,7 @@ class PluginPdfPreference extends CommonDBTM {
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr><th colspan='6'><center><i>".sprintf(__('%1$s: %2$s'),
                                           __('Choose the fields to print for table', 'pdf'), $tabtitle);
-                                           
+
       $i = 0;
       foreach ($tabFields as $num => $title) {
          $tabID = $tabnum.'$'.$num;
@@ -85,7 +85,7 @@ class PluginPdfPreference extends CommonDBTM {
          if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
             $title = "$title ($tabID)";
          }
-         $this->checkbox($tabID, $title, (isset($values[$tabID]) ? true : false));
+         $this->checkbox($tabID, $title, (isset($fields[$tabID]) || empty($fields)? true : false));
          if ($i == 4) {
             echo "</tr>";
             $i = 0;
@@ -212,7 +212,14 @@ class PluginPdfPreference extends CommonDBTM {
       
       foreach ($options as $num => $title) {
          if (isset($values[$num])){
-            $this->tabmenu($item, $itempdf,$num, $title, $values);
+            $tabFields = [];
+            foreach($values as $key => $field){
+               if (strpos($field, $num.'$') === 0){
+                  $tabFields[$field] = $field;
+                  unset($values[$field]);
+               }
+            }
+            $this->tabmenu($item, $itempdf,$num, $title, $tabFields);
          }
       }
       Html::closeForm();

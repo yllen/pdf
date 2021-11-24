@@ -94,45 +94,6 @@ class PluginPdfComputer extends PluginPdfCommon {
             }
          }
       }
-      /*
-      $name          = PluginPdfCommon::mainField($pdf, $computer, 'name');
-      $status        = PluginPdfCommon::mainField($pdf, $computer, 'status');
-      $location      = PluginPdfCommon::mainField($pdf, $computer, 'location');
-      $type          = PluginPdfCommon::mainField($pdf, $computer, 'type');
-      $tech          = PluginPdfCommon::mainField($pdf, $computer, 'tech');
-      $manufacturer  = PluginPdfCommon::mainField($pdf, $computer, 'manufacturer');
-      $techgroup     = PluginPdfCommon::mainField($pdf, $computer, 'techgroup');
-      $model         = PluginPdfCommon::mainField($pdf, $computer, 'model');
-      $contactnum    = PluginPdfCommon::mainField($pdf, $computer, 'contactnum');
-      $serial        = PluginPdfCommon::mainField($pdf, $computer, 'serial');
-      $contact       = PluginPdfCommon::mainField($pdf, $computer, 'contact');
-      $otherserial   = PluginPdfCommon::mainField($pdf, $computer, 'otherserial');
-      $user          = PluginPdfCommon::mainField($pdf, $computer, 'user');
-      $management    = PluginPdfCommon::mainField($pdf, $computer, 'management');
-      $comment       = PluginPdfCommon::mainField($pdf, $computer, 'comment');
-      $network = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
-                                  Html::clean(Dropdown::getDropdownName('glpi_networks',
-                                                                        $computer->fields['networks_id'])));
-      $group = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                                Dropdown::getDropdownName('glpi_groups',
-                                                          $computer->fields['groups_id']));
-      $uuid = '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']);
-      $update = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Update Source').'</i></b>',
-                                 Dropdown::getDropdownName('glpi_autoupdatesystems',
-                                                           $computer->fields['autoupdatesystems_id']));
-
-      /*
-      PluginPdfCommon::mainLine($pdf, $computer, 'name-status');
-      PluginPdfCommon::mainLine($pdf, $computer, 'location-type');
-      PluginPdfCommon::mainLine($pdf, $computer, 'tech-manufacturer');
-      PluginPdfCommon::mainLine($pdf, $computer, 'group-model');
-      PluginPdfCommon::mainLine($pdf, $computer, 'contactnum-serial');
-      PluginPdfCommon::mainLine($pdf, $computer, 'contact-otherserial');
-
-      $pdf->displayLine($user,$network);
-      $pdf->displayLine($group, $uuid);
-      $pdf->displayLine($update);
-      */
 
       PluginPdfCommon::displayLines($pdf, $fieldObjs);
       PluginPdfCommon::mainLine($pdf, $computer, 'comment');

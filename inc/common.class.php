@@ -503,7 +503,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
             foreach($tabs as $field){
                if (strpos($field, $tab.'$') === 0){
                   $tabFields[] = substr($field, strlen($tab)+1);
-                  unset($arr[$field]);
+                  unset($tabs[$field]);
                }
             }
             if (!$this->displayTabContentForPDF($this->pdf, $this->obj, $tab, $tabFields)
