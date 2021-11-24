@@ -36,12 +36,132 @@ abstract class PluginPdfCommon extends CommonGLPI {
 
    static $rightname = "plugin_pdf";
 
+   static $tabFields = ['name' => 'Name', 
+                        'status' => 'Status', 
+                        'location' => 'Location', 
+                        'type' => 'Type', 
+                        'tech' => 'Technician in charge of hardware',
+                        'manufacturer' => 'Manufacturer', 
+                        'techgroup' => 'Group in charge of hardware',
+                        'model' => 'Model', 
+                        'contactnum' => 'Alternate username number', 
+                        'serial' => 'Serial number',
+                        'contact' => 'Alternate username',
+                        'otherserial' => 'Inventory number',
+                        'user' => 'User',
+                        'management' => 'Management type'];
+
+   static function getFields(){
+      return self::$tabFields;
+   } 
+
 
    /**
     * Constructor, should intialize $this->obj property
    **/
    abstract function __construct(CommonGLPI $obj=NULL);
 
+   function getPdfItemForTab(CommonGLPI $item, $tab){
+      switch ($tab) {
+         case $item->getType().'$main' :
+            $class = get_class($this);
+            return new $class;
+            break;
+
+            case 'Document_Item$1' :
+               if (Session::haveRight('document', READ)) {
+                  return new PluginPdfDocument;
+               }
+               break;
+   
+            case 'NetworkPort$1' :
+               return new PluginPdfNetworkPort;
+               break;
+   
+            case 'Infocom$1' :
+               if (Session::haveRight('infocom', READ)) {
+                  return new PluginPdfInfocom;
+               }
+               break;
+   
+            case 'Contract_Item$1' :
+               if (Session::haveRight("contract", READ)) {
+                  return new PluginPdfContract_Item;
+               }
+               break;
+   
+            case 'Ticket$1' :
+               if (Ticket::canView()) {
+                  return new PluginPdfItem_Ticket;
+               }
+               break;
+   
+            case 'Item_Problem$1' :
+               if (Problem::canView()) {
+                  return new PluginPdfItem_Problem;
+               }
+               break;
+   
+            case 'Change_Item$1' :
+               if (Change::canView()) {
+                  return new PluginPdfChange_Item;
+               }
+               break;
+   
+            case 'Link$1' :
+               if (Session::haveRight('link', READ)) {
+                  return new PluginPdfLink;
+               }
+               break;
+   
+            case 'Reservation$1' :
+               if (Session::haveRight('reservation', READ)) {
+                  return new PluginPdfReservation;
+               }
+               break;
+   
+            case 'Log$1' :
+               return new PluginPdfLog;
+               break;
+   
+            /*
+            case 'KnowbaseItem_Item$1' :
+               if (KnowbaseItem::canView()) {
+                  return new PluginPdfItem_Knowbaseitem;
+               }
+               break;
+
+            case 'Item_Devices$1' :
+               if (Session::haveRight('device', READ)) {
+                  return new PluginPdfItem_Device;
+               }
+               break;
+
+            case 'Item_Disk$1' :
+               return new PluginPdfItem_Disk;
+               break;
+            */
+
+            case 'Computer_Item$1' :
+               return new PluginPdfComputer_Item;
+               break;
+   
+            case 'Item_SoftwareVersion$1' :
+               return new PluginPdfItem_SoftwareVersion;
+               break;
+   
+            case 'Domain_Item$1' :
+               return new PluginPdfDomain_Item;
+               break;
+   
+            case 'Item_OperatingSystem$1' :
+               return new PluginPdfItem_OperatingSystem;
+               break;
+   
+            default :
+               return false;
+      }
+   }
 
    /**
     * Add standard define tab
@@ -140,7 +260,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
     *
     * @return true if display done (else will search for another handler)
    **/
-   static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
+   static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab, $fields) {
       return false;
    }
 
@@ -156,11 +276,11 @@ abstract class PluginPdfCommon extends CommonGLPI {
     *
     * @return true if display done (else will search for another handler)
    **/
-   static final function displayCommonTabForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
+   static final function displayCommonTabForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab, $fields) {
 
       switch ($tab) {
          case $item->getType().'$main' :
-            static::pdfMain($pdf, $item);
+            static::pdfMain($pdf, $item, $fields);
             break;
 
          case 'Notepad$1' :
@@ -379,8 +499,15 @@ abstract class PluginPdfCommon extends CommonGLPI {
          }
 
          foreach ($tabs as $tab) {
-            if (!$this->displayTabContentForPDF($this->pdf, $this->obj, $tab)
-                && !$this->displayCommonTabForPDF($this->pdf, $this->obj, $tab)) {
+            $tabFields = [];
+            foreach($tabs as $field){
+               if (strpos($field, $tab.'$') === 0){
+                  $tabFields[] = substr($field, strlen($tab)+1);
+                  unset($arr[$field]);
+               }
+            }
+            if (!$this->displayTabContentForPDF($this->pdf, $this->obj, $tab, $tabFields)
+                && !$this->displayCommonTabForPDF($this->pdf, $this->obj, $tab, $tabFields)) {
 
                $data     = explode('$',$tab);
                $itemtype = $data[0];
@@ -392,7 +519,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
                   if ($itemtype == "Item_Devices") {
                      $PluginPdfComputer = new PluginPdfComputer();
                      if ($PluginPdfComputer->displayTabContentForPdf($this->pdf, $this->obj,
-                                                                     $tabnum)) {
+                                                                     $tabnum, ['name'])) {
                         continue;
                      }
                   } else if (method_exists($itemtype, "displayTabContentForPdf")
@@ -433,7 +560,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
    //displays all the fields given to it in two columns
    static function displayLines($pdf, $lines){
       $pdf->setColumnsSize(50,50);
-      for ($idx = 0; $x < count($lines); $idx++){
+      for ($idx = 0; $idx < count($lines); $idx++){
          if ($idx < count($lines)-2 ){
             $pdf->displayLine($lines[$idx], $lines[++$idx]);
          } else if ($idx < count($lines)-1 ){   //If there is an even amount of fields

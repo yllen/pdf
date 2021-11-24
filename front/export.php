@@ -68,6 +68,7 @@ if (isset($_POST["plugin_pdf_inventory_type"])
       $tab[] = $type.'$main';
    }
 
+   // The save button is pressed so the preferences need to be saved to the db
    if (isset($_POST['plugin_pdf_user_preferences_save'])) {
       $DB->query("DELETE
                   FROM `glpi_plugin_pdf_preferences`
@@ -89,6 +90,7 @@ if (isset($_POST["plugin_pdf_inventory_type"])
                              '".$_POST["plugin_pdf_inventory_type"]."', 'landscape')");
       }
       Html::back();
+   // the generate button is hit so the pdf will be generated
    } else if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])
        && class_exists($PLUGIN_HOOKS['plugin_pdf'][$type])
        && isset($_POST['generate'])) {

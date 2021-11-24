@@ -35,11 +35,17 @@ class PluginPdfComputer extends PluginPdfCommon {
 
    static $rightname = "plugin_pdf";
 
-
    function __construct(CommonGLPI $obj=NULL) {
       $this->obj = ($obj ? $obj : new Computer());
    }
 
+   static function getFields(){
+      return array_merge(parent::getFields(), [
+         'network' => 'Network',
+         'group' => 'Group',
+         'uuid' => 'UUID',
+         'update' => 'Update source']);
+   }
 
    function defineAllTabsPDF($options=[]) {
 
@@ -51,7 +57,7 @@ class PluginPdfComputer extends PluginPdfCommon {
       return $onglets;
    }
 
-   static function pdfMain(PluginPdfSimplePDF $pdf, Computer $computer){
+   static function pdfMain(PluginPdfSimplePDF $pdf, Computer $computer, $fields){
 
       $dbu = new DbUtils();
 
@@ -60,7 +66,35 @@ class PluginPdfComputer extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       $pdf->displayTitle('<b>'.sprintf($computer->getType()).'</b>');
 
-
+      $fieldObjs = [];
+      foreach($fields as $field){
+         if(isset(parent::getFields()[$field])){
+            $fieldObjs[] = PluginPdfCommon::mainField($pdf, $computer, $field);
+         } else {
+            switch($field) {
+               case 'network':
+                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
+                                                 Html::clean(Dropdown::getDropdownName('glpi_networks',
+                                                                                      $computer->fields['networks_id'])));
+                  break;
+               case 'group':
+                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
+                                                  Dropdown::getDropdownName('glpi_groups',
+                                                                            $computer->fields['groups_id']));
+                  break;
+               case 'uuid':
+                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']);
+                  break;
+               case 'update':
+                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Update Source').'</i></b>',
+                                                  Dropdown::getDropdownName('glpi_autoupdatesystems',
+                                                                            $computer->fields['autoupdatesystems_id']));
+                  break;
+               default: break;
+            }
+         }
+      }
+      /*
       $name          = PluginPdfCommon::mainField($pdf, $computer, 'name');
       $status        = PluginPdfCommon::mainField($pdf, $computer, 'status');
       $location      = PluginPdfCommon::mainField($pdf, $computer, 'location');
@@ -73,9 +107,9 @@ class PluginPdfComputer extends PluginPdfCommon {
       $serial        = PluginPdfCommon::mainField($pdf, $computer, 'serial');
       $contact       = PluginPdfCommon::mainField($pdf, $computer, 'contact');
       $otherserial   = PluginPdfCommon::mainField($pdf, $computer, 'otherserial');
+      $user          = PluginPdfCommon::mainField($pdf, $computer, 'user');
+      $management    = PluginPdfCommon::mainField($pdf, $computer, 'management');
       $comment       = PluginPdfCommon::mainField($pdf, $computer, 'comment');
-      $user = '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                               $dbu->getUserName($computer->fields['users_id']));
       $network = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
                                   Html::clean(Dropdown::getDropdownName('glpi_networks',
                                                                         $computer->fields['networks_id'])));
@@ -100,10 +134,8 @@ class PluginPdfComputer extends PluginPdfCommon {
       $pdf->displayLine($update);
       */
 
-      PluginPdfCommon::displayLines($pdf, [$contact, $contactnum, $model, $manufacturer, $serial, $otherserial]);
+      PluginPdfCommon::displayLines($pdf, $fieldObjs);
       PluginPdfCommon::mainLine($pdf, $computer, 'comment');
-      $pdf->displayText('<b><i>'.sprintf(__('%1$s: %2$s'), __('test').'</i></b>',
-                                                      ''), implode(" ; ", $computer->fields));
 
       $pdf->displaySpace();
    }
@@ -148,7 +180,7 @@ class PluginPdfComputer extends PluginPdfCommon {
    }
 
 
-   static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
+   static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab, $fields) {
 
       switch ($tab) {
          case 'ComputerVirtualMachine$1' :

@@ -63,9 +63,45 @@ class PluginPdfPreference extends CommonDBTM {
    function checkbox($num,$label,$checked=false) {
 
        echo "<td width='20%'><input type='checkbox' ".($checked==true?"checked='checked'":'').
-             " name='item[$num]' value='1'>&nbsp;".$label."</td>";
+             " name='item[$num]' value='1'>&nbsp; ".$label."</a></td>";
     }
 
+   function tabmenu($item, $itempdf, $tabnum, $tabtitle, $values) {
+      global $DB, $PLUGIN_HOOKS;
+
+      $tabItem = $itempdf->getPdfItemForTab($item, $tabnum);
+      $tabFields = $tabItem ? $tabItem::getFields() : [];
+
+      echo "<table class='tab_cadre_fixe'>";
+      echo "<tr><th colspan='6'><center><i>".sprintf(__('%1$s: %2$s'),
+                                          __('Choose the fields to print for table', 'pdf'), $tabtitle);
+                                           
+      $i = 0;
+      foreach ($tabFields as $num => $title) {
+         $tabID = $tabnum.'$'.$num;
+         if (!$i) {
+            echo "<tr class='tab_bg_1'>";
+         }
+         if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
+            $title = "$title ($tabID)";
+         }
+         $this->checkbox($tabID, $title, (isset($values[$tabID]) ? true : false));
+         if ($i == 4) {
+            echo "</tr>";
+            $i = 0;
+         } else {
+            $i++;
+         }
+      }
+      if ($i) {
+         while ($i <= 4) {
+            echo "<td width='20%'>&nbsp;</td>";
+            $i++;
+         }
+         echo "</tr>";
+      }
+      echo "</i></center></th></tr></table>";
+   }
 
     /**
      * @param $item
@@ -93,7 +129,7 @@ class PluginPdfPreference extends CommonDBTM {
 
       $formid="plugin_pdf_${type}_".mt_rand();
       echo "<form name='".$formid."' id='".$formid."' action='$action' method='post' ".
-             ($ID ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
+             ($ID ? /*"target='_blank'"*/"" : "")."><table class='tab_cadre_fixe'>";
 
       $landscape = false;
       $values    = [];
@@ -173,6 +209,12 @@ class PluginPdfPreference extends CommonDBTM {
               "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
       }
       echo "</table>";
+      
+      foreach ($options as $num => $title) {
+         if (isset($values[$num])){
+            $this->tabmenu($item, $itempdf,$num, $title, $values);
+         }
+      }
       Html::closeForm();
    }
 
