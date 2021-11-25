@@ -41,64 +41,79 @@ class PluginPdfSoftware extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new Software());
    }
 
+   static function getFields(){
+      return [
+         'name' => 'Name',
+         'publisher' => 'Publisher',
+         'location' => 'Location',
+         'category' => 'Category',
+         'tech' => 'Technician in charge of hardware',
+         'ticket' => 'Associable to a ticket',
+         'techgroup' => 'Group in charge of the hardware',
+         'user' => 'User',
+         'group' => 'Group',
+         'is_update' => 'Upgrade',
+         'comments' => 'Comments'
+      ];
+   }
 
-   static function pdfMain(PluginPdfSimplePDF $pdf, Software $software) {
+   static function pdfMain(PluginPdfSimplePDF $pdf, Software $software, $fields) {
 
       $dbu = new DbUtils();
 
-      PluginPdfCommon::mainTitle($pdf, $software);
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $software->fields['name']),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Publisher').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                                                $software->fields['manufacturers_id']))));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
-                          Dropdown::getDropdownName('glpi_locations',
-                                                    $software->fields['locations_id'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
-                          Dropdown::getDropdownName('glpi_softwarecategories',
-                                                    $software->fields['softwarecategories_id'])));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Technician in charge of the hardware').'</i></b>',
-                          $dbu->getUserName($software->fields['users_id_tech'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Associable to a ticket').'</i></b>',
-                          ($software->fields['is_helpdesk_visible'] ?__('Yes'):__('No'))));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group in charge of the hardware').'</i></b>',
-                          Dropdown::getDropdownName('glpi_groups',
-                                                    $software->fields['groups_id_tech'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                          $dbu->getUserName($software->fields['users_id'])));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                          Dropdown::getDropdownName('glpi_groups', $software->fields['groups_id'])));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('Last update on %s'),
-                          Html::convDateTime($software->fields['date_mod'])));
-
-
-      if ($software->fields['softwares_id'] > 0) {
-         $col2 = '<b><i> '.__('from').' </i></b> '.
-                  Html::clean(Dropdown::getDropdownName('glpi_softwares',
-                                                       $software->fields['softwares_id']));
-      } else {
-         $col2 = '';
-      }
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Upgrade').'</i></b>',
-                          ($software->fields['is_update']?__('Yes'):__('No')), $col2));
-
+      //PluginPdfCommon::mainTitle($pdf, $software);
 
       $pdf->setColumnsSize(100);
-      PluginPdfCommon::mainLine($pdf, $software, 'comment');
+      $pdf->displayTitle('<b>'.sprintf($software->getType()).'</b>');
+      $fieldObjs = [];
+
+      if (empty($fields)){
+         $fields = array_keys(static::getFields());
+      }
+
+      foreach($fields as $field){
+         if(isset(parent::getFields()[$field]) && $field != 'comments'){
+            $fieldObjs[] = PluginPdfCommon::mainField($pdf, $software, $field);
+         } else {
+            switch($field) {
+               case 'publisher':
+                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Publisher').'</i></b>',
+                          Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
+                                                                $software->fields['manufacturers_id'])));
+                  break;
+               case 'category':
+                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
+                          Dropdown::getDropdownName('glpi_softwarecategories',
+                                                    $software->fields['softwarecategories_id']));
+                  break;
+               case 'ticket':
+                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Associable to a ticket').'</i></b>',
+                          ($software->fields['is_helpdesk_visible'] ?__('Yes'):__('No')));
+                  break;
+               case 'group':
+                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
+                          Dropdown::getDropdownName('glpi_groups', $software->fields['groups_id']));
+                  break;
+               case 'is_update':
+                  if ($software->fields['softwares_id'] > 0) {
+                     $col2 = '<b><i> '.__('from').' </i></b> '.
+                              Html::clean(Dropdown::getDropdownName('glpi_softwares',
+                                                                   $software->fields['softwares_id']));
+                  } else {
+                     $col2 = '';
+                  }
+            
+                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Upgrade').'</i></b>',
+                                      ($software->fields['is_update']?__('Yes'):__('No')), $col2);
+               default: break;
+            }
+         }
+      }
+
+      PluginPdfCommon::displayLines($pdf, $fieldObjs);
+      if (isset(static::getFields()['comments'])){
+         PluginPdfCommon::mainLine($pdf, $software, 'comment');
+      }
 
       $pdf->displaySpace();
    }
