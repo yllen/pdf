@@ -41,6 +41,12 @@ class PluginPdfMonitor extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new Monitor());
    }
 
+   static function getFields(){
+      return array_merge(parent::getFields(), [
+         'group' => 'Group',
+         'size' => 'Size',
+         'flags' => 'Flags']);
+   }
 
    function defineAllTabsPDF($options=[]) {
 
@@ -51,43 +57,61 @@ class PluginPdfMonitor extends PluginPdfCommon {
    }
 
 
-   static function pdfMain(PluginPdfSimplePDF $pdf, Monitor $item) {
+   static function pdfMain(PluginPdfSimplePDF $pdf, Monitor $item, $fields) {
 
-      PluginPdfCommon::mainTitle($pdf, $item);
+      //PluginPdfCommon::mainTitle($pdf, $item);
+      
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle('<b>'.sprintf($item->getType()).'</b>');
+      $fieldObjs = [];
 
-      PluginPdfCommon::mainLine($pdf, $item, 'name-status');
-      PluginPdfCommon::mainLine($pdf, $item, 'location-type');
-      PluginPdfCommon::mainLine($pdf, $item, 'tech-manufacturer');
-      PluginPdfCommon::mainLine($pdf, $item, 'group-model');
-      PluginPdfCommon::mainLine($pdf, $item, 'contactnum-serial');
-      PluginPdfCommon::mainLine($pdf, $item, 'contact-otherserial');
-      PluginPdfCommon::mainLine($pdf, $item, 'user-management');
+      if (empty($fields)){
+         $fields = array_keys(static::getFields());
+      }
 
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                          Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Size').'</i></b>',
-                          sprintf(__('%1$s %2$s'), $item->fields['size'], '"')));
-
-      $opts = ['have_micro'         => __('Microphone'),
-               'have_speaker'       => __('Speakers'),
-               'have_subd'          => __('Sub-D'),
-               'have_bnc'           => __('BNC'),
-               'have_dvi'           => __('DVI'),
-               'have_pivot'         => __('Pivot'),
-               'have_hdmi'          => __('HDMI'),
-               'have_displayport'   => __('DisplayPort')];
-      foreach ($opts as $key => $val) {
-         if (!$item->fields[$key]) {
-            unset($opts[$key]);
+      foreach($fields as $field){
+         if(isset(parent::getFields()[$field]) && $field != 'comments'){
+            $fieldObjs[] = PluginPdfCommon::mainField($pdf, $item, $field);
+         } else {
+            switch($field) {
+               case 'group':
+                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
+                                   Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id']));
+                  break;
+               case 'size':
+                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Size').'</i></b>',
+                                   sprintf(__('%1$s %2$s'), $item->fields['size'], '"'));
+                  break;
+               default: break;
+            }
          }
       }
-      $pdf->setColumnsSize(100);
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Flags').'</i></b>',
-                          (count($opts) ? implode(', ',$opts) : __('None'))));
 
-      PluginPdfCommon::mainLine($pdf, $item, 'comment');
+      PluginPdfCommon::displayLines($pdf, $fieldObjs);
+
+      if (isset(static::getFields()['flags'])){
+         $opts = ['have_micro'         => __('Microphone'),
+                  'have_speaker'       => __('Speakers'),
+                  'have_subd'          => __('Sub-D'),
+                  'have_bnc'           => __('BNC'),
+                  'have_dvi'           => __('DVI'),
+                  'have_pivot'         => __('Pivot'),
+                  'have_hdmi'          => __('HDMI'),
+                  'have_displayport'   => __('DisplayPort')];
+         foreach ($opts as $key => $val) {
+            if (!$item->fields[$key]) {
+               unset($opts[$key]);
+            }
+         }
+         $pdf->setColumnsSize(100);
+         $pdf->displayLine(
+            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Flags').'</i></b>',
+                           (count($opts) ? implode(', ',$opts) : __('None'))));
+      }
+
+      if (isset(static::getFields()['comments'])){
+         PluginPdfCommon::mainLine($pdf, $item, 'comment');
+      }
 
       $pdf->displaySpace();
    }

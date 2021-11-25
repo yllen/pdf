@@ -44,8 +44,7 @@ class PluginPdfComputer extends PluginPdfCommon {
          'network' => 'Network',
          'group' => 'Group',
          'uuid' => 'UUID',
-         'update' => 'Update source',
-         'comments' => 'Comments']);
+         'update' => 'Update source']);
    }
 
    function defineAllTabsPDF($options=[]) {
@@ -72,7 +71,7 @@ class PluginPdfComputer extends PluginPdfCommon {
          $fields = array_keys(static::getFields());
       }
       foreach($fields as $field){
-         if(isset(parent::getFields()[$field])){
+         if(isset(parent::getFields()[$field]) && $field != 'comments'){
             $fieldObjs[] = PluginPdfCommon::mainField($pdf, $computer, $field);
          } else {
             switch($field) {

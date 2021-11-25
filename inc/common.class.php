@@ -49,7 +49,8 @@ abstract class PluginPdfCommon extends CommonGLPI {
                         'contact' => 'Alternate username',
                         'otherserial' => 'Inventory number',
                         'user' => 'User',
-                        'management' => 'Management type'];
+                        'management' => 'Management type',
+                        'comments' => 'Comments'];
 
    static function getFields(){
       return self::$tabFields;
