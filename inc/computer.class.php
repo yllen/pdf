@@ -57,55 +57,24 @@ class PluginPdfComputer extends PluginPdfCommon {
       return $onglets;
    }
 
-   static function pdfMain(PluginPdfSimplePDF $pdf, Computer $computer, $fields){
-
-      $dbu = new DbUtils();
-
-      //PluginPdfCommon::mainTitle($pdf, $computer);
-      
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.sprintf($computer->getType()).'</b>');
-      $fieldObjs = [];
-
-      if (empty($fields)){
-         $fields = array_keys(static::getFields());
-      }
-      foreach($fields as $field){
-         if(isset(parent::getFields()[$field]) && $field != 'comments'){
-            $fieldObjs[] = PluginPdfCommon::mainField($pdf, $computer, $field);
-         } else {
-            switch($field) {
-               case 'network':
-                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
-                                                 Html::clean(Dropdown::getDropdownName('glpi_networks',
-                                                                                      $computer->fields['networks_id'])));
-                  break;
-               case 'group':
-                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                                                  Dropdown::getDropdownName('glpi_groups',
-                                                                            $computer->fields['groups_id']));
-                  break;
-               case 'uuid':
-                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']);
-                  break;
-               case 'update':
-                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Update Source').'</i></b>',
-                                                  Dropdown::getDropdownName('glpi_autoupdatesystems',
-                                                                            $computer->fields['autoupdatesystems_id']));
-                  break;
-               default: break;
-            }
+   static function defineField($pdf, $computer, $field){
+      if(isset(parent::getFields()[$field]) && $field != 'comments'){
+         return PluginPdfCommon::mainField($pdf, $computer, $field);
+      } else {
+         switch($field) {
+            case 'network':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
+                                              Html::clean(Dropdown::getDropdownName('glpi_networks',
+                                                                                   $computer->fields['networks_id'])));
+            case 'uuid':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']);
+            case 'update':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Update Source').'</i></b>',
+                                               Dropdown::getDropdownName('glpi_autoupdatesystems',
+                                                                         $computer->fields['autoupdatesystems_id']));
          }
       }
-
-      PluginPdfCommon::displayLines($pdf, $fieldObjs);
-      if (isset(static::getFields()['comments'])){
-         PluginPdfCommon::mainLine($pdf, $computer, 'comment');
-      }
-
-      $pdf->displaySpace();
    }
-
 
    static function pdfOperatingSystem(PluginPdfSimplePDF $pdf, Computer $computer) {
 

@@ -57,67 +57,36 @@ class PluginPdfSoftware extends PluginPdfCommon {
       ];
    }
 
-   static function pdfMain(PluginPdfSimplePDF $pdf, Software $software, $fields) {
-
-      $dbu = new DbUtils();
-
-      //PluginPdfCommon::mainTitle($pdf, $software);
-
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.sprintf($software->getType()).'</b>');
-      $fieldObjs = [];
-
-      if (empty($fields)){
-         $fields = array_keys(static::getFields());
-      }
-
-      foreach($fields as $field){
-         if(isset(parent::getFields()[$field]) && $field != 'comments'){
-            $fieldObjs[] = PluginPdfCommon::mainField($pdf, $software, $field);
-         } else {
-            switch($field) {
-               case 'publisher':
-                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Publisher').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                                                $software->fields['manufacturers_id'])));
-                  break;
-               case 'category':
-                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
-                          Dropdown::getDropdownName('glpi_softwarecategories',
-                                                    $software->fields['softwarecategories_id']));
-                  break;
-               case 'ticket':
-                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Associable to a ticket').'</i></b>',
-                          ($software->fields['is_helpdesk_visible'] ?__('Yes'):__('No')));
-                  break;
-               case 'group':
-                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                          Dropdown::getDropdownName('glpi_groups', $software->fields['groups_id']));
-                  break;
-               case 'is_update':
-                  if ($software->fields['softwares_id'] > 0) {
-                     $col2 = '<b><i> '.__('from').' </i></b> '.
-                              Html::clean(Dropdown::getDropdownName('glpi_softwares',
-                                                                   $software->fields['softwares_id']));
-                  } else {
-                     $col2 = '';
-                  }
-            
-                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Upgrade').'</i></b>',
-                                      ($software->fields['is_update']?__('Yes'):__('No')), $col2);
-               default: break;
-            }
+   static function defineField($pdf, $software, $field){
+      if(isset(parent::getFields()[$field])){
+         return PluginPdfCommon::mainField($pdf, $software, $field);
+      } else {
+         switch($field) {
+            case 'publisher':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Publisher').'</i></b>',
+                     Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
+                                                            $software->fields['manufacturers_id'])));
+            case 'category':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
+                     Dropdown::getDropdownName('glpi_softwarecategories',
+                                                $software->fields['softwarecategories_id']));
+            case 'ticket':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Associable to a ticket').'</i></b>',
+                     ($software->fields['is_helpdesk_visible'] ?__('Yes'):__('No')));
+            case 'is_update':
+               if ($software->fields['softwares_id'] > 0) {
+                  $col2 = '<b><i> '.__('from').' </i></b> '.
+                           Html::clean(Dropdown::getDropdownName('glpi_softwares',
+                                                               $software->fields['softwares_id']));
+               } else {
+                  $col2 = '';
+               }
+         
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Upgrade').'</i></b>',
+                                 ($software->fields['is_update']?__('Yes'):__('No')), $col2);
          }
       }
-
-      PluginPdfCommon::displayLines($pdf, $fieldObjs);
-      if (isset(static::getFields()['comments'])){
-         PluginPdfCommon::mainLine($pdf, $software, 'comment');
-      }
-
-      $pdf->displaySpace();
    }
-
 
    function defineAllTabsPDF($options=[]) {
 

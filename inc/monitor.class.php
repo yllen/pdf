@@ -74,10 +74,6 @@ class PluginPdfMonitor extends PluginPdfCommon {
             $fieldObjs[] = PluginPdfCommon::mainField($pdf, $item, $field);
          } else {
             switch($field) {
-               case 'group':
-                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                                   Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id']));
-                  break;
                case 'size':
                   $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Size').'</i></b>',
                                    sprintf(__('%1$s %2$s'), $item->fields['size'], '"'));

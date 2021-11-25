@@ -43,35 +43,128 @@ class PluginPdfInfocom extends PluginPdfCommon {
 
    static function getFields(){
       return [
-         'order_date' => 'Order date',
-         'buy_date' => 'Date of purchase',
-         'delivery_date' => 'Delivery date',
-         'use_date' => 'Startup date',
-         'inventory_date' => 'Date of last physical inventory',
-         'decommission_date' => 'Decommission date',
-         'supplier' => 'Supplier',
-         'budget' => 'Budget',
-         'order_number' => 'Order number',
-         'immo_number' => 'Immobilization number',
-         'bill' => 'Invoice number',
-         'delivery_number' => 'Delivery form',
-         'value' => 'Value',
-         'warranty_value' => 'Warranty extension value',
-         'acc_value' => 'Account net value',
-         'sink_time' => 'Amortization duration',
-         'sink_type' => 'Amortization type',
-         'sink_coeff' => 'Amortization coefficient',
-         'tco' => 'TCO (value + tracking cost)',
-         'monthly_tco' => 'Monthly TCO',
-         'glpi_businesscriticities' => 'Business criticity',
+         'al_order_date' => 'Order date',
+         'al_buy_date' => 'Date of purchase',
+         'al_delivery_date' => 'Delivery date',
+         'al_use_date' => 'Startup date',
+         'al_inventory_date' => 'Date of last physical inventory',
+         'al_decommission_date' => 'Decommission date',
+         'fa_supplier' => 'Supplier',
+         'fa_budget' => 'Budget',
+         'fa_order_number' => 'Order number',
+         'fa_immo_number' => 'Immobilization number',
+         'fa_bill' => 'Invoice number',
+         'fa_delivery_number' => 'Delivery form',
+         'fa_value' => 'Value',
+         'fa_warranty_value' => 'Warranty extension value',
+         'fa_acc_value' => 'Account net value',
+         'fa_sink_time' => 'Amortization duration',
+         'fa_sink_type' => 'Amortization type',
+         'fa_sink_coeff' => 'Amortization coefficient',
+         'fa_tco' => 'TCO (value + tracking cost)',
+         'fa_monthly_tco' => 'Monthly TCO',
+         'fa_glpi_businesscriticities' => 'Business criticity',
          'comments' => 'Comments',
-         'warranty_date' => 'Start date of warranty',
-         'warranty_duration' => 'Warranty duration',
-         'warranty_info' => 'Warranty information',
-         'warranty_alarm' => 'Alarms'
+         'wa_warranty_date' => 'Start date of warranty',
+         'wa_warranty_duration' => 'Warranty duration',
+         'wa_warranty_info' => 'Warranty information',
+         'wa_warranty_alarm' => 'Alarms'
       ];
    }
 
+   static function defineField($pdf, $item, $field, $ic){
+      $print = static::getFields()[$field];
+      $num = substr($field, 3);
+      switch($num){
+         //Asset lifecycle fields
+         case 'order_date':
+         case 'buy_date':
+         case 'delivery_date':
+         case 'use_date':
+         case 'inventory_date':
+         case 'decommission_date':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __($print)."</i></b>",
+                                                Html::convDate($ic->fields[$num]));
+         
+         //Financial and administrative information
+         case 'supplier':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Supplier')."</i></b>",
+                           Html::clean(Dropdown::getDropdownName("glpi_suppliers",
+                                                                  $ic->fields["suppliers_id"])));
+         case 'budget':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Budget')."</i></b>",
+                           Html::clean(Dropdown::getDropdownName("glpi_budgets",
+                                                                  $ic->fields["budgets_id"])));
+         case 'order_number':
+         case 'immo_number':
+         case 'bill':
+         case 'delivery_number':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __($print)."</i></b>",
+                                                $ic->fields[$num]);
+         case 'value':
+            "<b><i>".sprintf(__('%1$s: %2$s'), _x('price', 'Value')."</i></b>",
+                                                PluginPdfConfig::formatNumber($ic->fields["value"]));
+         case 'warranty_value':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Warranty extension value')."</i></b>",
+                                                PluginPdfConfig::formatNumber($ic->fields["warranty_value"]));
+         case 'acc_value':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Account net value')."</i></b>",
+                                                Infocom::Amort($ic->fields["sink_type"], $ic->fields["value"],
+                                                               $ic->fields["sink_time"], $ic->fields["sink_coeff"],
+                                                               $ic->fields["warranty_date"], $ic->fields["use_date"],
+                                                               $CFG_GLPI['date_tax'],"n"));
+         case 'sink_time':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization duration')."</i></b>",
+                                    sprintf(__('%1$s (%2$s)'),
+                                          sprintf(_n('%d year', '%d years', $ic->fields["sink_time"]),
+                                                $ic->fields["sink_time"]),
+                                          Infocom::getAmortTypeName($ic->fields["sink_type"])));
+         case 'sink_type':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization type')."</i></b>",
+                                                Infocom::getAmortTypeName($ic->fields["sink_type"]));
+         case 'sink_coeff':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization coefficient')."</i></b>",
+                                                $ic->fields["sink_coeff"]);
+         case 'tco':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('TCO (value + tracking cost)')."</i></b>",
+                                                sprintf(__('%1$s %2$s'),
+                                                         Html::clean(Infocom::showTco($item->getField('ticket_tco'),
+                                                                                       $ic->fields["value"])), $sym));
+         case 'monthly_tco':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Monthly TCO')."</i></b>",
+                                       sprintf(__('%1$s %2$s'),
+                                                Html::clean(Infocom::showTco($item->getField('ticket_tco'),
+                                                                              $ic->fields["value"],
+                                                                              $ic->fields["buy_date"])), $sym));
+         case 'glpi_businesscriticities':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Business criticity')."</i></b>",
+                                                Dropdown::getDropdownName('glpi_businesscriticities',
+                                                                           $ic->fields['businesscriticities_id']));
+         //Waranty Information
+         case 'warranty_date':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Start date of warranty')."</i></b>",
+                                                Html::convDate($ic->fields["warranty_date"]));
+         case 'warranty_duration':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Warranty duration')."</i></b>",
+                                                sprintf(__('%1$s - %2$s'),
+                                                      sprintf(_n('%d month', '%d months',
+                                                                  $ic->fields["warranty_duration"]),
+                                                               $ic->fields["warranty_duration"]),
+                                                      sprintf(__('Valid to %s'),
+                                                               Infocom::getWarrantyExpir($ic->fields["buy_date"],
+                                                                                          $ic->fields["warranty_duration"]))));
+         case 'warranty_info':
+            return "<b><i>".sprintf(__('%1$s: %2$s'), __('Warranty information')."</i></b>",
+                                                $ic->fields["warranty_info"]);
+         case 'warranty_alarm':
+            $col1 = "<b><i>".__('Alarms on financial and administrative information')."</i></b>";
+            if ($ic->fields["alert"] == 0) {
+               return sprintf(__('%1$s: %2$s'), $col1, __('No'));
+            } else if ($ic->fields["alert"] == 4) {
+               return sprintf(__('%1$s: %2$s'), $col1, __('Warranty expiration date'));
+            }
+      }
+   }
    static function pdfForItem(PluginPdfSimplePDF $pdf, CommonDBTM $item, $fields){
       global $CFG_GLPI, $PDF_DEVICES;
 
@@ -104,116 +197,18 @@ class PluginPdfInfocom extends PluginPdfCommon {
             $fields = array_keys(static::getFields());
          }
 
-         foreach($fields as $num){
-            $print = static::getFields()[$num];
-            switch($num){
-               //Asset lifecycle fields
-               case 'order_date':
-               case 'buy_date':
-               case 'delivery_date':
-               case 'use_date':
-               case 'inventory_date':
-               case 'decommission_date':
-                  $lifecyclefields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __($print)."</i></b>",
-                                                  Html::convDate($ic->fields[$num]));
+         foreach($fields as $field){
+            switch(substr($field, 0, 3)){
+               case 'al_':
+                  $lifecyclefields[] = static::defineField($pdf, $item, $field, $ic);
                   break;
-
-               //Financial and administrative information
-               case 'supplier':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Supplier')."</i></b>",
-                                   Html::clean(Dropdown::getDropdownName("glpi_suppliers",
-                                                                         $ic->fields["suppliers_id"])));
+               case 'fa_':
+                  $financialfields[] = static::defineField($pdf, $item, $field, $ic);
                   break;
-               case 'budget':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Budget')."</i></b>",
-                                   Html::clean(Dropdown::getDropdownName("glpi_budgets",
-                                                                         $ic->fields["budgets_id"])));
+               case 'wa_':
+                  $warrantyfields[]  = static::defineField($pdf, $item, $field, $ic);
                   break;
-               case 'order_number':
-               case 'immo_number':
-               case 'bill':
-               case 'delivery_number':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __($print)."</i></b>",
-                                                      $ic->fields[$num]);
-                  break;
-               case 'value':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), _x('price', 'Value')."</i></b>",
-                                                      PluginPdfConfig::formatNumber($ic->fields["value"]));
-                  break;
-               case 'warranty_value':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Warranty extension value')."</i></b>",
-                                                      PluginPdfConfig::formatNumber($ic->fields["warranty_value"]));
-                  break;
-               case 'acc_value':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Account net value')."</i></b>",
-                                                      Infocom::Amort($ic->fields["sink_type"], $ic->fields["value"],
-                                                                     $ic->fields["sink_time"], $ic->fields["sink_coeff"],
-                                                                     $ic->fields["warranty_date"], $ic->fields["use_date"],
-                                                                     $CFG_GLPI['date_tax'],"n"));
-                  break;
-               case 'sink_time':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization duration')."</i></b>",
-                                          sprintf(__('%1$s (%2$s)'),
-                                                sprintf(_n('%d year', '%d years', $ic->fields["sink_time"]),
-                                                      $ic->fields["sink_time"]),
-                                                Infocom::getAmortTypeName($ic->fields["sink_type"])));
-                  break;
-               case 'sink_type':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization type')."</i></b>",
-                                                        Infocom::getAmortTypeName($ic->fields["sink_type"]));
-                  break;
-               case 'sink_coeff':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization coefficient')."</i></b>",
-                                                        $ic->fields["sink_coeff"]);
-                  break;
-               case 'tco':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('TCO (value + tracking cost)')."</i></b>",
-                                                        sprintf(__('%1$s %2$s'),
-                                                                Html::clean(Infocom::showTco($item->getField('ticket_tco'),
-                                                                                             $ic->fields["value"])), $sym));
-                  break;
-               case 'monthly_tco':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Monthly TCO')."</i></b>",
-                                             sprintf(__('%1$s %2$s'),
-                                                      Html::clean(Infocom::showTco($item->getField('ticket_tco'),
-                                                                                    $ic->fields["value"],
-                                                                                    $ic->fields["buy_date"])), $sym));
-                  break;
-               case 'glpi_businesscriticities':
-                  $financialfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Business criticity')."</i></b>",
-                                                        Dropdown::getDropdownName('glpi_businesscriticities',
-                                                                                 $ic->fields['businesscriticities_id']));
-                  break;
-                                                                                 
-               //Waranty Information
-               case 'warranty_date':
-                  $warrantyfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Start date of warranty')."</i></b>",
-                                                       Html::convDate($ic->fields["warranty_date"]));
-                  break;
-               case 'warranty_duration':
-                  $warrantyfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Warranty duration')."</i></b>",
-                                                      sprintf(__('%1$s - %2$s'),
-                                                            sprintf(_n('%d month', '%d months',
-                                                                        $ic->fields["warranty_duration"]),
-                                                                     $ic->fields["warranty_duration"]),
-                                                            sprintf(__('Valid to %s'),
-                                                                     Infocom::getWarrantyExpir($ic->fields["buy_date"],
-                                                                                                $ic->fields["warranty_duration"]))));
-                  break;
-               case 'warranty_info':
-                  $warrantyfields[] = "<b><i>".sprintf(__('%1$s: %2$s'), __('Warranty information')."</i></b>",
-                                                       $ic->fields["warranty_info"]);
-                  break;
-               case 'warranty_alarm':
-                  $col1 = "<b><i>".__('Alarms on financial and administrative information')."</i></b>";
-                  if ($ic->fields["alert"] == 0) {
-                     $col1 = sprintf(__('%1$s: %2$s'), $col1, __('No'));
-                  } else if ($ic->fields["alert"] == 4) {
-                     $col1 = sprintf(__('%1$s: %2$s'), $col1, __('Warranty expiration date'));
-                  }
-                  $warrantyfields[] = $col1;
-                  break;
-            }
+            }  
          }
 
          if (!empty($lifecyclefields)){

@@ -50,6 +50,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
                         'otherserial' => 'Inventory number',
                         'user' => 'User',
                         'management' => 'Management type',
+                        'group' => 'Group',
                         'comments' => 'Comments'];
 
    static function getFields(){
@@ -389,6 +390,41 @@ abstract class PluginPdfCommon extends CommonGLPI {
 
    }
 
+   /**
+    * Generate the main tab for some object
+    *
+    * @param $pdf    PDF         the pdf that will print
+    * @param $item   CommonDBTM  the item that will be printed
+    * @param $fields Array       the fields that will be printed
+    *
+   **/
+   static function pdfMain(PluginPdfSimplePDF $pdf, CommonDBTM $item, $fields){
+
+      $dbu = new DbUtils();
+
+      //PluginPdfCommon::mainTitle($pdf, $item);
+      
+      $pdf->setColumnsSize(100);
+      $pdf->displayTitle('<b>'.sprintf($item->getType()).'</b>');
+      $fieldObjs = [];
+
+      if (empty($fields)){
+         $fields = array_keys(static::getFields());
+      }
+      foreach($fields as $field){
+         if ($field != 'comments'){
+            $fieldObjs[] = static::defineField($pdf, $item, $field);
+         }
+      }
+
+      PluginPdfCommon::displayLines($pdf, $fieldObjs);
+      if (isset(static::getFields()['comments'])){
+         PluginPdfCommon::mainLine($pdf, $item, 'comment');
+      }
+
+      $pdf->displaySpace();
+   }
+
 
    /**
     * Generate the PDF for some object
@@ -541,6 +577,10 @@ abstract class PluginPdfCommon extends CommonGLPI {
             return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Management type').'</i></b>',
                                     ($item->fields['is_global']?__('Global management')
                                                                :__('Unit management')));
+         case 'group':
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
+                                    Dropdown::getDropdownName('glpi_groups',
+                                                              $item->fields['groups_id']));
       }
    }
 
