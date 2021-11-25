@@ -66,7 +66,13 @@ abstract class PluginPdfCommon extends CommonGLPI {
          case $item->getType().'$main' :
             return static::getFields();
             break;
-
+         
+         case 'Infocom$1' :
+            if (Session::haveRight('infocom', READ)) {
+               return PluginPdfInfocom::getFields();
+            }
+            break;
+         
          default :
             return false;
       }
@@ -210,7 +216,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
 
          case 'Infocom$1' :
             if (Session::haveRight('infocom', READ)) {
-               PluginPdfInfocom::pdfForItem($pdf, $item);
+               PluginPdfInfocom::pdfForItem($pdf, $item, $fields);
             }
             break;
 

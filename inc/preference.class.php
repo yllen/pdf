@@ -209,7 +209,6 @@ class PluginPdfPreference extends CommonDBTM {
       
       foreach ($options as $num => $title) {
          $tabFields = $itempdf->getFieldsForTab($item, $num);
-         echo $num;
          if ($tabFields && isset($values[$num])){
             $checkedFields = [];
             foreach($values as $key => $field){
