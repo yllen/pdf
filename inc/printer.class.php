@@ -39,6 +39,15 @@ class PluginPdfPrinter extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new Printer());
    }
 
+   static function getFields(){
+      return array_merge(parent::getFields(), [
+         'network' => 'Network',
+         'memory_size' => 'Memory',
+         'init_pages_counter' => 'Initial page counter',
+         'last_pages_counter' => 'Current counter of pages',
+         'ports' => 'Ports'
+      ]);
+   }
 
    function defineAllTabsPDF($options=[]) {
 
@@ -49,58 +58,50 @@ class PluginPdfPrinter extends PluginPdfCommon {
       return $onglets;
    }
 
+   static function displayLines($pdf, $lines){
+      if (null !== $ports = $lines['ports']){
+         unset($lines['ports']);
+         parent::displayLines($pdf, $lines);
+         $pdf->setColumnsSize(100);
+         $pdf->displayline($ports);
+      }
+   }
 
-   static function pdfMain(PluginPdfSimplePDF $pdf, Printer $printer) {
-
-       PluginPdfCommon::mainTitle($pdf, $printer);
-
-       PluginPdfCommon::mainLine($pdf, $printer, 'name-status');
-       PluginPdfCommon::mainLine($pdf, $printer, 'location-type');
-       PluginPdfCommon::mainLine($pdf, $printer, 'tech-manufacturer');
-       PluginPdfCommon::mainLine($pdf, $printer, 'group-model');
-       PluginPdfCommon::mainLine($pdf, $printer, 'contactnum-serial');
-       PluginPdfCommon::mainLine($pdf, $printer, 'contact-otherserial');
-       PluginPdfCommon::mainLine($pdf, $printer, 'user-management');
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                          Dropdown::getDropdownName('glpi_groups', $printer->fields['groups_id'])),
-        '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
-                         Html::clean(Dropdown::getDropdownName('glpi_networks',
-                                                                $printer->fields['networks_id']))));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Memory').'</i></b>',
-                          $printer->fields['memory_size']),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Initial page counter').'</i></b>',
-                          $printer->fields['init_pages_counter']));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Current counter of pages').'</i></b>',
-                          $printer->fields['last_pages_counter']));
-
-      $opts = ['have_serial'   => __('Serial'),
+   static function defineField($pdf, $item, $field){
+      $print = static::getFields()[$field];
+      if(isset(parent::getFields()[$field])){
+         return PluginPdfCommon::mainField($pdf, $item, $field);
+      } else {
+         switch($field) {
+            case 'network':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
+                                       Html::clean(Dropdown::getDropdownName('glpi_networks',
+                                                                              $printer->fields['networks_id'])));
+            case 'memory_size':
+            case 'init_pages_counter':
+            case 'last_pages_counter':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __($print).'</i></b>',
+                                       $printer->fields[$field]);
+            case 'ports':
+               $opts = ['have_serial'   => __('Serial'),
                'have_parallel' => __('Parallel'),
                'have_usb'      => __('USB'),
                'have_ethernet' => __('Ethernet'),
                'have_wifi'     => __('Wifi')];
 
-      foreach ($opts as $key => $val) {
-         if (!$printer->fields[$key]) {
-            unset($opts[$key]);
+               foreach ($opts as $key => $val) {
+                  if (!$printer->fields[$key]) {
+                     unset($opts[$key]);
+                  }
+               }
+
+               return '<b><i>'.sprintf(__('%1$s: %2$s'),
+                                       _n('Port', 'Ports', count($opts)).'</i></b>',
+                                       (count($opts) ? implode(', ',$opts) : __('None')));
+
          }
       }
-
-      $pdf->setColumnsSize(100);
-      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'),
-                                         _n('Port', 'Ports', count($opts)).'</i></b>',
-                                         (count($opts) ? implode(', ',$opts) : __('None'))));
-
-      PluginPdfCommon::mainLine($pdf, $printer, 'comment');
-
-      $pdf->displaySpace();
    }
-
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 

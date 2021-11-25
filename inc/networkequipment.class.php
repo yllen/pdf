@@ -41,6 +41,13 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new NetworkEquipment());
    }
 
+   static function getFields(){
+      $fields = array_merge(parent::getFields(), [
+                           'network' => 'Network',
+                           'memory' => 'Memory']);
+      unset($fields['management']);
+      return $fields;
+   }
 
    function defineAllTabsPDF($options=[]) {
 
@@ -52,43 +59,22 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
       return $onglets;
    }
 
-
-   static function pdfMain(PluginPdfSimplePDF $pdf, NetworkEquipment $item) {
-
-      $dbu = new DbUtils();
-
-      PluginPdfCommon::mainTitle($pdf, $item);
-
-      PluginPdfCommon::mainLine($pdf, $item, 'name-status');
-      PluginPdfCommon::mainLine($pdf, $item, 'location-type');
-      PluginPdfCommon::mainLine($pdf, $item, 'tech-manufacturer');
-      PluginPdfCommon::mainLine($pdf, $item, 'group-model');
-      PluginPdfCommon::mainLine($pdf, $item, 'contactnum-serial');
-      PluginPdfCommon::mainLine($pdf, $item, 'contact-otherserial');
-
-
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                          $dbu->getUserName($item->fields['users_id'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_networks',
-                                                                $item->fields['networks_id']))));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                          Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
-         '<b><i>'.__('The MAC address and the IP of the equipment are included in an aggregated network port'),
-         '<b><i>'.sprintf(__('%1$s: %2$s'),
-                          sprintf(__('%1$s (%2$s)'), __('Memory'),__('Mio')).'</i></b>',
-                                  $item->fields['ram']));
-
-      $pdf->setColumnsSize(100);
-      PluginPdfCommon::mainLine($pdf, $item, 'comment');
-
-      $pdf->displaySpace();
+   static function defineField($pdf, $item, $field){
+      if(isset(parent::getFields()[$field])){
+         return PluginPdfCommon::mainField($pdf, $item, $field);
+      } else {
+         switch($field) {
+            case 'network':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
+                                       Html::clean(Dropdown::getDropdownName('glpi_networks',
+                                                                             $item->fields['networks_id'])));
+            case 'memory':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'),
+                                       sprintf(__('%1$s (%2$s)'), __('Memory'),__('Mio')).'</i></b>',
+                                               $item->fields['ram']);
+         }
+      }
    }
-
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
