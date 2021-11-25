@@ -61,105 +61,14 @@ abstract class PluginPdfCommon extends CommonGLPI {
    **/
    abstract function __construct(CommonGLPI $obj=NULL);
 
-   function getPdfItemForTab(CommonGLPI $item, $tab){
+   function getFieldsForTab(CommonGLPI $item, $tab){
       switch ($tab) {
          case $item->getType().'$main' :
-            $class = get_class($this);
-            return new $class;
+            return static::getFields();
             break;
 
-            case 'Document_Item$1' :
-               if (Session::haveRight('document', READ)) {
-                  return new PluginPdfDocument;
-               }
-               break;
-   
-            case 'NetworkPort$1' :
-               return new PluginPdfNetworkPort;
-               break;
-   
-            case 'Infocom$1' :
-               if (Session::haveRight('infocom', READ)) {
-                  return new PluginPdfInfocom;
-               }
-               break;
-   
-            case 'Contract_Item$1' :
-               if (Session::haveRight("contract", READ)) {
-                  return new PluginPdfContract_Item;
-               }
-               break;
-   
-            case 'Ticket$1' :
-               if (Ticket::canView()) {
-                  return new PluginPdfItem_Ticket;
-               }
-               break;
-   
-            case 'Item_Problem$1' :
-               if (Problem::canView()) {
-                  return new PluginPdfItem_Problem;
-               }
-               break;
-   
-            case 'Change_Item$1' :
-               if (Change::canView()) {
-                  return new PluginPdfChange_Item;
-               }
-               break;
-   
-            case 'Link$1' :
-               if (Session::haveRight('link', READ)) {
-                  return new PluginPdfLink;
-               }
-               break;
-   
-            case 'Reservation$1' :
-               if (Session::haveRight('reservation', READ)) {
-                  return new PluginPdfReservation;
-               }
-               break;
-   
-            case 'Log$1' :
-               return new PluginPdfLog;
-               break;
-   
-            /*
-            case 'KnowbaseItem_Item$1' :
-               if (KnowbaseItem::canView()) {
-                  return new PluginPdfItem_Knowbaseitem;
-               }
-               break;
-
-            case 'Item_Devices$1' :
-               if (Session::haveRight('device', READ)) {
-                  return new PluginPdfItem_Device;
-               }
-               break;
-
-            case 'Item_Disk$1' :
-               return new PluginPdfItem_Disk;
-               break;
-            */
-
-            case 'Computer_Item$1' :
-               return new PluginPdfComputer_Item;
-               break;
-   
-            case 'Item_SoftwareVersion$1' :
-               return new PluginPdfItem_SoftwareVersion;
-               break;
-   
-            case 'Domain_Item$1' :
-               return new PluginPdfDomain_Item;
-               break;
-   
-            case 'Item_OperatingSystem$1' :
-               return new PluginPdfItem_OperatingSystem;
-               break;
-   
-            default :
-               return false;
+         default :
+            return false;
       }
    }
 

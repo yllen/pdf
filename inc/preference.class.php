@@ -66,18 +66,15 @@ class PluginPdfPreference extends CommonDBTM {
              " name='item[$num]' value='1'>&nbsp; ".$label."</a></td>";
     }
 
-   function tabmenu($item, $itempdf, $tabnum, $tabtitle, $fields) {
+   function tabmenu($tabnum, $tabtitle, $fields, $checked) {
       global $DB, $PLUGIN_HOOKS;
-
-      $tabItem = $itempdf->getPdfItemForTab($item, $tabnum);
-      $tabFields = $tabItem ? $tabItem::getFields() : [];
 
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr><th colspan='6'><center><i>".sprintf(__('%1$s: %2$s'),
                                           __('Choose the fields to print for table', 'pdf'), $tabtitle);
 
       $i = 0;
-      foreach ($tabFields as $num => $title) {
+      foreach ($fields as $num => $title) {
          $tabID = $tabnum.'$'.$num;
          if (!$i) {
             echo "<tr class='tab_bg_1'>";
@@ -85,7 +82,7 @@ class PluginPdfPreference extends CommonDBTM {
          if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
             $title = "$title ($tabID)";
          }
-         $this->checkbox($tabID, $title, (isset($fields[$tabID]) || empty($fields)? true : false));
+         $this->checkbox($tabID, $title, (isset($checked[$tabID]) || empty($checked)? true : false));
          if ($i == 4) {
             echo "</tr>";
             $i = 0;
@@ -211,15 +208,17 @@ class PluginPdfPreference extends CommonDBTM {
       echo "</table>";
       
       foreach ($options as $num => $title) {
-         if (isset($values[$num])){
-            $tabFields = [];
+         $tabFields = $itempdf->getFieldsForTab($item, $num);
+         echo $num;
+         if ($tabFields && isset($values[$num])){
+            $checkedFields = [];
             foreach($values as $key => $field){
                if (strpos($field, $num.'$') === 0){
-                  $tabFields[$field] = $field;
+                  $checkedFields[$field] = $field;
                   unset($values[$field]);
                }
             }
-            $this->tabmenu($item, $itempdf,$num, $title, $tabFields);
+            $this->tabmenu($num, $title, $tabFields, $checkedFields);
          }
       }
       Html::closeForm();
