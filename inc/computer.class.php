@@ -44,7 +44,8 @@ class PluginPdfComputer extends PluginPdfCommon {
          'network' => 'Network',
          'group' => 'Group',
          'uuid' => 'UUID',
-         'update' => 'Update source']);
+         'update' => 'Update source',
+         'comments' => 'Comments']);
    }
 
    function defineAllTabsPDF($options=[]) {
@@ -65,8 +66,11 @@ class PluginPdfComputer extends PluginPdfCommon {
       
       $pdf->setColumnsSize(100);
       $pdf->displayTitle('<b>'.sprintf($computer->getType()).'</b>');
-
       $fieldObjs = [];
+
+      if (empty($fields)){
+         $fields = array_keys(static::getFields());
+      }
       foreach($fields as $field){
          if(isset(parent::getFields()[$field])){
             $fieldObjs[] = PluginPdfCommon::mainField($pdf, $computer, $field);
@@ -96,7 +100,9 @@ class PluginPdfComputer extends PluginPdfCommon {
       }
 
       PluginPdfCommon::displayLines($pdf, $fieldObjs);
-      PluginPdfCommon::mainLine($pdf, $computer, 'comment');
+      if (isset(static::getFields()['comments'])){
+         PluginPdfCommon::mainLine($pdf, $computer, 'comment');
+      }
 
       $pdf->displaySpace();
    }
