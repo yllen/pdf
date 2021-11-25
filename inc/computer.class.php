@@ -42,7 +42,6 @@ class PluginPdfComputer extends PluginPdfCommon {
    static function getFields(){
       return array_merge(parent::getFields(), [
          'network' => 'Network',
-         'group' => 'Group',
          'uuid' => 'UUID',
          'update' => 'Update source']);
    }
@@ -58,7 +57,7 @@ class PluginPdfComputer extends PluginPdfCommon {
    }
 
    static function defineField($pdf, $computer, $field){
-      if(isset(parent::getFields()[$field]) && $field != 'comments'){
+      if(isset(parent::getFields()[$field])){
          return PluginPdfCommon::mainField($pdf, $computer, $field);
       } else {
          switch($field) {

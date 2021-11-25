@@ -413,11 +413,11 @@ abstract class PluginPdfCommon extends CommonGLPI {
       }
       foreach($fields as $field){
          if ($field != 'comments'){
-            $fieldObjs[] = static::defineField($pdf, $item, $field);
+            $fieldObjs[$field] = static::defineField($pdf, $item, $field);
          }
       }
 
-      PluginPdfCommon::displayLines($pdf, $fieldObjs);
+      static::displayLines($pdf, $fieldObjs);
       if (isset(static::getFields()['comments'])){
          PluginPdfCommon::mainLine($pdf, $item, 'comment');
       }
@@ -512,13 +512,14 @@ abstract class PluginPdfCommon extends CommonGLPI {
    //displays all the fields given to it in two columns
    static function displayLines($pdf, $lines){
       $pdf->setColumnsSize(50,50);
+      $keys = array_keys($lines);
       for ($idx = 0; $idx < count($lines); $idx++){
          if ($idx < count($lines)-2 ){
-            $pdf->displayLine($lines[$idx], $lines[++$idx]);
+            $pdf->displayLine($lines[$keys[$idx]], $lines[$keys[++$idx]]);
          } else if ($idx < count($lines)-1 ){   //If there is an even amount of fields
-            return $pdf->displayLine($lines[$idx], $lines[++$idx]);
+            return $pdf->displayLine($lines[$keys[$idx]], $lines[$keys[++$idx]]);
          } else if ($idx == count($lines)-1){   //There is an un even amount of fields
-            return $pdf->displayLine($lines[$idx]);
+            return $pdf->displayLine($lines[$keys[$idx]]);
          }
       }
    }

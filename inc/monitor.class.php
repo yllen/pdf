@@ -56,62 +56,42 @@ class PluginPdfMonitor extends PluginPdfCommon {
       return $onglets;
    }
 
-
-   static function pdfMain(PluginPdfSimplePDF $pdf, Monitor $item, $fields) {
-
-      //PluginPdfCommon::mainTitle($pdf, $item);
-      
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b>'.sprintf($item->getType()).'</b>');
-      $fieldObjs = [];
-
-      if (empty($fields)){
-         $fields = array_keys(static::getFields());
-      }
-
-      foreach($fields as $field){
-         if(isset(parent::getFields()[$field]) && $field != 'comments'){
-            $fieldObjs[] = PluginPdfCommon::mainField($pdf, $item, $field);
-         } else {
-            switch($field) {
-               case 'size':
-                  $fieldObjs[] = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Size').'</i></b>',
-                                   sprintf(__('%1$s %2$s'), $item->fields['size'], '"'));
-                  break;
-               default: break;
-            }
-         }
-      }
-
-      PluginPdfCommon::displayLines($pdf, $fieldObjs);
-
-      if (isset(static::getFields()['flags'])){
-         $opts = ['have_micro'         => __('Microphone'),
-                  'have_speaker'       => __('Speakers'),
-                  'have_subd'          => __('Sub-D'),
-                  'have_bnc'           => __('BNC'),
-                  'have_dvi'           => __('DVI'),
-                  'have_pivot'         => __('Pivot'),
-                  'have_hdmi'          => __('HDMI'),
-                  'have_displayport'   => __('DisplayPort')];
-         foreach ($opts as $key => $val) {
-            if (!$item->fields[$key]) {
-               unset($opts[$key]);
-            }
-         }
+   static function displayLines($pdf, $lines){
+      if (null !== $ports = $lines['flags']){
+         unset($lines['flags']);
+         parent::displayLines($pdf, $lines);
          $pdf->setColumnsSize(100);
-         $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Flags').'</i></b>',
-                           (count($opts) ? implode(', ',$opts) : __('None'))));
+         $pdf->displayline($ports);
       }
-
-      if (isset(static::getFields()['comments'])){
-         PluginPdfCommon::mainLine($pdf, $item, 'comment');
-      }
-
-      $pdf->displaySpace();
    }
 
+   static function defineField($pdf, $item, $field){
+      if(isset(parent::getFields()[$field])){
+         return PluginPdfCommon::mainField($pdf, $item, $field);
+      } else {
+         switch($field) {
+            case 'size':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Size').'</i></b>',
+                                       sprintf(__('%1$s %2$s'), $item->fields['size'], '"'));
+            case 'flags':
+               $opts = ['have_micro'         => __('Microphone'),
+                        'have_speaker'       => __('Speakers'),
+                        'have_subd'          => __('Sub-D'),
+                        'have_bnc'           => __('BNC'),
+                        'have_dvi'           => __('DVI'),
+                        'have_pivot'         => __('Pivot'),
+                        'have_hdmi'          => __('HDMI'),
+                        'have_displayport'   => __('DisplayPort')];
+               foreach ($opts as $key => $val) {
+                  if (!$item->fields[$key]) {
+                     unset($opts[$key]);
+                  }
+               }
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Flags').'</i></b>',
+                                 (count($opts) ? implode(', ',$opts) : __('None')));
+         }
+      }
+   }
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
