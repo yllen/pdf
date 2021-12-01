@@ -118,7 +118,6 @@ class PluginPdfContract extends PluginPdfCommon {
                   return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Email alarms').'</i></b>',
                                           ($contract->fields['alert'] > 0) ? $contract->fields['alert'] : '');
                }
-            default: return false;
          }
       }
    }
