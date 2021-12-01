@@ -41,6 +41,18 @@ class PluginPdfCartridgeItem extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new CartridgeItem());
    }
 
+   static function getFields(){
+      $fields = array_merge(parent::getFields(), [
+         'reference' => 'Reference',
+         'stock_location' => 'Stock location',
+         'location' => 'Stock location',
+         'alarm_threshold' => 'Alert threshold']);
+      $remove = ['type', 'tech', 'techgroup', 'model', 'contactnum', 'serial', 'contact', 'otherserial', 'user', 'management', 'group'];
+      foreach($remove as $removed){
+         unset($fields[$removed]);
+      }
+      return $fields;
+   }
 
    function defineAllTabsPDF($options=[]) {
 
@@ -48,41 +60,22 @@ class PluginPdfCartridgeItem extends PluginPdfCommon {
       return $onglets;
    }
 
-
-   static function pdfMain(PluginPdfSimplePDF $pdf, CartridgeItem $cartitem){
-
-      $dbu = new DbUtils();
-
-      PluginPdfCommon::mainTitle($pdf, $cartitem);
-
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $cartitem->fields['name']),
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Type').'</i></b>',
-                             Html::clean(Dropdown::getDropdownName('glpi_cartridgeitemtypes',
-                                                                   $cartitem->fields['cartridgeitemtypes_id']))));
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Reference').'</i></b>', $cartitem->fields['ref']),
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Manufacturer').'</i></b>',
-                             Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                                                   $cartitem->fields['manufacturers_id']))));
-
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Technician in charge of the hardware').'</i></b>',
-                             $dbu->getUserName($cartitem->fields['users_id_tech'])),
-            '<b><i>'.sprintf(__('%1$s: %2$s'),  __('Group in charge of the hardware').'</i></b>',
-                             Dropdown::getDropdownName('glpi_groups',
-                                                       $cartitem->fields['groups_id_tech'])));
-
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Stock location').'</i></b>',
-                             Dropdown::getDropdownName('glpi_locations',
-                                                       $cartitem->fields['locations_id'])),
-            '<b><i>'.sprintf(__('%1$s: %2$s'),  __('Alert threshold').'</i></b>',
-                             $cartitem->getField('alarm_threshold')));
-
-      PluginPdfCommon::mainLine($pdf, $cartitem, 'comment');
-
-      $pdf->displaySpace();
+   static function defineField($pdf, $item, $field){
+      if(isset(parent::getFields()[$field])){
+         return PluginPdfCommon::mainField($pdf, $item, $field);
+      } else {
+         switch($field) {
+            case 'reference':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Reference').'</i></b>', $item->fields['ref']);
+            case 'stock_location':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Stock location').'</i></b>',
+                                       Dropdown::getDropdownName('glpi_locations',
+                                                               $item->fields['locations_id']));
+            case 'alarm_threshold':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'),  __('Alert threshold').'</i></b>',
+                                       $item->getField('alarm_threshold'));
+         }
+      }
    }
 
 

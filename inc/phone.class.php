@@ -41,6 +41,13 @@ class PluginPdfPhone extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new Phone());
    }
 
+   static function getFields(){
+      return array_merge(parent::getFields(), [
+         'power' => 'Power Supply',
+         'brand' => 'Brand',
+         'quantity' => 'Number of lines',
+         'flags' => 'Flags']);
+   }
 
    function defineAllTabsPDF($options=[]) {
 
@@ -50,48 +57,43 @@ class PluginPdfPhone extends PluginPdfCommon {
       return $onglets;
    }
 
-
-   static function pdfMain(PluginPdfSimplePDF $pdf, Phone $item) {
-
-      PluginPdfCommon::mainTitle($pdf, $item);
-
-      PluginPdfCommon::mainLine($pdf, $item, 'name-status');
-      PluginPdfCommon::mainLine($pdf, $item, 'location-type');
-      PluginPdfCommon::mainLine($pdf, $item, 'tech-manufacturer');
-      PluginPdfCommon::mainLine($pdf, $item, 'group-model');
-      PluginPdfCommon::mainLine($pdf, $item, 'contactnum-serial');
-      PluginPdfCommon::mainLine($pdf, $item, 'contact-otherserial');
-      PluginPdfCommon::mainLine($pdf, $item, 'user-management');
-
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
-                          Dropdown::getDropdownName('glpi_groups', $item->fields['groups_id'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Power supply').'</i></b>',
-                          Dropdown::getYesNo($item->fields['phonepowersupplies_id'])));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Brand').'</i></b>', $item->fields['brand']),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), _x('quantity', 'Number of lines').'</i></b>',
-                          $item->fields['number_line']));
-
-      $opts = ['have_headset' => __('Headset'),
-               'have_hp'      => __('Speaker')];
-      foreach ($opts as $key => $val) {
-         if (!$item->fields[$key]) {
-            unset($opts[$key]);
-         }
+   static function displayLines($pdf, $lines){
+      if (null !== $ports = $lines['flags']){
+         unset($lines['flags']);
+         parent::displayLines($pdf, $lines);
+         $pdf->setColumnsSize(100);
+         $pdf->displayline($ports);
+      } else {
+         parent::displayLines($pdf, $lines);
       }
-
-      $pdf->setColumnsSize(100);
-      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Flags').'</i></b>',
-                        (count($opts) ? implode(', ',$opts) : __('None'))));
-
-      PluginPdfCommon::mainLine($pdf, $item, 'comment');
-
-      $pdf->displaySpace();
    }
 
+   static function defineField($pdf, $item, $field){
+      if(isset(parent::getFields()[$field])){
+         return PluginPdfCommon::mainField($pdf, $item, $field);
+      } else {
+         switch($field) {
+            case 'power':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Power supply').'</i></b>',
+                                       Dropdown::getYesNo($item->fields['phonepowersupplies_id']));
+            case 'brand':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Brand').'</i></b>', $item->fields['brand']);
+            case 'quantity':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), _x('quantity', 'Number of lines').'</i></b>',
+                                       $item->fields['number_line']);
+            case 'flags':
+               $opts = ['have_headset' => __('Headset'),
+                        'have_hp'      => __('Speaker')];
+               foreach ($opts as $key => $val) {
+                  if (!$item->fields[$key]) {
+                     unset($opts[$key]);
+                  }
+               }
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Flags').'</i></b>',
+                                       (count($opts) ? implode(', ',$opts) : __('None')));
+         }
+      }
+   }
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 

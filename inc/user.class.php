@@ -40,90 +40,115 @@ class PluginPdfUser extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new User());
    }
 
-
-   static function pdfMain(PluginPdfSimplePDF $pdf, User $item) {
-      global $DB;
-
-      $ID = $item->getField('id');
-
-      $pdf->setColumnsSize(50, 50);
-      $pdf->displayTitle('<b>'.sprintf(__('%1$s %2$s'),__('ID'), $item->fields['id']).'</b>',
-                         sprintf(__('%1$s: %2$s'), __('Last update'),
-                                 Html::convDateTime($item->fields['date_mod'])));
-
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Login').'</i></b>', $item->fields['name']),
-            '<b><i>'.sprintf(__('Last login on %s').'</i></b>',
-                             Html::convDateTime($item->fields['last_login'])));
-
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Surname'), $item->fields['realname'].'</i></b>'),
-            '<b><i>'.sprintf(__('%1$s - %2$s'),__('First name').'</i></b>',
-                             $item->fields['firstname']));
-
-      $end = '';
-      if ($item->fields['end_date']) {
-         $end = '<b><i> - '.sprintf(__('%1$s - %2$s'), __('Valid until').'</i></b>',
-                                       Html::convDateTime($item->fields['end_date']));
-      }
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Active').'</i></b>', $item->fields['is_active']),
-            '<b><i>'.sprintf(__('%1$s : %2$s'), __('Valid since').'</i></b>',
-                             Html::convDateTime($item->fields['begin_date']).$end));
-
-      $emails = [];
-      foreach ($DB->request('glpi_useremails', ['users_id' => $item->getField('id')]) as $key => $email) {
-         if ($email['is_default'] == 1) {
-            $emails[]= $email['email'] ." (".__('Default email').")";
-         } else {
-            $emails[]= $email['email'];
-         }
-      }
-      $pdf->setColumnsSize(100);
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'),
-                             _n('Email', 'Emails', Session::getPluralNumber()).'</i></b>',
-                             implode(", ", $emails)));
-
-      $pdf->setColumnsSize(50,50);
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Phone').'</i></b>', $item->fields['phone']),
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Phone 2').'</i></b>', $item->fields['phone2']));
-
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Mobile phone').'</i></b>',
-                             $item->fields['mobile']),
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
-                             Dropdown::getDropdownName('glpi_usercategories',
-                                                       $item->fields['usercategories_id'])));
-
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Administrative number').'</i></b>',
-                             $item->fields['registration_number']),
-            '<b><i>'.sprintf(__('%1$s: %2$s'), _x('person', 'Title').'</i></b>',
-                             Dropdown::getDropdownName('glpi_usertitles',
-                                                       $item->fields['usertitles_id'])));
-
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
-                             Dropdown::getDropdownName('glpi_locations',
-                                                       $item->fields['locations_id'])),
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Language').'</i></b>',
-                  Dropdown::getLanguageName($item->fields['language'])));
-
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Default profile').'</i></b>',
-                             Dropdown::getDropdownName('glpi_profiles',
-                                                       $item->fields['profiles_id'])),
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Default entity').'</i></b>',
-                             Dropdown::getDropdownName('glpi_entities',
-                                                       $item->fields['entities_id'])));
-
-      PluginPdfCommon::mainLine($pdf, $item, 'comment');
-
-      $pdf->displaySpace();
+   static function getFields(){
+      return ['name' => 'Login',
+              'last_login' => 'Last login on',
+              'realname' => 'Surname',
+              'firstname' => 'First name',
+              'is_active' => 'Active',
+              'valid' => 'Valid date',
+              'emails' => 'Emails',
+              'phone' => 'Phone',
+              'phone2' => 'Phone 2',
+              'mobile' => 'Mobile phone',
+              'category' => 'Category',
+              'registration_number' => 'Administrative number',
+              'title' => 'Title',
+              'location' => 'Location',
+              'language' => 'Language',
+              'profile' => 'Default profile',
+              'entity' => 'Default entity',
+              'comments' => 'Comments'];
    }
 
+   function defineAllTabsPDF($options=[]) {
+
+      $onglets = parent::defineAllTabsPDF($options);
+      unset($onglets['Profile_User$1']);
+      unset($onglets['Group_User$1']);
+      unset($onglets['Config$1']);
+      unset($onglets['Synchronisation$1']);
+      unset($onglets['Certificate_Item$1']);
+      unset($onglets['Auth$1']);
+
+      return $onglets;
+   }
+
+   static function displayLines($pdf, $lines){
+      if (null !== $emails = $lines['emails']){
+         $keys = array_keys($lines);
+         $key = array_search('emails', $keys);
+         parent::displayLines($pdf, array_slice($lines, 0, $key));
+         $pdf->setColumnsSize(100);
+         $pdf->displayline($emails);
+         parent::displayLines($pdf, array_slice($lines, $key+1));
+      } else {
+         parent::displayLines($pdf, $lines);
+      }
+   }
+
+   static function defineField($pdf, $item, $field){
+      global $DB;
+      $print = static::getFields()[$field];
+      switch($field){
+         case 'name':
+         case 'realname':
+         case 'firstname':
+         case 'is_active':
+         case 'phone':
+         case 'phone2':
+         case 'mobile':
+         case 'registration_number':
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($print).'</i></b>', $item->fields[$field]);
+
+         case 'last_login':
+            return '<b><i>'.sprintf(__('Last login on %s').'</i></b>',
+                                    Html::convDateTime($item->fields['last_login']));
+         case 'valid':
+            $end = '';
+            if ($item->fields['end_date']) {
+               $end = '<b><i> - '.sprintf(__('%1$s - %2$s'), __('Valid until').'</i></b>',
+                                             Html::convDateTime($item->fields['end_date']));
+            }
+            return '<b><i>'.sprintf(__('%1$s : %2$s'), __('Valid since').'</i></b>',
+                                    Html::convDateTime($item->fields['begin_date']).$end);
+         case 'emails':
+            $emails = [];
+            foreach ($DB->request('glpi_useremails', ['users_id' => $item->getField('id')]) as $key => $email) {
+               if ($email['is_default'] == 1) {
+                  $emails[]= $email['email'] ." (".__('Default email').")";
+               } else {
+                  $emails[]= $email['email'];
+               }
+            }
+            return '<b><i>'.sprintf(__('%1$s: %2$s'),
+                                    _n('Email', 'Emails', Session::getPluralNumber()).'</i></b>',
+                                    implode(", ", $emails));
+         case 'category':
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
+                                    Dropdown::getDropdownName('glpi_usercategories',
+                                                            $item->fields['usercategories_id']));
+         case 'title':
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), _x('person', 'Title').'</i></b>',
+                                    Dropdown::getDropdownName('glpi_usertitles',
+                                                            $item->fields['usertitles_id']));
+         case 'location':
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
+                                    Dropdown::getDropdownName('glpi_locations',
+                                                            $item->fields['locations_id']));
+         case 'language':
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Language').'</i></b>',
+                                    Dropdown::getLanguageName($item->fields['language']));
+         case 'profile':
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Default profile').'</i></b>',
+                                    Dropdown::getDropdownName('glpi_profiles',
+                                                            $item->fields['profiles_id']));
+         case 'entity':
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Default entity').'</i></b>',
+                                    Dropdown::getDropdownName('glpi_entities',
+                                                            $item->fields['entities_id']));
+      }
+   }
 
    static function pdfItems(PluginPdfSimplePDF $pdf, User $user, $tech) {
       global $CFG_GLPI, $DB;
@@ -302,21 +327,6 @@ class PluginPdfUser extends PluginPdfCommon {
          }
       }
    }
-
-
-   function defineAllTabsPDF($options=[]) {
-
-      $onglets = parent::defineAllTabsPDF($options);
-      unset($onglets['Profile_User$1']);
-      unset($onglets['Group_User$1']);
-      unset($onglets['Config$1']);
-      unset($onglets['Synchronisation$1']);
-      unset($onglets['Certificate_Item$1']);
-      unset($onglets['Auth$1']);
-
-      return $onglets;
-   }
-
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
