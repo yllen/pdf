@@ -41,66 +41,51 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new SoftwareLicense());
    }
 
-
-   static function pdfMain(PluginPdfSimplePDF $pdf, SoftwareLicense $license, $main=true, $cpt=true) {
-
-      $ID = $license->getField('id');
-
-      $pdf->setColumnsSize(100);
-      $entity = '';
-      if (Session::isMultiEntitiesMode() && !$main) {
-         $entity = ' ('.Dropdown::getDropdownName('glpi_entities', $license->fields['entities_id']).')';
-      }
-      $pdf->displayTitle('<b><i>'.sprintf(__('%1$s: %2$s'), __('ID')."</i>", $ID."</b>".$entity));
-
-      $pdf->setColumnsSize(50,50);
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), Software::getTypeName(1).'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwares',
-                                                                $license->fields['softwares_id']))),
-         '<b><i>'.sprintf(__('%1$s: %2$s'),__('Type').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
-                                                                $license->fields['softwarelicensetypes_id']))));
-
-      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
-                                         $license->fields['name']),
-                        '<b><i>'.sprintf(__('%1$s: %2$s'),__('Serial number').'</i></b>',
-                                         $license->fields['serial']));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Purchase version').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
-                                                                $license->fields['softwareversions_id_buy']))),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Inventory number').'</i></b>',
-                          $license->fields['otherserial']));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Version in use').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
-                                                                $license->fields['softwareversions_id_use']))),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Expiration').'</i></b>',
-                          Html::convDate($license->fields['expire'])));
-
-      $col2 = '';
-      if ($cpt) {
-         $col2 = '<b><i>'.sprintf(__('%1$s: %2$s'),__('Affected computers').'</i></b>',
-                                  Item_SoftwareLicense::countForLicense($ID));
-      }
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), _x('quantity', 'Number').'</i></b>',
-                          (($license->fields['number'] > 0)?$license->fields['number']
-                                                           :__('Unlimited'))),
-         $col2);
-
-      $pdf->setColumnsSize(100);
-      PluginPdfCommon::mainLine($pdf, $license, 'comment');
-
-      if ($main) {
-         $pdf->displaySpace();
-      }
+   static function getFields(){
+      return [
+         'software' => 'Software',
+         'type' => 'Type',
+         'name' => 'Name',
+         'serial' => 'Serial number',
+         'softwareversions_id_buy' => 'Purchase version',
+         'otherserial' => 'Inventory number',
+         'softwareversions_id_use' => 'Version in use',
+         'expire' => 'Expiration',
+         'quantity' => 'Number',
+         'affected' => 'Affected computers',
+         'comments' => 'Comments'
+      ];
    }
 
+   static function defineField($pdf, $license, $field){
+      $ID = $license->getField('id');
+      $print = static::getFields()[$field];
+      if(isset(parent::getFields()[$field])){
+         return PluginPdfCommon::mainField($pdf, $license, $field);
+      } else {
+         switch($field) {
+            case 'software':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), Software::getTypeName(1).'</i></b>',
+                                       Html::clean(Dropdown::getDropdownName('glpi_softwares',
+                                                                           $license->fields['softwares_id'])));
+            case 'softwareversions_id_buy':
+            case 'softwareversions_id_use':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __($print).'</i></b>',
+                                       Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
+                                                                           $license->fields[$field])));
+            case 'expire':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Expiration').'</i></b>',
+                                       Html::convDate($license->fields['expire']));
+            case 'quantity':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), _x('quantity', 'Number').'</i></b>',
+                                       (($license->fields['number'] > 0)?$license->fields['number']
+                                                                        :__('Unlimited')));
+            case 'affected':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'),__('Affected computers').'</i></b>',
+                                       Item_SoftwareLicense::countForLicense($ID));
+         }
+      }
+   }
 
    static function pdfForSoftware(PluginPdfSimplePDF $pdf, Software $software, $infocom=false) {
       global $DB;
@@ -174,12 +159,6 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 
       switch ($tab) {
-         case '_main_' :
-            $cpt = !(isset($_REQUEST['item']['Item_SoftwareLicense$1'])
-                     || isset($_REQUEST['item']['Item_SoftwareLicense$2']));
-            self::pdfMain($pdf, $item, true, $cpt);
-            break;
-
          case 'Item_SoftwareLicense$1' :
             PluginPdfItem_SoftwareLicense::pdfForLicenseByEntity($pdf, $item);
             break;
