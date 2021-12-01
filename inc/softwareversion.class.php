@@ -41,35 +41,29 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new SoftwareVersion());
    }
 
-
-   static function pdfMain(PluginPdfSimplePDF $pdf, SoftwareVersion $version) {
-
-      $ID = $version->getField('id');
-
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle('<b><i>'.sprintf(__('%1$s: %2$s'), __('ID')."</i>", $ID."</b>"));
-
-      $pdf->setColumnsSize(50,50);
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $version->fields['name']),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), _n('Software', 'Software', 2).'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwares',
-                                                                $version->fields['softwares_id']))));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Status').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_states',
-                                                                $version->fields['states_id']))),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Operating system').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
-                                                                $version->fields['operatingsystems_id']))));
-
-      $pdf->setColumnsSize(100);
-      PluginPdfCommon::mainLine($pdf, $version, 'comment');
-      $pdf->displaySpace();
+   static function getFields(){
+      return ['name' => 'Name',
+              'software' => 'Software',
+              'status' => 'Status',
+              'operating_system' => 'Operating system'];
    }
 
+   static function defineField($pdf, $item, $field){
+      if(isset(parent::getFields()[$field])){
+         return PluginPdfCommon::mainField($pdf, $item, $field);
+      } else {
+         switch($field) {
+            case 'software':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), _n('Software', 'Software', 2).'</i></b>',
+                                       Html::clean(Dropdown::getDropdownName('glpi_softwares',
+                                                                           $version->fields['softwares_id'])));
+            case 'operating_system':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Operating system').'</i></b>',
+                                       Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
+                                                                           $version->fields['operatingsystems_id'])));
+         }
+      }
+   }
 
    static function pdfForSoftware(PluginPdfSimplePDF $pdf, Software $item){
       global $DB;

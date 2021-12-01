@@ -40,6 +40,22 @@ class PluginPdfContract extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new Contract());
    }
 
+   static function getFields(){
+      return ['name' => 'Name',
+              'type' => 'Contract type',
+              'num' => 'Number',
+              'status' => 'Status',
+              'begin_date' => 'Start date',
+              'duration' => 'Initial contract period',
+              'notice' => 'Notice',
+              'accounting_number' => 'Account number',
+              'periodicity' => 'Contract renewal period',
+              'billing' => 'Invoice period',
+              'renewal' => 'Renewal',
+              'max_links_allowed' => 'Max number of items',
+              'alert' => 'Email alarms',
+              'comments' => 'Comments'];
+   }
 
    function defineAllTabsPDF($options=[]) {
 
@@ -48,77 +64,64 @@ class PluginPdfContract extends PluginPdfCommon {
       return $onglets;
    }
 
-
-   static function pdfMain(PluginPdfSimplePDF $pdf, Contract $contract){
-
-      $dbu = new DbUtils();
-
-      PluginPdfCommon::mainTitle($pdf, $contract);
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $contract->fields['name']),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Contract type').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_contracttypes',
-                                                                $contract->fields['contracttypes_id']))));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), _x('phone', 'Number').'</i></b>',
-                          $contract->fields['num']),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Status').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_states',
-                                                                $contract->fields['states_id']))));
-
-      $textduration = "";
-      if (!empty($contract->fields["begin_date"])) {
-         $textduration = sprintf(__('%1$s %2$s'), '   -> ',
-                                 Infocom::getWarrantyExpir($contract->fields['begin_date'],
-                                                           $contract->fields['duration']));
+   static function defineField($pdf, Contract $contract, $field){
+      if(isset(parent::getFields()[$field])){
+         return PluginPdfCommon::mainField($pdf, $contract, $field);
+      } else {
+         switch($field) {
+            case 'num':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), _x('phone', 'Number').'</i></b>',
+                                       $contract->fields['num']);
+            case 'begin_date':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Start date').'</i></b>',
+                                       Html::convDate($contract->fields['begin_date']));
+            case 'duration':
+               $textduration = "";
+               if (!empty($contract->fields["begin_date"])) {
+                  $textduration = sprintf(__('%1$s %2$s'), '   -> ',
+                                          Infocom::getWarrantyExpir($contract->fields['begin_date'],
+                                                                  $contract->fields['duration']));
+               }
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Initial contract period').'</i></b>',
+                                       sprintf(_n('%d month', '%d months', $contract->fields['duration']),
+                                             $contract->fields['duration']) .$textduration);
+            case 'notice':
+               $textduration = "";
+               if (!empty($contract->fields["begin_date"]) && ($contract->fields["notice"] > 0)) {
+                  $textduration = sprintf(__('%1$s %2$s'), '   -> ',
+                                          Infocom::getWarrantyExpir($contract->fields["begin_date"],
+                                                                    $contract->fields["duration"],
+                                                                    $contract->fields["notice"]));
+               }
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Notice').'</i></b>',
+                                       sprintf(_n('%d month', '%d months', $contract->fields["notice"]),
+                                             $contract->fields["notice"]).$textduration);
+            case 'accounting_number':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Account number').'</i></b>',
+                                       $contract->fields["accounting_number"]);
+            case 'periodicity':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Contract renewal period').'</i></b>',
+                                       sprintf(_n('%d month', '%d months', $contract->fields["periodicity"]),
+                                             $contract->fields["periodicity"]));
+            case 'billing':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Invoice period').'</i></b>',
+                                       sprintf(_n('%d month', '%d months', $contract->fields["billing"]),
+                                             $contract->fields["billing"]));
+            case 'renewal':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Renewal').'</i></b>',
+                                       Contract::getContractRenewalName($contract->fields["renewal"]));
+            case 'max_links_allowed':
+               return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Max number of items').'</i></b>',
+                                       $contract->fields["max_links_allowed"]);
+            case 'alert':
+               if (Entity::getUsedConfig("use_contracts_alert", $contract->fields["entities_id"])) {
+                  return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Email alarms').'</i></b>',
+                                          ($contract->fields['alert'] > 0) ? $contract->fields['alert'] : '');
+               }
+            default: return false;
+         }
       }
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Start date').'</i></b>',
-                          Html::convDate($contract->fields['begin_date'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Initial contract period').'</i></b>',
-                          sprintf(_n('%d month', '%d months', $contract->fields['duration']),
-                                  $contract->fields['duration']) .$textduration));
-
-      if (!empty($contract->fields["begin_date"]) && ($contract->fields["notice"] > 0)) {
-         $textduration = sprintf(__('%1$s %2$s'), '   -> ',
-                                 Infocom::getWarrantyExpir($contract->fields["begin_date"],
-                                                           $contract->fields["duration"],
-                                                           $contract->fields["notice"]));
-      }
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Notice').'</i></b>',
-                          sprintf(_n('%d month', '%d months', $contract->fields["notice"]),
-                                  $contract->fields["notice"]).$textduration),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Account number').'</i></b>',
-                           $contract->fields["accounting_number"]));
-
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Contract renewal period').'</i></b>',
-                             sprintf(_n('%d month', '%d months', $contract->fields["periodicity"]),
-                                   $contract->fields["periodicity"])),
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Invoice period').'</i></b>',
-                             sprintf(_n('%d month', '%d months', $contract->fields["billing"]),
-                                     $contract->fields["billing"])));
-
-      $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Renewal').'</i></b>',
-                             Contract::getContractRenewalName($contract->fields["renewal"])),
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Max number of items').'</i></b>',
-                             $contract->fields["max_links_allowed"]));
-
-      if (Entity::getUsedConfig("use_contracts_alert", $contract->fields["entities_id"])) {
-         $pdf->displayLine(
-               '<b><i>'.sprintf(__('%1$s: %2$s'), __('Email alarms').'</i></b>',
-                                ($contract->fields['alert'] > 0) ? $contract->fields['alert'] : ''));
-      }
-
-      PluginPdfCommon::mainLine($pdf, $contract, 'comment');
-
-      $pdf->displaySpace();
    }
-
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
 

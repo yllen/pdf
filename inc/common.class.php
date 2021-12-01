@@ -412,8 +412,8 @@ abstract class PluginPdfCommon extends CommonGLPI {
          $fields = array_keys(static::getFields());
       }
       foreach($fields as $field){
-         if ($field != 'comments'){
-            $fieldObjs[$field] = static::defineField($pdf, $item, $field);
+         if ($field != 'comments' && $defined = static::defineField($pdf, $item, $field)){
+            $fieldObjs[$field] = $defined;
          }
       }
 
