@@ -220,7 +220,7 @@ class PluginPdfInfocom extends PluginPdfCommon {
             $pdf->displayTitle("<b>".__($title)."</b>");
             PluginPdfCommon::displayLines($pdf, $financialfields);
             if (isset(static::getFields()['comments'])){
-               PluginPdfCommon::mainLine($pdf, $ic, 'comment');
+               PluginPdfCommon::commentLine($pdf, $ic);
             }
          }
          if (!empty($warrantyfields)){

@@ -419,7 +419,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
 
       static::displayLines($pdf, $fieldObjs);
       if (isset(static::getFields()['comments'])){
-         PluginPdfCommon::mainLine($pdf, $item, 'comment');
+         PluginPdfCommon::commentLine($pdf, $item);
       }
 
       $pdf->displaySpace();
@@ -587,76 +587,9 @@ abstract class PluginPdfCommon extends CommonGLPI {
       }
    }
 
-   static function mainLine(PluginPdfSimplePDF $pdf, $item, $field) {
-
-      $dbu  = new DbUtils();
-
-      $type = Toolbox::strtolower($item->getType());
-      switch($field) {
-         case 'name-status' :
-            return $pdf->displayLine(
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
-                                      $item->fields['name']),
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Status').'</i></b>',
-                                      Html::clean(Dropdown::getDropdownName('glpi_states',
-                                                                            $item->fields['states_id']))));
-
-         case 'location-type' :
-            return $pdf->displayLine(
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
-                                      Dropdown::getDropdownName('glpi_locations',
-                                                                $item->fields['locations_id'])),
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Type').'</i></b>',
-                                      Html::clean(Dropdown::getDropdownName('glpi_'.$type.'types',
-                                                                            $item->fields[$type.'types_id']))));
-
-         case 'tech-manufacturer' :
-            return $pdf->displayLine(
-                     '<b><i>'.sprintf(__('%1$s: %2$s'),
-                                      __('Technician in charge of the hardware').'</i></b>',
-                                      $dbu->getUserName($item->fields['users_id_tech'])),
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Manufacturer').'</i></b>',
-                                      Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                                                            $item->fields['manufacturers_id']))));
-         case 'group-model' :
-            return $pdf->displayLine(
-                     '<b><i>'.sprintf(__('%1$s: %2$s'),
-                                      __('Group in charge of the hardware').'</i></b>',
-                                      Dropdown::getDropdownName('glpi_groups',
-                                                                $item->fields['groups_id_tech'])),
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Model').'</i></b>',
-                                      Html::clean(Dropdown::getDropdownName('glpi_'.$type.'models',
-                                                                            $item->fields[$type.'models_id']))));
-
-         case 'contactnum-serial' :
-            return $pdf->displayLine(
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Alternate username number').'</i></b>',
-                                      $item->fields['contact_num']),
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Serial number').'</i></b>',
-                                      $item->fields['serial']));
-
-         case 'contact-otherserial' :
-            return $pdf->displayLine(
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Alternate username').'</i></b>',
-                                      $item->fields['contact']),
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Inventory number').'</i></b>',
-                                      $item->fields['otherserial']));
-
-         case 'user-management' :
-            return $pdf->displayLine(
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                                      $dbu->getUserName($item->fields['users_id'])),
-                     '<b><i>'.sprintf(__('%1$s: %2$s'), __('Management type').'</i></b>',
-                                      ($item->fields['is_global']?__('Global management')
-                                                                 :__('Unit management'))));
-
-         case 'comment' :
-            return $pdf->displayText('<b><i>'.sprintf(__('%1$s: %2$s'), __('Comments').'</i></b>',
+   static function commentLine($pdf, $item){
+      return $pdf->displayText('<b><i>'.sprintf(__('%1$s: %2$s'), __('Comments').'</i></b>',
                                                       ''), $item->fields['comment']);
-
-       default :
-        return;
-      }
    }
 
 
