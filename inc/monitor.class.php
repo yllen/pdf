@@ -43,7 +43,6 @@ class PluginPdfMonitor extends PluginPdfCommon {
 
    static function getFields(){
       return array_merge(parent::getFields(), [
-         'group' => 'Group',
          'size' => 'Size',
          'flags' => 'Flags']);
    }
@@ -62,6 +61,8 @@ class PluginPdfMonitor extends PluginPdfCommon {
          parent::displayLines($pdf, $lines);
          $pdf->setColumnsSize(100);
          $pdf->displayline($ports);
+      } else {
+         parent::displayLines($pdf, $lines);
       }
    }
 
