@@ -527,59 +527,61 @@ abstract class PluginPdfCommon extends CommonGLPI {
    static function mainField(PluginPdfSimplePDF $pdf, $item, $field) {
       $dbu  = new DbUtils();
 
+      $displayname = static::getFields()[$field];
+
       $type = Toolbox::strtolower($item->getType());
       switch($field) {
          case 'name' : 
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     $item->fields['name']);
          case 'status' :
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Status').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     Html::clean(Dropdown::getDropdownName('glpi_states',
                                                                           $item->fields['states_id'])));
          case 'location' :
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     Dropdown::getDropdownName('glpi_locations',
                                                               $item->fields['locations_id']));
          case 'type' :
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Type').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     Html::clean(Dropdown::getDropdownName('glpi_'.$type.'types',
                                                                           $item->fields[$type.'types_id'])));
          case 'tech':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Technician in charge of the hardware').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     $dbu->getUserName($item->fields['users_id_tech']));
          case 'manufacturer':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Manufacturer').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
                                                                           $item->fields['manufacturers_id'])));
          case 'techgroup':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group in charge of the hardware').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     Dropdown::getDropdownName('glpi_groups',
                                                               $item->fields['groups_id_tech']));
          case 'model':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Model').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     Html::clean(Dropdown::getDropdownName('glpi_'.$type.'models',
                                                                           $item->fields[$type.'models_id'])));
          case 'contactnum':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Alternate username number').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     $item->fields['contact_num']);
          case 'serial':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Serial number').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     $item->fields['serial']);
          case 'contact':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Alternate username').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     $item->fields['contact']);
          case 'otherserial':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Inventory number').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     $item->fields['otherserial']);
          case 'user':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     $dbu->getUserName($item->fields['users_id']));
          case 'management':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Management type').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     ($item->fields['is_global']?__('Global management')
                                                                :__('Unit management')));
          case 'group':
-            return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
+            return '<b><i>'.sprintf(__('%1$s: %2$s'), __($displayname).'</i></b>',
                                     Dropdown::getDropdownName('glpi_groups',
                                                               $item->fields['groups_id']));
       }
