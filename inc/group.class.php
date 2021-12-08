@@ -41,7 +41,7 @@ class PluginPdfGroup extends PluginPdfCommon {
    }
 
 
-   static function pdfMain(PluginPdfSimplePDF $pdf, Group $item) {
+   static function pdfMain(PluginPdfSimplePDF $pdf, Group $item, $fields) {
 
       $ID = $item->getField('id');
 
