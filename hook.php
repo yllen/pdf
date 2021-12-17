@@ -139,7 +139,7 @@ function plugin_pdf_install() {
    }
 
    if (!$DB->tableExists('glpi_plugin_pdf_configs')) {
-      include_once(Plugin::getPhpDir('pdf')."inc/config.class.php");
+      include_once(Plugin::getPhpDir('pdf')."/inc/config.class.php");
       PluginPdfConfig::install($migration);
    }
 
