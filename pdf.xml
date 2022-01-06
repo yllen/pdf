@@ -3,7 +3,7 @@
    <name>PDF</name>
    <key>pdf</key>
    <state>stable</state>
-   <logo>https://github.com/yllen/pdf/blob/master/pdf.png</logo>
+   <logo>https://raw.githubusercontent.com/yllen/pdf/master/pdf.png</logo>
    <description>
       <short>
          <fr><![CDATA[Ce plugin vous permet d’exporter en PDF la fiche d'un élément de 
