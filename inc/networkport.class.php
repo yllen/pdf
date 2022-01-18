@@ -62,7 +62,7 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
             $pdf->displayTitle('<b>'.__('No network port found').'</b>');
          } else {
             if ($nb_connect > $_SESSION['glpilist_limit']) {
-               $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+               $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$nb_connect);
             } else {
                $title = sprintf(__('%1$s: %2$d'), $title, $nb_connect);
             }
@@ -109,7 +109,7 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                   $pdf->displayLine(
                      '<b>'.sprintf(__('%1$s: %2$s'), __('Ethernet port type').'</b>', $type));
 
-                  $netpoint = new Netpoint();
+                  $netpoint = new Socket();
                   $outlet = '';
                   if ($netpoint->getFromDB($netportethernet->fields['netpoints_id'])) {
                      $outlet = $netpoint->fields['name'];

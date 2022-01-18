@@ -37,7 +37,7 @@ class PluginPdfItem_Knowbaseitem extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-      $this->obj = ($obj ? $obj : new ComputerDisk());
+      $this->obj = ($obj ? $obj : new Knowbaseitem());
    }
 
 

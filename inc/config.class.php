@@ -132,7 +132,7 @@ class PluginPdfConfig extends CommonDBTM {
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
       if ($item->getType()=='Config') {
-            return $this::getName();
+            return $this->getName();
       }
       return '';
    }
