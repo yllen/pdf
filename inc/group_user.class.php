@@ -83,7 +83,7 @@ class PluginPdfGroup_User extends PluginPdfCommon {
          for ($i=0 ; $i<$number && $i<$_SESSION['glpilist_limit'] ; $i++) {
             $data = $used[$i];
             $user->getFromDB($data["id"]);
-            $name = Html::clean($dbu->getUserName($data["id"]));
+            $name = Toolbox::stripTags($dbu->getUserName($data["id"]));
 
             if ($tree) {
                $group->getFromDB($data["groups_id"]);

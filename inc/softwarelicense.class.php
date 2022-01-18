@@ -57,10 +57,10 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), Software::getTypeName(1).'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwares',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwares',
                                                                 $license->fields['softwares_id']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'),__('Type').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwarelicensetypes',
                                                                 $license->fields['softwarelicensetypes_id']))));
 
       $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
@@ -70,14 +70,14 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Purchase version').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwareversions',
                                                                 $license->fields['softwareversions_id_buy']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Inventory number').'</i></b>',
                           $license->fields['otherserial']));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Version in use').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwareversions',
                                                                 $license->fields['softwareversions_id_use']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Expiration').'</i></b>',
                           Html::convDate($license->fields['expire'])));
@@ -153,11 +153,11 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
                                  ($license->fields['number'] > 0) ? $license->fields['number']
                                                                   :__('Unlimited'),
                                  Item_SoftwareLicense::countForLicense($license->getField('id')),
-                                 Html::clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
+                                 Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwarelicensetypes',
                                                                        $license->fields['softwarelicensetypes_id'])),
-                                 Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
+                                 Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwareversions',
                                                                        $license->fields['softwareversions_id_buy'])),
-                                 Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
+                                 Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwareversions',
                                                                        $license->fields['softwareversions_id_use'])),
                                  Html::convDate($license->fields['expire']));
             }

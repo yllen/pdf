@@ -58,14 +58,14 @@ class PluginPdfContract extends PluginPdfCommon {
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $contract->fields['name']),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Contract type').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_contracttypes',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_contracttypes',
                                                                 $contract->fields['contracttypes_id']))));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), _x('phone', 'Number').'</i></b>',
                           $contract->fields['num']),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Status').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_states',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_states',
                                                                 $contract->fields['states_id']))));
 
       $textduration = "";
@@ -171,7 +171,7 @@ class PluginPdfContract extends PluginPdfCommon {
             $pdf->displayLine($data['name'],
                               Html::convDate($data['begin_date']),
                               Html::convDate($data['end_date']),
-                              Html::Clean(Dropdown::getDropdownName('glpi_budgets',
+                              Toolbox::stripTags(Dropdown::getDropdownName('glpi_budgets',
                                                                     $data['budgets_id'])),
                               PluginPdfConfig::formatNumber($data['cost']));
             $total += $data['cost'];

@@ -88,10 +88,10 @@ class PluginPdfInfocom extends PluginPdfCommon {
 
          $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Supplier')."</i></b>",
-                             Html::clean(Dropdown::getDropdownName("glpi_suppliers",
+                             Toolbox::stripTags(Dropdown::getDropdownName("glpi_suppliers",
                                                                    $ic->fields["suppliers_id"]))),
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Budget')."</i></b>",
-                             Html::clean(Dropdown::getDropdownName("glpi_budgets",
+                             Toolbox::stripTags(Dropdown::getDropdownName("glpi_budgets",
                                                                    $ic->fields["budgets_id"]))));
 
          $pdf->displayLine(
@@ -140,11 +140,11 @@ class PluginPdfInfocom extends PluginPdfCommon {
          $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('TCO (value + tracking cost)')."</i></b>",
                              sprintf(__('%1$s %2$s'),
-                                     Html::clean(Infocom::showTco($item->getField('ticket_tco'),
+                                     Toolbox::stripTags(Infocom::showTco($item->getField('ticket_tco'),
                                                                   $ic->fields["value"])), $sym)),
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Monthly TCO')."</i></b>",
                              sprintf(__('%1$s %2$s'),
-                                     Html::clean(Infocom::showTco($item->getField('ticket_tco'),
+                                     Toolbox::stripTags(Infocom::showTco($item->getField('ticket_tco'),
                                                                   $ic->fields["value"],
                                                                   $ic->fields["buy_date"])), $sym)));
 

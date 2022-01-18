@@ -102,13 +102,13 @@ class PluginPdfProblemTask extends PluginPdfCommon {
             } else {
                $lib = '';
             }
-            $pdf->displayLine("</b>".Html::clean($lib),
+            $pdf->displayLine("</b>".Toolbox::stripTags($lib),
                               Html::convDateTime($data["date"]),
                               Html::timestampToString($data["actiontime"], 0),
-                              Html::clean($dbu->getUserName($data["users_id"])),
-                              Html::clean($planification),1);
+                              Toolbox::stripTags($dbu->getUserName($data["users_id"])),
+                              Toolbox::stripTags($planification),1);
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
-                                               Html::clean($data["content"]), 1);
+                                               Toolbox::stripTags($data["content"]), 1);
          }
       }
       $pdf->displaySpace();

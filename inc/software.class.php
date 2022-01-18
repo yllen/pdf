@@ -51,7 +51,7 @@ class PluginPdfSoftware extends PluginPdfCommon {
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $software->fields['name']),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Publisher').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_manufacturers',
                                                                 $software->fields['manufacturers_id']))));
 
       $pdf->displayLine(
@@ -86,7 +86,7 @@ class PluginPdfSoftware extends PluginPdfCommon {
 
       if ($software->fields['softwares_id'] > 0) {
          $col2 = '<b><i> '.__('from').' </i></b> '.
-                  Html::clean(Dropdown::getDropdownName('glpi_softwares',
+                  Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwares',
                                                        $software->fields['softwares_id']));
       } else {
          $col2 = '';

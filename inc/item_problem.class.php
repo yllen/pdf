@@ -117,17 +117,17 @@ class PluginPdfItem_Problem extends PluginPdfCommon {
                }
                if ($prem) {
                   $typename = $item->getTypeName($nb);
-                  $pdf->displayLine(Html::clean(sprintf(__('%1$s: %2$s'), $typename, $nb)),
-                                    Html::clean($name),
+                  $pdf->displayLine(Toolbox::stripTags(sprintf(__('%1$s: %2$s'), $typename, $nb)),
+                                    Toolbox::stripTags($name),
                                     Dropdown::getDropdownName("glpi_entities", $data['entity']),
-                                    Html::clean($data["serial"]),
-                                    Html::clean($data["otherserial"]),$nb);
+                                    Toolbox::stripTags($data["serial"]),
+                                    Toolbox::stripTags($data["otherserial"]),$nb);
                } else {
                   $pdf->displayLine('',
-                                    Html::clean($name),
+                                    Toolbox::stripTags($name),
                                     Dropdown::getDropdownName("glpi_entities", $data['entity']),
-                                    Html::clean($data["serial"]),
-                                    Html::clean($data["otherserial"]),$nb);
+                                    Toolbox::stripTags($data["serial"]),
+                                    Toolbox::stripTags($data["otherserial"]),$nb);
                }
             }
             $totalnb += $nb;

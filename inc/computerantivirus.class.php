@@ -71,13 +71,13 @@ class PluginPdfComputerAntivirus extends PluginPdfCommon {
          $antivirus = new ComputerAntivirus();
          foreach($result as $data) {
             $pdf->displayLine($data['name'],
-                              Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
+                              Toolbox::stripTags(Dropdown::getDropdownName('glpi_manufacturers',
                                                                     $data['manufacturers_id'])),
                               $data['antivirus_version'],
                               $data['signature_version'],
                               Dropdown::getYesNo($data['is_active']),
                               Dropdown::getYesNo($data['is_uptodate']),
-                              Html::clean(Html::convDate($data['date_expiration'])));
+                              Toolbox::stripTags(Html::convDate($data['date_expiration'])));
          }
       }
 

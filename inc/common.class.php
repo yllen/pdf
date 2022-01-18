@@ -442,7 +442,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
                                       $item->fields['name']),
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Status').'</i></b>',
-                                      Html::clean(Dropdown::getDropdownName('glpi_states',
+                                      Toolbox::stripTags(Dropdown::getDropdownName('glpi_states',
                                                                             $item->fields['states_id']))));
 
          case 'location-type' :
@@ -451,7 +451,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
                                       Dropdown::getDropdownName('glpi_locations',
                                                                 $item->fields['locations_id'])),
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Type').'</i></b>',
-                                      Html::clean(Dropdown::getDropdownName('glpi_'.$type.'types',
+                                      Toolbox::stripTags(Dropdown::getDropdownName('glpi_'.$type.'types',
                                                                             $item->fields[$type.'types_id']))));
 
          case 'tech-manufacturer' :
@@ -460,7 +460,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
                                       __('Technician in charge of the hardware').'</i></b>',
                                       $dbu->getUserName($item->fields['users_id_tech'])),
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Manufacturer').'</i></b>',
-                                      Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
+                                      Toolbox::stripTags(Dropdown::getDropdownName('glpi_manufacturers',
                                                                             $item->fields['manufacturers_id']))));
          case 'group-model' :
             return $pdf->displayLine(
@@ -469,7 +469,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
                                       Dropdown::getDropdownName('glpi_groups',
                                                                 $item->fields['groups_id_tech'])),
                      '<b><i>'.sprintf(__('%1$s: %2$s'), __('Model').'</i></b>',
-                                      Html::clean(Dropdown::getDropdownName('glpi_'.$type.'models',
+                                      Toolbox::stripTags(Dropdown::getDropdownName('glpi_'.$type.'models',
                                                                             $item->fields[$type.'models_id']))));
 
          case 'contactnum-serial' :

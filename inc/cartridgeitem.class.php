@@ -58,12 +58,12 @@ class PluginPdfCartridgeItem extends PluginPdfCommon {
       $pdf->displayLine(
             '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $cartitem->fields['name']),
             '<b><i>'.sprintf(__('%1$s: %2$s'), __('Type').'</i></b>',
-                             Html::clean(Dropdown::getDropdownName('glpi_cartridgeitemtypes',
+                             Toolbox::stripTags(Dropdown::getDropdownName('glpi_cartridgeitemtypes',
                                                                    $cartitem->fields['cartridgeitemtypes_id']))));
       $pdf->displayLine(
             '<b><i>'.sprintf(__('%1$s: %2$s'), __('Reference').'</i></b>', $cartitem->fields['ref']),
             '<b><i>'.sprintf(__('%1$s: %2$s'), __('Manufacturer').'</i></b>',
-                             Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
+                             Toolbox::stripTags(Dropdown::getDropdownName('glpi_manufacturers',
                                                                    $cartitem->fields['manufacturers_id']))));
 
       $pdf->displayLine(

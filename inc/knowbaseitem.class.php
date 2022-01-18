@@ -65,14 +65,14 @@ class PluginPdfKnowbaseItem extends PluginPdfCommon {
       }
 
       $knowbaseitemcategories_id = $item->getField('knowbaseitemcategories_id');
-      $fullcategoryname = Html::clean($dbu->getTreeValueCompleteName("glpi_knowbaseitemcategories",
+      $fullcategoryname = Toolbox::stripTags($dbu->getTreeValueCompleteName("glpi_knowbaseitemcategories",
                                                    $knowbaseitemcategories_id));
 
-      $question = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
+      $question = Toolbox::stripTags(Toolbox::unclean_cross_side_scripting_deep(
                   html_entity_decode($item->getField('name'),
                                           ENT_QUOTES, "UTF-8")));
 
-      $answer = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
+      $answer = Toolbox::stripTags(Toolbox::unclean_cross_side_scripting_deep(
                   html_entity_decode($item->getField('answer'), ENT_QUOTES, "UTF-8")));
 
       $pdf->setColumnsSize(100);

@@ -58,12 +58,12 @@ class PluginPdfConsumableItem extends PluginPdfCommon {
       $pdf->displayLine(
             '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $consitem->fields['name']),
             '<b><i>'.sprintf(__('%1$s: %2$s'), __('Type').'</i></b>',
-                             Html::clean(Dropdown::getDropdownName('glpi_consumableitemtypes',
+                             Toolbox::stripTags(Dropdown::getDropdownName('glpi_consumableitemtypes',
                                                                    $consitem->fields['consumableitemtypes_id']))));
       $pdf->displayLine(
             '<b><i>'.sprintf(__('%1$s: %2$s'), __('Reference').'</i></b>', $consitem->fields['ref']),
             '<b><i>'.sprintf(__('%1$s: %2$s'), __('Manufacturer').'</i></b>',
-                             Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
+                             Toolbox::stripTags(Dropdown::getDropdownName('glpi_manufacturers',
                                                                    $consitem->fields['manufacturers_id']))));
 
       $pdf->displayLine(

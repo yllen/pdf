@@ -54,15 +54,15 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $version->fields['name']),
          '<b><i>'.sprintf(__('%1$s: %2$s'), _n('Software', 'Software', 2).'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwares',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwares',
                                                                 $version->fields['softwares_id']))));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Status').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_states',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_states',
                                                                 $version->fields['states_id']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Operating system').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_operatingsystems',
                                                                 $version->fields['operatingsystems_id']))));
 
       $pdf->setColumnsSize(100);

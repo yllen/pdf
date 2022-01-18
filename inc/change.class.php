@@ -106,9 +106,9 @@ class PluginPdfChange extends PluginPdfCommon {
 
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Status')."</i></b>",
-                          Html::clean($job->getStatus($job->fields["status"])). $status),
+                          Toolbox::stripTags($job->getStatus($job->fields["status"])). $status),
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Urgency')."</i></b>",
-                  Html::clean($job->getUrgencyName($job->fields["urgency"]))));
+                  Toolbox::stripTags($job->getUrgencyName($job->fields["urgency"]))));
 
 
       $pdf->displayLine(
@@ -116,13 +116,13 @@ class PluginPdfChange extends PluginPdfCommon {
                           Dropdown::getDropdownName("glpi_itilcategories",
                                                     $job->fields["itilcategories_id"])),
          "<b><i>". sprintf(__('%1$s: %2$s'), __('Impact')."</i></b>",
-                  Html::clean($job->getImpactName($job->fields["impact"]))));
+                  Toolbox::stripTags($job->getImpactName($job->fields["impact"]))));
 
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Total duration')."</i></b>",
-                          Html::clean(CommonITILObject::getActionTime($job->fields["actiontime"]))),
+                          Toolbox::stripTags(CommonITILObject::getActionTime($job->fields["actiontime"]))),
           "<b><i>".sprintf(__('%1$s: %2$s'), __('Priority')."</i></b>",
-                             Html::clean($job->getPriorityName($job->fields["priority"]))));
+                             Toolbox::stripTags($job->getPriorityName($job->fields["priority"]))));
 
       $pdf->setColumnsSize(50,50);
 
@@ -132,7 +132,7 @@ class PluginPdfChange extends PluginPdfCommon {
       $requester = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester'), $listusers);
       foreach ($job->getUsers(CommonITILActor::REQUESTER) as $d) {
          if ($d['users_id']) {
-            $tmp = Html::clean($dbu->getUserName($d['users_id']));
+            $tmp = Toolbox::stripTags($dbu->getUserName($d['users_id']));
             if ($d['alternative_email']) {
                $tmp .= ' ('.$d['alternative_email'].')';
             }
@@ -164,7 +164,7 @@ class PluginPdfChange extends PluginPdfCommon {
       $watcher   = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher'), $listusers);
       foreach ($job->getUsers(CommonITILActor::OBSERVER) as $d) {
          if ($d['users_id']) {
-            $tmp = Html::clean($dbu->getUserName($d['users_id']));
+            $tmp = Toolbox::stripTags($dbu->getUserName($d['users_id']));
             if ($d['alternative_email']) {
                $tmp .= ' ('.$d['alternative_email'].')';
             }
@@ -197,7 +197,7 @@ class PluginPdfChange extends PluginPdfCommon {
                                     $listusers);
       foreach ($job->getUsers(CommonITILActor::ASSIGN) as $d) {
          if ($d['users_id']) {
-            $tmp = Html::clean($dbu->getUserName($d['users_id']));
+            $tmp = Toolbox::stripTags($dbu->getUserName($d['users_id']));
             if ($d['alternative_email']) {
                $tmp .= ' ('.$d['alternative_email'].')';
             }
@@ -229,7 +229,7 @@ class PluginPdfChange extends PluginPdfCommon {
       $assignsupplier = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to a supplier'),
                                          $listsuppliers);
       foreach ($job->getSuppliers(CommonITILActor::ASSIGN) as $d) {
-         $suppliers[] = Html::clean(Dropdown::getDropdownName("glpi_suppliers", $d['suppliers_id']));
+         $suppliers[] = Toolbox::stripTags(Dropdown::getDropdownName("glpi_suppliers", $d['suppliers_id']));
       }
       if (count($suppliers)) {
          $listsuppliers = implode(', ', $suppliers);
@@ -241,7 +241,7 @@ class PluginPdfChange extends PluginPdfCommon {
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Title')."</i></b>", $job->fields["name"]));
 
       $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
-                                         Html::clean($job->fields["content"]), 1);
+                                         Toolbox::stripTags($job->fields["content"]), 1);
 
       $pdf->displaySpace();
    }
@@ -305,7 +305,7 @@ class PluginPdfChange extends PluginPdfCommon {
       $pdf->setColumnsSize(50, 50);
       if (isset($job->fields['takeintoaccount_delay_stat']) > 0) {
          if ($job->fields['takeintoaccount_delay_stat'] > 0) {
-            $accountdelay = Html::clean(Html::timestampToString($job->fields['takeintoaccount_delay_stat'],0));
+            $accountdelay = Toolbox::stripTags(Html::timestampToString($job->fields['takeintoaccount_delay_stat'],0));
          }
          $pdf->displayLine(__('Take into account'),
                            isset($accountdelay) ? $accountdelay : '');
@@ -315,18 +315,18 @@ class PluginPdfChange extends PluginPdfCommon {
           || in_array($job->fields["status"], $job->getClosedStatusArray())) {
                if ($job->fields['solve_delay_stat'] > 0) {
             $pdf->displayLine(__('Resolution'),
-                              Html::clean(Html::timestampToString($job->fields['solve_delay_stat'],0)));
+                              Toolbox::stripTags(Html::timestampToString($job->fields['solve_delay_stat'],0)));
          }
       }
       if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
          if ($job->fields['close_delay_stat'] > 0) {
             $pdf->displayLine(__('Closing'),
-                              Html::clean(Html::timestampToString($job->fields['close_delay_stat'],0)));
+                              Toolbox::stripTags(Html::timestampToString($job->fields['close_delay_stat'],0)));
          }
       }
       if ($job->fields['waiting_duration'] > 0) {
          $pdf->displayLine(__('Pending'),
-                           Html::clean(Html::timestampToString($job->fields['waiting_duration'],0)));
+                           Toolbox::stripTags(Html::timestampToString($job->fields['waiting_duration'],0)));
       }
 
       $pdf->displaySpace();
