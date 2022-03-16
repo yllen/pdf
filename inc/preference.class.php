@@ -82,7 +82,7 @@ class PluginPdfPreference extends CommonDBTM {
          if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
             $title = "$title ($tabID)";
          }
-         $this->checkbox($tabID, $title, (isset($checked[$tabID]) || empty($checked)? true : false));
+         $this->checkbox($tabID, __($title), (isset($checked[$tabID]) || empty($checked)? true : false));
          if ($i == 4) {
             echo "</tr>";
             $i = 0;

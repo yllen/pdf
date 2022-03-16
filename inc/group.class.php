@@ -40,6 +40,9 @@ class PluginPdfGroup extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new Group());
    }
 
+   static function getFields(){
+      return [];
+   }
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Group $item, $fields) {
 

@@ -418,7 +418,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
       }
 
       static::displayLines($pdf, $fieldObjs);
-      if (isset(static::getFields()['comments'])){
+      if (isset(array_combine($fields, $fields)['comments'])){
          PluginPdfCommon::commentLine($pdf, $item);
       }
 
