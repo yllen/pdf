@@ -183,8 +183,8 @@ class PluginPdfContract_Item extends PluginPdfCommon {
                        'start'      => 0,
                        'sort'       => 80,
                        'criteria'   => [0 => ['value'      => '$$$$'.$instID,
-                       'searchtype' => 'contains',
-                       'field'      => 29]]];
+                                              'searchtype' => 'contains',
+                                              'field'      => 29]]];
 
                $link = ". __('Device list').";
 
