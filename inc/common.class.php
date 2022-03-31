@@ -306,8 +306,14 @@ abstract class PluginPdfCommon extends CommonGLPI {
          if (Session::isMultiEntitiesMode() && $this->obj->isEntityAssign()) {
             $entity = ' ('.Dropdown::getDropdownName('glpi_entities', $this->obj->getEntityID()).')';
          }
-         $this->pdf->setHeader(sprintf(__('%1$s - %2$s'), $this->obj->getTypeName(),
-                                       sprintf(__('%1$s %2$s'), $name, $entity)));
+         $header = Toolbox::unclean_cross_side_scripting_deep(
+            sprintf(
+               __('%1$s - %2$s'),
+               $this->obj->getTypeName(),
+               sprintf(__('%1$s %2$s'), $name, $entity)
+            )
+         );
+         $this->pdf->setHeader($header);
 
          return true;
       }
