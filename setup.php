@@ -96,8 +96,8 @@ function plugin_version_pdf() {
            'author'         => 'Remi Collet, Nelly Mahu-Lasson',
            'license'        => 'GPLv3+',
            'homepage'       => 'https://forge.glpi-project.org/projects/pdf',
-           'minGlpiVersion' => '9.5',
-           'requirements'   => ['glpi' => ['min' => '9.5',
-                                           'max' => '9.6']]];
+           'minGlpiVersion' => '10.0.0',
+           'requirements'   => ['glpi' => ['min' => '10.0.0',
+                                           'max' => '10.1.0']]];
 
 }
