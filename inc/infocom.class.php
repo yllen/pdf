@@ -89,11 +89,11 @@ class PluginPdfInfocom extends PluginPdfCommon {
          //Financial and administrative information
          case 'supplier':
             return "<b><i>".sprintf(__('%1$s: %2$s'), __('Supplier')."</i></b>",
-                           Html::clean(Dropdown::getDropdownName("glpi_suppliers",
+                           Toolbox::stripTags(Dropdown::getDropdownName("glpi_suppliers",
                                                                   $ic->fields["suppliers_id"])));
          case 'budget':
             return "<b><i>".sprintf(__('%1$s: %2$s'), __('Budget')."</i></b>",
-                           Html::clean(Dropdown::getDropdownName("glpi_budgets",
+                           Toolbox::stripTags(Dropdown::getDropdownName("glpi_budgets",
                                                                   $ic->fields["budgets_id"])));
          case 'order_number':
          case 'immo_number':
@@ -128,12 +128,12 @@ class PluginPdfInfocom extends PluginPdfCommon {
          case 'tco':
             return "<b><i>".sprintf(__('%1$s: %2$s'), __('TCO (value + tracking cost)')."</i></b>",
                                                 sprintf(__('%1$s %2$s'),
-                                                         Html::clean(Infocom::showTco($item->getField('ticket_tco'),
+                                                         Toolbox::stripTags(Infocom::showTco($item->getField('ticket_tco'),
                                                                                        $ic->fields["value"])), $sym));
          case 'monthly_tco':
             return "<b><i>".sprintf(__('%1$s: %2$s'), __('Monthly TCO')."</i></b>",
                                        sprintf(__('%1$s %2$s'),
-                                                Html::clean(Infocom::showTco($item->getField('ticket_tco'),
+                                                Toolbox::stripTags(Infocom::showTco($item->getField('ticket_tco'),
                                                                               $ic->fields["value"],
                                                                               $ic->fields["buy_date"])), $sym));
          case 'glpi_businesscriticities':

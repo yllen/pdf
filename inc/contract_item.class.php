@@ -93,7 +93,7 @@ class PluginPdfContract_Item extends PluginPdfCommon {
                   (empty($con->fields["name"]) ? "(".$con->fields["id"].")" : $con->fields["name"]),
                   Dropdown::getDropdownName("glpi_entities", $con->fields["entities_id"]),
                   $con->fields["num"],
-                  Html::clean(Dropdown::getDropdownName("glpi_contracttypes",
+                  Toolbox::stripTags(Dropdown::getDropdownName("glpi_contracttypes",
                                                        $con->fields["contracttypes_id"])),
                   str_replace("<br>", " ", $con->getSuppliersNames()),
                   Html::convDate($con->fields["begin_date"]),
@@ -239,20 +239,20 @@ class PluginPdfContract_Item extends PluginPdfCommon {
 
                   if ($prem) {
                      $typename = $item->getTypeName($nb);
-                     $pdf->displayLine(Html::clean(sprintf(__('%1$s: %2$s'), $typename, $nb)),
-                                       Html::clean($name),
+                     $pdf->displayLine(Toolbox::stripTags(sprintf(__('%1$s: %2$s'), $typename, $nb)),
+                                       Toolbox::stripTags($name),
                                        Dropdown::getDropdownName("glpi_entities", $objdata['entity']),
-                                       Html::clean((isset($objdata["serial"])? "".$objdata["serial"]."" :"-")),
-                                       Html::clean((isset($objdata["otherserial"])? "".$objdata["otherserial"]."" :"-")),
+                                       Toolbox::stripTags((isset($objdata["serial"])? "".$objdata["serial"]."" :"-")),
+                                       Toolbox::stripTags((isset($objdata["otherserial"])? "".$objdata["otherserial"]."" :"-")),
                                        (isset($objdata['states_id']) ? Dropdown::getDropdownName("glpi_states", $objdata['states_id'])
                                                                      : ''));
                      $prem = false;
                   } else {
                      $pdf->displayLine('',
-                                       Html::clean($name),
+                                       Toolbox::stripTags($name),
                                        Dropdown::getDropdownName("glpi_entities", $objdata['entity']),
-                                       Html::clean((isset($objdata["serial"])? "".$objdata["serial"]."" :"-")),
-                                       Html::clean((isset($objdata["otherserial"])? "".$objdata["otherserial"]."" :"-")),
+                                       Toolbox::stripTags((isset($objdata["serial"])? "".$objdata["serial"]."" :"-")),
+                                       Toolbox::stripTags((isset($objdata["otherserial"])? "".$objdata["otherserial"]."" :"-")),
                                        (isset($objdata['states_id']) ? Dropdown::getDropdownName("glpi_states", $objdata['states_id'])
                                                                      : ''));
                   }

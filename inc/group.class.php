@@ -171,7 +171,7 @@ class PluginPdfGroup extends PluginPdfCommon {
                }
 
             } else if ($usr = $item->getField(str_replace('groups', 'users', $field))) {
-               $col4 = Html::clean($dbu->getUserName($usr));
+               $col4 = Toolbox::stripTags($dbu->getUserName($usr));
             }
 
          }

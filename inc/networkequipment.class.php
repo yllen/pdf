@@ -66,7 +66,7 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
          switch($field) {
             case 'network':
                return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
-                                       Html::clean(Dropdown::getDropdownName('glpi_networks',
+                                       Toolbox::stripTags(Dropdown::getDropdownName('glpi_networks',
                                                                              $item->fields['networks_id'])));
             case 'memory':
                return '<b><i>'.sprintf(__('%1$s: %2$s'),

@@ -108,7 +108,7 @@ class PluginPdfItem_Device extends PluginPdfCommon {
                                                                  $device->fields[$label["name"]]);
                             }
                             $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $label["label"].'</i></b>',
-                                                     Html::clean($value)." ");
+                                                     Toolbox::stripTags($value)." ");
                         } else {
                            if (!isset($value) || empty($value)) {
                               $value = $device->fields[$label["name"]];

@@ -69,7 +69,7 @@ class PluginPdfLog extends PluginPdfCommon {
          foreach ($changes as $data) {
             if ($data['display_history'] && ($tot < $_SESSION['glpilist_limit'])) {
                $pdf->displayLine($data['id'], $data['date_mod'], $data['user_name'], $data['field'],
-                                 Html::clean($data['change']));
+                                 Toolbox::stripTags($data['change']));
                $tot++;
             }
          } // Each log

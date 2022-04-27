@@ -55,11 +55,11 @@ class PluginPdfSoftwareVersion extends PluginPdfCommon {
          switch($field) {
             case 'software':
                return '<b><i>'.sprintf(__('%1$s: %2$s'), _n('Software', 'Software', 2).'</i></b>',
-                                       Html::clean(Dropdown::getDropdownName('glpi_softwares',
+                                       Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwares',
                                                                            $version->fields['softwares_id'])));
             case 'operating_system':
                return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Operating system').'</i></b>',
-                                       Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
+                                       Toolbox::stripTags(Dropdown::getDropdownName('glpi_operatingsystems',
                                                                            $version->fields['operatingsystems_id'])));
          }
       }

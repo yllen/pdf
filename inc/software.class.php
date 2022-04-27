@@ -64,7 +64,7 @@ class PluginPdfSoftware extends PluginPdfCommon {
          switch($field) {
             case 'publisher':
                return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Publisher').'</i></b>',
-                     Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
+                     Toolbox::stripTags(Dropdown::getDropdownName('glpi_manufacturers',
                                                             $software->fields['manufacturers_id'])));
             case 'category':
                return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
@@ -76,7 +76,7 @@ class PluginPdfSoftware extends PluginPdfCommon {
             case 'is_update':
                if ($software->fields['softwares_id'] > 0) {
                   $col2 = '<b><i> '.__('from').' </i></b> '.
-                           Html::clean(Dropdown::getDropdownName('glpi_softwares',
+                           Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwares',
                                                                $software->fields['softwares_id']));
                } else {
                   $col2 = '';

@@ -63,7 +63,7 @@ class PluginPdfComputer extends PluginPdfCommon {
          switch($field) {
             case 'network':
                return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
-                                              Html::clean(Dropdown::getDropdownName('glpi_networks',
+                                              Toolbox::stripTags(Dropdown::getDropdownName('glpi_networks',
                                                                                    $computer->fields['networks_id'])));
             case 'uuid':
                return '<b><i>'.sprintf(__('%1$s: %2$s'), __('UUID').'</i></b>', $computer->fields['uuid']);
@@ -89,17 +89,17 @@ class PluginPdfComputer extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_operatingsystems',
                                                                 $computer->fields['operatingsystems_id']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Version').'</i></b>',
-                           Html::clean(Dropdown::getDropdownName('glpi_operatingsystemversions',
+                           Toolbox::stripTags(Dropdown::getDropdownName('glpi_operatingsystemversions',
                                                                  $computer->fields['operatingsystemversions_id']))));
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Architecture').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystemarchitectures',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_operatingsystemarchitectures',
                                                                 $computer->fields['operatingsystemarchitectures_id']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Service pack').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystemservicepacks',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_operatingsystemservicepacks',
                                                                 $computer->fields['operatingsystemservicepacks_id']))));
 
       $pdf->displayLine(

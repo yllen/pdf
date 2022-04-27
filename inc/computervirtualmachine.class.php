@@ -81,16 +81,16 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
             }
             $pdf->displayLine(
                $virtualmachine['name'],
-               Html::clean(Dropdown::getDropdownName('glpi_virtualmachinetypes',
+               Toolbox::stripTags(Dropdown::getDropdownName('glpi_virtualmachinetypes',
                                                     $virtualmachine['virtualmachinetypes_id'])),
-               Html::clean(Dropdown::getDropdownName('glpi_virtualmachinesystems',
+               Toolbox::stripTags(Dropdown::getDropdownName('glpi_virtualmachinesystems',
                                                      $virtualmachine['virtualmachinesystems_id'])),
-               Html::clean(Dropdown::getDropdownName('glpi_virtualmachinestates',
+               Toolbox::stripTags(Dropdown::getDropdownName('glpi_virtualmachinestates',
                                                     $virtualmachine['virtualmachinestates_id'])),
                $virtualmachine['uuid'],
                $virtualmachine['vcpu'],
 
-               Html::clean(Html::formatNumber($virtualmachine['ram'],false,0)),
+               Toolbox::stripTags(Html::formatNumber($virtualmachine['ram'],false,0)),
                $name
             );
          }
@@ -117,7 +117,7 @@ class PluginPdfComputerVirtualMachine extends PluginPdfCommon {
                if ($computer->getFromDB($host['id'])) {
                   $pdf->displayLine(
                      $computer->getName(),
-                     Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
+                     Toolbox::stripTags(Dropdown::getDropdownName('glpi_operatingsystems',
                                                            $computer->getField('operatingsystems_id'))),
                      Dropdown::getDropdownName('glpi_entities', $computer->getEntityID()));
                }

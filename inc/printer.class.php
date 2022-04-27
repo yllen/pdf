@@ -77,7 +77,7 @@ class PluginPdfPrinter extends PluginPdfCommon {
          switch($field) {
             case 'network':
                return '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
-                                       Html::clean(Dropdown::getDropdownName('glpi_networks',
+                                       Toolbox::stripTags(Dropdown::getDropdownName('glpi_networks',
                                                                               $printer->fields['networks_id'])));
             case 'memory_size':
             case 'init_pages_counter':

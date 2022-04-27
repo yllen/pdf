@@ -95,7 +95,7 @@ class PluginPdfCommonItilCost extends PluginPdfCommon {
             $pdf->displayLine($data['name'],
                               Html::convDate($data['begin_date']),
                               Html::convDate($data['end_date']),
-                              Html::Clean(Dropdown::getDropdownName('glpi_budgets',
+                              Toolbox::stripTags(Dropdown::getDropdownName('glpi_budgets',
                                                                     $data['budgets_id'])),
                               CommonITILObject::getActionTime($data['actiontime']),
                               PluginPdfConfig::formatNumber($data['cost_time']),

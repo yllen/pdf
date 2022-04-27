@@ -360,7 +360,7 @@ class PluginPdfItem_SoftwareVersion extends PluginPdfCommon {
             $lic .= '<b>'.$data['name'].'</b> '.$data['serial'];
             if (!empty($data['softwarelicensetypes_id'])) {
                $lic = sprintf(__('%1$s (%2$s)'), $lic,
-                              Html::Clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
+                              Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwarelicensetypes',
                                                                    $data['softwarelicensetypes_id'])));
             }
             $pdf->displayLine($data['softname'], $data['state'], $data['version'], $lic);

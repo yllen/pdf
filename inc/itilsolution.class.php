@@ -63,12 +63,12 @@ class PluginPdfITILSolution extends PluginPdfCommon {
          $pdf->displayTitle($title);
          while ($row = $soluce->next()) {
             if ($row['solutiontypes_id']) {
-               $title = Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
+               $title = Toolbox::stripTags(Dropdown::getDropdownName('glpi_solutiontypes',
                                                               $row['solutiontypes_id']));
             } else {
                $title = __('Solution');
             }
-            $sol = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
+            $sol = Toolbox::stripTags(Toolbox::unclean_cross_side_scripting_deep(
                                                       html_entity_decode($row['content'],
                                                                          ENT_QUOTES, "UTF-8")));
 
@@ -84,7 +84,7 @@ class PluginPdfITILSolution extends PluginPdfCommon {
                                sprintf(__('%1$s %2$s'), $text,
                                        Html::convDateTime($row['date_approval']))."&nbsp;".
                                sprintf(__('%1$s %2$s'), __('By'),
-                                       Html::clean($dbu->getUserName($row["users_id_approval"])))."</i>";
+                                       Toolbox::stripTags($dbu->getUserName($row["users_id_approval"])))."</i>";
                $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol.
                                  $textapprove);
             }

@@ -41,6 +41,13 @@ class PluginPdfTicket extends PluginPdfCommon {
       $this->obj = ($obj ? $obj : new Ticket());
    }
 
+   static function getFields(){
+      return ['openingDate' => 'Opening date',
+              'by' => 'By',
+              'lastUpdate' => 'Last update',
+              'time_to_own' => 'Time to own']
+   }
+
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Ticket $job) {
 
@@ -87,7 +94,7 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       if ($job->fields["olas_id_tto"] > 0) {
          $tto .= "<b><i>".sprintf(__('%1$s: %2$s'), __('OLA')."</b></i>",
-                                  Html::clean(Dropdown::getDropdownName("glpi_olas",
+                                  Toolbox::stripTags(Dropdown::getDropdownName("glpi_olas",
                                                                         $job->fields["olas_id_tto"])));
 
          $olalevel = new OlaLevel();
@@ -106,7 +113,7 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       if ($job->fields["slas_id_ttr"] > 0) {
          $ttr .= "<b><i>".sprintf(__('%1$s: %2$s'), __('SLA')."</b></i>",
-                                  Html::clean(Dropdown::getDropdownName("glpi_slas",
+                                  Toolbox::stripTags(Dropdown::getDropdownName("glpi_slas",
                                                                         $job->fields["slas_id_ttr"])));
 
          $slalevel = new SlaLevel();
@@ -144,7 +151,7 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Type')."</i></b>",
-                          Html::clean(Ticket::getTicketTypeName($job->fields["type"]))),
+                          Toolbox::stripTags(Ticket::getTicketTypeName($job->fields["type"]))),
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Category')."</i></b>",
                           Dropdown::getDropdownName("glpi_itilcategories",
                                                     $job->fields["itilcategories_id"])));
@@ -165,27 +172,27 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Status')."</i></b>",
-                          Html::clean($job->getStatus($job->fields["status"])). $status),
+                          Toolbox::stripTags($job->getStatus($job->fields["status"])). $status),
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Request source')."</i></b>",
-                          Html::clean(Dropdown::getDropdownName('glpi_requesttypes',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_requesttypes',
                                                                 $job->fields['requesttypes_id']))));
 
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Urgency')."</i></b>",
-                          Html::clean($job->getUrgencyName($job->fields["urgency"]))),
+                          Toolbox::stripTags($job->getUrgencyName($job->fields["urgency"]))),
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Approval')."</i></b>",
                           TicketValidation::getStatus($job->fields['global_validation'])));
 
       $pdf->displayLine(
             "<b><i>". sprintf(__('%1$s: %2$s'), __('Impact')."</i></b>",
-                  Html::clean($job->getImpactName($job->fields["impact"]))),
+                  Toolbox::stripTags($job->getImpactName($job->fields["impact"]))),
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Location')."</i></b>",
                   Dropdown::getDropdownName("glpi_locations",
                         $job->fields["locations_id"])));
 
       $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Priority')."</i></b>",
-                             Html::clean($job->getPriorityName($job->fields["priority"]))));
+                             Toolbox::stripTags($job->getPriorityName($job->fields["priority"]))));
 
       $pdf->setColumnsSize(50,50);
 
@@ -195,7 +202,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $requester = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester'), $listusers);
       foreach ($job->getUsers(CommonITILActor::REQUESTER) as $d) {
          if ($d['users_id']) {
-            $tmp = "<i>".Html::clean($dbu->getUserName($d['users_id']))."</i>";
+            $tmp = "<i>".Toolbox::stripTags($dbu->getUserName($d['users_id']))."</i>";
             if ($d['alternative_email']) {
                $tmp .= ' ('.$d['alternative_email'].')';
             }
@@ -270,7 +277,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $watcher   = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher'), $listusers);
       foreach ($job->getUsers(CommonITILActor::OBSERVER) as $d) {
          if ($d['users_id']) {
-            $tmp = Html::clean($dbu->getUserName($d['users_id']));
+            $tmp = Toolbox::stripTags($dbu->getUserName($d['users_id']));
             if ($d['alternative_email']) {
                $tmp .= ' ('.$d['alternative_email'].')';
             }
@@ -303,7 +310,7 @@ class PluginPdfTicket extends PluginPdfCommon {
                                     $listusers);
       foreach ($job->getUsers(CommonITILActor::ASSIGN) as $d) {
          if ($d['users_id']) {
-            $tmp = Html::clean($dbu->getUserName($d['users_id']));
+            $tmp = Toolbox::stripTags($dbu->getUserName($d['users_id']));
             if ($d['alternative_email']) {
                $tmp .= ' ('.$d['alternative_email'].')';
             }
@@ -335,7 +342,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $assignsupplier = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Assigned to a supplier'),
                                          $listsuppliers);
       foreach ($job->getSuppliers(CommonITILActor::ASSIGN) as $d) {
-         $suppliers[] = Html::clean(Dropdown::getDropdownName("glpi_suppliers", $d['suppliers_id']));
+         $suppliers[] = Toolbox::stripTags(Dropdown::getDropdownName("glpi_suppliers", $d['suppliers_id']));
       }
       if (count($suppliers)) {
          $listsuppliers = implode(', ', $suppliers);
@@ -419,25 +426,25 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->setColumnsSize(50, 50);
       if ($job->fields['takeintoaccount_delay_stat'] > 0) {
          $pdf->displayLine(__('Take into account'),
-                           Html::clean(Html::timestampToString($job->fields['takeintoaccount_delay_stat'],0)));
+                           Toolbox::stripTags(Html::timestampToString($job->fields['takeintoaccount_delay_stat'],0)));
       }
 
       if (in_array($job->fields["status"], $job->getSolvedStatusArray())
           || in_array($job->fields["status"], $job->getClosedStatusArray())) {
                if ($job->fields['solve_delay_stat'] > 0) {
             $pdf->displayLine(__('Solution'),
-                              Html::clean(Html::timestampToString($job->fields['solve_delay_stat'],0)));
+                              Toolbox::stripTags(Html::timestampToString($job->fields['solve_delay_stat'],0)));
          }
       }
       if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
          if ($job->fields['close_delay_stat'] > 0) {
             $pdf->displayLine(__('Closing'),
-                              Html::clean(Html::timestampToString($job->fields['close_delay_stat'],1)));
+                              Toolbox::stripTags(Html::timestampToString($job->fields['close_delay_stat'],1)));
          }
       }
       if ($job->fields['waiting_duration'] > 0) {
          $pdf->displayLine(__('Pending'),
-                           Html::clean(Html::timestampToString($job->fields['waiting_duration'],0)));
+                           Toolbox::stripTags(Html::timestampToString($job->fields['waiting_duration'],0)));
       }
 
       $pdf->displaySpace();

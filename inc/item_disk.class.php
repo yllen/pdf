@@ -86,10 +86,10 @@ class PluginPdfItem_Disk extends PluginPdfCommon {
                               $data['mountpoint'],
                               $data['name'],
                               sprintf(__('%s Mio'),
-                                      Html::clean(Html::formatNumber($data['totalsize'], false, 0))),
+                                      Toolbox::stripTags(Html::formatNumber($data['totalsize'], false, 0))),
                               sprintf(__('%s Mio'),
-                                      Html::clean(Html::formatNumber($data['freesize'], false, 0))),
-                              sprintf(__('%s %s'),Html::clean(Html::formatNumber($percent, false, 0)), '%'));
+                                      Toolbox::stripTags(Html::formatNumber($data['freesize'], false, 0))),
+                              sprintf(__('%s %s'),Toolbox::stripTags(Html::formatNumber($percent, false, 0)), '%'));
          }
       }
       $pdf->displaySpace();
