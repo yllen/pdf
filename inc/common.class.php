@@ -61,7 +61,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
    /**
     * Constructor, should intialize $this->obj property
    **/
-   abstract function __construct(CommonGLPI $obj=NULL);
+   function __construct(CommonGLPI $obj=NULL) {}
 
    function getFieldsForTab(CommonGLPI $item, $tab){
       switch ($tab) {
