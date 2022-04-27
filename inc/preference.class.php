@@ -202,8 +202,12 @@ class PluginPdfPreference extends CommonDBTM {
          echo "<input type='submit' value='". _sx('button','Print', 'pdf') .
               "' name='generate' class='submit'></td></tr>";
       } else {
-         echo "<input type='submit' value='" . _sx('button', 'Save') .
-              "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
+         echo Html::submit(_sx('button', 'Save'), [
+            'name'  => 'plugin_pdf_user_preferences_save',
+            'class' => 'btn btn-primary',
+            'icon'  => 'ti ti-device-floppy'
+         ]);
+         echo "</td></tr>";
       }
       echo "</table>";
       
