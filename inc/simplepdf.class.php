@@ -29,6 +29,7 @@
  @since     2009
  --------------------------------------------------------------------------
 */
+use TCPDF;
 
 define ('K_PATH_IMAGES', Plugin::getPhpDir('pdf').'/pics/');
 
