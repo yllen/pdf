@@ -88,14 +88,19 @@ function plugin_pdf_install() {
 
    if (!$DB->tableExists('glpi_plugin_pdf_preference')
        && !$DB->tableExists('glpi_plugin_pdf_preferences')) {
+
+      $default_charset   = DBConnection::getDefaultCharset();
+      $default_collation = DBConnection::getDefaultCollation();
+      $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+
       $query= "CREATE TABLE IF NOT EXISTS
                `glpi_plugin_pdf_preferences` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `users_id` int(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',
+                  `id` int $default_key_sign NOT NULL AUTO_INCREMENT,
+                  `users_id` int $default_key_sign NOT NULL COMMENT 'RELATION to glpi_users (id)',
                   `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',
                   `tabref` varchar(255) NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name',
                   PRIMARY KEY (`id`)
-               ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+               ) ENGINE=InnoDB DEFAULT CHARSET = {$default_charset} COLLATE = {$default_collation} ROW_FORMAT=DYNAMIC;";
       $DB->queryOrDie($query, $DB->error());
    } else {
       if ($DB->tableExists('glpi_plugin_pdf_preference')) {
@@ -103,12 +108,12 @@ function plugin_pdf_install() {
       }
       // 0.6.0
       if ($DB->fieldExists('glpi_plugin_pdf_preferences','user_id')) {
-         $migration->changeField('glpi_plugin_pdf_preferences', 'user_id', 'users_id', 'integer',
+         $migration->changeField('glpi_plugin_pdf_preferences', 'user_id', 'users_id', "int {$default_key_sign} NOT NULL DEFAULT '0'",
                                  ['comment' => 'RELATION to glpi_users (id)']);
       }
       // 0.6.1
       if ($DB->fieldExists('glpi_plugin_pdf_preferences','FK_users')) {
-         $migration->changeField('glpi_plugin_pdf_preferences', 'FK_users', 'users_id', 'integer',
+         $migration->changeField('glpi_plugin_pdf_preferences', 'FK_users', 'users_id', "int {$default_key_sign} NOT NULL DEFAULT '0'",
                                  ['comment' => 'RELATION to glpi_users (id)']);
       }
       // 0.6.0

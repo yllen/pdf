@@ -78,12 +78,16 @@ class PluginPdfConfig extends CommonDBTM {
       $table = 'glpi_plugin_pdf_configs';
       if (!$DB->tableExists($table)) { //not installed
 
+         $default_charset   = DBConnection::getDefaultCharset();
+         $default_collation = DBConnection::getDefaultCollation();
+         $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+ 
          $query = "CREATE TABLE `". $table."`(
-                     `id` int(11) NOT NULL,
+                     `id` int $default_key_sign NOT NULL,
                      `currency`  VARCHAR(15) NULL,
-                     `date_mod` datetime default NULL,
+                     `date_mod` timestamp NULL DEFAULT NULL,
                      PRIMARY KEY  (`id`)
-                   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+                     ) ENGINE=InnoDB DEFAULT CHARSET = {$default_charset} COLLATE = {$default_collation} ROW_FORMAT=DYNAMIC;";
          $DB->queryOrDie($query, 'Error in creating glpi_plugin_pdf_configs'.
                                  "<br>".$DB->error());
 
