@@ -37,7 +37,7 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-      $this->obj = ($obj ? $obj : new Computer_SoftwareLicense());
+      $this->obj = ($obj ? $obj : new Item_SoftwareLicense());
    }
 
 
@@ -55,7 +55,7 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
 
       $tot = 0;
       if (in_array(0,$_SESSION["glpiactiveentities"])) {
-         $nb = Computer_SoftwareLicense::countForLicense($ID, 0);
+         $nb = Item_SoftwareLicense::countForLicense($ID, 0);
          if ($nb > 0) {
             $pdf->displayLine(__('Root entity'), $nb);
             $tot += $nb;
@@ -67,7 +67,7 @@ class PluginPdfComputer_SoftwareLicense extends PluginPdfCommon {
               'ORDER'   => 'completename'];
 
       foreach ($DB->request($sql) as $entity => $data) {
-         $nb = Computer_SoftwareLicense::countForLicense($ID,$entity);
+         $nb = Item_SoftwareLicense::countForLicense($ID,$entity);
          if ($nb > 0) {
             $pdf->displayLine($data["completename"], $nb);
             $tot += $nb;

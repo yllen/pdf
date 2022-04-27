@@ -38,7 +38,7 @@ class PluginPdfItem_Device extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-      $this->obj = ($obj ? $obj : new Item_Device());
+      $this->obj = ($obj ? $obj : new Item_Devices());
    }
 
 

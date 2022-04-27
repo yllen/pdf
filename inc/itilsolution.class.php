@@ -68,7 +68,7 @@ class PluginPdfITILSolution extends PluginPdfCommon {
             } else {
                $title = __('Solution');
             }
-            $sol = Toolbox::stripTags(Toolbox::unclean_cross_side_scripting_deep(
+            $sol = Toolbox::stripTags(Glpi\Toolbox\Sanitizer::unsanitize(
                                                       html_entity_decode($row['content'],
                                                                          ENT_QUOTES, "UTF-8")));
 

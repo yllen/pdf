@@ -213,7 +213,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       $assigngroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Technician group'),
                                          $listgroups);
       foreach ($job->getGroups(CommonITILActor::ASSIGN) as $d) {
-         $groups[] = Toolbox::stripTags(Toolbox::clean_cross_side_scripting_deep(Dropdown::getDropdownName("glpi_groups",
+         $groups[] = Toolbox::stripTags(Glpi\Toolbox\Sanitizer::unsanitize(Dropdown::getDropdownName("glpi_groups",
                                                                               $d['groups_id'])));
       }
       if (count($groups)) {
@@ -446,14 +446,14 @@ class PluginPdfProblem extends PluginPdfCommon {
 
       $text = '';
       if ($job->fields['impactcontent']) {
-         $text = Toolbox::stripTags(Toolbox::unclean_cross_side_scripting_deep(
+         $text = Toolbox::stripTags(Glpi\Toolbox\Sanitizer::unsanitize(
                              html_entity_decode($job->getField('impactcontent'),
                                                 ENT_QUOTES, "UTF-8")));
       }
       $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Impacts')."</i></b>", $text));
 
       if ($job->fields['causecontent']) {
-         $text = Toolbox::stripTags(Toolbox::unclean_cross_side_scripting_deep(
+         $text = Toolbox::stripTags(Glpi\Toolbox\Sanitizer::unsanitize(
                              html_entity_decode($job->getField('causecontent'),
                                                 ENT_QUOTES, "UTF-8")));
       }
@@ -461,7 +461,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Causes')."</i></b>", $text));
 
       if ($job->fields['symptomcontent']) {
-         $text = Toolbox::stripTags(Toolbox::unclean_cross_side_scripting_deep(
+         $text = Toolbox::stripTags(Glpi\Toolbox\Sanitizer::unsanitize(
                              html_entity_decode($job->getField('symptomcontent'),
                                                 ENT_QUOTES, "UTF-8")));
       }

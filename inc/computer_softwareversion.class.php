@@ -37,7 +37,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-      $this->obj = ($obj ? $obj : new Computer_SoftwareVersion());
+      $this->obj = ($obj ? $obj : new Item_SoftwareVersion());
    }
 
 
@@ -138,7 +138,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
             if (empty($compname) || $_SESSION['glpiis_ids_visible']) {
                $compname = sprintf(__('%1$s (%2$s)'), $compname, $data['cID']);
             }
-            $lics = Computer_SoftwareLicense::GetLicenseForInstallation($data['cID'], $data['vID']);
+            $lics = Item_SoftwareLicense::GetLicenseForInstallation('Computer', $data['cID'], $data['vID']);
 
             $tmp = [];
             if (count($lics)) {
@@ -184,7 +184,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
 
       $lig = $tot = 0;
       if (in_array(0, $_SESSION["glpiactiveentities"])) {
-         $nb = Computer_SoftwareVersion::countForVersion($softwareversions_id,0);
+         $nb = Item_SoftwareVersion::countForVersion($softwareversions_id,0);
          if ($nb > 0) {
             $pdf->displayLine(__('Root entity'), $nb);
             $tot += $nb;
@@ -197,7 +197,7 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
               'ORDER'   => 'completename'];
 
       foreach ($DB->request($sql) as $ID => $data) {
-         $nb = Computer_SoftwareVersion::countForVersion($softwareversions_id,$ID);
+         $nb = Item_SoftwareVersion::countForVersion($softwareversions_id,$ID);
          if ($nb > 0) {
             $pdf->displayLine($data["completename"], $nb);
             $tot += $nb;
