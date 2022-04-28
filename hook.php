@@ -61,7 +61,7 @@ function plugin_pdf_install() {
    //new install
    if (!$DB->tableExists('glpi_plugin_pdf_profiles')
        && !$DB->tableExists('glpi_plugin_pdf_preferences')) {
-      include_once(Plugin::getPhpDir('pdf')."inc/profile.class.php");
+      include_once(Plugin::getPhpDir('pdf')."/inc/profile.class.php");
       PluginPdfProfile::install($migration);
 
    } else {
@@ -144,7 +144,7 @@ function plugin_pdf_install() {
    }
 
    if (!$DB->tableExists('glpi_plugin_pdf_configs')) {
-      include_once(Plugin::getPhpDir('pdf')."inc/config.class.php");
+      include_once(Plugin::getPhpDir('pdf')."/inc/config.class.php");
       PluginPdfConfig::install($migration);
    }
 
@@ -174,7 +174,7 @@ function plugin_pdf_uninstall() {
    $DB->queryOrDie($query, $DB->error());
 
    if ($DB->tableExists('glpi_plugin_pdf_configs')) {
-      include_once(Plugin::getPhpDir('pdf')."inc/config.class.php");
+      include_once(Plugin::getPhpDir('pdf')."/inc/config.class.php");
       PluginPdfConfig::uninstall($migration);
    }
 
