@@ -346,8 +346,22 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Title')."</i></b>", $job->fields["name"]));
 
+
+   $content = Toolbox::unclean_cross_side_scripting_deep(Html::entity_decode_deep( $job->fields['content']));
+
+   preg_match_all('/<img [^>]*src="([^"]*docid=([0-9]*))"[^>]*>/', $content, $res, PREG_SET_ORDER);
+
+   foreach ($res as $img) {
+      $docimg = new Document();
+      $docimg->getFromDB($img[2]);
+
+      $path = '<img src="file://'.GLPI_DOC_DIR.'/'.$docimg->fields['filepath'].'"/>';
+      $content = str_replace($img[0], $path, $content);
+   }
+
       $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
-                                         $job->fields['content'], 1);
+                                         $content, 1);
+
 
       // Linked tickets
       $tickets   = Ticket_Ticket::getLinkedTicketsTo($ID);

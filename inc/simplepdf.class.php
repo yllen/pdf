@@ -105,6 +105,8 @@ class PluginPdfSimplePDF {
       $this->width  = $pdf->getPageWidth() - 20;
       $this->height = $pdf->getPageHeight() - 40;
       $this->pdf    = $pdf;
+
+      $pdf->SetAllowLocalFiles(true);
    }
 
 
