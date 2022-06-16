@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id: config.form.php 217 2017-09-29 07:37:36Z orthagh $
  -------------------------------------------------------------------------
 
  LICENSE
@@ -22,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2019-2020 PDF plugin team
+ @copyright Copyright (c) 2019-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
