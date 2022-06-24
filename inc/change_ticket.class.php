@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id:
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson
- @copyright Copyright (c) 2020-2021 PDF plugin team
+ @copyright Copyright (c) 2020-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -75,7 +74,7 @@ class PluginPdfChange_Ticket extends PluginPdfCommon {
          $pdf->displayTitle($title);
 
          $job = new Ticket();
-         while ($data = $result->next()) {
+         foreach ($result as $data) {
             if (!$job->getFromDB($data["id"])) {
                continue;
             }
@@ -271,7 +270,7 @@ class PluginPdfChange_Ticket extends PluginPdfCommon {
                             $number));
 
          $job = new Change();
-         while ($data = $result->next()) {
+         foreach ($result as $data) {
             if (!$job->getFromDB($data["id"])) {
                continue;
             }

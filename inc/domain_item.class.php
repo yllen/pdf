@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id: setup.php 378 2014-06-08 15:12:45Z yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson
- @copyright Copyright (c) 2020-2021 PDF plugin team
+ @copyright Copyright (c) 2020-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -77,7 +76,7 @@ class PluginPdfDomain_Item extends PluginPdfCommon {
                             __('Type'), __('Domain relation'), __('Creation date'),
                             __('Expiration date'));
 
-         while ($data = $result->next()) {
+         foreach ($result as $data) {
             $pdf->displayLine($data["name"],
                               Dropdown::getDropdownName("glpi_entities", $data["entities_id"]),
                               Dropdown::getDropdownName("glpi_groups", $data["groups_id_tech"]),

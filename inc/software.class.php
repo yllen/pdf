@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id$
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -51,8 +50,8 @@ class PluginPdfSoftware extends PluginPdfCommon {
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $software->fields['name']),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Publisher').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                                                $software->fields['manufacturers_id']))));
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_manufacturers',
+                                                                       $software->fields['manufacturers_id']))));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
@@ -86,8 +85,8 @@ class PluginPdfSoftware extends PluginPdfCommon {
 
       if ($software->fields['softwares_id'] > 0) {
          $col2 = '<b><i> '.__('from').' </i></b> '.
-                  Html::clean(Dropdown::getDropdownName('glpi_softwares',
-                                                       $software->fields['softwares_id']));
+                  Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwares',
+                                                               $software->fields['softwares_id']));
       } else {
          $col2 = '';
       }

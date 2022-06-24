@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id$
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -105,22 +104,22 @@ class PluginPdfProblem extends PluginPdfCommon {
 
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Status')."</i></b>",
-                          Html::clean($job->getStatus($job->fields["status"])). $status),
+                          Toolbox::stripTags($job->getStatus($job->fields["status"])). $status),
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Urgency')."</i></b>",
-                          Html::clean($job->getUrgencyName($job->fields["urgency"]))));
+                          Toolbox::stripTags($job->getUrgencyName($job->fields["urgency"]))));
 
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Category')."</i></b>",
                           Dropdown::getDropdownName("glpi_itilcategories",
                                                     $job->fields["itilcategories_id"])),
          "<b><i>". sprintf(__('%1$s: %2$s'), __('Impact')."</i></b>",
-                  Html::clean($job->getImpactName($job->fields["impact"]))));
+                  Toolbox::stripTags($job->getImpactName($job->fields["impact"]))));
 
       $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Total duration')."</i></b>",
-                             Html::clean(CommonITILObject::getActionTime($job->fields["actiontime"]))),
+                             Toolbox::stripTags(CommonITILObject::getActionTime($job->fields["actiontime"]))),
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Priority')."</i></b>",
-                             Html::clean($job->getPriorityName($job->fields["priority"]))));
+                             Toolbox::stripTags($job->getPriorityName($job->fields["priority"]))));
 
 
       // Requester
@@ -129,7 +128,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       $requester = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Requester'), $listusers);
       foreach ($job->getUsers(CommonITILActor::REQUESTER) as $d) {
          if ($d['users_id']) {
-            $tmp = Html::clean($dbu->getUserName($d['users_id']));
+            $tmp = Toolbox::stripTags($dbu->getUserName($d['users_id']));
             if ($d['alternative_email']) {
                $tmp .= ' ('.$d['alternative_email'].')';
             }
@@ -161,7 +160,7 @@ class PluginPdfProblem extends PluginPdfCommon {
       $watcher   = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Watcher'), $listusers);
       foreach ($job->getUsers(CommonITILActor::OBSERVER) as $d) {
          if ($d['users_id']) {
-            $tmp = Html::clean($dbu->getUserName($d['users_id']));
+            $tmp = Toolbox::stripTags($dbu->getUserName($d['users_id']));
             if ($d['alternative_email']) {
                $tmp .= ' ('.$d['alternative_email'].')';
             }
@@ -194,7 +193,7 @@ class PluginPdfProblem extends PluginPdfCommon {
                                     $listusers);
       foreach ($job->getUsers(CommonITILActor::ASSIGN) as $d) {
          if ($d['users_id']) {
-            $tmp = Html::clean($dbu->getUserName($d['users_id']));
+            $tmp = Toolbox::stripTags($dbu->getUserName($d['users_id']));
             if ($d['alternative_email']) {
                $tmp .= ' ('.$d['alternative_email'].')';
             }
@@ -213,8 +212,9 @@ class PluginPdfProblem extends PluginPdfCommon {
       $assigngroup = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Technician group'),
                                          $listgroups);
       foreach ($job->getGroups(CommonITILActor::ASSIGN) as $d) {
-         $groups[] = Html::clean(Toolbox::clean_cross_side_scripting_deep(Dropdown::getDropdownName("glpi_groups",
-                                                                              $d['groups_id'])));
+         $groups[]
+         = Toolbox::stripTags(Glpi\Toolbox\Sanitizer::unsanitize(Dropdown::getDropdownName("glpi_groups",
+                                                                                           $d['groups_id'])));
       }
       if (count($groups)) {
          $listgroups = implode(', ', $groups);
@@ -227,7 +227,8 @@ class PluginPdfProblem extends PluginPdfCommon {
       $assignsupplier = '<b><i>'.sprintf(__('%1$s: %2$s')."</i></b>", __('Supplier'),
                                          $listsuppliers);
       foreach ($job->getSuppliers(CommonITILActor::ASSIGN) as $d) {
-         $suppliers[] = Html::clean(Dropdown::getDropdownName("glpi_suppliers", $d['suppliers_id']));
+         $suppliers[] = Toolbox::stripTags(Dropdown::getDropdownName("glpi_suppliers",
+                                                                     $d['suppliers_id']));
       }
       if (count($suppliers)) {
          $listsuppliers = implode(', ', $suppliers);
@@ -239,7 +240,7 @@ class PluginPdfProblem extends PluginPdfCommon {
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Title')."</i></b>", $job->fields["name"]));
 
       $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Description')."</i></b>", ''),
-                                         Html::clean($job->fields["content"]), 1);
+                                         Toolbox::stripTags($job->fields["content"]), 1);
 
       $pdf->displaySpace();
    }
@@ -446,23 +447,23 @@ class PluginPdfProblem extends PluginPdfCommon {
 
       $text = '';
       if ($job->fields['impactcontent']) {
-         $text = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
-                             html_entity_decode($job->getField('impactcontent'),
-                                                ENT_QUOTES, "UTF-8")));
+         $text = Toolbox::stripTags(Glpi\Toolbox\Sanitizer::unsanitize(
+                                                 html_entity_decode($job->getField('impactcontent'),
+                                                 ENT_QUOTES, "UTF-8")));
       }
       $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Impacts')."</i></b>", $text));
 
       if ($job->fields['causecontent']) {
-         $text = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
-                             html_entity_decode($job->getField('causecontent'),
-                                                ENT_QUOTES, "UTF-8")));
+         $text = Toolbox::stripTags(Glpi\Toolbox\Sanitizer::unsanitize(
+                                                  html_entity_decode($job->getField('causecontent'),
+                                                  ENT_QUOTES, "UTF-8")));
       }
 
       $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), __('Causes')."</i></b>", $text));
 
       if ($job->fields['symptomcontent']) {
-         $text = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
-                             html_entity_decode($job->getField('symptomcontent'),
+         $text = Toolbox::stripTags(Glpi\Toolbox\Sanitizer::unsanitize(
+                                                html_entity_decode($job->getField('symptomcontent'),
                                                 ENT_QUOTES, "UTF-8")));
       }
 
@@ -500,18 +501,18 @@ class PluginPdfProblem extends PluginPdfCommon {
           || in_array($job->fields["status"], $job->getClosedStatusArray())) {
                if ($job->fields['solve_delay_stat'] > 0) {
             $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Solution'),
-                                      Html::clean(Html::timestampToString($job->fields['solve_delay_stat'],0))));
+                                      Toolbox::stripTags(Html::timestampToString($job->fields['solve_delay_stat'],0))));
          }
       }
       if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
          if ($job->fields['close_delay_stat'] > 0) {
             $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Closing'),
-                                      Html::clean(Html::timestampToString($job->fields['close_delay_stat'],0))));
+                                      Toolbox::stripTags(Html::timestampToString($job->fields['close_delay_stat'],0))));
          }
       }
       if ($job->fields['waiting_duration'] > 0) {
          $pdf->displayLine(sprintf(__('%1$s: %2$s'), __('Pending'),
-                                   Html::clean(Html::timestampToString($job->fields['waiting_duration'],0))));
+                                   Toolbox::stripTags(Html::timestampToString($job->fields['waiting_duration'],0))));
       }
 
       $pdf->displaySpace();

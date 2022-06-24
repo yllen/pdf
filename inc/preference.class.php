@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id$
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -149,8 +148,8 @@ class PluginPdfPreference extends CommonDBTM {
            $_SERVER['PHP_SELF']."?select=none'>".__('Uncheck all')."</a></td>";
 
       echo "<td colspan='4' class='center'>";
-      echo "<input type='hidden' name='plugin_pdf_inventory_type' value='".$type."'>";
-      echo "<input type='hidden' name='indice' value='".count($options)."'>";
+      echo Html::hidden('plugin_pdf_inventory_type', ['value' => $type]);
+      echo Html::hidden('indice', ['value' => count($options)]);
 
       if ($ID) {
         echo __('Display (number of items)')."&nbsp;";
@@ -163,14 +162,15 @@ class PluginPdfPreference extends CommonDBTM {
       echo "</select>&nbsp;&nbsp;&nbsp;&nbsp;\n";
 
       if ($ID) {
-         echo "<input type='hidden' name='itemID' value='".$ID."'>";
-         echo "<input type='submit' value='". _sx('button','Print', 'pdf') .
-              "' name='generate' class='submit'></td></tr>";
+         echo Html::hidden('itemID', ['value' => $ID]);
+         echo Html::submit(_sx('button','Print', 'pdf'), ['name' => 'generate',
+                                                          'class' => 'btn btn-primary']);
       } else {
-         echo "<input type='submit' value='" . _sx('button', 'Save') .
-              "' name='plugin_pdf_user_preferences_save' class='submit'></td></tr>";
+         echo Html::submit(_sx('button', 'Save'), ['name'  => 'plugin_pdf_user_preferences_save',
+                                                   'class' => 'btn btn-primary',
+                                                   'icon'  => 'ti ti-device-floppy']);
       }
-      echo "</table>";
+      echo "</td></tr></table>";
       Html::closeForm();
    }
 
@@ -190,5 +190,71 @@ class PluginPdfPreference extends CommonDBTM {
          self::showPreferences();
       }
       return true;
+   }
+
+
+   static function install(Migration $mig) {
+      global $DB;
+
+      $table = 'glpi_plugin_pdf_preferences';
+      if (!$DB->tableExists('glpi_plugin_pdf_preference')
+          && !$DB->tableExists($table)) {
+         $default_charset   = DBConnection::getDefaultCharset();
+         $default_collation = DBConnection::getDefaultCollation();
+         $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+
+         $query = "CREATE TABLE `". $table."`(
+                  `id` int $default_key_sign NOT NULL AUTO_INCREMENT,
+                  `users_id` int $default_key_sign NOT NULL COMMENT 'RELATION to glpi_users (id)',
+                  `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',
+                  `tabref` VARCHAR(255) NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name',
+                  PRIMARY KEY (`id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET= {$default_charset}
+                 COLLATE = {$default_collation} ROW_FORMAT=DYNAMIC";
+         $DB->queryOrDie($query, $DB->error());
+
+      } else {
+          if ($DB->tableExists('glpi_plugin_pdf_preference')) {
+            $mig->renameTable('glpi_plugin_pdf_preference', 'glpi_plugin_pdf_preferences');
+         }
+         // 0.6.0
+         if ($DB->fieldExists($table,'user_id')) {
+            $mig->changeField($table, 'user_id', 'users_id',
+                              "int {$default_key_sign} NOT NULL DEFAULT '0'",
+                              ['comment' => 'RELATION to glpi_users (id)']);
+         }
+         // 0.6.1
+         if ($DB->fieldExists($table,'FK_users')) {
+            $mig>changeField($table, 'FK_users', 'users_id',
+                             "int {$default_key_sign} NOT NULL DEFAULT '0'",
+                             ['comment' => 'RELATION to glpi_users (id)']);
+         }
+         // 0.6.0
+         if ($DB->fieldExists($table,'cat')) {
+            $mig->changeField($table, 'cat', 'itemtype', 'VARCHAR(100) NOT NULL',
+                              ['comment' => 'see define.php *_TYPE constant']);
+         }
+         // 0.6.1
+         if ($DB->fieldExists($table,'device_type')) {
+            $mig->changeField($table, 'device_type', 'itemtype', 'VARCHAR(100) NOT NULL',
+                              ['comment' => 'see define.php *_TYPE constant']);
+         }
+         // 0.6.0
+         if ($DB->fieldExists($table,'table_num')) {
+            $mig->changeField($table, 'table_num', 'tabref', 'string',
+                              ['comment' => 'ref of tab to display, or plugname_#, or option name']);
+         }
+         //0.85
+         if (isset($main)) {
+            $query = "UPDATE `glpi_plugin_pdf_preferences`
+                      SET `tabref`= CONCAT(`itemtype`,'$main')
+                      WHERE `tabref`='_main_'";
+            $DB->queryOrDie($query, "update tabref for main");
+         }
+      }
+   }
+
+   static function uninstall(Migration $mig) {
+      $mig->dropTable('glpi_plugin_pdf_preferences');
    }
 }

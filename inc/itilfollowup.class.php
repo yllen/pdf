@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id: setup.php 378 2014-06-08 15:12:45Z yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2019-2020 PDF plugin team
+ @copyright Copyright (c) 2019-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -88,9 +87,7 @@ class PluginPdfItilFollowup extends PluginPdfCommon {
                "<b><i>".__('Date')."</i></b>", // Date
                "<b><i>".__('Requester')."</i></b>"); // Author
 
-
-         $tot = 0;
-         while (($data = $result->next()) && ($tot < $_SESSION['glpilist_limit'])) {
+         foreach ($result as $data) {
             if ($data['requesttypes_id']) {
                $lib = Dropdown::getDropdownName('glpi_requesttypes', $data['requesttypes_id']);
             } else {
@@ -99,13 +96,12 @@ class PluginPdfItilFollowup extends PluginPdfCommon {
             if ($data['is_private']) {
                $lib = sprintf(__('%1$s (%2$s)'), $lib, __('Private'));
             }
-            $pdf->displayLine(Html::clean($lib),
+            $pdf->displayLine(Toolbox::stripTags($lib),
                               Html::convDateTime($data["date"]),
-                              Html::clean($dbu->getUserName($data["users_id"])));
+                              Toolbox::stripTags($dbu->getUserName($data["users_id"])));
 
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>",__('Comments'), ''),
                                                $data["content"], 1);
-            $tot++;
          }
       }
       $pdf->displaySpace();

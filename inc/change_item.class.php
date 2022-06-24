@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id:
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2021 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -74,8 +73,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                                   __('Inventory number')."</i></b>");
 
          $totalnb = 0;
-         for ($i=0 ; $i<$number ; $i++) {
-            $row = $result->next();
+         foreach ($result as $row) {
             $itemtype = $row['itemtype'];
             if (!($item = $dbu->getItemForItemtype($itemtype))) {
                continue;
@@ -109,25 +107,27 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                $result_linked = $DB->request($query, '',true);
                $nb            = count($result_linked);
 
-               for ($prem=true ; $data=$result_linked->next() ; $prem=false) {
+               $prem = true;
+               foreach ($result_linked as $data) {
                   $name = $data["name"];
                   if (empty($data["name"])) {
                      $name = "(".$data["id"].")";
                   }
                   if ($prem) {
                      $typename = $item->getTypeName($nb);
-                     $pdf->displayLine(Html::clean(sprintf(__('%1$s: %2$s'), $typename, $nb)),
-                                       Html::clean($name),
+                     $pdf->displayLine(Toolbox::stripTags(sprintf(__('%1$s: %2$s'), $typename, $nb)),
+                                       Toolbox::stripTags($name),
                                        Dropdown::getDropdownName("glpi_entities", $data['entity']),
-                                       Html::clean($data["serial"]),
-                                       Html::clean($data["otherserial"]),$nb);
+                                       Toolbox::stripTags($data["serial"]),
+                                       Toolbox::stripTags($data["otherserial"]),$nb);
                   } else {
                      $pdf->displayLine('',
-                                       Html::clean($name),
+                                       Toolbox::stripTags($name),
                                        Dropdown::getDropdownName("glpi_entities", $data['entity']),
-                                       Html::clean($data["serial"]),
-                                       Html::clean($data["otherserial"]),$nb);
+                                       Toolbox::stripTags($data["serial"]),
+                                       Toolbox::stripTags($data["otherserial"]),$nb);
                   }
+                  $prem = false;
                }
                $totalnb += $nb;
             }
@@ -213,7 +213,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                                           $number));
 
          $job = new Change();
-         while ($data = $result->next()) {
+         foreach ($result as $data) {
             if (!$job->getFromDB($data["id"])) {
                continue;
             }

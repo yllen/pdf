@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id$
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -57,11 +56,11 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), Software::getTypeName(1).'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwares',
-                                                                $license->fields['softwares_id']))),
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwares',
+                                                                       $license->fields['softwares_id']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'),__('Type').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
-                                                                $license->fields['softwarelicensetypes_id']))));
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwarelicensetypes',
+                                                                       $license->fields['softwarelicensetypes_id']))));
 
       $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
                                          $license->fields['name']),
@@ -70,15 +69,15 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Purchase version').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
-                                                                $license->fields['softwareversions_id_buy']))),
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwareversions',
+                                                                       $license->fields['softwareversions_id_buy']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Inventory number').'</i></b>',
                           $license->fields['otherserial']));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Version in use').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
-                                                                $license->fields['softwareversions_id_use']))),
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwareversions',
+                                                                       $license->fields['softwareversions_id_use']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Expiration').'</i></b>',
                           Html::convDate($license->fields['expire'])));
 
@@ -142,7 +141,7 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
                             '<b><i>'.__('Version in use').'</i></b>',
                             '<b><i>'.__('Expiration').'</i></b>');
          $totnbre = $totaffect = 0;
-         for ($tot=0 ; $data=$result->next() ; ) {
+         foreach ($result as $data) {
             if ($license->getFromDB($data['id'])) {
                $totnbre   += $license->fields['number'];
                $totaffect += Item_SoftwareLicense::countForLicense($license->getField('id'));
@@ -153,12 +152,12 @@ class PluginPdfSoftwareLicense extends PluginPdfCommon {
                                  ($license->fields['number'] > 0) ? $license->fields['number']
                                                                   :__('Unlimited'),
                                  Item_SoftwareLicense::countForLicense($license->getField('id')),
-                                 Html::clean(Dropdown::getDropdownName('glpi_softwarelicensetypes',
-                                                                       $license->fields['softwarelicensetypes_id'])),
-                                 Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
-                                                                       $license->fields['softwareversions_id_buy'])),
-                                 Html::clean(Dropdown::getDropdownName('glpi_softwareversions',
-                                                                       $license->fields['softwareversions_id_use'])),
+                                 Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwarelicensetypes',
+                                                                              $license->fields['softwarelicensetypes_id'])),
+                                 Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwareversions',
+                                                                              $license->fields['softwareversions_id_buy'])),
+                                 Toolbox::stripTags(Dropdown::getDropdownName('glpi_softwareversions',
+                                                                              $license->fields['softwareversions_id_use'])),
                                  Html::convDate($license->fields['expire']));
             }
             $pdf->setColumnsAlign('left', 'left', 'right', 'right', 'right');

@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2021 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -71,13 +70,13 @@ class PluginPdfComputerAntivirus extends PluginPdfCommon {
          $antivirus = new ComputerAntivirus();
          foreach($result as $data) {
             $pdf->displayLine($data['name'],
-                              Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                                                    $data['manufacturers_id'])),
+                              Toolbox::stripTags(Dropdown::getDropdownName('glpi_manufacturers',
+                                                                           $data['manufacturers_id'])),
                               $data['antivirus_version'],
                               $data['signature_version'],
                               Dropdown::getYesNo($data['is_active']),
                               Dropdown::getYesNo($data['is_uptodate']),
-                              Html::clean(Html::convDate($data['date_expiration'])));
+                              Html::convDate($data['date_expiration']));
          }
       }
 

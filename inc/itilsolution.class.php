@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id:  yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2018-2020 PDF plugin team
+ @copyright Copyright (c) 2018-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -61,15 +60,14 @@ class PluginPdfITILSolution extends PluginPdfCommon {
       } else {
          $title = sprintf(__('%1$s: %2$s'), $title, $number);
          $pdf->displayTitle($title);
-         while ($row = $soluce->next()) {
+         foreach ($soluce as $row) {
             if ($row['solutiontypes_id']) {
-               $title = Html::clean(Dropdown::getDropdownName('glpi_solutiontypes',
-                                                              $row['solutiontypes_id']));
+               $title = Toolbox::stripTags(Dropdown::getDropdownName('glpi_solutiontypes',
+                                                                     $row['solutiontypes_id']));
             } else {
                $title = __('Solution');
             }
-            $sol = Html::clean(Toolbox::unclean_cross_side_scripting_deep(
-                                                      html_entity_decode($row['content'],
+            $sol = Toolbox::stripTags(Glpi\Toolbox\Sanitizer::unsanitize(html_entity_decode($row['content'],
                                                                          ENT_QUOTES, "UTF-8")));
 
             if ($row['status'] == 3) {
@@ -84,7 +82,8 @@ class PluginPdfITILSolution extends PluginPdfCommon {
                                sprintf(__('%1$s %2$s'), $text,
                                        Html::convDateTime($row['date_approval']))."&nbsp;".
                                sprintf(__('%1$s %2$s'), __('By'),
-                                       Html::clean($dbu->getUserName($row["users_id_approval"])))."</i>";
+                                       Toolbox::stripTags($dbu->getUserName($row["users_id_approval"])))
+                               ."</i>";
                $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol.
                                  $textapprove);
             }

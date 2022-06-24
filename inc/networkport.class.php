@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id$
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -29,7 +28,7 @@
  @since     2009
  --------------------------------------------------------------------------
 */
-
+use Glpi\Socket;
 
 class PluginPdfNetworkPort extends PluginPdfCommon {
 
@@ -62,13 +61,13 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
             $pdf->displayTitle('<b>'.__('No network port found').'</b>');
          } else {
             if ($nb_connect > $_SESSION['glpilist_limit']) {
-               $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
+               $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$nb_connect);
             } else {
                $title = sprintf(__('%1$s: %2$d'), $title, $nb_connect);
             }
             $pdf->displayTitle($title);
 
-            while ($devid = $result->next()) {
+            foreach ($result as $devid) {
                $netport = new NetworkPort;
                $netport->getfromDB(current($devid));
                $instantiation_type = $netport->fields["instantiation_type"];
@@ -100,7 +99,8 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                                                    $add));
                   $netportethernet = new NetworkPortEthernet();
                   $speed = $type = '';
-                  if ($netportethernet->getFromDB($netport->fields['id'])) {
+
+                  if ($netportethernet->getFromDBByCrit(['networkports_id' => $netport->fields['id']])) {
                      $speed = NetworkPortEthernet::getPortSpeed($netportethernet->fields['speed']);
                      $type  = NetworkPortEthernet::getPortTypeName($netportethernet->fields['type']);
                   }
@@ -109,9 +109,9 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                   $pdf->displayLine(
                      '<b>'.sprintf(__('%1$s: %2$s'), __('Ethernet port type').'</b>', $type));
 
-                  $netpoint = new Netpoint();
+                  $netpoint = new Socket();
                   $outlet = '';
-                  if ($netpoint->getFromDB($netportethernet->fields['netpoints_id'])) {
+                  if ($netpoint->getFromDBByCrit(['networkports_id' => $netportethernet->fields['networkports_id']])) {
                      $outlet = $netpoint->fields['name'];
                   }
                   $pdf->displayLine(
@@ -145,9 +145,7 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
                                          + $dbu->getEntitiesRestrictCriteria('glpi_ipnetworks')];
 
                   $res        = $DB->request($sql);
-                  if ($res) {
-                     $row = $res->next();
-
+                  foreach ($res as $row) {
                      $ipnetwork = new IPNetwork();
                      if ($ipnetwork->getFromDB($row['ipnetworks_id'])) {
                         $pdf->displayLine('<b>'.sprintf(__('%1$s: %2$s'), __('IP network').'</b>',

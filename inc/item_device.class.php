@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id:
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2018-2020 PDF plugin team
+ @copyright Copyright (c) 2018-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -38,7 +37,7 @@ class PluginPdfItem_Device extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-      $this->obj = ($obj ? $obj : new Item_Device());
+      $this->obj = ($obj ? $obj : new Item_Devices());
    }
 
 
@@ -108,7 +107,7 @@ class PluginPdfItem_Device extends PluginPdfCommon {
                                                                  $device->fields[$label["name"]]);
                             }
                             $col4 .= '<b><i>'.sprintf(__('%1$s: %2$s'), $label["label"].'</i></b>',
-                                                     Html::clean($value)." ");
+                                                      Toolbox::stripTags($value)." ");
                         } else {
                            if (!isset($value) || empty($value)) {
                               $value = $device->fields[$label["name"]];

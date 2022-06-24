@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id: setup.php 378 2014-06-08 15:12:45Z yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2018-2021 PDF plugin team
+ @copyright Copyright (c) 2018-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -57,18 +56,23 @@ class PluginPdfCartridgeItem extends PluginPdfCommon {
 
       $pdf->displayLine(
             '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $cartitem->fields['name']),
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Type').'</i></b>',
-                             Html::clean(Dropdown::getDropdownName('glpi_cartridgeitemtypes',
-                                                                   $cartitem->fields['cartridgeitemtypes_id']))));
+            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Location').'</i></b>',
+                             Toolbox::stripTags(Dropdown::getDropdownName('glpi_locations',
+                                                              $cartitem->fields['locations_id']))));
       $pdf->displayLine(
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Reference').'</i></b>', $cartitem->fields['ref']),
-            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Manufacturer').'</i></b>',
-                             Html::clean(Dropdown::getDropdownName('glpi_manufacturers',
-                                                                   $cartitem->fields['manufacturers_id']))));
+            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Type').'</i></b>',
+                             Toolbox::stripTags(Dropdown::getDropdownName('glpi_cartridgeitemtypes',
+                                                      $cartitem->fields['cartridgeitemtypes_id']))),
+            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Reference').'</i></b>', $cartitem->fields['ref']));
+
 
       $pdf->displayLine(
             '<b><i>'.sprintf(__('%1$s: %2$s'), __('Technician in charge of the hardware').'</i></b>',
-                             $dbu->getUserName($cartitem->fields['users_id_tech'])),
+                                              $dbu->getUserName($cartitem->fields['users_id_tech'])),
+            '<b><i>'.sprintf(__('%1$s: %2$s'), __('Manufacturer').'</i></b>',
+                             Toolbox::stripTags(Dropdown::getDropdownName('glpi_manufacturers',
+                                                           $cartitem->fields['manufacturers_id']))));
+      $pdf->displayLine(
             '<b><i>'.sprintf(__('%1$s: %2$s'),  __('Group in charge of the hardware').'</i></b>',
                              Dropdown::getDropdownName('glpi_groups',
                                                        $cartitem->fields['groups_id_tech'])));
@@ -116,7 +120,7 @@ class PluginPdfCartridgeItem extends PluginPdfCommon {
       $iterator = CartridgeItem_PrinterModel::getListForItem($item);
       $number = count($iterator);
 
-      while ($data = $iterator->next()) {
+      foreach ($iterator as $data) {
          $datas[$data["linkid"]]  = $data;
       }
 

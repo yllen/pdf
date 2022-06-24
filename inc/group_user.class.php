@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id$
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2021 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -83,7 +82,7 @@ class PluginPdfGroup_User extends PluginPdfCommon {
          for ($i=0 ; $i<$number && $i<$_SESSION['glpilist_limit'] ; $i++) {
             $data = $used[$i];
             $user->getFromDB($data["id"]);
-            $name = Html::clean($dbu->getUserName($data["id"]));
+            $name = Toolbox::stripTags($dbu->getUserName($data["id"]));
 
             if ($tree) {
                $group->getFromDB($data["groups_id"]);

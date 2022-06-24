@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id$
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2021 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -48,6 +47,10 @@ class PluginPdfComputer extends PluginPdfCommon {
       unset($onglets['Appliance_Item$1']);
       unset($onglets['Certificate_Item$1']);
       unset($onglets['Impact$1']);
+      unset($onglets['GLPI\Socket$1']);
+      unset($onglets['Item_RemoteManagement$1']);
+      unset($onglets['DatabaseInstance$1']);
+      unset($onglets['RuleMatchedLog$1']);
       return $onglets;
    }
 
@@ -70,8 +73,8 @@ class PluginPdfComputer extends PluginPdfCommon {
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
                           $dbu->getUserName($computer->fields['users_id'])),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
-                           Html::clean(Dropdown::getDropdownName('glpi_networks',
-                                                                 $computer->fields['networks_id']))));
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_networks',
+                                                                       $computer->fields['networks_id']))));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',
@@ -104,18 +107,18 @@ class PluginPdfComputer extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystems',
-                                                                $computer->fields['operatingsystems_id']))),
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_operatingsystems',
+                                                                       $computer->fields['operatingsystems_id']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Version').'</i></b>',
-                           Html::clean(Dropdown::getDropdownName('glpi_operatingsystemversions',
-                                                                 $computer->fields['operatingsystemversions_id']))));
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_operatingsystemversions',
+                                                                       $computer->fields['operatingsystemversions_id']))));
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Architecture').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystemarchitectures',
-                                                                $computer->fields['operatingsystemarchitectures_id']))),
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_operatingsystemarchitectures',
+                                                                       $computer->fields['operatingsystemarchitectures_id']))),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Service pack').'</i></b>',
-                          Html::clean(Dropdown::getDropdownName('glpi_operatingsystemservicepacks',
-                                                                $computer->fields['operatingsystemservicepacks_id']))));
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_operatingsystemservicepacks',
+                                                                       $computer->fields['operatingsystemservicepacks_id']))));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Kernel version').'</i></b>',

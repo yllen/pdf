@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id:  yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2019-2020 PDF plugin team
+ @copyright Copyright (c) 2019-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -37,7 +36,7 @@ class PluginPdfItem_Disk extends PluginPdfCommon {
 
 
    function __construct(CommonGLPI $obj=NULL) {
-      $this->obj = ($obj ? $obj : new ComputerDisk());
+      $this->obj = ($obj ? $obj : new Item_Disk());
    }
 
 
@@ -76,7 +75,7 @@ class PluginPdfItem_Disk extends PluginPdfCommon {
 
          $pdf->setColumnsAlign('left','left','left','left','center','right','right');
 
-         while ($data = $result->next()) {
+         foreach ($result as $data) {
             $percent = 0;
             if ($data['totalsize'] > 0) {
                $percent = round(100*$data['freesize']/$data['totalsize']);
@@ -86,10 +85,13 @@ class PluginPdfItem_Disk extends PluginPdfCommon {
                               $data['mountpoint'],
                               $data['name'],
                               sprintf(__('%s Mio'),
-                                      Html::clean(Html::formatNumber($data['totalsize'], false, 0))),
+                                      Toolbox::stripTags(Html::formatNumber($data['totalsize'],
+                                                         false, 0))),
                               sprintf(__('%s Mio'),
-                                      Html::clean(Html::formatNumber($data['freesize'], false, 0))),
-                              sprintf(__('%s %s'),Html::clean(Html::formatNumber($percent, false, 0)), '%'));
+                                      Toolbox::stripTags(Html::formatNumber($data['freesize'],
+                                                         false, 0))),
+                              sprintf(__('%s %s'),
+                                      Toolbox::stripTags(Html::formatNumber($percent, false, 0)), '%'));
          }
       }
       $pdf->displaySpace();

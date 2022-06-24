@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id: config.class.php 194 2016-10-25 10:02:30Z tsmr $
  -------------------------------------------------------------------------
 
  LICENSE
@@ -22,7 +21,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2018-2021 PDF plugin team
+ @copyright Copyright (c) 2018-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -77,13 +76,16 @@ class PluginPdfConfig extends CommonDBTM {
 
       $table = 'glpi_plugin_pdf_configs';
       if (!$DB->tableExists($table)) { //not installed
-
+         $default_charset   = DBConnection::getDefaultCharset();
+         $default_collation = DBConnection::getDefaultCollation();
+         $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
          $query = "CREATE TABLE `". $table."`(
-                     `id` int(11) NOT NULL,
+                     `id` int $default_key_sign NOT NULL,
                      `currency`  VARCHAR(15) NULL,
-                     `date_mod` datetime default NULL,
+                     `date_mod` timestamp NULL DEFAULT NULL,
                      PRIMARY KEY  (`id`)
-                   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+                   ) ENGINE=InnoDB  DEFAULT CHARSET= {$default_charset}
+                 COLLATE = {$default_collation} ROW_FORMAT=DYNAMIC";
          $DB->queryOrDie($query, 'Error in creating glpi_plugin_pdf_configs'.
                                  "<br>".$DB->error());
 
@@ -92,6 +94,11 @@ class PluginPdfConfig extends CommonDBTM {
                    VALUES (1, 'EUR')";
          $DB->queryOrDie($query, 'Error during update glpi_plugin_pdf_configs'.
                                  "<br>" . $DB->error());
+      } else {
+         // 2.1.0
+         if ($DB->fieldExists($table,'date_mod')) {
+            $mig->changeField($table, 'date_mod', 'date_mod', 'timestamp');
+         }
       }
 
    }
@@ -128,7 +135,7 @@ class PluginPdfConfig extends CommonDBTM {
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
       if ($item->getType()=='Config') {
-            return $this::getName();
+            return $this->getName();
       }
       return '';
    }

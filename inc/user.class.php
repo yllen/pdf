@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id: yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2021 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -178,7 +177,7 @@ class PluginPdfUser extends PluginPdfCommon {
             $type_name = $item->getTypeName();
 
             if (count($result)) {
-               while ($data = $result->next()) {
+               foreach ($result as $data) {
                   $name  = $data["name"];
                   if (empty($name)) {
                      $name = sprintf(__('%1$s (%2$s)'), $name, $data["id"]);
@@ -221,7 +220,7 @@ class PluginPdfUser extends PluginPdfCommon {
       if ($number > 0) {
          $first = true;
 
-         while ($data = $result->next()) {
+         foreach ($result as $data) {
             if ($first) {
                $first = false;
             } else {
@@ -255,7 +254,7 @@ class PluginPdfUser extends PluginPdfCommon {
                $type_name = $item->getTypeName();
 
                if (count($result)) {
-                  while ($data = $result->next()) {
+                  foreach ($result as $data) {
                      $name   = $data["name"];
                      if (empty($name)) {
                         $name = sprintf(__('%1$s (%2$s)'), $name, $data["id"]);
@@ -297,7 +296,7 @@ class PluginPdfUser extends PluginPdfCommon {
                                                    'items_id' => $ID],
                                    'ORDER'     => 'date_out DESC']);
 
-         while ($dataconso = $iterator->next()) {
+         foreach ($iterator as $dataconso) {
             $pdf->displayLine($dataconso["name"], Html::convDate($dataconso["date_out"]));
          }
       }

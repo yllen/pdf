@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id: setup.php 378 2014-06-08 15:12:45Z yllen $
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson
- @copyright Copyright (c) 2020 PDF plugin team
+ @copyright Copyright (c) 2020-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -141,7 +140,7 @@ class PluginPdfItem_SoftwareVersion extends PluginPdfCommon {
                             __('User'), _n('License', 'Licenses', 2),
                             __('Installation date').'</i></b>');
 
-         while ($data = $result->next()) {
+         foreach ($result as $data) {
             $itemname = $data['compname'];
             if (empty($itemname) || $_SESSION['glpiis_ids_visible']) {
                $itemname = sprintf(__('%1$s (%2$s)'), $itemname, $data['cID']);

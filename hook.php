@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id$
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2021 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -56,94 +55,18 @@ function plugin_pdf_MassiveActions($type) {
 function plugin_pdf_install() {
    global $DB;
 
-   $migration = new Migration('1.7.0');
+   $migration = new Migration('2.1.0');
 
-   //new install
-   if (!$DB->tableExists('glpi_plugin_pdf_profiles')
-       && !$DB->tableExists('glpi_plugin_pdf_preferences')) {
-      include_once(Plugin::getPhpDir('pdf')."/inc/profile.class.php");
-      PluginPdfProfile::install($migration);
+   include_once(Plugin::getPhpDir('pdf')."/inc/profile.class.php");
+   PluginPdfProfile::install($migration);
 
-   } else {
-      if ($DB->tableExists('glpi_plugin_pdf_profiles')
-          && $DB->fieldExists('glpi_plugin_pdf_profiles','ID')) { //< 0.7.0
-         $migration->changeField('glpi_plugin_pdf_profiles', 'ID', 'id', 'autoincrement');
-      }
-      // -- SINCE 0.85 --
-      //Add new rights in glpi_profilerights table
-      $profileRight = new ProfileRight();
+   include_once(Plugin::getPhpDir('pdf')."/inc/preference.class.php");
+   PluginPdfPreference::install($migration);
 
-      if ($DB->tableExists('glpi_plugin_pdf_profiles')) {
-         foreach ($DB->request('glpi_plugin_pdf_profiles', ['use' => 1]) as $data) {
-            $right['profiles_id']   = $data['id'];
-            $right['name']          = "plugin_pdf";
-            $right['rights']        = $data['use'];
+   include_once(Plugin::getPhpDir('pdf')."/inc/config.class.php");
+   PluginPdfConfig::install($migration);
 
-            $profileRight->add($right);
-         }
-         $migration->dropTable('glpi_plugin_pdf_profiles');
-      }
-
-   }
-
-   if (!$DB->tableExists('glpi_plugin_pdf_preference')
-       && !$DB->tableExists('glpi_plugin_pdf_preferences')) {
-      $query= "CREATE TABLE IF NOT EXISTS
-               `glpi_plugin_pdf_preferences` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `users_id` int(11) NOT NULL COMMENT 'RELATION to glpi_users (id)',
-                  `itemtype` VARCHAR(100) NOT NULL COMMENT 'see define.php *_TYPE constant',
-                  `tabref` varchar(255) NOT NULL COMMENT 'ref of tab to display, or plugname_#, or option name',
-                  PRIMARY KEY (`id`)
-               ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-      $DB->queryOrDie($query, $DB->error());
-   } else {
-      if ($DB->tableExists('glpi_plugin_pdf_preference')) {
-         $migration->renameTable('glpi_plugin_pdf_preference', 'glpi_plugin_pdf_preferences');
-      }
-      // 0.6.0
-      if ($DB->fieldExists('glpi_plugin_pdf_preferences','user_id')) {
-         $migration->changeField('glpi_plugin_pdf_preferences', 'user_id', 'users_id', 'integer',
-                                 ['comment' => 'RELATION to glpi_users (id)']);
-      }
-      // 0.6.1
-      if ($DB->fieldExists('glpi_plugin_pdf_preferences','FK_users')) {
-         $migration->changeField('glpi_plugin_pdf_preferences', 'FK_users', 'users_id', 'integer',
-                                 ['comment' => 'RELATION to glpi_users (id)']);
-      }
-      // 0.6.0
-      if ($DB->fieldExists('glpi_plugin_pdf_preferences','cat')) {
-         $migration->changeField('glpi_plugin_pdf_preferences', 'cat', 'itemtype',
-                                 'VARCHAR(100) NOT NULL',
-                                 ['comment' => 'see define.php *_TYPE constant']);
-      }
-      // 0.6.1
-      if ($DB->fieldExists('glpi_plugin_pdf_preferences','device_type')) {
-         $migration->changeField('glpi_plugin_pdf_preferences', 'device_type', 'itemtype',
-                                 'VARCHAR(100) NOT NULL',
-                                 ['comment' => 'see define.php *_TYPE constant']);
-      }
-      // 0.6.0
-      if ($DB->fieldExists('glpi_plugin_pdf_preferences','table_num')) {
-         $migration->changeField('glpi_plugin_pdf_preferences', 'table_num', 'tabref',
-                                 'string',
-                                 ['comment' => 'ref of tab to display, or plugname_#, or option name']);
-      }
-      //0.85
-      if (isset($main)) {
-         $query = "UPDATE `glpi_plugin_pdf_preferences`
-                   SET `tabref`= CONCAT(`itemtype`,'$main')
-                   WHERE `tabref`='_main_'";
-         $DB->queryOrDie($query, "update tabref for main");
-      }
-   }
-
-   if (!$DB->tableExists('glpi_plugin_pdf_configs')) {
-      include_once(Plugin::getPhpDir('pdf')."/inc/config.class.php");
-      PluginPdfConfig::install($migration);
-   }
-
-      $migration->executeMigration();
+   $migration->executeMigration();
 
    return true;
 }
@@ -152,26 +75,18 @@ function plugin_pdf_install() {
 function plugin_pdf_uninstall() {
    global $DB;
 
-   $migration = new Migration('1.7.0');
+   $migration = new Migration('2.1.0');
 
-   $tables = ["glpi_plugin_pdf_preference",
-              "glpi_plugin_pdf_profiles",
-              "glpi_plugin_pdf_preferences"];
+   include_once(Plugin::getPhpDir('pdf')."/inc/config.class.php");
+   PluginPdfConfig::uninstall($migration);
 
-   foreach ($tables as $table) {
-      $migration->dropTable($table);
-   }
+   include_once(Plugin::getPhpDir('pdf')."/inc/preferences.class.php");
 
    //Delete rights associated with the plugin
    $query = "DELETE
              FROM `glpi_profilerights`
              WHERE `name` = 'plugin_pdf'";
    $DB->queryOrDie($query, $DB->error());
-
-   if ($DB->tableExists('glpi_plugin_pdf_configs')) {
-      include_once(Plugin::getPhpDir('pdf')."/inc/config.class.php");
-      PluginPdfConfig::uninstall($migration);
-   }
 
    $migration->executeMigration();
 

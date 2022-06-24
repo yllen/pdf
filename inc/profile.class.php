@@ -1,6 +1,5 @@
 <?php
 /**
- * @version $Id$
  -------------------------------------------------------------------------
  LICENSE
 
@@ -21,7 +20,7 @@
 
  @package   pdf
  @authors   Nelly Mahu-Lasson, Remi Collet
- @copyright Copyright (c) 2009-2020 PDF plugin team
+ @copyright Copyright (c) 2009-2022 PDF plugin team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://forge.glpi-project.org/projects/pdf
@@ -82,7 +81,9 @@ class PluginPdfProfile extends Profile {
       if ($canedit) {
          echo "<div class='center'>";
          echo Html::hidden('id', ['value' => $ID]);
-         echo Html::submit(_sx('button', 'Update'), ['name' => 'update']);
+         echo Html::submit(_sx('button', 'Update'), ['name' => 'update',
+                                                     'class' => 'btn btn-primary',
+                                                    'icon'  => 'ti ti-device-floppy']);
          echo "</div>\n";
          Html::closeForm();
       }
@@ -185,10 +186,37 @@ class PluginPdfProfile extends Profile {
    }
 
 
-   static function install() {
+   static function install(Migration $mig) {
+      global $DB;
 
-      self::initProfile();
-      self::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+      $table = 'glpi_plugin_pdf_profiles';
+      if (!$DB->tableExists($table)
+          && !$DB->tableExists('glpi_plugin_pdf_preferences')) {
+
+         self::initProfile();
+         self::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+
+      } else {
+         if ($DB->tableExists($table)
+             && $DB->fieldExists($table,'ID')) { //< 0.7.0
+            $mig->changeField($table, 'ID', 'id', 'autoincrement');
+         }
+         // -- SINCE 0.85 --
+         //Add new rights in glpi_profilerights table
+         $profileRight = new ProfileRight();
+
+         if ($DB->tableExists($table)) {
+            foreach ($DB->request($table, ['use' => 1]) as $data) {
+               $right['profiles_id']   = $data['id'];
+               $right['name']          = "plugin_pdf";
+               $right['rights']        = $data['use'];
+
+               $profileRight->add($right);
+            }
+            $mig->dropTable($table);
+         }
+      }
    }
+
 
 }
