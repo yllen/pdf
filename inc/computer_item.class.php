@@ -52,7 +52,7 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
                 'Peripheral' => _n('Device', 'Devices', 2),
                 'Phone'      => _n('Phone', 'Phones', 2)];
 
-      $info = new InfoCom();
+      $info = new Infocom();
 
       $pdf->setColumnsSize(100);
       $pdf->displayTitle('<b>'.__('Direct connections').'</b>');
@@ -152,7 +152,7 @@ class PluginPdfComputer_Item extends PluginPdfCommon {
       $ID   = $item->getField('id');
       $type = $item->getType();
 
-      $info = new InfoCom();
+      $info = new Infocom();
       $comp = new Computer();
 
       $pdf->setColumnsSize(100);
