@@ -111,7 +111,8 @@ class PluginPdfNetworkPort extends PluginPdfCommon {
 
                   $netpoint = new Socket();
                   $outlet = '';
-                  if ($netpoint->getFromDBByCrit(['networkports_id' => $netportethernet->fields['networkports_id']])) {
+                  if (isset($netportethernet->fields['networkports_id'])
+                      && $netpoint->getFromDBByCrit(['networkports_id' => $netportethernet->fields['networkports_id']])) {
                      $outlet = $netpoint->fields['name'];
                   }
                   $pdf->displayLine(

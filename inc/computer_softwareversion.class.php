@@ -75,8 +75,9 @@ class PluginPdfComputer_SoftwareVersion extends PluginPdfCommon {
 
       $total = 0;
       if ($result = $DB->request($query_number)) {
-         $row = $result->next();
-         $total  = $row['cpt'];
+         foreach ($result as $row) {
+            $total  = $row['cpt'];
+         }
       }
 
       $query = "SELECT DISTINCT `glpi_computers_softwareversions`.*,

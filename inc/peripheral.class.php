@@ -47,6 +47,7 @@ class PluginPdfPeripheral extends PluginPdfCommon {
       unset($onglets['Certificate_Item$1']);
       unset($onglets['Impact$1']);
       unset($onglets['Appliance_Item$1']);
+      unset($onglets['Glpi\Socket$1']);
       return $onglets;
    }
 

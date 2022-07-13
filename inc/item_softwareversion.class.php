@@ -41,7 +41,7 @@ class PluginPdfItem_SoftwareVersion extends PluginPdfCommon {
 
 
    static function pdfForSoftware(PluginPdfSimplePDF $pdf, CommonDBTM $item){
-      global $DB;
+      global $DB, $CFG_GLPI;
 
       $dbu = new DbUtils();
 
@@ -49,104 +49,159 @@ class PluginPdfItem_SoftwareVersion extends PluginPdfCommon {
       $type = $item->getType();
       $crit = ($type=='Software' ? 'softwares_id' : 'id');
 
-
-      $query_number = ['FROM'       => 'glpi_items_softwareversions', 'COUNT' => 'cpt',
-                       'INNER JOIN' => ['glpi_computers'
-                                        => ['FKEY' => ['glpi_items_softwareversions' => 'items_id',
-                                                       'glpi_computers'                  => 'id'],
-                                                       ['AND' => ['glpi_items_softwareversions.itemtype' => 'Computer']]]],
-                       'WHERE'      => ['glpi_computers.is_deleted'               => 0,
-                                        'glpi_computers.is_template'              => 0,
-                                        'glpi_items_softwareversions.is_deleted'  => 0]
-                                        + $dbu->getEntitiesRestrictCriteria('glpi_computers')];
-
-      if ($type == 'Software') {
-         $crit      = 'softwares_id';
-         // Software ID
-         $query_number['INNER JOIN']['glpi_softwareversions']
-                           = ['FKEY' => ['glpi_items_softwareversions' => 'softwareversions_id',
-                                         'glpi_softwareversions'           => 'id'],
-                                         ['AND' => ['glpi_items_softwareversions.itemtype' => 'Computer']]];
-         $query_number['WHERE']['glpi_softwareversions.softwares_id'] = $ID;
-
+      if ($crit == "softwares_id") {
+         $number = Item_SoftwareVersion::countForSoftware($ID);
+         $sort = "`entity` ASC, `version`, `itemname`";
       } else {
-         $crit      = 'id';
-         //SoftwareVersion ID
-         $query_number['WHERE']['glpi_items_softwareversions.softwareversions_id'] = $ID;
+         $number = Item_SoftwareVersion::countForVersion($ID);
+         $sort = "`entity` ASC, `itemname`";
       }
 
-      $total = 0;
-      if ($result = $DB->request($query_number)) {
-         $row = $result->next();
-         $total  = $row['cpt'];
+      $item_version_table = 'glpi_items_softwareversions';
+      foreach ($CFG_GLPI['software_types'] as $itemtype) {
+         $canshowitems[$itemtype] = $itemtype::canView();
+         $itemtable = $itemtype::getTable();
+         $query = ['SELECT' => [$item_version_table . '.*',
+                                'glpi_softwareversions.name AS version',
+                                'glpi_softwareversions.softwares_id AS sID',
+                                'glpi_softwareversions.id AS vID',
+                                "{$itemtable}.name AS itemname",
+                                "{$itemtable}.id AS iID",
+                     new QueryExpression($DB->quoteValue($itemtype)." AS ".$DB::quoteName('item_type')),
+                               ],
+                   'FROM'   => $item_version_table,
+                   'INNER JOIN' => ['glpi_softwareversions'
+                                    => ['FKEY' => [$item_version_table     => 'softwareversions_id',
+                                                   'glpi_softwareversions' => 'id']]
+                                   ],
+                   'LEFT JOIN' => [$itemtable
+                                   => ['FKEY' => [$item_version_table  => 'items_id',
+                                                  $itemtable           => 'id',
+                                                  ['AND'
+                                                    => [$item_version_table.'.itemtype'  => $itemtype
+                                                  ]]]]],
+                   'WHERE'     => ["glpi_softwareversions.$crit"             => $ID,
+                                   'glpi_items_softwareversions.is_deleted'  => 0
+                                  ]
+                  ];
+
+         if ($DB->fieldExists($itemtable, 'serial')) {
+            $query['SELECT'][] = $itemtable.'.serial';
+         } else {
+            $query['SELECT'][] = new QueryExpression(
+                                    $DB->quoteValue('')." AS ".$DB->quoteName($itemtable.".serial"));
+         }
+
+         if ($DB->fieldExists($itemtable, 'otherserial')) {
+            $query['SELECT'][] = $itemtable.'.otherserial';
+         } else {
+            $query['SELECT'][] = new QueryExpression(
+                                 $DB->quoteValue('')." AS ".$DB->quoteName($itemtable.".otherserial"));
+         }
+
+         if ($DB->fieldExists($itemtable, 'users_id')) {
+            $query['SELECT'][] = 'glpi_users.name AS username';
+            $query['SELECT'][] = 'glpi_users.id AS userid';
+            $query['SELECT'][] = 'glpi_users.realname AS userrealname';
+            $query['SELECT'][] = 'glpi_users.firstname AS userfirstname';
+            $query['LEFT JOIN']['glpi_users'] = ['FKEY' => [$itemtable     => 'users_id',
+                                                            'glpi_users'   => 'id']
+                                                ];
+         } else {
+            $query['SELECT'][] = new QueryExpression(
+                                 $DB->quoteValue('')." AS ".$DB->quoteName($itemtable.".username"));
+            $query['SELECT'][] = new QueryExpression(
+                                 $DB->quoteValue('-1')." AS ".$DB->quoteName($itemtable.".userid"));
+            $query['SELECT'][] = new QueryExpression(
+                                 $DB->quoteValue('')." AS ".$DB->quoteName($itemtable.".userrealname"));
+            $query['SELECT'][] = new QueryExpression(
+                                 $DB->quoteValue('')." AS ".$DB->quoteName($itemtable.".userfirstname"));
+         }
+
+         if ($DB->fieldExists($itemtable, 'entities_id')) {
+            $query['SELECT'][] = 'glpi_entities.completename AS entity';
+            $query['LEFT JOIN']['glpi_entities'] = ['FKEY' => [$itemtable      => 'entities_id',
+                                                               'glpi_entities' => 'id']
+                                                   ];
+            $query['WHERE'] += getEntitiesRestrictCriteria($itemtable, '', '', true);
+         } else {
+            $query['SELECT'][] = new QueryExpression(
+                                             $DB->quoteValue('')." AS ".$DB->quoteName('entity'));
+         }
+
+         if ($DB->fieldExists($itemtable, 'locations_id')) {
+            $query['SELECT'][] = 'glpi_locations.completename AS location';
+            $query['LEFT JOIN']['glpi_locations'] = ['FKEY' => [$itemtable       => 'locations_id',
+                                                                'glpi_locations' => 'id']
+                                                    ];
+         } else {
+            $query['SELECT'][] = new QueryExpression(
+                                             $DB->quoteValue('')." AS ".$DB->quoteName('location'));
+         }
+         if ($DB->fieldExists($itemtable, 'states_id')) {
+            $query['SELECT'][] = 'glpi_states.name AS state';
+            $query['LEFT JOIN']['glpi_states'] = ['FKEY' => [$itemtable    => 'states_id',
+                                                             'glpi_states' => 'id']
+                                                 ];
+         } else {
+            $query['SELECT'][] = new QueryExpression(
+                                                $DB->quoteValue('')." AS ".$DB->quoteName('state'));
+         }
+
+         if ($DB->fieldExists($itemtable, 'groups_id')) {
+            $query['SELECT'][] = 'glpi_groups.name AS groupe';
+            $query['LEFT JOIN']['glpi_groups'] = ['FKEY' => [$itemtable    => 'groups_id',
+                                                             'glpi_groups' => 'id']
+                                                 ];
+         } else {
+            $query['SELECT'][] = new QueryExpression(
+                                             $DB->quoteValue('')." AS ".$DB->quoteName('groupe'));
+         }
+
+         if ($DB->fieldExists($itemtable, 'is_deleted')) {
+            $query['WHERE']["{$itemtable}.is_deleted"] = 0;
+         }
+
+         if ($DB->fieldExists($itemtable, 'is_template')) {
+            $query['WHERE']["{$itemtable}.is_template"] = 0;
+         }
+
+         $queries[] = $query;
       }
+      $union = new QueryUnion($queries, true);
+      $criteria = ['SELECT' => [],
+                   'FROM'   => $union,
+                   'ORDER'  => "$sort ASC",
+                   'LIMIT'  => $_SESSION['glpilist_limit']
+                  ];
 
-      $query = "SELECT DISTINCT `glpi_items_softwareversions`.*,
-                          `glpi_computers`.`name` AS compname,
-                          `glpi_computers`.`id` AS cID,
-                          `glpi_computers`.`serial`,
-                          `glpi_computers`.`otherserial`,
-                          `glpi_users`.`name` AS username,
-                          `glpi_users`.`id` AS userid,
-                          `glpi_users`.`realname` AS userrealname,
-                          `glpi_users`.`firstname` AS userfirstname,
-                          `glpi_softwareversions`.`name` AS version,
-                          `glpi_softwareversions`.`id` AS vID,
-                          `glpi_softwareversions`.`softwares_id` AS sID,
-                          `glpi_softwareversions`.`name` AS vername,
-                          `glpi_entities`.`completename` AS entity,
-                          `glpi_locations`.`completename` AS location,
-                          `glpi_states`.`name` AS state,
-                          `glpi_groups`.`name` AS groupe
-                FROM `glpi_items_softwareversions`
-                INNER JOIN `glpi_softwareversions`
-                     ON (`glpi_items_softwareversions`.`softwareversions_id`
-                              = `glpi_softwareversions`.`id`
-                         AND `glpi_items_softwareversions`.`itemtype` = 'Computer')
-                INNER JOIN `glpi_computers`
-                     ON (`glpi_items_softwareversions`.`items_id` = `glpi_computers`.`id`
-                         AND `glpi_items_softwareversions`.`itemtype` = 'Computer')
-                LEFT JOIN `glpi_entities` ON (`glpi_computers`.`entities_id` = `glpi_entities`.`id`)
-                LEFT JOIN `glpi_locations`
-                     ON (`glpi_computers`.`locations_id` = `glpi_locations`.`id`)
-                LEFT JOIN `glpi_states` ON (`glpi_computers`.`states_id` = `glpi_states`.`id`)
-                LEFT JOIN `glpi_groups` ON (`glpi_computers`.`groups_id` = `glpi_groups`.`id`)
-                LEFT JOIN `glpi_users` ON (`glpi_computers`.`users_id` = `glpi_users`.`id`)
-                WHERE (`glpi_softwareversions`.`$crit` = '$ID') " .
-                      $dbu->getEntitiesRestrictRequest(' AND', 'glpi_computers') ."
-                      AND `glpi_computers`.`is_deleted` = '0'
-                      AND `glpi_computers`.`is_template` = '0'
-                ORDER BY version, compname
-                LIMIT 0," . intval($_SESSION['glpilist_limit']);
-
-      $result = $DB->request($query);
-      $number = count($result);
+      $iterator = $DB->request($criteria);
 
       $pdf->setColumnsSize(100);
       $title = '<b>'._n('Installation', 'Installations', $number).'</b>';
       if (!$number) {
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         if ($total > $_SESSION['glpilist_limit']) {
-            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$total);
+         if ($number > $_SESSION['glpilist_limit']) {
+            $title = sprintf(__('%1$s: %2$s'), $title, $_SESSION['glpilist_limit'].' / '.$number);
          } else {
-            $title = sprintf(__('%1$s: %2$s'), $title, $total);
+            $title = sprintf(__('%1$s: %2$s'), $title, $number);
          }
          $pdf->displayTitle($title);
 
-         $pdf->setColumnsSize(8,12,10,10,12,8,10,12,12,8);
+         $pdf->setColumnsSize(8,8,12,10,10,12,8,10,12,12);
          $pdf->displayTitle('<b><i>'._n('Version', 'Versions', 2), __('Name'), __('Serial number'),
                             __('Inventory number'), __('Location'), __('Status'), __('Group'),
                             __('User'), _n('License', 'Licenses', 2),
-                            __('Installation date').'</i></b>');
+                            __('Type').'</i></b>');
 
-         foreach ($result as $data) {
-            $itemname = $data['compname'];
+         foreach ($iterator as $data) {
+            $itemname = $data['itemname'];
             if (empty($itemname) || $_SESSION['glpiis_ids_visible']) {
-               $itemname = sprintf(__('%1$s (%2$s)'), $itemname, $data['cID']);
+               $itemname = sprintf(__('%1$s (%2$s)'), $itemname, $data['iID']);
             }
-            $lics = Item_SoftwareLicense::GetLicenseForInstallation($item->getType(),
-                                                                    $data['cID'], $data['vID']);
+            $lics = Item_SoftwareLicense::GetLicenseForInstallation($data['item_type'],
+                                                                    $data['iID'], $data['vID']);
 
             $tmp = [];
             if (count($lics)) {
@@ -159,11 +214,10 @@ class PluginPdfItem_SoftwareVersion extends PluginPdfCommon {
                }
             }
             $linkUser = User::canView();
-            $pdf->displayLine($data['version'], $itemname,$data['serial'], $data['otherserial'],
+            $pdf->displayLine($data['version'], $data['item_type'], $itemname,$data['serial'], $data['otherserial'],
                               $data['location'], $data['state'], $data['groupe'],
                               formatUserName($data['userid'], $data['username'], $data['userrealname'],
-                                             $data['userfirstname'], $linkUser), implode(', ', $tmp),
-                              Html::convDate($data['date_install']));
+                                             $data['userfirstname'], $linkUser), implode(', ', $tmp));
          }
       }
       $pdf->displaySpace();
