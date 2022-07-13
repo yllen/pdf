@@ -62,7 +62,6 @@ class PluginPdfContract_Item extends PluginPdfCommon {
       $result = $DB->request($query);
       $number = count($result);
 
-
       $pdf->setColumnsSize(100);
       $title = '<b>'._n('Associated contract', 'Associated contracts', $number).'</b>';
       if (!$number) {

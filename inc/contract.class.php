@@ -170,8 +170,8 @@ class PluginPdfContract extends PluginPdfCommon {
             $pdf->displayLine($data['name'],
                               Html::convDate($data['begin_date']),
                               Html::convDate($data['end_date']),
-                              Html::Clean(Dropdown::getDropdownName('glpi_budgets',
-                                                                    $data['budgets_id'])),
+                              Toolbox::stripTags(Dropdown::getDropdownName('glpi_budgets',
+                                                                           $data['budgets_id'])),
                               PluginPdfConfig::formatNumber($data['cost']));
             $total += $data['cost'];
          }

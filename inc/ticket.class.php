@@ -489,6 +489,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             break;
 
          case 'Ticket$main' : // 0.90+
+            self::pdfMain($pdf, $item);
             PluginPdfItilFollowup::pdfForItem($pdf, $item, $private);
             PluginPdfTicketTask::pdfForTicket($pdf, $item, $private);
             if (Session::haveRight('document', READ)) {
@@ -525,6 +526,10 @@ class PluginPdfTicket extends PluginPdfCommon {
             if (Change::canView()) {
                PluginPdfChange_Ticket::pdfForTicket($pdf, $item);
             }
+            break;
+
+         case 'Ticket_Contract$1' :
+            PluginPdfTicket_Contract::pdfForTicket($pdf, $item);
             break;
 
          default :

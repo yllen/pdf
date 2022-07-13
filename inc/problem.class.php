@@ -543,6 +543,16 @@ class PluginPdfProblem extends PluginPdfCommon {
             // nothing to export, just a flag
             break;
 
+         case 'Problem$main' :
+            self::pdfMain($pdf, $item);
+            PluginPdfItilFollowup::pdfForItem($pdf, $item, $private);
+            PluginPdfProblemTask::pdfForProblem($pdf, $item, $private);
+            if (Session::haveRight('document', READ)) {
+               PluginPdfDocument::pdfForItem($pdf, $item);
+            }
+            PluginPdfITILSolution::pdfForItem($pdf, $item);
+            break;
+
          case 'Problem$1' :
             self::pdfAnalysis($pdf, $item);
             break;

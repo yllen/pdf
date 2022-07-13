@@ -51,6 +51,7 @@ class PluginPdfComputer extends PluginPdfCommon {
       unset($onglets['Item_RemoteManagement$1']);
       unset($onglets['DatabaseInstance$1']);
       unset($onglets['RuleMatchedLog$1']);
+      unset($onglets['Glpi\Socket$1']);
       return $onglets;
    }
 
