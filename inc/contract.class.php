@@ -56,16 +56,16 @@ class PluginPdfContract extends PluginPdfCommon {
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Name').'</i></b>', $contract->fields['name']),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Contract type').'</i></b>',
-                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_contracttypes',
-                                                                       $contract->fields['contracttypes_id']))));
-
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), _x('phone', 'Number').'</i></b>',
-                          $contract->fields['num']),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Status').'</i></b>',
                           Toolbox::stripTags(Dropdown::getDropdownName('glpi_states',
                                                                        $contract->fields['states_id']))));
+
+      $pdf->displayLine(
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Contract type').'</i></b>',
+                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_contracttypes',
+                                                                       $contract->fields['contracttypes_id']))),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), _x('phone', 'Number').'</i></b>',
+                          $contract->fields['num']));
 
       $textduration = "";
       if (!empty($contract->fields["begin_date"])) {
