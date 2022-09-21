@@ -347,8 +347,7 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $content = Toolbox::unclean_cross_side_scripting_deep(Html::entity_decode_deep( $job->fields['content']));
 
-      preg_match_all('/<img [^>]*src="([^"]*docid=([0-9]*))"[^>]*>/', $content, $res, PREG_SET_ORDER);
-
+      preg_match_all('/<img [^>]*src="([^"]*docid=([0-9]*)(|&tickets_id=[0-9]*))"[^>]*>/', $content, $res, PREG_SET_ORDER);
       foreach ($res as $img) {
          $docimg = new Document();
          $docimg->getFromDB($img[2]);
