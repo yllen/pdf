@@ -64,6 +64,7 @@ function plugin_init_pdf() {
 
 
       // Define the type for which we know how to generate PDF :
+      $PLUGIN_HOOKS['plugin_pdf']['Appliance']        = 'PluginPdfAppliance';
       $PLUGIN_HOOKS['plugin_pdf']['CartridgeItem']    = 'PluginPdfCartridgeItem';
       $PLUGIN_HOOKS['plugin_pdf']['ConsumableItem']   = 'PluginPdfConsumableItem';
       $PLUGIN_HOOKS['plugin_pdf']['Change']           = 'PluginPdfChange';
@@ -84,6 +85,7 @@ function plugin_init_pdf() {
       $PLUGIN_HOOKS['plugin_pdf']['User']             = 'PluginPdfUser';
 
 
+
       // End init, when all types are registered by all plugins
       $PLUGIN_HOOKS['post_init']['pdf'] = 'plugin_pdf_postinit';
 
@@ -95,7 +97,7 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return ['name'           => __('Print to pdf', 'pdf'),
-           'version'        => '2.1.0',
+           'version'        => '2.2.0',
            'author'         => 'Remi Collet, Nelly Mahu-Lasson',
            'license'        => 'GPLv3+',
            'homepage'       => 'https://forge.glpi-project.org/projects/pdf',
