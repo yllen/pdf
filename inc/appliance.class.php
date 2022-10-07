@@ -140,15 +140,6 @@ class PluginPdfAppliance extends PluginPdfCommon {
                     Toolbox::stripTags(Dropdown::getDropdownName('glpi_applianceenvironments',
                                             $item->fields['applianceenvironments_id']))));
 
-
-
-
-    //  $pdf->displayLine(
-  //          sprintf(__('%1$s: %2$s'), '<b><i>'.__('Associable to a ticket').'</i></b>',
-  //                  Dropdown::getYesNo($item->fields['is_helpdesk_visible'])));
-   //         sprintf(__('%1$s: %2$s'),'<b><i>'.__('Item to link').'</i></b>',
-     //               Toolbox::stripTags(PluginAppliancesRelation::getTypeName($item->fields['relationtype']))));
-
       $pdf->displayText(
             sprintf(__('%1$s: %2$s'), '<b><i>'.__('Comments').'</i></b>', $item->fields['comment']));
 
@@ -158,15 +149,8 @@ class PluginPdfAppliance extends PluginPdfCommon {
 
    static function pdfForAppliance(PluginPdfSimplePDF $pdf, Appliance $appli) {
       global $DB;
-toolbox::logdebug("dans pdfforappliance");
-      $instID = $appli->fields['id'];
 
- //     if (!$appli->can($instID, READ)) {
-//         return false;
-  //    }
- ////     if (!Session::haveRight("plugin_appliances", READ)) {
- //        return false;
-  //    }
+      $instID = $appli->fields['id'];
 
       $pdf->setColumnsSize(100);
       $pdf->displayTitle('<b>'._n('Associated item', 'Associated items',2).'</b>');
@@ -262,13 +246,12 @@ toolbox::logdebug("dans pdfforappliance");
                         if (!empty($data['IDD'])) {
                         self::showList_relation($pdf, $data["IDD"]);
                         }
-            //            PluginAppliancesOptvalue_Item::showList_PDF($pdf, $data["id"], $instID);
-                     } // Each device
-                  } // numrows device
+                     }
+                  }
                }
-            } // type right
-         } // each type
-      } // numrows type
+            }
+         }
+      }
       $pdf->displaySpace();
    }
 
@@ -292,15 +275,7 @@ toolbox::logdebug("dans pdfforappliance");
       $field    = 'name AS dispname';
       if ($item == 'Location') {
          $field = 'completename AS dispname';
-
       }
-
-      // selects all the attached relations
- //     $tablename = PluginAppliancesRelatioable($relationtype);
- //     $title     = PluginAppliancesRelation::getTypeName($relationtype);
-
-   //   $field    = 'name AS dispname';
-
 
       $sql_loc = ['SELECT'    => ['glpi_appliances_items_relations.*', $field],
                   'FROM'      => $tablename,
