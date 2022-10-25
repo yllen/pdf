@@ -97,10 +97,10 @@ function plugin_init_pdf() {
 function plugin_version_pdf() {
 
    return ['name'           => __('Print to pdf', 'pdf'),
-           'version'        => '2.2.0',
+           'version'        => '2.1.0',
            'author'         => 'Remi Collet, Nelly Mahu-Lasson',
            'license'        => 'GPLv3+',
-           'homepage'       => 'https://forge.glpi-project.org/projects/pdf',
+           'homepage'       => 'https://github.com/yllen/pdf',
            'minGlpiVersion' => '10.0.0',
            'requirements'   => ['glpi' => ['min' => '10.0.0',
                                            'max' => '10.1.0']]];
