@@ -118,14 +118,14 @@ class PluginPdfItem_Ticket extends PluginPdfCommon {
                      $pdf->displayLine(Toolbox::stripTags(sprintf(__('%1$s: %2$s'), $typename, $nb)),
                                        Toolbox::stripTags($name),
                                        Dropdown::getDropdownName("glpi_entities", $data['entity']),
-                                       Toolbox::stripTags($data["serial"]),
-                                       Toolbox::stripTags($data["otherserial"]),$nb);
+                                       isset($data["serial"])?Toolbox::stripTags($data["serial"]):'',
+                                       isset($data["otherserial"])?Toolbox::stripTags($data["otherserial"]):'',$nb);
                   } else {
                      $pdf->displayLine('',
                                        Toolbox::stripTags($name),
                                        Dropdown::getDropdownName("glpi_entities", $data['entity']),
-                                       Toolbox::stripTags($data["serial"]),
-                                       Toolbox::stripTags($data["otherserial"]),$nb);
+                                       isset($data["serial"])?Toolbox::stripTags($data["serial"]):'',
+                                       isset($data["otherserial"])?Toolbox::stripTags($data["otherserial"]):'',$nb);
                   }
                   $prem = false;
                }
