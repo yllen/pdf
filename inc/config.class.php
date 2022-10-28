@@ -82,6 +82,7 @@ class PluginPdfConfig extends CommonDBTM {
          $query = "CREATE TABLE `". $table."`(
                      `id` int $default_key_sign NOT NULL,
                      `currency`  VARCHAR(15) NULL,
+                     `add_text`  VARCHAR(255) NULL,
                      `date_mod` timestamp NULL DEFAULT NULL,
                      PRIMARY KEY  (`id`)
                    ) ENGINE=InnoDB  DEFAULT CHARSET= {$default_charset}
@@ -98,6 +99,10 @@ class PluginPdfConfig extends CommonDBTM {
          // 2.1.0
          if ($DB->fieldExists($table,'date_mod')) {
             $mig->changeField($table, 'date_mod', 'date_mod', 'timestamp');
+         }
+         //3.0.0
+         if (!$DB->fieldExists($table,'add_text')) {
+            $mig->addField($table, 'add_text', 'char(255) DEFAULT NULL', ['after' => 'currency']);
          }
       }
 
@@ -125,6 +130,15 @@ class PluginPdfConfig extends CommonDBTM {
       Dropdown::showFromArray("currency", $options,
                               ['value' => $config->fields['currency']]);
       echo "</td></tr>\n";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>".__("Text to add at the end of the PDF generation", "pdf")."</td>";
+      echo "<td rowspan='5' class='middle' colspan='3'>";
+      Html::textarea(['name'            => 'add_text',
+                      'value'           => $config->fields["add_text"],
+                      'rows'            => '5',
+                      'style'           => 'width:95%']);
+      echo "</textarea>";
 
       $config->showFormButtons(['candel'=>false]);
 

@@ -410,6 +410,11 @@ abstract class PluginPdfCommon extends CommonGLPI {
             }
          }
       }
+      $config = PluginPdfConfig::getInstance();
+      if (!empty($config->getField('add_text'))) {
+         $this->pdf->displayText('<b><i>'.$config->getField('add_text').'</i></b>', '', 5);
+      }
+
       if($render) {
          $this->pdf->render();
       } else {
