@@ -55,7 +55,7 @@ function plugin_pdf_MassiveActions($type) {
 function plugin_pdf_install() {
    global $DB;
 
-   $migration = new Migration('2.1.0');
+   $migration = new Migration('3.0.0');
 
    include_once(Plugin::getPhpDir('pdf')."/inc/profile.class.php");
    PluginPdfProfile::install($migration);
@@ -75,7 +75,7 @@ function plugin_pdf_install() {
 function plugin_pdf_uninstall() {
    global $DB;
 
-   $migration = new Migration('2.1.0');
+   $migration = new Migration('3.0.0');
 
    include_once(Plugin::getPhpDir('pdf')."/inc/config.class.php");
    PluginPdfConfig::uninstall($migration);
