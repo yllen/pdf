@@ -366,6 +366,8 @@ class PluginPdfChange extends PluginPdfCommon {
                PluginPdfDocument::pdfForItem($pdf, $item);
             }
             PluginPdfITILSolution::pdfForItem($pdf, $item);
+            self::pdfPlan($pdf, $item);
+            self::pdfAnalysis($pdf, $item);
             break;
 
          case 'Change$1' :
