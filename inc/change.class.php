@@ -335,8 +335,14 @@ class PluginPdfChange extends PluginPdfCommon {
    function defineAllTabsPDF($options=[]) {
 
       $onglets = parent::defineAllTabsPDF($options);
+
+      $tmpmain = ['Change$main' => $onglets['Change$main']];
+      unset($onglets['Change$main']);
+
       unset($onglets['Itil_Project$1']);
       unset($onglets['Impact$1']);
+
+      $onglets = $tmpmain+$onglets;
 
       if (Session::haveRight('change', Change::READALL) // for technician
             || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)
