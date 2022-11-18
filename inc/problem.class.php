@@ -521,8 +521,14 @@ class PluginPdfProblem extends PluginPdfCommon {
    function defineAllTabsPDF($options=[]) {
 
       $onglets = parent::defineAllTabsPDF($options);
+
+      $tmpmain = ['Problem$main' => $onglets['Problem$main']];
+      unset($onglets['Problem$main']);
+
       unset($onglets['Itil_Project$1']);
       unset($onglets['Impact$1']);
+
+      $onglets = $tmpmain+$onglets;
 
       if (Session::haveRight('problem', Problem::READALL) // for technician
           || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)) {
