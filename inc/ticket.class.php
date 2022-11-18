@@ -457,8 +457,14 @@ class PluginPdfTicket extends PluginPdfCommon {
    function defineAllTabsPDF($options=[]) {
 
       $onglets = parent::defineAllTabsPDF($options);
+
+      $tmpmain = ['Ticket$main' => $onglets['Ticket$main']];
+      unset($onglets['Ticket$main']);
+      
       unset($onglets['ProjectTask_Ticket$1']);
       unset($onglets['Itil_Project$1']);
+
+      $onglets = $tmpmain+$onglets;
 
       if (Session::haveRight('ticket', Ticket::READALL) // for technician
           || Session::haveRight('followup', ITILFollowup::SEEPRIVATE)
