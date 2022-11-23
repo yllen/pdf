@@ -78,6 +78,9 @@ class PluginPdfDocument extends PluginPdfCommon {
          $pdf->displayTitle(__('Name'), __('Entity'), __('File'), __('Web link'), __('Heading'),
                             __('MIME type'), __('Tag'), __('Date'));
          foreach ($result as $data) {
+            if (empty($data["link"])) {
+                $data["link"] = '';   
+            }             }
             $pdf->displayLine($data["name"], $data['completename'], basename($data["filename"]),
                               $data["link"], Dropdown::getDropdownName("glpi_documentcategories",
                                                                        $data["documentcategories_id"]),
