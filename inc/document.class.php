@@ -80,7 +80,7 @@ class PluginPdfDocument extends PluginPdfCommon {
          foreach ($result as $data) {
             if (empty($data["link"])) {
                 $data["link"] = '';   
-            }             }
+            }            
             $pdf->displayLine($data["name"], $data['completename'], basename($data["filename"]),
                               $data["link"], Dropdown::getDropdownName("glpi_documentcategories",
                                                                        $data["documentcategories_id"]),
