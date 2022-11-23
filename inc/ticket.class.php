@@ -350,7 +350,7 @@ class PluginPdfTicket extends PluginPdfCommon {
 
       $content = preg_replace('#data:image/[^;]+;base64,#', '@', $content);
 
-      preg_match_all('/<img [^>]*src=[\'"]([^\'"]*docid=([0-9]*)(|&tickets_id=[0-9]*))[\'"][^>]*>/', $content, $res, PREG_SET_ORDER);
+      preg_match_all('/<img [^>]*src=[\'"]([^\'"]*docid=([0-9]*))[^>]*>/', $content, $res, PREG_SET_ORDER);
 
       foreach ($res as $img) {
          $docimg = new Document();
