@@ -37,13 +37,17 @@
       <author>Nelly MAHU-LASSON</author>
    </authors>
    <versions>
+	<version>
+          <num>3.0.0</num>
+          <compatibility>~10.0.3</compatibility>
+          <download_url>https://github.com/yllen/pdf/releases/download/v3.0.0/glpi-pdf-3.0.0.tar.gz</download_url>
+   	</version>
        <version>
           <num>2.1.0</num>
           <compatibility>10.0.0</compatibility>
           <download_url>https://github.com/yllen/pdf/releases/download/v2.1.0/glpi-pdf-2.1.0.tar.gz</download_url>
-   </version>
-
-       <version>
+   	</version>
+      <version>
           <num>2.0.0</num>
           <compatibility>9.5.4</compatibility>
       </version>
