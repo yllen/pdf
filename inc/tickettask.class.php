@@ -124,7 +124,7 @@ class PluginPdfTicketTask extends PluginPdfCommon {
                               Toolbox::stripTags($dbu->getUserName($data["users_id"])),
                               $planification);
             $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s')."</i></b>", __('Description'), ''),
-                                               $data["content"], 1);
+                                               '<br />'.$data["content"], 1);
          }
       }
 
