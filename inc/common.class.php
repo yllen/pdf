@@ -519,7 +519,6 @@ abstract class PluginPdfCommon extends CommonGLPI {
 
       switch ($ma->getAction()) {
          case 'DoIt':
-            $cont = $ma->POST['container'];
             $opt = ['id' => 'pdfmassubmit'];
             echo Html::submit(_sx('button', 'Post'), $opt);
             return true;
@@ -543,8 +542,9 @@ abstract class PluginPdfCommon extends CommonGLPI {
              }
              $_SESSION["plugin_pdf"]["type"]   = $item->getType();
              $_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
+             $webDir = Plugin::getWebDir('pdf');
              echo "<script type='text/javascript'>
-                      location.href='../plugins/pdf/front/export.massive.php'</script>";
+                      location.href='$webDir/front/export.massive.php'</script>";
              break;
       }
    }
