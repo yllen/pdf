@@ -68,12 +68,8 @@ class PluginPdfNetworkEquipment extends PluginPdfCommon {
 
 
 
-      $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',
-                          $dbu->getUserName($item->fields['users_id'])),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',
-                          Toolbox::stripTags(Dropdown::getDropdownName('glpi_networks',
-                                                                       $item->fields['networks_id']))));
+      $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('User').'</i></b>',$dbu->getUserName($item->fields['users_id'])),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Network').'</i></b>',Toolbox::stripTags(Dropdown::getDropdownName('glpi_networks',$item->fields['networks_id']))));
 
       $pdf->displayLine(
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Group').'</i></b>',

@@ -57,6 +57,15 @@ foreach ($result as $data) {
       $tab[] = $type.'$main';
    }
 
+   $plugin = new Plugin();
+	if ($plugin->isActivated("fields")) {
+      $iterator = PluginPdfCustomfield::getTabsFromFields($type);
+
+      foreach ($iterator as $row) {
+         $tab[] = 'PluginFieldsContainer$'.$row['name'];
+      }
+   }
+
 if (isset($PLUGIN_HOOKS['plugin_pdf'][$type])) {
 
    $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$type]($item);

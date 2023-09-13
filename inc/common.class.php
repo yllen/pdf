@@ -29,6 +29,10 @@
  --------------------------------------------------------------------------
 */
 
+use PluginFieldsContainer;
+use PluginFieldsDropdown;
+use PluginFieldsField;
+
 abstract class PluginPdfCommon extends CommonGLPI {
 
    protected $obj= NULL;
@@ -81,6 +85,28 @@ abstract class PluginPdfCommon extends CommonGLPI {
       }
    }
 
+   /**
+    * Add PluginFields tabs
+    *
+    * @param $onglets       array defined tab array
+    *
+    * @return nothing (set the tab array)
+   **/
+   final function addFieldsTabs(&$onglets) {
+      global $DB;
+
+      $plugin = new Plugin();
+
+		if ($plugin->isActivated("fields")) {
+         $iterator = PluginPdfCustomfield::getTabsFromFields($this->obj->getType());
+
+         foreach ($iterator as $row) {
+            //Tabs are known as containers
+            $onglets['PluginFieldsContainer$'.$row['name']] = $row['label'];
+         }
+      }
+   }
+
 
    /**
     * Get the list of the printable tab for the object
@@ -89,12 +115,16 @@ abstract class PluginPdfCommon extends CommonGLPI {
     * @param $options Array of options
    **/
    function defineAllTabsPDF($options=[]) {
-
+      global $DB;
       $onglets  = $this->obj->defineTabs();
 
       $othertabs = CommonGLPI::getOtherTabs($this->obj->getType());
 
       unset($onglets['empty']);
+
+      $optgroup = [];
+
+      $this->addFieldsTabs($onglets);
 
       // Add plugins TAB
       foreach($othertabs as $typetab) {
@@ -258,6 +288,9 @@ abstract class PluginPdfCommon extends CommonGLPI {
             break;
 
          default :
+            if (strstr($tab,'PluginFieldsContainer')){
+               return PluginPdfCustomfield::renderCustomFields($pdf, $item, $tab);
+            }
             return false;
       }
       return true;
@@ -519,7 +552,6 @@ abstract class PluginPdfCommon extends CommonGLPI {
 
       switch ($ma->getAction()) {
          case 'DoIt':
-            $cont = $ma->POST['container'];
             $opt = ['id' => 'pdfmassubmit'];
             echo Html::submit(_sx('button', 'Post'), $opt);
             return true;
@@ -543,8 +575,9 @@ abstract class PluginPdfCommon extends CommonGLPI {
              }
              $_SESSION["plugin_pdf"]["type"]   = $item->getType();
              $_SESSION["plugin_pdf"]["tab_id"] = serialize($tab_id);
+             $webDir = Plugin::getWebDir('pdf');
              echo "<script type='text/javascript'>
-                      location.href='../plugins/pdf/front/export.massive.php'</script>";
+                     location.href='$webDir/front/export.massive.php'</script>";
              break;
       }
    }
