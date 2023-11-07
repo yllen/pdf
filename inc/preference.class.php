@@ -254,7 +254,4 @@ class PluginPdfPreference extends CommonDBTM {
       }
    }
 
-   static function uninstall(Migration $mig) {
-      $mig->dropTable('glpi_plugin_pdf_preferences');
-   }
 }

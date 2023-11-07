@@ -109,11 +109,6 @@ class PluginPdfConfig extends CommonDBTM {
    }
 
 
-   static function uninstall(Migration $mig) {
-      $mig->dropTable('glpi_plugin_pdf_configs');
-   }
-
-
    static function showConfigForm($item) {
       global $PDF_DEVICES;
 

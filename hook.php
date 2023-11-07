@@ -76,11 +76,13 @@ function plugin_pdf_uninstall() {
    global $DB;
 
    $migration = new Migration('3.0.0');
-
-   include_once(Plugin::getPhpDir('pdf')."/inc/config.class.php");
-   PluginPdfConfig::uninstall($migration);
-
-   include_once(Plugin::getPhpDir('pdf')."/inc/preferences.class.php");
+   
+   $tables = ['glpi_plugin_pdf_configs',
+              'glpi_plugin_pdf_preferences'];
+   
+   foreach($tables as $table) {
+       $migration->dropTable($table);
+   }
 
    //Delete rights associated with the plugin
    $query = "DELETE
