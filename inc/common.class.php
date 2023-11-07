@@ -32,6 +32,7 @@
 abstract class PluginPdfCommon extends CommonGLPI {
 
    protected $obj= NULL;
+   protected $pdf= NULL;
 
    static $rightname = "plugin_pdf";
 

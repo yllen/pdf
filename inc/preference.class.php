@@ -90,7 +90,7 @@ class PluginPdfPreference extends CommonDBTM {
       $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$type]($item);
       $options = $itempdf->defineAllTabsPDF();
 
-      $formid="plugin_pdf_${type}_".mt_rand();
+      $formid="plugin_pdf_{$type}_".mt_rand();
       echo "<form name='".$formid."' id='".$formid."' action='$action' method='post' ".
              ($ID ? "target='_blank'" : "")."><table class='tab_cadre_fixe'>";
 
