@@ -113,10 +113,13 @@ class PluginPdfInfocom extends PluginPdfCommon {
 
          $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Account net value')."</i></b>",
-                             Infocom::Amort($ic->fields["sink_type"], $ic->fields["value"],
-                                            $ic->fields["sink_time"], $ic->fields["sink_coeff"],
-                                            $ic->fields["warranty_date"], $ic->fields["use_date"],
-                                            $CFG_GLPI['date_tax'],"n")),
+                             PluginPdfConfig::formatNumber(Infocom::Amort($ic->fields["sink_type"], 
+                                                                          $ic->fields["value"],
+                                                                          $ic->fields["sink_time"], 
+                                                                          $ic->fields["sink_coeff"],
+                                                                          $ic->fields["warranty_date"], 
+                                                                          $ic->fields["use_date"],
+                                                                          $CFG_GLPI['date_tax'],"n"))),
                "<b><i>".sprintf(__('%1$s: %2$s'), __('Amortization duration')."</i></b>",
                      sprintf(__('%1$s (%2$s)'),
                            sprintf(_n('%d year', '%d years', $ic->fields["sink_time"]),
