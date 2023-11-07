@@ -339,7 +339,7 @@ class PluginPdfSimplePDF {
     * @param $name      string   display on the left, before text
     * @param $content   string   of text display on right (multi-line)
     * @param $minline   integer  for minimum box size (default 3)
-    * @param $maxline   interger for maximum box size (1 page = 80 lines) (default 100) (ignored)
+    * @param $maxline   integer for maximum box size (1 page = 80 lines) (default 100) (ignored)
    **/
    public function displayText($name, $content='', $minline=3, $maxline=100) {
 
