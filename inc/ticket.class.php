@@ -345,7 +345,7 @@ class PluginPdfTicket extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       $pdf->displayLine(
             "<b><i>".sprintf(__('%1$s: %2$s'), __('Title')."</i></b>", $job->fields["name"]));
-
+      $content = Glpi\RichText\RichText::getTextFromHtml($job->fields['content']);
       $content = Glpi\Toolbox\Sanitizer::unsanitize(Html::entity_decode_deep( $job->fields['content']));
 
       $content = preg_replace('#data:image/[^;]+;base64,#', '@', $content);
@@ -459,6 +459,7 @@ class PluginPdfTicket extends PluginPdfCommon {
 
 
    function defineAllTabsPDF($options=[]) {
+       global $PLUGIN_HOOKS;
 
       $onglets = parent::defineAllTabsPDF($options);
       unset($onglets['ProjectTask_Ticket$1']);
@@ -474,14 +475,34 @@ class PluginPdfTicket extends PluginPdfCommon {
          $onglets['_inforequester_'] = __('Requester information', 'pdf');
       }
 
+       $tabname = "Tab_".$this->obj->getTypeName();
+       if (isset($PLUGIN_HOOKS['plugin_pdf'][$tabname])) {
+           $plugin = $PLUGIN_HOOKS['plugin_pdf'][$tabname];
+           if (isset($PLUGIN_HOOKS['plugin_pdf'][$tabname])
+               && class_exists($PLUGIN_HOOKS['plugin_pdf'][$tabname])) {
+               $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$tabname]($this);
+               $name =  $itempdf::getTypeName();
+               $onglets[$plugin] = $name;
+           }
+       }
+
       return $onglets;
    }
 
 
    static function displayTabContentForPDF(PluginPdfSimplePDF $pdf, CommonGLPI $item, $tab) {
+       global $PLUGIN_HOOKS;
 
       $private = isset($_REQUEST['item']['_private_']);
-
+       $tabname = "Tab_".$item->getTypeName();
+       if (isset($PLUGIN_HOOKS['plugin_pdf'][$tabname])) {
+           if (isset($PLUGIN_HOOKS['plugin_pdf'][$tabname])
+               && class_exists($PLUGIN_HOOKS['plugin_pdf'][$tabname])
+               && $tab == $PLUGIN_HOOKS['plugin_pdf'][$tabname]) {
+               $itempdf = new $PLUGIN_HOOKS['plugin_pdf'][$tabname]($item);
+               return $itempdf::pdfForTicket($pdf, $item);
+           }
+       }
       switch ($tab) {
          case '_private_' :
             // nothing to export, just a flag
@@ -534,7 +555,7 @@ class PluginPdfTicket extends PluginPdfCommon {
             PluginPdfTicket_Contract::pdfForTicket($pdf, $item);
             break;
 
-         default :
+         case 'default' :
             return false;
       }
       return true;
