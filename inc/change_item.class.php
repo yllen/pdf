@@ -119,13 +119,13 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                                        Toolbox::stripTags($name),
                                        Dropdown::getDropdownName("glpi_entities", $data['entity']),
                                        Toolbox::stripTags($data["serial"]),
-                                       Toolbox::stripTags($data["otherserial"]),$nb);
+                                       Toolbox::stripTags((string)$data["otherserial"]),$nb);
                   } else {
                      $pdf->displayLine('',
                                        Toolbox::stripTags($name),
                                        Dropdown::getDropdownName("glpi_entities", $data['entity']),
                                        Toolbox::stripTags($data["serial"]),
-                                       Toolbox::stripTags($data["otherserial"]),$nb);
+                                       Toolbox::stripTags((string)$data["otherserial"]),$nb);
                   }
                   $prem = false;
                }
