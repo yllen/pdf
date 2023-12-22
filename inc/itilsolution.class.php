@@ -77,16 +77,16 @@ class PluginPdfITILSolution extends PluginPdfCommon {
             } else {
                $text = $textapprove = '';
             }
-            if (isset($row['date_approval']) || isset($row["users_id_approval"])) {
+            if (isset($row['date_approval']) || !empty($row["users_id_approval"])) {
                $textapprove = "<br /><br /><br /><i>".
                                sprintf(__('%1$s %2$s'), $text,
                                        Html::convDateTime($row['date_approval']))."&nbsp;".
                                sprintf(__('%1$s %2$s'), __('By'),
                                        Toolbox::stripTags($dbu->getUserName($row["users_id_approval"])))
                                ."</i>";
-               $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol.
-                                 $textapprove);
             }
+            $pdf->displayText("<b><i>".sprintf(__('%1$s: %2$s'), $title."</i></b>", ''), $sol.
+                              $textapprove);
          }
       }
 
