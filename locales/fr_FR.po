@@ -4,724 +4,22 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2020
+# Stanislas <skita@teclib.com>, 2024
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-18 16:13+0200\n"
-"PO-Revision-Date: 2017-01-09 15:25+0000\n"
-"Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2020\n"
-"Language-Team: French (France) (https://www.transifex.com/yllen/teams/7201/fr_FR/)\n"
+"POT-Creation-Date: 2024-12-19 15:15+0100\n"
+"PO-Revision-Date: 2024-12-20 09:24+0000\n"
+"Last-Translator: Stanislas <skita@teclib.com>, 2024\n"
+"Language-Team: French (France) (https://app.transifex.com/teclib/teams/203052/fr_FR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
-
-#: hook.php:48 setup.php:97 inc/common.class.php:125 inc/config.class.php:55
-#: inc/preference.class.php:181 inc/profile.class.php:43
-#: inc/profile.class.php:72 inc/profile.class.php:76 inc/profile.class.php:96
-#: inc/profile.class.php:150
-msgid "Print to pdf"
-msgstr "Impression pdf"
-
-#: inc/cartridgeitem.class.php:130
-msgid "No printel model associated"
-msgstr "Aucun modèle d'imprimante associé"
-
-#: inc/changevalidation.class.php:50
-msgid "Approvals for the change"
-msgstr "Validations pour ce changement"
-
-#: inc/computer_item.class.php:126
-msgid "No printer"
-msgstr "Pas d'imprimante"
-
-#: inc/computer_item.class.php:130
-msgid "No monitor"
-msgstr "Pas d'écran"
-
-#: inc/computer_item.class.php:134
-msgid "No peripheral"
-msgstr "Pas de périphérique"
-
-#: inc/computer_item.class.php:138
-msgid "No phone"
-msgstr "Pas de téléphone"
-
-#: inc/computer_softwareversion.class.php:344
-#: inc/item_softwareversion.class.php:406
-msgid "Affected licenses of not installed software"
-msgstr "Licences associées à un logiciel non installé"
-
-#: inc/config.class.php:121
-msgid "Choose your international currency"
-msgstr "Choisir votre devise internationale"
-
-#: inc/config.class.php:156
-msgid "UAE Dirham"
-msgstr "dirham des Émirats arabes unis"
-
-#: inc/config.class.php:157
-msgid "Afghani"
-msgstr "afghani"
-
-#: inc/config.class.php:158
-msgid "Lek"
-msgstr "lek albanais"
-
-#: inc/config.class.php:159
-msgid "Armenian Dram"
-msgstr "dram"
-
-#: inc/config.class.php:160
-msgid "Kwanza"
-msgstr "kwanza"
-
-#: inc/config.class.php:161
-msgid "Argentine Peso"
-msgstr "peso argentin"
-
-#: inc/config.class.php:162
-msgid "Australian Dollar"
-msgstr "dollar australien"
-
-#: inc/config.class.php:163
-msgid "Aruban Guilder/Florin"
-msgstr "Florin arubais"
-
-#: inc/config.class.php:164
-msgid "Azerbaijanian Manat"
-msgstr "manat azerbaïdjanais"
-
-#: inc/config.class.php:165
-msgid "Konvertibilna Marka"
-msgstr "mark convertible"
-
-#: inc/config.class.php:166
-msgid "Barbados Dollar"
-msgstr "dollar barbadien"
-
-#: inc/config.class.php:167
-msgid "Taka"
-msgstr "taka"
-
-#: inc/config.class.php:168
-msgid "Bulgarian Lev"
-msgstr "lev bulgare"
-
-#: inc/config.class.php:169
-msgid "Bahraini Dinar"
-msgstr "dinar de Bahreïn"
-
-#: inc/config.class.php:170
-msgid "Burundi Franc"
-msgstr "franc burundais"
-
-#: inc/config.class.php:171
-msgid "Bermudian Dollar"
-msgstr "dollar des Bermudes"
-
-#: inc/config.class.php:172
-msgid "Brunei Dollar"
-msgstr "dollar de Brunei"
-
-#: inc/config.class.php:173
-msgid "Boliviano"
-msgstr "boliviano bolivien"
-
-#: inc/config.class.php:174
-msgid "Brazilian Real"
-msgstr "réal brésilien"
-
-#: inc/config.class.php:175
-msgid "Bahamian Dollar"
-msgstr "dollar des Bahamas"
-
-#: inc/config.class.php:176
-msgid "Ngultrum"
-msgstr "ngultrum"
-
-#: inc/config.class.php:177
-msgid "Pula"
-msgstr "pula"
-
-#: inc/config.class.php:178
-msgid "Belarussian Ruble"
-msgstr "rouble biélorusse"
-
-#: inc/config.class.php:179
-msgid "Belize Dollar"
-msgstr "dollar de Belize"
-
-#: inc/config.class.php:180
-msgid "Canadian Dollar"
-msgstr "dollar canadien"
-
-#: inc/config.class.php:181
-msgid "Congolese Franc"
-msgstr " franc congolais"
-
-#: inc/config.class.php:182
-msgid "Swiss Franc"
-msgstr "franc suisse"
-
-#: inc/config.class.php:183
-msgid "Chilean Peso"
-msgstr "peso chilien"
-
-#: inc/config.class.php:184
-msgid "Yuan"
-msgstr "yuan renminbi"
-
-#: inc/config.class.php:185
-msgid "Colombian Peso"
-msgstr "peso colombien"
-
-#: inc/config.class.php:186
-msgid "Costa Rican Colon"
-msgstr "colon du Costa Rica"
-
-#: inc/config.class.php:187
-msgid "Cuban Peso"
-msgstr "peso cubain"
-
-#: inc/config.class.php:188
-msgid "Cape Verde Escudo"
-msgstr "escudo du Cap-Vert"
-
-#: inc/config.class.php:189
-msgid "Czech Koruna"
-msgstr "couronne tchèque"
-
-#: inc/config.class.php:190
-msgid "Djibouti Franc"
-msgstr "franc de Djibouti"
-
-#: inc/config.class.php:191
-msgid "Danish Krone"
-msgstr "couronne danoise"
-
-#: inc/config.class.php:192
-msgid "Dominican Peso"
-msgstr "peso dominicain"
-
-#: inc/config.class.php:193
-msgid "Algerian Dinar"
-msgstr "dinar algérien"
-
-#: inc/config.class.php:194
-msgid "Egyptian Pound"
-msgstr "livre égyptienne"
-
-#: inc/config.class.php:195
-msgid "Nakfa"
-msgstr "nakfa"
-
-#: inc/config.class.php:196
-msgid "Ethiopian Birr"
-msgstr " birr"
-
-#: inc/config.class.php:197
-msgid "Euro"
-msgstr "euro"
-
-#: inc/config.class.php:198
-msgid "Fiji Dollar"
-msgstr "dollar de Fidji"
-
-#: inc/config.class.php:199
-msgid "Falkland Islands Pound"
-msgstr "livre des Îles Malouines"
-
-#: inc/config.class.php:200
-msgid "Pound Sterling"
-msgstr "livre sterling"
-
-#: inc/config.class.php:201
-msgid "Lari"
-msgstr " lari"
-
-#: inc/config.class.php:202
-msgid "Cedi"
-msgstr "cedi"
-
-#: inc/config.class.php:203
-msgid "Gibraltar Pound"
-msgstr "livre de Gibraltar"
-
-#: inc/config.class.php:204
-msgid "Dalasi"
-msgstr "dalasi"
-
-#: inc/config.class.php:205
-msgid "Guinea Franc"
-msgstr "franc guinéen"
-
-#: inc/config.class.php:206
-msgid "Quetzal"
-msgstr "quetzal"
-
-#: inc/config.class.php:207
-msgid "Hong Kong Dollar"
-msgstr "dollar de Hong Kong"
-
-#: inc/config.class.php:208
-msgid "Lempira"
-msgstr "lempira"
-
-#: inc/config.class.php:209
-msgid "Croatian Kuna"
-msgstr "kuna croate"
-
-#: inc/config.class.php:210
-msgid "Gourde"
-msgstr "gourde haïtienne"
-
-#: inc/config.class.php:211
-msgid "Forint"
-msgstr "forint hongrois"
-
-#: inc/config.class.php:212
-msgid "Rupiah"
-msgstr " rupiah"
-
-#: inc/config.class.php:213
-msgid "New Israeli Shekel"
-msgstr "Shekel"
-
-#: inc/config.class.php:214
-msgid "Indian Rupee"
-msgstr " roupie indienne"
-
-#: inc/config.class.php:215
-msgid "Iraqi Dinar"
-msgstr " dinar irakien"
-
-#: inc/config.class.php:216
-msgid "Iranian Rial"
-msgstr " rial iranien"
-
-#: inc/config.class.php:217
-msgid "Iceland Krona"
-msgstr "couronne islandaise"
-
-#: inc/config.class.php:218
-msgid "Jamaican Dollar"
-msgstr " dollar jamaïcain"
-
-#: inc/config.class.php:219
-msgid "Jordanian Dinar"
-msgstr "dinar jordanien"
-
-#: inc/config.class.php:220
-msgid "Yen"
-msgstr "yen"
-
-#: inc/config.class.php:221
-msgid "Kenyan Shilling"
-msgstr " shilling kényan"
-
-#: inc/config.class.php:222
-msgid "Som"
-msgstr "som"
-
-#: inc/config.class.php:223
-msgid "Riel"
-msgstr " riel"
-
-#: inc/config.class.php:224
-msgid "North Korean Won"
-msgstr "won nord-coréen"
-
-#: inc/config.class.php:225
-msgid "South Korean Won"
-msgstr "won sud-coréen"
-
-#: inc/config.class.php:226
-msgid "Kuwaiti Dinar"
-msgstr "dinar koweïtien"
-
-#: inc/config.class.php:227
-msgid "Cayman Islands Dollar"
-msgstr "dollar des îles Caïmans"
-
-#: inc/config.class.php:228
-msgid "Tenge"
-msgstr "tenge"
-
-#: inc/config.class.php:229
-msgid "Kip"
-msgstr " kip"
-
-#: inc/config.class.php:230
-msgid "Lebanese Pound"
-msgstr "livre libanaise"
-
-#: inc/config.class.php:231
-msgid "Sri Lanka Rupee"
-msgstr "roupie srilankaise"
-
-#: inc/config.class.php:232
-msgid "Liberian Dollar"
-msgstr "dollar libérien"
-
-#: inc/config.class.php:233
-msgid "Loti"
-msgstr " loti"
-
-#: inc/config.class.php:234
-msgid "Libyan Dinar"
-msgstr "dinar libyen"
-
-#: inc/config.class.php:235
-msgid "Moroccan Dirham"
-msgstr "dirham marocain"
-
-#: inc/config.class.php:236
-msgid "Moldavian Leu"
-msgstr "leu moldave"
-
-#: inc/config.class.php:237
-msgid "Malagasy Ariary"
-msgstr "ariary"
-
-#: inc/config.class.php:238
-msgid "Denar"
-msgstr "denar"
-
-#: inc/config.class.php:239
-msgid "Kyat"
-msgstr " kyat"
-
-#: inc/config.class.php:240
-msgid "Tugrik"
-msgstr "tugrik"
-
-#: inc/config.class.php:241
-msgid "Pataca"
-msgstr "pataca"
-
-#: inc/config.class.php:242
-msgid "Ouguiya"
-msgstr "Ouguiya"
-
-#: inc/config.class.php:243
-msgid "Mauritius Rupee"
-msgstr "roupie mauricienne"
-
-#: inc/config.class.php:244
-msgid "Rufiyaa"
-msgstr "rufiyaa"
-
-#: inc/config.class.php:245
-msgid "Kwacha"
-msgstr " kwacha malawien"
-
-#: inc/config.class.php:246
-msgid "Mexican Peso"
-msgstr "Peso mexicain"
-
-#: inc/config.class.php:247
-msgid "Malaysian Ringgit"
-msgstr "ringgit"
-
-#: inc/config.class.php:248
-msgid "Metical"
-msgstr " metical"
-
-#: inc/config.class.php:249
-msgid "Namibia Dollar"
-msgstr "dollar namibien"
-
-#: inc/config.class.php:250
-msgid "Naira"
-msgstr "naira"
-
-#: inc/config.class.php:251
-msgid "Cordoba Oro"
-msgstr "córdoba oro"
-
-#: inc/config.class.php:252
-msgid "Norwegian Krone"
-msgstr "couronne norvégienne"
-
-#: inc/config.class.php:253
-msgid "Nepalese Rupee"
-msgstr "roupie népalaise"
-
-#: inc/config.class.php:254
-msgid "New Zealand Dollar"
-msgstr "dollar néo-zélandais"
-
-#: inc/config.class.php:255
-msgid "Rial Omani"
-msgstr "rial omanais"
-
-#: inc/config.class.php:256
-msgid "Balboa"
-msgstr " balboa"
-
-#: inc/config.class.php:257
-msgid "Nuevo Sol"
-msgstr " nuevo sol péruvien"
-
-#: inc/config.class.php:258
-msgid "Kina"
-msgstr "kina"
-
-#: inc/config.class.php:259
-msgid "Philippine Peso"
-msgstr "peso philippin"
-
-#: inc/config.class.php:260
-msgid "Pakistan Rupee"
-msgstr "roupie pakistanaise"
-
-#: inc/config.class.php:261
-msgid "PZloty"
-msgstr "złoty polonais"
-
-#: inc/config.class.php:262
-msgid "Guarani"
-msgstr " guaraní paraguayen"
-
-#: inc/config.class.php:263
-msgid "Qatari Rial"
-msgstr "riyal qatari"
-
-#: inc/config.class.php:264
-msgid "Leu"
-msgstr "leu roumain"
-
-#: inc/config.class.php:265
-msgid "Serbian Dinar"
-msgstr "dinar serbe"
-
-#: inc/config.class.php:266
-msgid "Russian Ruble"
-msgstr "rouble russe"
-
-#: inc/config.class.php:267
-msgid "Rwanda Franc"
-msgstr " franc rwandais"
-
-#: inc/config.class.php:268
-msgid "Saudi Riyal"
-msgstr " riyal saoudien"
-
-#: inc/config.class.php:269
-msgid "Solomon Islands Dollar"
-msgstr " dollar des îles Salomon"
-
-#: inc/config.class.php:270
-msgid "Seychelles Rupee"
-msgstr "roupie seychelloise"
-
-#: inc/config.class.php:271
-msgid "Sudanese"
-msgstr " livre soudanaise"
-
-#: inc/config.class.php:272
-msgid "Swedish Krona"
-msgstr "couronne suédoise"
-
-#: inc/config.class.php:273
-msgid "Singapore Dollar"
-msgstr "dollar de Singapour"
-
-#: inc/config.class.php:274
-msgid "Saint Helena Pound"
-msgstr "livre de Sainte-Hélène"
-
-#: inc/config.class.php:275
-msgid "leone"
-msgstr "leone"
-
-#: inc/config.class.php:276
-msgid "Somali Shilling"
-msgstr "shilling somalien"
-
-#: inc/config.class.php:277
-msgid "Suriname Dollar"
-msgstr "dollar du Suriname"
-
-#: inc/config.class.php:278
-msgid "Dobra"
-msgstr "dobra"
-
-#: inc/config.class.php:279
-msgid "Syrian Pound"
-msgstr "Livre syrienne"
-
-#: inc/config.class.php:280
-msgid "Lilangeni"
-msgstr "lilangeni"
-
-#: inc/config.class.php:281
-msgid "Baht"
-msgstr " baht"
-
-#: inc/config.class.php:282
-msgid "Somoni"
-msgstr " somoni"
-
-#: inc/config.class.php:283
-msgid "Manat"
-msgstr "manat turkmène"
-
-#: inc/config.class.php:284
-msgid "Tunisian Dinar"
-msgstr "dinar tunisien"
-
-#: inc/config.class.php:285
-msgid "Pa’anga"
-msgstr " paʻanga"
-
-#: inc/config.class.php:286
-msgid "Turkish Lira"
-msgstr " livre turque"
-
-#: inc/config.class.php:287
-msgid "Trinidad and Tobago Dollar"
-msgstr " dollar trinidadien"
-
-#: inc/config.class.php:288
-msgid "Taiwan Dollar"
-msgstr "nouveau dollar de Taïwan"
-
-#: inc/config.class.php:289
-msgid "Tanzanian Shilling"
-msgstr " shilling tanzanien"
-
-#: inc/config.class.php:290
-msgid "Hryvnia"
-msgstr " hryvnia"
-
-#: inc/config.class.php:291
-msgid "Uganda Shilling"
-msgstr " shilling ougandais"
-
-#: inc/config.class.php:292
-msgid "US Dollar"
-msgstr "dollar américain"
-
-#: inc/config.class.php:293
-msgid "Peso Uruguayo"
-msgstr " peso uruguayen"
-
-#: inc/config.class.php:294
-msgid "Uzbekistan Sum"
-msgstr " sum"
-
-#: inc/config.class.php:295
-msgid "Bolivar Fuerte"
-msgstr " bolívar vénézuélien"
-
-#: inc/config.class.php:296
-msgid "Dong"
-msgstr "dong"
-
-#: inc/config.class.php:297
-msgid "Vatu"
-msgstr " vatu"
-
-#: inc/config.class.php:298
-msgid "Tala"
-msgstr " tala"
-
-#: inc/config.class.php:299
-msgid "CFA Franc BCEAO"
-msgstr "Franc CFA (CEMAC)"
-
-#: inc/config.class.php:300
-msgid "East Caribbean Dollar"
-msgstr "dollar des Caraïbes orientales"
-
-#: inc/config.class.php:301
-msgid "CFP Franc"
-msgstr "franc pacifique"
-
-#: inc/config.class.php:302
-msgid "Yemeni Rial"
-msgstr " riyal yéménite"
-
-#: inc/config.class.php:303
-msgid "Rand"
-msgstr "rand"
-
-#: inc/config.class.php:304
-msgid "Zambian Kwacha"
-msgstr "kwacha de Zambie"
-
-#: inc/config.class.php:305
-msgid "Zimbabwe Dollar"
-msgstr "dollar du Zimbabwe"
-
-#: inc/group.class.php:233
-#, php-format
-msgid "No sons of %s"
-msgstr "Auncun enfant pour 1%s"
-
-#: inc/itilfollowup.class.php:86
-msgid "Source of followup"
-msgstr "Source du suivi"
-
-#: inc/itilsolution.class.php:74
-msgid "Soluce approved on "
-msgstr "Solution approuvée le "
-
-#: inc/itilsolution.class.php:76
-msgid "Soluce refused on "
-msgstr "Solution refusée le "
-
-#: inc/knowbaseitem.class.php:90
-msgid "No question found"
-msgstr "Pas de question trouvée"
-
-#: inc/knowbaseitem.class.php:97
-msgid "No answer found"
-msgstr "Aucune réponse trouvée"
-
-#: inc/preference.class.php:116
-msgid "Choose the tables to print in pdf"
-msgstr "Choisir les tableaux pour l'impression pdf"
-
-#: inc/preference.class.php:159
-msgid "Portrait"
-msgstr "Portrait"
-
-#: inc/preference.class.php:160
-msgid "Landscape"
-msgstr "Paysage"
-
-#: inc/preference.class.php:166
-msgctxt "button"
-msgid "Print"
-msgstr "Imprimer"
-
-#: inc/problem_ticket.class.php:404
-msgid "Items of the ticket"
-msgstr "Eléments du ticket"
-
-#: inc/reservation.class.php:74 inc/reservation.class.php:163
-msgid "No current and future reservations"
-msgstr "Aucune réservation actuelle ou future"
-
-#: inc/reservation.class.php:107 inc/reservation.class.php:205
-msgid "No past reservations"
-msgstr "Aucune réservation antérieure"
-
-#: inc/reservation.class.php:127
-msgid "Item not reservable"
-msgstr "Elément non réservable"
-
-#: inc/ticket.class.php:472
-msgid "Requester information"
-msgstr "Information sur le demandeur"
 
 #: inc/ticketsatisfaction.class.php:61
 msgid "1 star"
@@ -743,18 +41,736 @@ msgstr "4 étoiles"
 msgid "5 stars"
 msgstr "5 étoiles"
 
-#: inc/ticketsatisfaction.class.php:81
-msgid "No answer"
-msgstr "Pas de réponse"
+#: inc/computer_softwareversion.class.php:344
+#: inc/item_softwareversion.class.php:406
+msgid "Affected licenses of not installed software"
+msgstr "Licences associées à un logiciel non installé"
 
-#: inc/tickettask.class.php:104
-msgid "By user"
-msgstr "Par l'utilisateur"
+#: inc/config.class.php:166
+msgid "Afghani"
+msgstr "afghani"
+
+#: inc/config.class.php:202
+msgid "Algerian Dinar"
+msgstr "dinar algérien"
+
+#: inc/changevalidation.class.php:50
+msgid "Approvals for the change"
+msgstr "Validations pour ce changement"
+
+#: inc/ticketvalidation.class.php:50
+msgid "Approvals for the ticket"
+msgstr "Validations pour ce tickets"
+
+#: inc/config.class.php:170
+msgid "Argentine Peso"
+msgstr "peso argentin"
+
+#: inc/config.class.php:168
+msgid "Armenian Dram"
+msgstr "dram"
+
+#: inc/config.class.php:172
+msgid "Aruban Guilder/Florin"
+msgstr "Florin arubais"
+
+#: inc/appliance.class.php:350
+msgid "Associated appliances"
+msgstr ""
+
+#: inc/config.class.php:171
+msgid "Australian Dollar"
+msgstr "dollar australien"
+
+#: inc/config.class.php:173
+msgid "Azerbaijanian Manat"
+msgstr "manat azerbaïdjanais"
+
+#: inc/config.class.php:184
+msgid "Bahamian Dollar"
+msgstr "dollar des Bahamas"
+
+#: inc/config.class.php:178
+msgid "Bahraini Dinar"
+msgstr "dinar de Bahreïn"
+
+#: inc/config.class.php:290
+msgid "Baht"
+msgstr " baht"
+
+#: inc/config.class.php:265
+msgid "Balboa"
+msgstr " balboa"
+
+#: inc/config.class.php:175
+msgid "Barbados Dollar"
+msgstr "dollar barbadien"
+
+#: inc/config.class.php:187
+msgid "Belarussian Ruble"
+msgstr "rouble biélorusse"
+
+#: inc/config.class.php:188
+msgid "Belize Dollar"
+msgstr "dollar de Belize"
+
+#: inc/config.class.php:180
+msgid "Bermudian Dollar"
+msgstr "dollar des Bermudes"
+
+#: inc/config.class.php:304
+msgid "Bolivar Fuerte"
+msgstr " bolívar vénézuélien"
+
+#: inc/config.class.php:182
+msgid "Boliviano"
+msgstr "boliviano bolivien"
+
+#: inc/config.class.php:183
+msgid "Brazilian Real"
+msgstr "réal brésilien"
+
+#: inc/config.class.php:181
+msgid "Brunei Dollar"
+msgstr "dollar de Brunei"
+
+#: inc/config.class.php:177
+msgid "Bulgarian Lev"
+msgstr "lev bulgare"
+
+#: inc/config.class.php:179
+msgid "Burundi Franc"
+msgstr "franc burundais"
 
 #: inc/tickettask.class.php:108
 msgid "By group"
 msgstr "Par le groupe"
 
-#: inc/ticketvalidation.class.php:50
-msgid "Approvals for the ticket"
-msgstr "Validations pour ce tickets"
+#: inc/tickettask.class.php:104
+msgid "By user"
+msgstr "Par l'utilisateur"
+
+#: inc/config.class.php:308
+msgid "CFA Franc BCEAO"
+msgstr "Franc CFA (CEMAC)"
+
+#: inc/config.class.php:310
+msgid "CFP Franc"
+msgstr "franc pacifique"
+
+#: inc/config.class.php:189
+msgid "Canadian Dollar"
+msgstr "dollar canadien"
+
+#: inc/config.class.php:197
+msgid "Cape Verde Escudo"
+msgstr "escudo du Cap-Vert"
+
+#: inc/config.class.php:236
+msgid "Cayman Islands Dollar"
+msgstr "dollar des îles Caïmans"
+
+#: inc/config.class.php:211
+msgid "Cedi"
+msgstr "cedi"
+
+#: inc/config.class.php:192
+msgid "Chilean Peso"
+msgstr "peso chilien"
+
+#: inc/preference.class.php:116
+msgid "Choose the tables to print in pdf"
+msgstr "Choisir les tableaux pour l'impression pdf"
+
+#: inc/config.class.php:121
+msgid "Choose your international currency"
+msgstr "Choisir votre devise internationale"
+
+#: inc/config.class.php:194
+msgid "Colombian Peso"
+msgstr "peso colombien"
+
+#: inc/config.class.php:190
+msgid "Congolese Franc"
+msgstr " franc congolais"
+
+#: inc/config.class.php:260
+msgid "Cordoba Oro"
+msgstr "córdoba oro"
+
+#: inc/config.class.php:195
+msgid "Costa Rican Colon"
+msgstr "colon du Costa Rica"
+
+#: inc/config.class.php:218
+msgid "Croatian Kuna"
+msgstr "kuna croate"
+
+#: inc/config.class.php:196
+msgid "Cuban Peso"
+msgstr "peso cubain"
+
+#: inc/config.class.php:198
+msgid "Czech Koruna"
+msgstr "couronne tchèque"
+
+#: inc/config.class.php:213
+msgid "Dalasi"
+msgstr "dalasi"
+
+#: inc/config.class.php:200
+msgid "Danish Krone"
+msgstr "couronne danoise"
+
+#: inc/config.class.php:247
+msgid "Denar"
+msgstr "denar"
+
+#: inc/config.class.php:199
+msgid "Djibouti Franc"
+msgstr "franc de Djibouti"
+
+#: inc/config.class.php:287
+msgid "Dobra"
+msgstr "dobra"
+
+#: inc/config.class.php:201
+msgid "Dominican Peso"
+msgstr "peso dominicain"
+
+#: inc/config.class.php:305
+msgid "Dong"
+msgstr "dong"
+
+#: inc/config.class.php:309
+msgid "East Caribbean Dollar"
+msgstr "dollar des Caraïbes orientales"
+
+#: inc/config.class.php:203
+msgid "Egyptian Pound"
+msgstr "livre égyptienne"
+
+#: inc/appliance.class.php:139
+msgid "Environment"
+msgstr ""
+
+#: inc/config.class.php:205
+msgid "Ethiopian Birr"
+msgstr " birr"
+
+#: inc/config.class.php:206
+msgid "Euro"
+msgstr "euro"
+
+#: inc/config.class.php:208
+msgid "Falkland Islands Pound"
+msgstr "livre des Îles Malouines"
+
+#: inc/config.class.php:207
+msgid "Fiji Dollar"
+msgstr "dollar de Fidji"
+
+#: inc/config.class.php:220
+msgid "Forint"
+msgstr "forint hongrois"
+
+#: inc/config.class.php:212
+msgid "Gibraltar Pound"
+msgstr "livre de Gibraltar"
+
+#: inc/config.class.php:219
+msgid "Gourde"
+msgstr "gourde haïtienne"
+
+#: inc/config.class.php:271
+msgid "Guarani"
+msgstr " guaraní paraguayen"
+
+#: inc/config.class.php:214
+msgid "Guinea Franc"
+msgstr "franc guinéen"
+
+#: inc/config.class.php:216
+msgid "Hong Kong Dollar"
+msgstr "dollar de Hong Kong"
+
+#: inc/config.class.php:299
+msgid "Hryvnia"
+msgstr " hryvnia"
+
+#: inc/config.class.php:226
+msgid "Iceland Krona"
+msgstr "couronne islandaise"
+
+#: inc/config.class.php:223
+msgid "Indian Rupee"
+msgstr " roupie indienne"
+
+#: inc/config.class.php:225
+msgid "Iranian Rial"
+msgstr " rial iranien"
+
+#: inc/config.class.php:224
+msgid "Iraqi Dinar"
+msgstr " dinar irakien"
+
+#: inc/reservation.class.php:127
+msgid "Item not reservable"
+msgstr "Elément non réservable"
+
+#: inc/problem_ticket.class.php:404
+msgid "Items of the ticket"
+msgstr "Eléments du ticket"
+
+#: inc/config.class.php:227
+msgid "Jamaican Dollar"
+msgstr " dollar jamaïcain"
+
+#: inc/config.class.php:228
+msgid "Jordanian Dinar"
+msgstr "dinar jordanien"
+
+#: inc/config.class.php:230
+msgid "Kenyan Shilling"
+msgstr " shilling kényan"
+
+#: inc/config.class.php:267
+msgid "Kina"
+msgstr "kina"
+
+#: inc/config.class.php:238
+msgid "Kip"
+msgstr " kip"
+
+#: inc/config.class.php:174
+msgid "Konvertibilna Marka"
+msgstr "mark convertible"
+
+#: inc/config.class.php:235
+msgid "Kuwaiti Dinar"
+msgstr "dinar koweïtien"
+
+#: inc/config.class.php:254
+msgid "Kwacha"
+msgstr " kwacha malawien"
+
+#: inc/config.class.php:169
+msgid "Kwanza"
+msgstr "kwanza"
+
+#: inc/config.class.php:248
+msgid "Kyat"
+msgstr " kyat"
+
+#: inc/preference.class.php:160
+msgid "Landscape"
+msgstr "Paysage"
+
+#: inc/config.class.php:210
+msgid "Lari"
+msgstr " lari"
+
+#: inc/config.class.php:239
+msgid "Lebanese Pound"
+msgstr "livre libanaise"
+
+#: inc/config.class.php:167
+msgid "Lek"
+msgstr "lek albanais"
+
+#: inc/config.class.php:217
+msgid "Lempira"
+msgstr "lempira"
+
+#: inc/config.class.php:273
+msgid "Leu"
+msgstr "leu roumain"
+
+#: inc/config.class.php:241
+msgid "Liberian Dollar"
+msgstr "dollar libérien"
+
+#: inc/config.class.php:243
+msgid "Libyan Dinar"
+msgstr "dinar libyen"
+
+#: inc/config.class.php:289
+msgid "Lilangeni"
+msgstr "lilangeni"
+
+#: inc/config.class.php:242
+msgid "Loti"
+msgstr " loti"
+
+#: inc/config.class.php:246
+msgid "Malagasy Ariary"
+msgstr "ariary"
+
+#: inc/config.class.php:256
+msgid "Malaysian Ringgit"
+msgstr "ringgit"
+
+#: inc/config.class.php:292
+msgid "Manat"
+msgstr "manat turkmène"
+
+#: inc/config.class.php:252
+msgid "Mauritius Rupee"
+msgstr "roupie mauricienne"
+
+#: inc/config.class.php:257
+msgid "Metical"
+msgstr " metical"
+
+#: inc/config.class.php:255
+msgid "Mexican Peso"
+msgstr "Peso mexicain"
+
+#: inc/config.class.php:245
+msgid "Moldavian Leu"
+msgstr "leu moldave"
+
+#: inc/config.class.php:244
+msgid "Moroccan Dirham"
+msgstr "dirham marocain"
+
+#: inc/config.class.php:259
+msgid "Naira"
+msgstr "naira"
+
+#: inc/config.class.php:204
+msgid "Nakfa"
+msgstr "nakfa"
+
+#: inc/config.class.php:258
+msgid "Namibia Dollar"
+msgstr "dollar namibien"
+
+#: inc/config.class.php:262
+msgid "Nepalese Rupee"
+msgstr "roupie népalaise"
+
+#: inc/config.class.php:222
+msgid "New Israeli Shekel"
+msgstr "Shekel"
+
+#: inc/config.class.php:263
+msgid "New Zealand Dollar"
+msgstr "dollar néo-zélandais"
+
+#: inc/config.class.php:185
+msgid "Ngultrum"
+msgstr "ngultrum"
+
+#: inc/ticketsatisfaction.class.php:81
+msgid "No answer"
+msgstr "Pas de réponse"
+
+#: inc/knowbaseitem.class.php:97
+msgid "No answer found"
+msgstr "Aucune réponse trouvée"
+
+#: inc/reservation.class.php:74 inc/reservation.class.php:163
+msgid "No current and future reservations"
+msgstr "Aucune réservation actuelle ou future"
+
+#: inc/computer_item.class.php:130
+msgid "No monitor"
+msgstr "Pas d'écran"
+
+#: inc/reservation.class.php:107 inc/reservation.class.php:205
+msgid "No past reservations"
+msgstr "Aucune réservation antérieure"
+
+#: inc/computer_item.class.php:134
+msgid "No peripheral"
+msgstr "Pas de périphérique"
+
+#: inc/computer_item.class.php:138
+msgid "No phone"
+msgstr "Pas de téléphone"
+
+#: inc/cartridgeitem.class.php:130
+msgid "No printel model associated"
+msgstr "Aucun modèle d'imprimante associé"
+
+#: inc/computer_item.class.php:126
+msgid "No printer"
+msgstr "Pas d'imprimante"
+
+#: inc/knowbaseitem.class.php:90
+msgid "No question found"
+msgstr "Pas de question trouvée"
+
+#: inc/group.class.php:233
+#, php-format
+msgid "No sons of %s"
+msgstr "Auncun enfant pour 1%s"
+
+#: inc/config.class.php:233
+msgid "North Korean Won"
+msgstr "won nord-coréen"
+
+#: inc/config.class.php:261
+msgid "Norwegian Krone"
+msgstr "couronne norvégienne"
+
+#: inc/config.class.php:266
+msgid "Nuevo Sol"
+msgstr " nuevo sol péruvien"
+
+#: inc/config.class.php:251
+msgid "Ouguiya"
+msgstr "Ouguiya"
+
+#: inc/config.class.php:270
+msgid "PZloty"
+msgstr "złoty polonais"
+
+#: inc/config.class.php:269
+msgid "Pakistan Rupee"
+msgstr "roupie pakistanaise"
+
+#: inc/config.class.php:250
+msgid "Pataca"
+msgstr "pataca"
+
+#: inc/config.class.php:294
+msgid "Pa’anga"
+msgstr " paʻanga"
+
+#: inc/config.class.php:302
+msgid "Peso Uruguayo"
+msgstr " peso uruguayen"
+
+#: inc/config.class.php:268
+msgid "Philippine Peso"
+msgstr "peso philippin"
+
+#: inc/preference.class.php:159
+msgid "Portrait"
+msgstr "Portrait"
+
+#: inc/config.class.php:209
+msgid "Pound Sterling"
+msgstr "livre sterling"
+
+#: inc/preference.class.php:166
+msgctxt "button"
+msgid "Print"
+msgstr "Imprimer"
+
+#: hook.php:48 inc/config.class.php:55 inc/profile.class.php:43
+#: inc/profile.class.php:72 inc/profile.class.php:76 inc/profile.class.php:96
+#: inc/profile.class.php:150 inc/preference.class.php:181
+#: inc/common.class.php:126 setup.php:99
+msgid "Print to pdf"
+msgstr "Impression pdf"
+
+#: inc/config.class.php:186
+msgid "Pula"
+msgstr "pula"
+
+#: inc/config.class.php:272
+msgid "Qatari Rial"
+msgstr "riyal qatari"
+
+#: inc/config.class.php:215
+msgid "Quetzal"
+msgstr "quetzal"
+
+#: inc/config.class.php:312
+msgid "Rand"
+msgstr "rand"
+
+#: inc/ticket.class.php:474
+msgid "Requester information"
+msgstr "Information sur le demandeur"
+
+#: inc/config.class.php:264
+msgid "Rial Omani"
+msgstr "rial omanais"
+
+#: inc/config.class.php:232
+msgid "Riel"
+msgstr " riel"
+
+#: inc/config.class.php:253
+msgid "Rufiyaa"
+msgstr "rufiyaa"
+
+#: inc/config.class.php:221
+msgid "Rupiah"
+msgstr " rupiah"
+
+#: inc/config.class.php:275
+msgid "Russian Ruble"
+msgstr "rouble russe"
+
+#: inc/config.class.php:276
+msgid "Rwanda Franc"
+msgstr " franc rwandais"
+
+#: inc/config.class.php:283
+msgid "Saint Helena Pound"
+msgstr "livre de Sainte-Hélène"
+
+#: inc/config.class.php:277
+msgid "Saudi Riyal"
+msgstr " riyal saoudien"
+
+#: inc/config.class.php:274
+msgid "Serbian Dinar"
+msgstr "dinar serbe"
+
+#: inc/config.class.php:279
+msgid "Seychelles Rupee"
+msgstr "roupie seychelloise"
+
+#: inc/config.class.php:282
+msgid "Singapore Dollar"
+msgstr "dollar de Singapour"
+
+#: inc/config.class.php:278
+msgid "Solomon Islands Dollar"
+msgstr " dollar des îles Salomon"
+
+#: inc/itilsolution.class.php:74
+msgid "Soluce approved on "
+msgstr "Solution approuvée le "
+
+#: inc/itilsolution.class.php:76
+msgid "Soluce refused on "
+msgstr "Solution refusée le "
+
+#: inc/config.class.php:231
+msgid "Som"
+msgstr "som"
+
+#: inc/config.class.php:285
+msgid "Somali Shilling"
+msgstr "shilling somalien"
+
+#: inc/config.class.php:291
+msgid "Somoni"
+msgstr " somoni"
+
+#: inc/itilfollowup.class.php:86
+msgid "Source of followup"
+msgstr "Source du suivi"
+
+#: inc/config.class.php:234
+msgid "South Korean Won"
+msgstr "won sud-coréen"
+
+#: inc/config.class.php:240
+msgid "Sri Lanka Rupee"
+msgstr "roupie srilankaise"
+
+#: inc/config.class.php:280
+msgid "Sudanese"
+msgstr " livre soudanaise"
+
+#: inc/config.class.php:286
+msgid "Suriname Dollar"
+msgstr "dollar du Suriname"
+
+#: inc/config.class.php:281
+msgid "Swedish Krona"
+msgstr "couronne suédoise"
+
+#: inc/config.class.php:191
+msgid "Swiss Franc"
+msgstr "franc suisse"
+
+#: inc/config.class.php:288
+msgid "Syrian Pound"
+msgstr "Livre syrienne"
+
+#: inc/config.class.php:297
+msgid "Taiwan Dollar"
+msgstr "nouveau dollar de Taïwan"
+
+#: inc/config.class.php:176
+msgid "Taka"
+msgstr "taka"
+
+#: inc/config.class.php:307
+msgid "Tala"
+msgstr " tala"
+
+#: inc/config.class.php:298
+msgid "Tanzanian Shilling"
+msgstr " shilling tanzanien"
+
+#: inc/config.class.php:237
+msgid "Tenge"
+msgstr "tenge"
+
+#: inc/config.class.php:130
+msgid "Text to add at the end of the PDF generation"
+msgstr ""
+
+#: inc/config.class.php:296
+msgid "Trinidad and Tobago Dollar"
+msgstr " dollar trinidadien"
+
+#: inc/config.class.php:249
+msgid "Tugrik"
+msgstr "tugrik"
+
+#: inc/config.class.php:293
+msgid "Tunisian Dinar"
+msgstr "dinar tunisien"
+
+#: inc/config.class.php:295
+msgid "Turkish Lira"
+msgstr " livre turque"
+
+#: inc/config.class.php:165
+msgid "UAE Dirham"
+msgstr "dirham des Émirats arabes unis"
+
+#: inc/config.class.php:301
+msgid "US Dollar"
+msgstr "dollar américain"
+
+#: inc/config.class.php:300
+msgid "Uganda Shilling"
+msgstr " shilling ougandais"
+
+#: inc/appliance.class.php:337
+msgid "User fields"
+msgstr ""
+
+#: inc/config.class.php:303
+msgid "Uzbekistan Sum"
+msgstr " sum"
+
+#: inc/config.class.php:306
+msgid "Vatu"
+msgstr " vatu"
+
+#: inc/config.class.php:311
+msgid "Yemeni Rial"
+msgstr " riyal yéménite"
+
+#: inc/config.class.php:229
+msgid "Yen"
+msgstr "yen"
+
+#: inc/config.class.php:193
+msgid "Yuan"
+msgstr "yuan renminbi"
+
+#: inc/config.class.php:313
+msgid "Zambian Kwacha"
+msgstr "kwacha de Zambie"
+
+#: inc/config.class.php:314
+msgid "Zimbabwe Dollar"
+msgstr "dollar du Zimbabwe"
+
+#: inc/config.class.php:284
+msgid "leone"
+msgstr "leone"
